@@ -18,7 +18,7 @@ const SOURCES = [
   "SoilGrids",
   "Copernicus DEM",
   "ESA WorldCover",
-  "CSA field evidence",
+  "Field-trial evidence",
 ];
 
 export function HomeHero() {
@@ -78,7 +78,7 @@ export function HomeHero() {
             transition={{ delay: 0.04, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             className="font-display text-[clamp(2.75rem,6.5vw,4.75rem)] font-semibold leading-[0.98] tracking-tight text-ink"
           >
-            Agroecology AI
+            AgroAdvisor-ET
           </motion.h1>
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 12 }}
@@ -86,7 +86,7 @@ export function HomeHero() {
             transition={{ delay: 0.1 }}
             className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-body sm:text-xl"
           >
-            Evidence-ranked climate-smart practices for Ethiopian farms —
+            Evidence-ranked agroecological practices for Ethiopian farms —
             grounded in field trials and local geospatial context.
           </motion.p>
 
@@ -135,7 +135,7 @@ export function HomeHero() {
                     aria-hidden
                   />
                   <label className="sr-only" htmlFor="hero-ask">
-                    Ask Agroecology AI
+                    Ask AgroAdvisor-ET
                   </label>
                   <input
                     id="hero-ask"

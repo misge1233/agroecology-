@@ -18,19 +18,31 @@ indicator), not the user's free text.
 | `corpus/manifest.jsonl` | acquisition ledger: per study — OA status, files, licence |
 | `eval/` | retrieval Recall@k/MRR, RAGAS-style faithfulness, expert-study materials |
 
-## Corpus acquisition (start here)
+## Building the corpus + index (run from `rag/`)
 
 ```bash
 pip install -r requirements.txt
-export UNPAYWALL_EMAIL="you@example.org"   # required by the Unpaywall API's polite pool
-python ingest/fetch_papers.py --doi-list ../paper/references/era_doi_list.csv --out corpus/
-# resumable: re-running skips studies already in the manifest
+
+# 1) Acquire: DOI -> Crossref metadata -> Unpaywall OA PDF   (resumable)
+export UNPAYWALL_EMAIL="you@example.org"   # any contact email; required by Unpaywall
+python ingest/fetch_papers.py --doi-list ../paper/references/era_doi_list.csv --out corpus
+
+# 2) Parse + chunk: PDFs/abstracts -> corpus/chunks.jsonl
+python ingest/parse_and_chunk.py --corpus corpus
+
+# 3) Embed + index: chunks -> Chroma at index/store            (resumable)
+#    key from OPENAI_API_KEY or ../app/backend/.env
+python ingest/build_index.py --corpus corpus --index index/store
+
+# sanity check
+python retrieve.py "soil bunds effect on soil loss Ethiopia"
 ```
 
 Expected outcome (typical OA rates for this literature): full text for roughly
 half the corpus, abstract + metadata for the rest — every study contributes at
 least metadata. The manifest records exactly what each study contributed, which
-feeds the paper's corpus table.
+feeds the paper's corpus table. Indexing ~300 studies costs well under $1 of
+embeddings (text-embedding-3-small).
 
 ## Design rules (do not break)
 

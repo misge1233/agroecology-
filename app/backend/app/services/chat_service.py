@@ -7,8 +7,8 @@ Pipeline (evidence-first):
    phrase a short narrative grounded in that evidence.
 4. Follow-ups (why/how) reuse the prior recommendation; social acks skip tools.
 
-The ML/agent logic is canonical in ``backend/groq_agent.py``; we reuse its
-``SYSTEM_PROMPT`` for narrative phrasing and the offline ``CSAAdvisor`` fallback.
+The ML/agent logic is canonical in ``backend/advisor_agent.py``; we reuse its
+``SYSTEM_PROMPT`` for narrative phrasing and the offline ``AgroAdvisor`` fallback.
 """
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ from app.services.slot_extraction import (
 )
 
 # Canonical agent building blocks.
-from groq_agent import (  # noqa: E402
+from advisor_agent import (  # noqa: E402
     SYSTEM_PROMPT,
     _is_social_ack,
 )
@@ -103,7 +103,7 @@ def _social_reply(has_prior: bool) -> str:
         )
     return (
         "You're welcome. Share a map location, challenge area, and objective "
-        "whenever you're ready and I'll recommend CSA practices."
+        "whenever you're ready and I'll recommend suitable practices."
     )
 
 
@@ -288,9 +288,9 @@ async def _stream_followup(
 async def _stream_offline_followup(
     message: str, last_recommendation: dict[str, Any]
 ) -> AsyncIterator[str]:
-    from groq_agent import CSAAdvisor
+    from advisor_agent import AgroAdvisor
 
-    advisor = CSAAdvisor()
+    advisor = AgroAdvisor()
     advisor._last = last_recommendation
     reply = advisor._offline(message)
     reply = strip_leaked_tool_markup(reply or "") or evidence_summary(last_recommendation)

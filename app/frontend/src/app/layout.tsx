@@ -18,9 +18,9 @@ const display = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "Agroecology AI — CSA Practice Recommender",
+  title: "AgroAdvisor-ET — AI-Powered Agroecology+ Advisor",
   description:
-    "Evidence-ranked climate-smart agriculture recommendations for Ethiopia — geospatial context, field-trial evidence, and transparent confidence.",
+    "Evidence-ranked agroecological practice recommendations for Ethiopia — geospatial context, field-trial evidence, and transparent confidence.",
 };
 
 export default function RootLayout({

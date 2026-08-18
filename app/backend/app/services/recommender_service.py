@@ -1,13 +1,14 @@
 """Thin service wrapper around the canonical recommender engine.
 
-``backend/recommend.py`` and ``backend/groq_agent.py`` are the source of truth for
-the ML logic. We do **not** duplicate or fork them — we put ``backend/`` on
+``backend/recommend.py`` and ``backend/advisor_agent.py`` are the source of truth
+for the ML logic. We do **not** duplicate or fork them — we put ``backend/`` on
 ``sys.path`` and import them, load the model once at startup, and expose small,
 typed helpers to the routers.
 """
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -17,8 +18,13 @@ from app.config import get_settings
 logger = logging.getLogger(__name__)
 
 # Make the canonical engine importable (it lives at backend/ root and resolves its
-# own artifacts/, dataset/, layers/ paths relative to its own file location).
+# own artifacts/ and dataset/ paths relative to its own file location; the raster
+# stack location is configurable via LAYERS_DIR).
 _BACKEND_ROOT = get_settings().backend_root
+_LAYERS_DIR = get_settings().resolved_layers_dir
+# recommend.py reads LAYERS_DIR from the process env at import time — export the
+# resolved setting (which may come from backend/.env) before importing it.
+os.environ["LAYERS_DIR"] = str(_LAYERS_DIR)
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
@@ -53,7 +59,7 @@ def _required_paths() -> list[Path]:
         root / "aez_belt_lookup.csv",
     ]
     layer_names = list(_engine.STACK.keys()) + ["aez_belt"]
-    paths += [root / "layers" / f"{name}.tif" for name in layer_names]
+    paths += [_LAYERS_DIR / f"{name}.tif" for name in layer_names]
     return paths
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-recommend.py  -  Phase 3: the CSA practice recommender.
+recommend.py  -  the agroecological practice recommender (AgroAdvisor-ET engine).
 
 recommend(lat, lon, practice_family, indicator, crop_type=None, top_n=3) -> dict
 
@@ -22,7 +22,10 @@ from rasterio.windows import Window
 B=os.path.dirname(os.path.abspath(__file__))
 ART=os.path.join(B,"artifacts","csa_model.joblib")
 DATA=os.path.join(B,"dataset","CSA_ERA_final_model_ready.csv")
-LAYER_DIR=os.path.join(B,"layers")
+# GeoTIFF stack location — override with LAYERS_DIR (e.g. the repo's geodata/layers)
+# so the ~730 MB rasters need not be duplicated next to the code. Defaults to ./layers
+# (the path docker-compose mounts inside the container).
+LAYER_DIR=os.environ.get("LAYERS_DIR") or os.path.join(B,"layers")
 AEZ_LOOK=os.path.join(B,"aez_belt_lookup.csv")
 
 # indicator direction: +1 higher-is-better, -1 lower-is-better

@@ -1,4 +1,4 @@
-/** Shared API types matching the FastAPI schemas (lat/long CSA contract). */
+/** Shared API types matching the FastAPI schemas (AgroAdvisor-ET contract). */
 
 export type Direction = "increase" | "reduce";
 export type Confidence = "high" | "medium" | "low";
@@ -25,7 +25,7 @@ export interface Metadata {
   indicators: IndicatorMeta[];
   /** Indicator keys with evidence for each practice family (model-derived). */
   indicators_by_family?: Record<string, string[]>;
-  /** CSA practice names eligible for ranking within each practice_family. */
+  /** Practice names eligible for ranking within each practice_family. */
   practices_by_family?: Record<string, string[]>;
   crop_types: string[];
   bounds: Bounds;

@@ -37,8 +37,9 @@ export function AboutPopover() {
             How it works
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-mute">
-            AgroGuide reads the agro-ecological context under your map pin and ranks
-            Climate-Smart Agriculture practices with a Random Forest trained on
+            AgroAdvisor-ET reads the agro-ecological context under your map pin and
+            ranks agroecological practices (including climate-smart agriculture) with
+            a Random Forest trained on
             Ethiopian meta-analysis field evidence. Skill is modest, so trust the
             <em> ordering</em> more than the exact percentages. The assistant only
             interprets your words — every number comes from the model.

@@ -74,7 +74,7 @@ export function HomeFamilies() {
           {families.map((f, i) => {
             const m = FAMILY_META[f] ?? {
               icon: Sprout,
-              blurb: "Climate-smart practices for this challenge.",
+              blurb: "Evidence-backed practices for this challenge.",
             };
             const Icon = m.icon;
             return (

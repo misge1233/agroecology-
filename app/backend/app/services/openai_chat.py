@@ -1,4 +1,4 @@
-"""OpenAI chat completions adapter for CSA chat with manual function calling."""
+"""OpenAI chat completions adapter for the advisor chat (manual function calling)."""
 from __future__ import annotations
 
 import json
@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 
-from groq_agent import TOOLS, run_tool
+from advisor_agent import TOOLS, run_tool
 
 logger = logging.getLogger(__name__)
 

@@ -24,15 +24,16 @@ _FEATURES = [
 
 @router.get("/models", response_model=list[ModelListItem])
 def models():
-    """Single current model — the pooled RandomForest CSA response-ratio ranker."""
+    """Single current model — the pooled RandomForest response-ratio ranker."""
     return [
         ModelListItem(
             key="csa_agroecology",
-            label="CSA Agroecology (Ethiopia)",
+            label="AgroAdvisor-ET evidence model (Ethiopia)",
             description=(
                 "Pooled RandomForest predicting the with/without response ratio of "
-                "Climate-Smart Agriculture practices from a map location (auto-derived "
-                "agro-ecological context), practice family, and goal indicator."
+                "agroecological practices (including CSA) from a map location "
+                "(auto-derived agro-ecological context), practice family, and goal "
+                "indicator."
             ),
             features=_FEATURES,
         )

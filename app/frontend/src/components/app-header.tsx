@@ -24,7 +24,7 @@ export function AppHeader() {
             <Leaf className="relative h-4 w-4 2xl:h-[18px] 2xl:w-[18px]" />
           </span>
           <span className="font-display text-[1.35rem] leading-none tracking-tight text-ink 2xl:text-[1.6rem]">
-            AgroGuide
+            AgroAdvisor-ET
           </span>
         </Link>
 

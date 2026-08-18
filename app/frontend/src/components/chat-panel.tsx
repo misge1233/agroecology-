@@ -370,12 +370,12 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
               <p className="eyebrow mb-4 inline-flex items-center gap-2 rounded-lg border border-edge bg-elevated px-3.5 py-1.5 normal-case tracking-normal shadow-sm">
                 <Sparkles className="h-3.5 w-3.5 text-leaf" />
                 <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-mute">
-                  CSA practice advisor
+                  Agroecology+ practice advisor
                 </span>
               </p>
               <h1 className="font-display text-[2.4rem] font-semibold leading-[1.08] tracking-tight text-ink sm:text-[3.1rem]">
                 Describe the farm context.
-                <span className="block text-body">Receive best CSA practice</span>
+                <span className="block text-body">Receive the best-fit practice</span>
               </h1>
               <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-mute sm:text-base">
                 Describe your farm in plain language — place name or map pin, challenge,

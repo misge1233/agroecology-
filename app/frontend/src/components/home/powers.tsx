@@ -18,7 +18,7 @@ const TILES = [
   {
     icon: BookOpenCheck,
     title: "Evidence base",
-    body: "Meta-analysis of CSA field trials across Ethiopia — thousands of observations across hundreds of studies.",
+    body: "Meta-analysis of agroecological field trials across Ethiopia — thousands of paired observations across hundreds of studies.",
     span: "",
   },
   {

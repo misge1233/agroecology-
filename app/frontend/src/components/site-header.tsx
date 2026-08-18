@@ -37,10 +37,10 @@ export function SiteHeader() {
             </span>
             <span className="flex flex-col leading-none">
               <span className="font-display text-[1.2rem] font-semibold tracking-tight text-ink sm:text-[1.3rem]">
-                Agroecology AI
+                AgroAdvisor-ET
               </span>
               <span className="mt-1 hidden text-[10px] font-medium uppercase tracking-[0.14em] text-mute sm:block">
-                CSA decision support
+                Agroecology+ decision support
               </span>
             </span>
           </Link>

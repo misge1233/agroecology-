@@ -1,4 +1,4 @@
-/** Map CSA practice names to image files under /public/practices/. */
+/** Map practice names to image files under /public/practices/. */
 
 export function practiceSlug(name: string): string {
   return name

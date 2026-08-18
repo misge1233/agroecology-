@@ -1,6 +1,6 @@
-# Frontend — Agroecology AI (Next.js)
+# Frontend — AgroAdvisor-ET (Next.js)
 
-Premium three-page UI over the FastAPI CSA recommender.
+Premium three-page UI over the FastAPI AgroAdvisor-ET recommender.
 
 ## Information architecture
 

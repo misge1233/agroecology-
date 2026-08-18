@@ -215,7 +215,7 @@ export function DashboardPanel() {
               </p>
               <p className="mt-1 text-sm text-mute">
                 Choose the challenge area and the outcome you want to improve.
-                Recommendations are ranked only among CSA practices in that
+                Recommendations are ranked only among practices recorded for that
                 challenge (practice family) in the evidence dataset.
               </p>
             </div>

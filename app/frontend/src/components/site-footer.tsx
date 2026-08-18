@@ -38,11 +38,11 @@ export function SiteFooter() {
               <Leaf className="h-3.5 w-3.5" aria-hidden />
             </span>
             <span className="font-display text-lg font-semibold tracking-tight text-ink">
-              Agroecology AI
+              AgroAdvisor-ET
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-mute">
-            Evidence-ranked climate-smart agriculture recommendations for
+            Evidence-ranked agroecological practice recommendations for
             Ethiopian farms — field trials, geospatial context, and transparent
             confidence on request.
           </p>
@@ -67,7 +67,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-edge">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 text-[12px] text-mute sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>© {new Date().getFullYear()} Agroecology AI. Ranking instrument — not field guarantees.</p>
+          <p>© {new Date().getFullYear()} AgroAdvisor-ET. Ranking instrument — not field guarantees.</p>
           <p>Designed for extension, research, and policy audiences in Ethiopia.</p>
         </div>
       </div>
