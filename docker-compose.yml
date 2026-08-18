@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./app/backend
+    ports:
+      - "8000:8000"
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      # Large GeoTIFF stack (~730 MB) — canonical copy lives at ./geodata/layers
+      # (see geodata/README.md); mounted read-only rather than baked into the image.
+      - ./geodata/layers:/srv/layers:ro
+
+  frontend:
+    build:
+      context: ./app/frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000

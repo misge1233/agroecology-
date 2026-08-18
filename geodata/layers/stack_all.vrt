@@ -1,0 +1,114 @@
+<VRTDataset rasterXSize="6800" rasterYSize="5156">
+  <SRS>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform>32.9, 0.00225, 0.0, 14.901, 0.0, -0.00225</GeoTransform>
+  <VRTRasterBand dataType="Int16" band="1">
+    <Description>aez_belt</Description>
+    <NoDataValue>0</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">aez_belt.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2">
+    <Description>precip_annual</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">precip_annual.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3">
+    <Description>temp_mean_annual</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">temp_mean_annual.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4">
+    <Description>precip_seasonality</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">precip_seasonality.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="5">
+    <Description>lgp_days</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">lgp_days.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="6">
+    <Description>elevation</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">elevation.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="7">
+    <Description>slope</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">slope.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="8">
+    <Description>soil_clay</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">soil_clay.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="9">
+    <Description>soil_ph</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">soil_ph.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="10">
+    <Description>soil_soc</Description>
+    <NoDataValue>-9999</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">soil_soc.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Byte" band="11">
+    <Description>land_cover</Description>
+    <NoDataValue>0</NoDataValue>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">land_cover.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+      <DstRect xOff="0" yOff="0" xSize="6800" ySize="5156"/>
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>

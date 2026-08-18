@@ -1,0 +1,16 @@
+Agro_zone,moisture_regime,thermal_belt,area_km2,zone_bbox_lon_min,zone_bbox_lat_min,zone_bbox_lon_max,zone_bbox_lat_max,within_soilgrid_extent,approx_soilgrid_cells_in_zone
+Dry Berha,Dry,Berha,144351.22,34.19734,3.93603,47.70135,14.39991,yes,2702044
+Moist Berha,Moist,Berha,16852.0,33.01969,6.94265,34.85015,8.77582,yes,315445
+Dry Kolla,Dry,Kolla,465391.08,34.245,3.41339,48.14585,14.71698,yes,8711441
+Moist Kolla,Moist,Kolla,103955.83,34.15391,5.07162,41.69296,13.75804,yes,1945901
+Wet Kolla,Wet,Kolla,13794.0,34.49634,6.14735,37.36059,11.53453,yes,258204
+Dry Weyna Dega,Dry,Weyna Dega,73446.57,36.75077,3.84746,43.76092,14.63446,yes,1374813
+Moist Weyna Dega,Moist,Weyna Dega,130955.0,34.18239,4.86449,42.68161,13.77232,yes,2451286
+Wet Weyna Dega,Wet,Weyna Dega,87761.0,34.30362,5.48748,39.86551,12.02616,yes,1642758
+Dry Dega,Dry,Dega,9253.0,37.6176,6.73432,39.82823,14.58506,yes,173203
+Moist Dega,Moist,Dega,48865.0,36.60999,5.54638,42.43775,13.51405,yes,914681
+Wet Dega,Wet,Dega,32958.0,34.73549,5.50877,39.85664,12.12566,yes,616926
+Moist High Dega,Moist,High Dega,4768.0,38.09713,6.70831,40.00863,13.38193,yes,89250
+Wet High Dega,Wet,High Dega,1351.0,37.70789,6.79787,39.96207,13.28266,yes,25289
+Moist Wurch,Moist,Wurch,1042.0,38.15137,6.73554,39.96235,13.35499,yes,19505
+Wet Wurch,Wet,Wurch,144.0,37.83193,7.81112,39.44509,13.27504,yes,2695

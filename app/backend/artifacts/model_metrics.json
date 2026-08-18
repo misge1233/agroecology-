@@ -1,0 +1,66 @@
+{
+  "model": "RandomForest",
+  "cv_r2": 0.18975884978496405,
+  "cv_rmse": 0.5846054747851869,
+  "baseline_r2": 0.1884023097611196,
+  "per_indicator": {
+    "SOM content": [
+      111,
+      -0.646
+    ],
+    "biomass yield": [
+      1525,
+      0.022
+    ],
+    "income": [
+      208,
+      0.002
+    ],
+    "runoff": [
+      359,
+      -0.164
+    ],
+    "soil loss": [
+      296,
+      -0.23
+    ],
+    "water use efficiency": [
+      255,
+      -0.194
+    ],
+    "yield": [
+      5910,
+      0.025
+    ]
+  },
+  "per_source": {
+    "CSA": 0.324,
+    "ERA": 0.117
+  },
+  "indicator_confidence": {
+    "SOM content": "low",
+    "biomass yield": "medium",
+    "income": "medium",
+    "runoff": "low",
+    "soil loss": "low",
+    "water use efficiency": "low",
+    "yield": "medium"
+  },
+  "n_rows": 8664,
+  "n_groups": 337,
+  "features": [
+    "CSA_practices",
+    "practice_family",
+    "Crop_group",
+    "crop_type",
+    "aez_belt",
+    "Indicator",
+    "land_cover",
+    "Rainfall",
+    "Altitude_r",
+    "temp_mean_annual",
+    "precip_seasonality",
+    "slope",
+    "soil_clay"
+  ]
+}

@@ -1,0 +1,11 @@
+# Large raster stack (~730 MB) — mounted as a read-only volume at runtime, not baked.
+layers/
+
+# Local dev cruft
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.env
+tests/

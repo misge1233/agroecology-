@@ -1,0 +1,11 @@
+{
+  "crs": "EPSG:4326",
+  "res_deg": 0.00225,
+  "res_m_approx": 250.5,
+  "xmin": 32.9,
+  "ymin": 3.3,
+  "xmax": 48.2,
+  "ymax": 14.901,
+  "ncols": 6800,
+  "nrows": 5156
+}

@@ -1,0 +1,7 @@
+site,lat,lon,aez_zone,moisture_regime,thermal_belt,alt_min_m,alt_max_m,alt_mid_m,temp_min_c,temp_max_c,temp_mid_c,rain_min_mm,rain_max_mm,rain_mid_mm,lgp_min_days,lgp_max_days,lgp_mid_days,moisture_code,thermal_code
+Addis Ababa,9.03,38.74,Moist Dega,Moist,Dega,2300.0,3200.0,2750.0,12.0,18.0,15.0,900.0,1400.0,1150.0,60.0,180.0,120.0,2.0,4.0
+Mekelle,13.49,39.47,Dry Weyna Dega,Dry,Weyna Dega,1500.0,2300.0,1900.0,18.0,25.0,21.5,300.0,900.0,600.0,0.0,60.0,30.0,1.0,3.0
+Hawassa,7.06,38.48,Moist Weyna Dega,Moist,Weyna Dega,1500.0,2300.0,1900.0,18.0,25.0,21.5,900.0,1400.0,1150.0,60.0,180.0,120.0,2.0,3.0
+Semera (Afar),11.79,41.0,Dry Berha,Dry,Berha,0.0,500.0,250.0,27.5,35.0,31.25,300.0,900.0,600.0,0.0,60.0,30.0,1.0,1.0
+Gambela,8.25,34.58,Moist Berha,Moist,Berha,0.0,500.0,250.0,27.5,35.0,31.25,900.0,1400.0,1150.0,60.0,180.0,120.0,2.0,1.0
+Jimma,7.67,36.83,Wet Weyna Dega,Wet,Weyna Dega,1500.0,2300.0,1900.0,18.0,25.0,21.5,1400.0,2200.0,1800.0,180.0,300.0,240.0,3.0,3.0

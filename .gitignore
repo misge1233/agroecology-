@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+tsconfig.tsbuildinfo
+
+# --- Secrets / env ---
+.env
+.env.local
+!.env.example
+
+# --- Large geodata (kept on disk, out of git — see geodata/README.md) ---
+geodata/layers/*.tif
+app/backend/layers/*.tif
+*.zip
+
+# --- Large model artifact (Zenodo/DVC at release; keep metrics in git) ---
+model/artifacts/csa_model.joblib
+app/backend/artifacts/csa_model.joblib
+
+# --- Raw data too large for git (Dataverse is the source of truth) ---
+data/raw/ERA_Ethiopia_dataset.csv
+
+# --- RAG corpus (rebuilt by rag/ingest scripts) ---
+rag/corpus/pdfs/*.pdf
+rag/index/store/
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+*.swp

@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Institutional Modern Indigo
+  70% paper neutrals · 20% navy structure · 10% indigo/cyan (data + actions)
+  Tuned for officials, scientists, and formal presentation.
+*/
+:root {
+  --canvas: #f7f8fb;
+  --panel: #eef1f6;
+  --elevated: #ffffff;
+  --ink: #0b1220;
+  --body: #334155;
+  --mute: #64748b;
+  --edge: #e2e8f0;
+  --leaf: #4f46e5;
+  --leaf-deep: #3730a3;
+  --leaf-bright: #818cf8;
+  --soil: #dc2626;
+  --accent: #0891b2;
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --brand-blue: #4f46e5;
+  --brand-violet: #6366f1;
+  --brand-pink: #e11d48;
+  --brand-teal: #0891b2;
+  --chart-1: #4f46e5;
+  --chart-2: #0891b2;
+  --chart-3: #059669;
+  --chart-4: #d97706;
+  --chart-5: #6366f1;
+  --chart-6: #e11d48;
+  --header-bg: #e0e7ff;
+  --header-bg-deep: #c7d2fe;
+  --header-fg: #0b1220;
+  --header-muted: rgb(11 18 32 / 0.58);
+  --glow-a: #4f46e5;
+  --glow-b: #0891b2;
+  --glow-c: #c7d2fe;
+  --background: var(--canvas);
+  --foreground: var(--body);
+  --shadow-soft: 0 1px 2px rgb(11 18 32 / 0.04), 0 8px 24px rgb(11 18 32 / 0.05);
+  --shadow-lift: 0 16px 40px rgb(11 18 32 / 0.08);
+  --radius-control: 0.75rem;
+  --radius-card: 1.25rem;
+  --header-h: 4.5rem;
+}
+
+.dark {
+  --canvas: #080d16;
+  --panel: #101826;
+  --elevated: #121c2c;
+  --ink: #f1f5f9;
+  --body: #cbd5e1;
+  --mute: #94a3b8;
+  --edge: #243247;
+  --leaf: #818cf8;
+  --leaf-deep: #a5b4fc;
+  --leaf-bright: #c7d2fe;
+  --soil: #f87171;
+  --accent: #22d3ee;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --brand-blue: #818cf8;
+  --brand-violet: #a5b4fc;
+  --brand-pink: #fb7185;
+  --brand-teal: #22d3ee;
+  --chart-1: #818cf8;
+  --chart-2: #22d3ee;
+  --chart-3: #34d399;
+  --chart-4: #fbbf24;
+  --chart-5: #a5b4fc;
+  --chart-6: #fb7185;
+  --header-bg: #121a2b;
+  --header-bg-deep: #0f172a;
+  --header-fg: #f1f5f9;
+  --header-muted: rgb(241 245 249 / 0.65);
+  --glow-a: #1e1b4b;
+  --glow-b: #164e63;
+  --glow-c: #312e81;
+  --background: var(--canvas);
+  --foreground: var(--body);
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.35), 0 10px 28px rgb(0 0 0 / 0.3);
+  --shadow-lift: 0 18px 44px rgb(0 0 0 / 0.45);
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  color: var(--body);
+  background-color: var(--canvas);
+  min-height: 100dvh;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Near-paper field with a whisper of structure — not product “aurora” */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 32% at 100% 0%, color-mix(in oklab, var(--glow-a) 7%, transparent), transparent 70%),
+    radial-gradient(36% 28% at 0% 0%, color-mix(in oklab, var(--glow-b) 6%, transparent), transparent 68%),
+    linear-gradient(180deg, #ffffff 0%, var(--canvas) 48%, color-mix(in oklab, var(--panel) 55%, var(--canvas)) 100%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+.dark body::after {
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--leaf) 18%, transparent);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass {
+    background: color-mix(in oklab, var(--elevated) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  }
+
+  .glass-strong {
+    background: color-mix(in oklab, var(--elevated) 94%, transparent);
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-lift {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      var(--leaf-deep) 0%,
+      var(--leaf) 100%
+    );
+  }
+
+  .bg-leaf-gradient {
+    background-image: linear-gradient(
+      145deg,
+      var(--leaf-deep) 0%,
+      var(--leaf) 100%
+    );
+  }
+
+  /* Deep navy instrument panel — presentation-grade, not rainbow */
+  .bg-aurora-panel {
+    background:
+      radial-gradient(70% 80% at 12% 18%, color-mix(in oklab, #4338ca 35%, transparent) 0%, transparent 55%),
+      radial-gradient(55% 60% at 88% 78%, color-mix(in oklab, #0e7490 22%, transparent) 0%, transparent 50%),
+      linear-gradient(155deg, #0b1220 0%, #172554 52%, #164e63 100%);
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(
+      120deg,
+      var(--leaf-deep) 0%,
+      var(--leaf) 55%,
+      var(--accent) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .focus-ring {
+    outline: none;
+  }
+
+  .focus-ring:focus-visible {
+    border-color: color-mix(in oklab, var(--leaf) 40%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--leaf) 16%, transparent);
+  }
+
+  .bg-header-surface {
+    background-color: var(--header-bg);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  }
+
+  .bg-header-teal {
+    background-color: var(--header-bg);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  }
+
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+}

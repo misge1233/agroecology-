@@ -1,0 +1,9 @@
+RAG development. currently identified three sources:
+1) CGSpace: https://cgspace.cgiar.org/server/api
+Use the CGSpace REST API to search and retrieve current CGIAR publications and their files/PDFs, then extract, chunk, embed, and index the text in your vector database. CGSpace officially exposes repository content through its REST API.
+
+2) Gardian: https://huggingface.co/datasets/CGIAR/gardian-cigi-ai-documents
+Use the GARDIAN-CIGI dataset as a bulk/preprocessed knowledge source: after accepting the Hugging Face access conditions, load its documents, use the already-extracted content and metadata, chunk and embed them, and store them in your vector database. The GARDIAN-CIGI corpus currently contains 85,782 processed agricultural research documents and is explicitly structured for retrieval/RAG use.
+
+3) Harvard Dataverse (what we say ERA dataset) https://dataverse.harvard.edu/api
+Query the dataset endpoint → obtain metadata and file IDs → download relevant PDFs/documents using the file-access endpoint → extract text → chunk → generate embeddings → store in your vector database. If the dataset contains tabular data rather than papers, you can also ingest those files using an appropriate table/data parser. Restricted files may require authentication or additional access approval. by the way the CSA practice recommendation model is developed from this ERA dataset. so using the papers (data has Doi of the paper) for RAG will do model improvement.
