@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from app import __version__
 from app.config import get_settings
 from app.helpers import RequestIdMiddleware
-from app.routers import chat, health, metadata, models, recommend
+from app.routers import chat, explain, health, metadata, models, recommend
 from app.services.recommender_service import warmup
 
 logging.basicConfig(
@@ -53,6 +53,7 @@ def create_app() -> FastAPI:
     application.include_router(recommend.router)
     application.include_router(models.router)
     application.include_router(chat.router)
+    application.include_router(explain.router)
 
     @application.exception_handler(HTTPException)
     async def http_handler(_request: Request, exc: HTTPException):

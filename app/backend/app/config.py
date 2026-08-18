@@ -38,6 +38,18 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("LAYERS_DIR"),
     )
 
+    # RAG evidence index (Phase P2b). Built by rag/ingest (fetch_papers →
+    # parse_and_chunk → build_index); lives at the repo root by default. Relative
+    # paths resolve against backend_root, mirroring LAYERS_DIR.
+    rag_index_dir: str = Field(
+        default="../../rag/index/store",
+        validation_alias=AliasChoices("RAG_INDEX_DIR"),
+    )
+    rag_chunks_path: str = Field(
+        default="../../rag/corpus/chunks.jsonl",
+        validation_alias=AliasChoices("RAG_CHUNKS_PATH"),
+    )
+
     # OpenAI chat — set OPENAI_API_KEY in backend/.env; model/URL live in openai_chat.py
     openai_api_key: str = ""
     openai_timeout_seconds: float = Field(
@@ -62,6 +74,18 @@ class Settings(BaseSettings):
             p = Path(self.layers_dir)
             return p if p.is_absolute() else (self.backend_root / p).resolve()
         return self.backend_root / "layers"
+
+    @property
+    def resolved_rag_index_dir(self) -> Path:
+        """Absolute path of the persistent Chroma index (RAG_INDEX_DIR)."""
+        p = Path(self.rag_index_dir)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
+
+    @property
+    def resolved_rag_chunks_path(self) -> Path:
+        """Absolute path of the corpus chunks JSONL (RAG_CHUNKS_PATH)."""
+        p = Path(self.rag_chunks_path)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
 
 
 @lru_cache

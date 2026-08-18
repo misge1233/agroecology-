@@ -11,6 +11,7 @@ from functools import lru_cache
 from typing import Any
 
 from app.config import get_settings
+from app.services import explain_service
 from app.services import recommender_service as svc
 
 logger = logging.getLogger(__name__)
@@ -78,4 +79,6 @@ def build_metadata() -> dict[str, Any]:
         "crop_types": svc.crop_types(),
         "bounds": {"lat": [lat_lo, lat_hi], "lon": [lon_lo, lon_hi]},
         "model": model_meta,
+        # True when the RAG evidence index exists on disk (POST /explain usable).
+        "rag_ready": explain_service.is_ready(),
     }

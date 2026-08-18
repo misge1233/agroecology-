@@ -59,6 +59,24 @@ class RecommendRequest(BaseModel):
         return self
 
 
+class ExplainRequest(BaseModel):
+    """Grounded explanation of a recommendation the engine already produced."""
+
+    recommendation: dict[str, Any] = Field(
+        ..., description="The two-tier /recommend payload (query/recommendations/details)."
+    )
+    question: str | None = Field(default=None, max_length=2000)
+    k: int = Field(default=8, ge=1, le=20, description="Evidence chunks to retrieve.")
+
+    @field_validator("question")
+    @classmethod
+    def _blank_question_is_none(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        v = v.strip()
+        return v or None
+
+
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant", "system"]
     content: str
@@ -154,6 +172,26 @@ class MetadataResponse(BaseModel):
     crop_types: list[str]
     bounds: BoundsMeta
     model: ModelMeta
+    rag_ready: bool
+
+
+class ExplainCitation(BaseModel):
+    """Provenance of one retrieved evidence chunk (era_code links to training rows)."""
+
+    era_code: str | None = None
+    doi: str | None = None
+    title: str | None = None
+    year: int | None = None
+    journal: str | None = None
+    practice: str | None = None
+    snippet: str
+
+
+class ExplainResponse(BaseModel):
+    explanation: str
+    citations: list[ExplainCitation]
+    grounded: bool
+    llm_used: bool
 
 
 class HealthResponse(BaseModel):

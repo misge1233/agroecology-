@@ -10,6 +10,7 @@ Wraps the canonical recommender engine (`recommend.py` + `advisor_agent.py`, the
 | `GET /context?lat=&lon=` | Auto-derived agro-ecological context (aez_belt + features) for a map point |
 | `POST /recommend` | Two-tier recommendation (`query` / clean `recommendations` / `details`) |
 | `POST /chat` | OpenAI tool-calling advisor → SSE stream (clean text + structured recommendation event) |
+| `POST /explain` | Grounded, cited explanation of a `/recommend` payload (RAG over the ERA source studies); 503 until the index is built |
 | `GET /models` | The single current model's descriptor |
 
 The user provides only: **lat, lon, practice_family, indicator, and an optional
@@ -75,6 +76,17 @@ and endpoint are pinned in `app/services/openai_chat.py` (`gpt-4o-mini` by
 default). If `OPENAI_API_KEY` is unset, `/chat` still works end to end via the
 canonical rule-based `AgroAdvisor` offline fallback in `advisor_agent.py` —
 useful for local dev and tests. No key ever leaves the backend.
+
+The `/explain` layer (`app/services/explain_service.py`) is separate from chat:
+it retrieves evidence chunks from the RAG index (`rag/retrieve.py`, locations
+configurable via `RAG_INDEX_DIR` / `RAG_CHUNKS_PATH`, defaults at
+`../../rag/index/store` and `../../rag/corpus/chunks.jsonl`) and asks the LLM
+to explain the recommendation citing passages as `[n]`, with a numeric
+guardrail: any number not present in the recommendation JSON or the cited
+chunks discards the LLM text in favour of a deterministic citation-grounded
+template. Without `OPENAI_API_KEY` the endpoint still works and returns that
+deterministic fallback (`llm_used=false`); without the index it returns 503
+and `GET /metadata` reports `rag_ready=false`.
 
 ## Tests
 

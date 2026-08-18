@@ -32,6 +32,23 @@ RRF_K = 60          # standard reciprocal-rank-fusion constant
 CANDIDATES = 40     # candidates per retriever before fusion
 
 
+def _find_api_key() -> str:
+    """OPENAI_API_KEY from the environment, else from app/backend/.env.
+
+    Same fallback as ingest/build_index.py, so one key configuration serves
+    the indexer, the retriever, and the backend alike.
+    """
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if key:
+        return key
+    env_path = Path(__file__).resolve().parents[1] / "app" / "backend" / ".env"
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("OPENAI_API_KEY="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
 def build_query_text(recommendation: dict[str, Any], practice: str | None = None) -> str:
     """Compose the retrieval query from the engine's recommendation JSON."""
     q = recommendation.get("query", {})
@@ -69,18 +86,28 @@ class RagRetriever:
             if l.strip()
         ]
         self._by_id = {c["chunk_id"]: c for c in self._chunks}
-        self._api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
+        self._api_key = api_key or _find_api_key()
         self._session = requests.Session()
         self._bm25 = None  # built lazily
 
     # ---------------------------------------------------------------- dense
     def _embed(self, text: str) -> list[float]:
+        if not self._api_key:
+            raise RuntimeError(
+                "OPENAI_API_KEY is not configured (env var or app/backend/.env) — "
+                "the dense retriever needs it to embed the query."
+            )
         resp = self._session.post(
             EMBED_URL,
             headers={"Authorization": f"Bearer {self._api_key}"},
             json={"model": EMBED_MODEL, "input": [text]},
             timeout=60,
         )
+        if resp.status_code == 401:
+            raise RuntimeError(
+                "OpenAI rejected the API key (401). Check OPENAI_API_KEY in "
+                "app/backend/.env — it may be an old or revoked key."
+            )
         resp.raise_for_status()
         return resp.json()["data"][0]["embedding"]
 
