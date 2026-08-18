@@ -212,3 +212,185 @@ Tracked findings (non-blocking):
 **Status: P2b closed. Next action: owner launches Claude Code for Phase
 P2a.1** (OA coverage remediation, brief above — now including finding #2,
 title tag/entity cleaning in `fetch_papers.py`).
+
+## Phase P2a.1 — OA coverage remediation (18 Aug 2026)
+
+**Built**
+- `fetch_papers.py --retry-missing`: reprocesses ONLY manifest entries lacking
+  full text on disk and/or an abstract (289/306 on the current manifest —
+  283 without full text + 6 PDF-holders missing abstracts); manifest rewritten
+  in place (atomic `os.replace`, `.bak` backup kept); first-run successes pass
+  through untouched apart from metadata cleaning. Entries whose recorded
+  `pdf_file` vanished from disk count as missing (self-healing).
+- OA fallback chain per DOI (`acquire()`, used by both fresh and retry modes;
+  stops at first full-text success; URLs deduped across sources; polite UA +
+  `--sleep` throttle; OA sources only — no paywall circumvention):
+  (a) Unpaywall **all** `oa_locations` — every `url_for_pdf`, then every
+  landing `url`, all with `%PDF` magic sniffing; (b) OpenAlex (`mailto` polite
+  pool) — `best_oa_location` + all locations' `pdf_url`/`landing_page_url`,
+  plus abstract reconstruction from `abstract_inverted_index`; (c) Europe PMC —
+  if `isOpenAccess` with a PMCID, full-text JATS XML saved to
+  `corpus/xml/<era_code>.xml`; abstract fallback otherwise; (d) Crossref
+  `link` array (content-type `application/pdf`/`unspecified`).
+- Manifest provenance fields: `pdf_source` (`unpaywall` / `unpaywall_landing` /
+  `openalex` / `crossref_link`), `abstract_source` (`crossref` / `openalex` /
+  `europepmc`), `fulltext_xml`.
+- **Finding #2 (title tag/entity cleaning):** `clean_html()` strips tags and
+  unescapes entities twice (Crossref deposits both `<i>…</i>` and
+  double-escaped `&lt;i&gt;…`), applied to title/journal/abstract on every
+  fetch AND retroactively to all existing records during the retry rewrite —
+  covers the 36 polluted titles in the current manifest.
+- `parse_and_chunk.py`: JATS XML full-text support (`source="xml"`) — keeps
+  only `<abstract>` + `<body>` (front matter is metadata noise), drops
+  `ref-list`/`back`/`xref`/`table-wrap`/`fig`/formulas, tag-strips +
+  unescapes; PDF still preferred over XML, abstract remains the last resort.
+- `build_index.py --rebuild`: drops the Chroma collection and re-embeds
+  everything. **Required after the corpus changes**: chunk ids are
+  reassigned per study, so a study upgraded from abstract-only to full text
+  reuses `<code>_000` with different text and resumable mode would silently
+  keep the stale embedding. parse_and_chunk prints a reminder.
+
+**Files**
+- `rag/ingest/fetch_papers.py` — rewritten (fallback chain, retry mode,
+  cleaning, provenance, coverage summary).
+- `rag/ingest/parse_and_chunk.py` — XML extraction + counts (`N full-text
+  (X PDF + Y XML) + Z abstract-only`).
+- `rag/ingest/build_index.py` — `--rebuild` flag.
+- `rag/README.md` — layout + build steps updated (retry step, `corpus/xml/`,
+  `--rebuild` warning).
+- `.gitignore` — `rag/corpus/xml/*.xml`, `rag/corpus/manifest.jsonl.bak`.
+
+**Decisions**
+- Failed/non-PDF downloads are now deleted instead of renamed to `.html` —
+  with up to ~10 candidate URLs per study the old keep-for-review behaviour
+  would litter the corpus (the 11 existing `.html` leftovers can be removed).
+- Retry mode re-fetches Crossref metadata per retried study (one extra
+  request): refreshes cleaned titles and picks up newly deposited abstracts.
+- Europe PMC full text is served at `/rest/<PMCID>/fullTextXML` — the
+  documented-looking `<source>/<id>` form 404s (verified live); XML kept only
+  if the body contains `<article` in the first 4 KB.
+- Index-staleness handling = explicit `--rebuild` (reviewer's "agent's call"):
+  simplest correct option; content-hash chunk ids were rejected as they'd
+  churn every id on any parser tweak and complicate the era_code_NNN join
+  convention.
+
+**Verified (sandbox — WSL on owner's machine; real corpus left untouched)**
+- `py_compile` clean on all three scripts; backend `test_explain.py`
+  **18/18 green** (deps installed to an isolated scratchpad target).
+- Offline unit checks: `clean_html` (single + double-escaped, entities, None/
+  empty), inverted-index abstract reconstruction, `needs_retry` matrix (pdf on
+  disk / xml on disk / abstract-only / vanished file / no-DOI),
+  `coverage_summary`, JATS extraction (refs/tables/xref dropped, entities
+  unescaped), chunking of XML text.
+- **Live API smoke test** on an isolated 11-entry manifest copy (scratchpad,
+  sampling gold/green/hybrid/bronze/closed failures from the real manifest):
+  3 full-text PDFs recovered (OpenAlex ×2, Unpaywall all-locations ×1, all
+  `%PDF`-verified), 6 abstracts recovered (OpenAlex), manifest rewrite
+  preserved order/fields, the double-escaped AG0016 title came out clean.
+- **Live Europe PMC XML end-to-end** (PMC8486100): 157 KB JATS → 4,693 words
+  → 19 chunks, front-matter noise excluded.
+- `parse_and_chunk.py` on the scratch corpus: 92 chunks from 4 full-text
+  (3 PDF + 1 XML) + 6 abstract-only; chunk schema unchanged (downstream
+  retriever/explain unaffected; `source` is unconstrained there).
+
+**Needs local verification (owner)**
+- Full remediation run + rechunk + reindex (from `rag/`, ~30–60 min fetch;
+  reindex still well under $1):
+  `export UNPAYWALL_EMAIL="<email>"`
+  `python ingest/fetch_papers.py --doi-list ../paper/references/era_doi_list.csv --out corpus --retry-missing`
+  `python ingest/parse_and_chunk.py --corpus corpus`
+  `python ingest/build_index.py --corpus corpus --index index/store --rebuild`
+- The final coverage table for the paper is printed by both fetch (`N studies:
+  X full-text (P PDF + Q XML), Y abstract-only, Z metadata-only`) and
+  parse_and_chunk — please report the numbers back. Smoke-sample projection:
+  2/10 remediable studies gained full text and 6/10 gained abstracts, so
+  expect roughly 60–100+ full-text studies total and most of the 208
+  metadata-only studies to become abstract-only.
+- `pytest -q` full suite (test_api.py needs rasterio) and a `/explain`
+  spot-check after the rebuilt index (citations should now show clean titles).
+
+### Review (Senior Engineer) — P2a.1 APPROVED ✅ (no changes required)
+Read the full diff (`fetch_papers.py` rewrite, `parse_and_chunk.py` XML path,
+`build_index.py --rebuild`). Verdict: correct and careful work.
+
+What earns the approval:
+- **The agent caught the stale-embedding hazard itself** (reused chunk ids
+  with changed text after remediation) and handled it properly with
+  `--rebuild` (drop collection + re-embed) plus warnings in both scripts.
+  This was the subtle bug of the phase.
+- Fallback chain is legally clean (OA locations only), polite (shared email,
+  throttled), and evidence-safe: PDF magic-byte sniffing, non-PDF downloads
+  unlinked, XML sanity-checked for `<article`.
+- Retry mode is atomic (tmp + os.replace, .bak kept) and non-destructive:
+  first-run successes pass through untouched except metadata cleaning.
+- Finding #2 (HTML tags/entities in titles) fixed retroactively across the
+  whole manifest via double unescape+strip — correct for Crossref's
+  double-encoded titles.
+- JATS extraction keeps `<abstract>`+`<body>` only, drops refs/tables/figs/
+  xref, turns block closers into paragraph breaks — chunker-compatible.
+
+Minor notes (accepted, no rework): retry of an XML-only study re-attempts PDF
+sources (harmless duplication of effort); `--limit` in retry mode skips
+metadata cleaning of untouched tail records (cosmetic; full runs unaffected);
+`rec in targets` relies on identity-implies-equality (fine at this scale).
+
+**Owner actions to close P2a.1** (from `rag/`, backend venv active,
+UNPAYWALL_EMAIL set):
+```
+python ingest/fetch_papers.py --doi-list ../paper/references/era_doi_list.csv --out corpus --retry-missing
+python ingest/parse_and_chunk.py --corpus corpus
+python ingest/build_index.py --corpus corpus --index index/store --rebuild
+python retrieve.py "mulch water harvesting soil loss Ethiopia Dry Kolla"
+```
+Then restart uvicorn, re-run the /explain smoke test (titles should now be
+clean), run `pytest -q`, commit, and report the final coverage line — that
+line is the manuscript's corpus table. Re-embedding the full corpus stays
+well under $1.
+
+**Then queued:** P2c (frontend Evidence chips with per-study dedup + grounded
+chat follow-ups), P3 (evaluation harness).
+
+**P2a.1 closure (owner run, 18 Aug 2026):**
+Incident during first retry run: `KeyError: pdf_source` — v1 manifest records
+with a PDF but no provenance field crashed the status printer, and the
+end-of-run-only manifest write lost 11 results (downloads survived on disk).
+*Review accountability:* this path was missed in the senior review (acquisition
+logic was checked; status printing against v1-shaped records was not). Hotfix
+applied by the reviewer: safe `.get()` provenance defaults, per-record
+try/except (one bad study logs ERROR and continues), manifest checkpointed
+every 25 studies + `finally` rewrite (progress survives crash/Ctrl+C).
+
+**Final corpus (FROZEN for the manuscript):**
+| Tier | v1 | v2 (P2a.1) |
+|---|---|---|
+| Full-text | 23 (7.5%) | **40 (13.1%)** = 31 PDF + 9 XML |
+| Abstract-only | 75 (24.5%) | **168 (54.9%)** |
+| Metadata-only | 98 remain (32.0%) — overwhelmingly `closed` (no legal OA copy) | |
+| Contributing studies | 98 (32%) | **208 (68%)** |
+| Chunks indexed | 678 | **1,191** |
+
+Retrieval spot-check post-rebuild: clean titles; top hits now FULL-TEXT
+sections of EO0016 incl. the 82/90/60% soil-loss passage (previously
+abstract-only). Remaining metadata-only studies require institutional access —
+recorded as future work, not pursued. **Phase P2a.1 closed.** ✅
+
+### Next steps → Phase P2c — Evidence in the product (assigned to Claude Code)
+1. **Backend — citation dedup (finding #1):** in
+   `app/backend/app/services/explain_service.py`, dedupe `citations` per
+   `era_code` (keep first/best snippet, add `n_passages: int`); update
+   `ExplainCitation` schema + tests (currently NN0206 appears 3×).
+2. **Frontend — Evidence panel:** on recommendation cards (both `/dashboard`
+   and `/chat`), add an "Evidence" action: lazily POST the current
+   recommendation to `/explain` (new function in `src/lib/api.ts`, types in
+   `src/lib/types.ts`), render the grounded explanation + one chip per study
+   (era_code · title · year, linking to `https://doi.org/<doi>` when doi
+   present), a subtle `grounded`/`llm_used` badge, loading + error states.
+   Hide the action entirely when `/metadata.rag_ready` is false. Follow the
+   existing component style (Tailwind, clean-by-default: evidence only on
+   demand).
+3. **Scope guard:** server-side RAG grounding of chat follow-ups is NOT in
+   this phase (queued as P2d) — chat gets the same client-side Evidence panel
+   on its recommendation cards, nothing more.
+4. Tests: backend dedup unit tests; frontend `npm run test` for the new lib
+   function; `npm run build` must pass.
+5. Append the phase report to progress.md per CLAUDE.md and stop.

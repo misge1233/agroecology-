@@ -11,11 +11,13 @@ indicator), not the user's free text.
 
 | Path | Role |
 |---|---|
-| `ingest/fetch_papers.py` | DOI → Crossref metadata → open-access PDF (Unpaywall) → `corpus/` |
-| `ingest/` (next) | parse (GROBID/pypdf) → section-aware chunking → embeddings |
+| `ingest/fetch_papers.py` | DOI → Crossref metadata → OA full text via fallback chain (Unpaywall all locations → OpenAlex → Europe PMC XML → Crossref links) → `corpus/` |
+| `ingest/parse_and_chunk.py` | PDFs/XML/abstracts → `corpus/chunks.jsonl` |
+| `ingest/build_index.py` | chunks → embeddings → Chroma (`--rebuild` after corpus changes) |
 | `index/` | vector store (Chroma, embedded) + BM25; metadata: `{doi, era_code, title, year, section}` |
 | `corpus/pdfs/` | downloaded papers (git-ignored) — seeded with the two Adimassu et al. CSA papers |
-| `corpus/manifest.jsonl` | acquisition ledger: per study — OA status, files, licence |
+| `corpus/xml/` | Europe PMC full-text JATS XML (git-ignored) |
+| `corpus/manifest.jsonl` | acquisition ledger: per study — OA status, files, licence, `pdf_source`/`abstract_source`/`fulltext_xml` provenance |
 | `eval/` | retrieval Recall@k/MRR, RAGAS-style faithfulness, expert-study materials |
 
 ## Building the corpus + index (run from `rag/`)
@@ -23,16 +25,23 @@ indicator), not the user's free text.
 ```bash
 pip install -r requirements.txt
 
-# 1) Acquire: DOI -> Crossref metadata -> Unpaywall OA PDF   (resumable)
+# 1) Acquire: DOI -> Crossref metadata -> OA full text        (resumable)
+#    fallback chain: Unpaywall (all locations) -> OpenAlex -> Europe PMC -> Crossref links
 export UNPAYWALL_EMAIL="you@example.org"   # any contact email; required by Unpaywall
 python ingest/fetch_papers.py --doi-list ../paper/references/era_doi_list.csv --out corpus
 
-# 2) Parse + chunk: PDFs/abstracts -> corpus/chunks.jsonl
+# 1b) Coverage remediation: re-run ONLY the studies still missing full text
+#     and/or an abstract (manifest rewritten in place; .bak backup kept)
+python ingest/fetch_papers.py --doi-list ../paper/references/era_doi_list.csv --out corpus --retry-missing
+
+# 2) Parse + chunk: PDFs/XML/abstracts -> corpus/chunks.jsonl
 python ingest/parse_and_chunk.py --corpus corpus
 
 # 3) Embed + index: chunks -> Chroma at index/store            (resumable)
 #    key from OPENAI_API_KEY or ../app/backend/.env
-python ingest/build_index.py --corpus corpus --index index/store
+#    IMPORTANT: after --retry-missing changed the corpus, use --rebuild —
+#    chunk ids get reassigned, so resumable mode would keep stale embeddings
+python ingest/build_index.py --corpus corpus --index index/store --rebuild
 
 # sanity check
 python retrieve.py "soil bunds effect on soil loss Ethiopia"

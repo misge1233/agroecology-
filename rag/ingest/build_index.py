@@ -12,8 +12,15 @@ so one key configuration serves both the app and the indexer.
 Resumable: chunks already present in the collection are skipped, so an
 interrupted run continues where it left off.
 
+--rebuild drops the collection first and re-embeds everything. REQUIRED after
+the corpus changes (e.g. fetch_papers.py --retry-missing followed by
+parse_and_chunk.py): chunk ids are reassigned per study, so a study upgraded
+from abstract-only to full text reuses id <code>_000 with different text —
+resumable mode would silently keep the stale embedding.
+
 Usage:
     python build_index.py --corpus ../corpus --index ../index/store
+    python build_index.py --corpus ../corpus --index ../index/store --rebuild
 """
 from __future__ import annotations
 
@@ -70,6 +77,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", default="../corpus")
     ap.add_argument("--index", default="../index/store")
+    ap.add_argument("--rebuild", action="store_true",
+                    help="drop the collection and re-embed all chunks "
+                         "(required after the corpus changed)")
     args = ap.parse_args()
 
     import chromadb  # deferred: heavy import
@@ -80,6 +90,12 @@ def main() -> int:
         raise SystemExit(f"No chunks found in {chunks_path} — run parse_and_chunk.py first.")
 
     client = chromadb.PersistentClient(path=str(Path(args.index)))
+    if args.rebuild:
+        try:
+            client.delete_collection(COLLECTION)
+            print(f"--rebuild: dropped existing collection '{COLLECTION}'.")
+        except Exception:
+            pass  # no existing collection — nothing to drop
     col = client.get_or_create_collection(COLLECTION, metadata={"hnsw:space": "cosine"})
 
     existing: set[str] = set()

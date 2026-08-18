@@ -30,6 +30,8 @@ data/raw/ERA_Ethiopia_dataset.csv
 
 # --- RAG corpus (rebuilt by rag/ingest scripts) ---
 rag/corpus/pdfs/*.pdf
+rag/corpus/xml/*.xml
+rag/corpus/manifest.jsonl.bak
 rag/index/store/
 
 # --- OS / editor noise ---
