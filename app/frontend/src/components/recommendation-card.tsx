@@ -8,6 +8,7 @@ import type {
   RecommendResponse,
   RecommendationItem,
 } from "@/lib/types";
+import { EvidencePanel } from "./evidence-panel";
 import { PctChangeChart } from "./pct-chart";
 import { PracticeImage } from "./practice-image";
 
@@ -234,6 +235,8 @@ export function RecommendationPanel({
           <p className="text-[11px] leading-relaxed text-mute">{details.note}</p>
         </div>
       )}
+
+      <EvidencePanel data={data} />
 
       <p className="text-[11px] italic text-mute">
         Estimates from limited field evidence — not guarantees.

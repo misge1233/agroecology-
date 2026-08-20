@@ -394,3 +394,145 @@ recorded as future work, not pursued. **Phase P2a.1 closed.** ✅
 4. Tests: backend dedup unit tests; frontend `npm run test` for the new lib
    function; `npm run build` must pass.
 5. Append the phase report to progress.md per CLAUDE.md and stop.
+
+## Phase P2c — Evidence in the product (18 Aug 2026)
+
+**Built**
+- **Backend citation dedup (finding #1):** `shape_citations()` now returns one
+  citation per **study**, not per chunk — chunks are grouped by `era_code`
+  (fallback key: doi → title → unique chunk slot, so two unidentified studies
+  never collapse); the highest-ranked chunk supplies `snippet` and `practice`,
+  and a new `n_passages` field counts how many retrieved passages the study
+  contributed. `ExplainCitation` gains `n_passages: int = Field(default=1,
+  ge=1)` (additive — old payloads still validate). The deterministic fallback
+  text now also cites each study at most once per practice (previously two
+  chunks of the same paper could produce a duplicated title).
+- **Frontend Evidence panel** (`EvidencePanel`, wired into
+  `RecommendationPanel` — so it appears on recommendation cards in BOTH
+  `/dashboard` and `/chat` automatically): an "Evidence" toggle in the same
+  style as "Why this?". On first open it lazily POSTs the current
+  recommendation to `/explain` via the new `postExplain()` in `src/lib/api.ts`
+  and caches the result for the card's lifetime. Renders: the grounded
+  explanation; subtle badges ("Grounded in literature" / "No evidence
+  retrieved" + "AI summary" / "Deterministic summary" from
+  `grounded`/`llm_used`); one chip per study — `era_code · title · year`,
+  `×N` passage count when >1, snippet as hover tooltip — linking to
+  `https://doi.org/<doi>` (new tab, `noopener noreferrer`) when a DOI exists.
+  Loading state (spinner) and error state (message + "Try again" retry).
+- **`rag_ready` gate:** `Metadata.rag_ready?: boolean` added to the frontend
+  types; when `/metadata` reports false (or the field is absent), the
+  Evidence action is not rendered at all — the UI stays exactly as before.
+- **Scope guard respected:** no server-side chat grounding — chat gets the
+  same client-side panel on its recommendation cards, nothing more (P2d).
+
+**Files**
+- `app/backend/app/services/explain_service.py` — per-study dedup in
+  `shape_citations()`; one-mention-per-study in `build_fallback_text()`.
+- `app/backend/app/schemas.py` — `ExplainCitation.n_passages`, docstring.
+- `app/backend/tests/test_explain.py` — 3 new tests (dedup order/counting/
+  snippet-from-top-chunk; unidentified studies never collapsed; fallback
+  cites each study once) + `n_passages` assertion in the existing shaping
+  test.
+- `app/backend/README.md` — citation-dedup sentence.
+- `app/frontend/src/lib/types.ts` — `ExplainCitation`, `ExplainResponse`,
+  `ExplainRequestPayload`, `Metadata.rag_ready`.
+- `app/frontend/src/lib/api.ts` — `postExplain()` (reuses `parseError`, so
+  the 503 "RAG index not built…" envelope surfaces verbatim in the panel).
+- `app/frontend/src/components/evidence-panel.tsx` — new.
+- `app/frontend/src/components/recommendation-card.tsx` — renders
+  `<EvidencePanel data={data} />` above the disclaimer line.
+- `app/frontend/src/lib/api.test.ts` — new vitest suite for `postExplain`.
+- `app/frontend/src/components/setup-pickers.tsx` — removed an unused
+  `AnimatePresence` import (pre-existing, untouched since the initial commit;
+  it failed `next build`'s lint gate, which this phase requires to pass).
+
+**Decisions**
+- Dedup lives in `shape_citations()` itself rather than a separate pass —
+  every consumer (LLM path, fallback path, router) gets per-study citations
+  with no call-site changes; the guardrail still whitelists numbers from ALL
+  retrieved chunks (unchanged), so deduping the display list cannot make the
+  guardrail stricter or looser.
+- The LLM prompt still numbers passages per chunk (`[n]`) — renumbering per
+  study would change prompt/guardrail behaviour, out of P2c scope. The UI
+  chips are study-level and carry no `[n]`, so no mismatch is displayed.
+- One `EvidencePanel` inside `RecommendationPanel` instead of two page-level
+  integrations: both `/dashboard` and `/chat` render that component, so the
+  feature lands in both with a single code path (and any future surface gets
+  it for free).
+- Evidence fetch result is cached in component state — collapsing and
+  re-opening the panel does not re-POST; "Try again" appears only on error.
+- Chip key: `era_code ?? doi ?? title ?? index`, matching the dedup key.
+
+**Verified (sandbox — WSL, Windows Node toolchain via interop)**
+- Backend: `py_compile` clean; `pytest tests/test_explain.py` → **21/21
+  green** (18 existing + 3 new; `test_api.py` still needs rasterio, not
+  runnable here).
+- Frontend: `npm ci` + `npm run test` → **16/16 green** (3 suites: existing
+  utils/chat-flow + new `api.test.ts` covering URL/method/body defaults,
+  question/k forwarding, and the 503 error envelope message); `npm run
+  build` → **compiled, lint + type checks passed, all 7 routes generated**.
+- Gating logic: `rag_ready` optional in the type, panel returns `null` when
+  absent/false — verified by type-check + code path (no UI regression when
+  the backend predates P2b's metadata field).
+
+**Needs local verification (owner)**
+- Visual pass with the live stack: `/dashboard` → recommend → "Evidence"
+  (spinner → explanation + deduped chips, NN0206-style duplicates gone,
+  clean titles, DOI links open) and the same on a `/chat` recommendation
+  card; badge states with and without `OPENAI_API_KEY`; panel absent after
+  temporarily renaming the index dir (`rag_ready=false`).
+- `pytest -q` full suite (43+ with rasters) on the machine, then commit.
+
+### Review (Senior Engineer) — P2c APPROVED ✅ (no changes required)
+Read the diff. Backend dedup is correct: keyed on `era_code` with `doi`/`title`
+fallbacks and a unique per-chunk fallback (two unidentified studies can never
+collapse); the top-ranked chunk supplies snippet + practice; `n_passages`
+counted; the numeric guardrail still validates against ALL retrieved chunks —
+the right call, since the LLM saw all passages. Fallback text now cites each
+study once. Frontend `EvidencePanel` is properly engineered: gated on
+`/metadata.rag_ready`, lazy fetch cached after first open, loading/error/retry
+states, unmount guard, DOI links (`noopener`), snippet tooltips, ×N passage
+badges, grounded/llm_used badges, single code path for /dashboard and /chat via
+RecommendationPanel. The out-of-scope lint fix (unused import in
+setup-pickers.tsx, pre-existing) was necessary for the build gate and honestly
+disclosed — accepted.
+
+Tracked finding (polish, non-blocking): inline `[n]` markers in the LLM
+explanation are CHUNK-numbered while the chip list is now STUDY-deduped, so a
+reader may see `[6]` with fewer than 6 chips. Fix when next touching the
+explain layer: renumber prompt passages per study, or post-map chunk markers →
+study order. → queued into P2d/P3 backlog.
+
+**Owner actions to close P2c:** visual pass with the live stack (npm run dev +
+uvicorn): Evidence toggle on a dashboard card and a chat card; deduped chips;
+DOI links open; badges correct with the API key set; then commit.
+
+### Next steps → Phase P3 — Evaluation harness (assigned to Claude Code)
+Everything below runs offline against the frozen corpus/index; owner executes.
+1. **`rag/eval/build_queries.py`** — build the evaluation query set from
+   `data/processed/CSA_ERA_final_model_ready.csv`: sample ~50 scenarios
+   (practice_family × indicator × a real study location), stratified across
+   the 5 families and 7 indicators. **Silver relevance labels:** for each
+   scenario, relevant studies = ERA-source era_codes (strip the `ERA_` prefix
+   from `Study_No_`) whose rows match the scenario's practice family +
+   indicator (and top practice when available). Skip scenarios whose relevant
+   studies contribute zero chunks to the corpus; report how many were
+   skipped. Output `rag/eval/queries.jsonl`.
+2. **`rag/eval/eval_retrieval.py`** — run the real `RagRetriever` over the
+   query set; report Recall@4/8/16 and MRR, overall and per family/indicator;
+   write `rag/eval/results/retrieval_metrics.json` + a small md table.
+3. **`rag/eval/eval_faithfulness.py`** — for ~30 scenarios call
+   `explain_service.explain()` (live LLM path); record grounded/llm_used
+   rates and guardrail trips; auto-check every numeric sentence against cited
+   chunk text; emit `results/faithfulness_audit.csv` (one row per claim
+   sentence: text, cited study, auto-verdict, blank column for the human
+   audit) — includes word-form numbers (regex for one/two/…/half/third) so the
+   known guardrail gap is MEASURED.
+4. **`rag/eval/expert_study/`** — materials for the blinded expert study:
+   `protocol.md` (A/B: deterministic model-only text vs model+RAG explanation,
+   ~30 scenarios, 3–5 experts, Likert 1–5 on agronomic soundness, usefulness,
+   trustworthiness, clarity; randomized order, condition blinded),
+   `make_packets.py` producing per-expert scoring sheets (CSV) from the same
+   scenario sample.
+5. No changes to app/ or rag/retrieve.py in this phase. Tests for the label
+   builder (pure functions). Append the phase report per CLAUDE.md and stop.

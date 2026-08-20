@@ -2,6 +2,7 @@ import type {
   ChatMessage,
   ChatStreamEvent,
   ContextResponse,
+  ExplainResponse,
   Metadata,
   RecommendRequest,
   RecommendResponse,
@@ -51,6 +52,24 @@ export async function postRecommend(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function postExplain(
+  recommendation: RecommendResponse,
+  opts?: { question?: string; k?: number; signal?: AbortSignal }
+): Promise<ExplainResponse> {
+  const res = await fetch(`${API_BASE}/explain`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      recommendation,
+      question: opts?.question ?? null,
+      k: opts?.k ?? 8,
+    }),
+    signal: opts?.signal,
   });
   if (!res.ok) throw new Error(await parseError(res));
   return res.json();

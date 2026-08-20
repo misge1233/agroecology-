@@ -176,7 +176,12 @@ class MetadataResponse(BaseModel):
 
 
 class ExplainCitation(BaseModel):
-    """Provenance of one retrieved evidence chunk (era_code links to training rows)."""
+    """Provenance of one cited study (era_code links to training rows).
+
+    Deduped per study: retrieval may surface several chunks of the same
+    paper; ``n_passages`` says how many, ``snippet`` comes from the
+    highest-ranked one.
+    """
 
     era_code: str | None = None
     doi: str | None = None
@@ -185,6 +190,7 @@ class ExplainCitation(BaseModel):
     journal: str | None = None
     practice: str | None = None
     snippet: str
+    n_passages: int = Field(default=1, ge=1)
 
 
 class ExplainResponse(BaseModel):

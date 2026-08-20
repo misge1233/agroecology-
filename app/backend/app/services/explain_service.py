@@ -125,21 +125,35 @@ def _safe_int(value: Any) -> int | None:
 
 
 def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """One citation per retrieved chunk, with provenance + a short snippet."""
+    """One citation per study (era_code), deduped across retrieved chunks.
+
+    Retrieval returns chunks, several of which may come from the same study;
+    the citation list is per-study provenance for the UI. The first chunk of
+    a study (highest fused rank) supplies the snippet and practice;
+    ``n_passages`` counts how many retrieved passages that study contributed.
+    """
     citations: list[dict[str, Any]] = []
-    for c in chunks:
+    by_study: dict[Any, dict[str, Any]] = {}
+    for i, c in enumerate(chunks):
+        # era_code is the join key; fall back to doi/title so studies without
+        # one are still deduped sensibly, and never collapse two unknowns.
+        key = c.get("era_code") or c.get("doi") or c.get("title") or f"chunk-{i}"
+        if key in by_study:
+            by_study[key]["n_passages"] += 1
+            continue
         text = (c.get("text") or "").strip()
-        citations.append(
-            {
-                "era_code": c.get("era_code"),
-                "doi": c.get("doi"),
-                "title": c.get("title"),
-                "year": _safe_int(c.get("year")),
-                "journal": c.get("journal"),
-                "practice": c.get("for_practice"),
-                "snippet": text[:SNIPPET_CHARS],
-            }
-        )
+        citation = {
+            "era_code": c.get("era_code"),
+            "doi": c.get("doi"),
+            "title": c.get("title"),
+            "year": _safe_int(c.get("year")),
+            "journal": c.get("journal"),
+            "practice": c.get("for_practice"),
+            "snippet": text[:SNIPPET_CHARS],
+            "n_passages": 1,
+        }
+        by_study[key] = citation
+        citations.append(citation)
     return citations
 
 
@@ -225,9 +239,17 @@ def build_fallback_text(
         effect = rec.get("effect") or ""
         # Prefer chunks retrieved for this practice; fall back to the pool.
         matched = [c for c in chunks if c.get("for_practice") == practice] or chunks
+        seen_studies: set[Any] = set()
+        cited: list[dict[str, Any]] = []
+        for c in matched:  # one mention per study, not per chunk
+            key = c.get("era_code") or c.get("doi") or c.get("title")
+            if key in seen_studies:
+                continue
+            seen_studies.add(key)
+            cited.append(c)
         cites = ", ".join(
             f"“{(c.get('title') or 'Untitled study')}” ({c.get('era_code')})"
-            for c in matched[:2]
+            for c in cited[:2]
         )
         sentence = f"{practice}: the model estimates {effect}".rstrip()
         if cites:

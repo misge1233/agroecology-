@@ -84,9 +84,12 @@ configurable via `RAG_INDEX_DIR` / `RAG_CHUNKS_PATH`, defaults at
 to explain the recommendation citing passages as `[n]`, with a numeric
 guardrail: any number not present in the recommendation JSON or the cited
 chunks discards the LLM text in favour of a deterministic citation-grounded
-template. Without `OPENAI_API_KEY` the endpoint still works and returns that
-deterministic fallback (`llm_used=false`); without the index it returns 503
-and `GET /metadata` reports `rag_ready=false`.
+template. The `citations` list is deduped per study (`era_code`): the
+top-ranked chunk supplies the snippet and `n_passages` counts how many
+retrieved passages that study contributed. Without `OPENAI_API_KEY` the
+endpoint still works and returns that deterministic fallback
+(`llm_used=false`); without the index it returns 503 and `GET /metadata`
+reports `rag_ready=false`.
 
 ## Tests
 

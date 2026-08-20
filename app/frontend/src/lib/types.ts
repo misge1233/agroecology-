@@ -30,6 +30,8 @@ export interface Metadata {
   crop_types: string[];
   bounds: Bounds;
   model: ModelMeta;
+  /** True when the RAG index is built — gates the Evidence panel. */
+  rag_ready?: boolean;
 }
 
 /** The clean, default-view item (practice + one-line effect). */
@@ -79,6 +81,32 @@ export interface RecommendRequest {
   indicator: string;
   crop_type?: string | null;
   top_n?: number;
+}
+
+/** One cited study behind an explanation (deduped per era_code). */
+export interface ExplainCitation {
+  era_code: string | null;
+  doi: string | null;
+  title: string | null;
+  year: number | null;
+  journal: string | null;
+  practice: string | null;
+  snippet: string;
+  /** How many retrieved passages this study contributed. */
+  n_passages: number;
+}
+
+export interface ExplainResponse {
+  explanation: string;
+  citations: ExplainCitation[];
+  grounded: boolean;
+  llm_used: boolean;
+}
+
+export interface ExplainRequestPayload {
+  recommendation: RecommendResponse;
+  question?: string | null;
+  k?: number;
 }
 
 export interface ChatRequestPayload {

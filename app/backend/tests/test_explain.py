@@ -166,6 +166,40 @@ def test_shape_citations_maps_provenance_and_truncates_snippet():
     assert first["practice"] == "Mulching"
     assert len(first["snippet"]) == es.SNIPPET_CHARS
     assert first["snippet"].startswith("Mulch cover reduced soil loss")
+    assert first["n_passages"] == 1
+
+
+def test_shape_citations_dedupes_per_study_and_counts_passages():
+    chunks = make_chunks()
+    # Two more chunks of the FIRST study (lower-ranked sections of NN0123).
+    chunks.append({**chunks[0], "chunk_id": "c3", "text": "Later section.",
+                   "for_practice": "Soil bunds"})
+    chunks.append({**chunks[0], "chunk_id": "c4", "text": "Another section."})
+    citations = es.shape_citations(chunks)
+    assert [c["era_code"] for c in citations] == ["NN0123", "NN0456"]
+    assert citations[0]["n_passages"] == 3
+    assert citations[1]["n_passages"] == 1
+    # The highest-ranked chunk supplies snippet and practice.
+    assert citations[0]["snippet"].startswith("Mulch cover reduced soil loss")
+    assert citations[0]["practice"] == "Mulching"
+
+
+def test_shape_citations_never_collapses_unidentified_studies():
+    anon = {"chunk_id": "a1", "era_code": None, "doi": None, "title": None,
+            "year": None, "journal": None, "text": "First anonymous chunk."}
+    citations = es.shape_citations([anon, {**anon, "chunk_id": "a2",
+                                           "text": "Second anonymous chunk."}])
+    assert len(citations) == 2
+    assert all(c["n_passages"] == 1 for c in citations)
+
+
+def test_fallback_text_cites_each_study_once():
+    rec, chunks = make_recommendation(), make_chunks()
+    # A second, lower-ranked chunk of NN0123 for the same practice.
+    chunks.insert(1, {**chunks[0], "chunk_id": "c1b", "text": "More mulch text."})
+    text = es.build_fallback_text(rec, chunks)
+    assert text.count("NN0123") == 1
+    assert "NN0456" in text
 
 
 # ------------------------------------------------------------------- is_ready
