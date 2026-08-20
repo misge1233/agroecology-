@@ -536,3 +536,123 @@ Everything below runs offline against the frozen corpus/index; owner executes.
    scenario sample.
 5. No changes to app/ or rag/retrieve.py in this phase. Tests for the label
    builder (pure functions). Append the phase report per CLAUDE.md and stop.
+
+## Phase P3 — Evaluation harness (20 Aug 2026)
+
+**Built**
+- **`rag/eval/build_queries.py` (step 1):** builds the evaluation query set
+  from `data/processed/CSA_ERA_final_model_ready.csv`. Scenarios are real ERA
+  study locations crossed with the practice family × indicator studied there,
+  stratified over the 5 families × 7 indicators (per-cell quota =
+  round(n_target / n_cells), anchors drawn per distinct study, deterministic
+  seed). Silver labels: relevant studies = ERA-source era_codes (`ERA_`
+  prefix stripped from `Study_No_`) whose rows match the scenario's family +
+  indicator + top practice, restricted to studies that contribute chunks to
+  the corpus; a family-level label set (no practice constraint) is stored
+  alongside for looser diagnostics. Candidates whose relevant set is empty
+  after the corpus restriction are skipped and counted. Query text is
+  composed by the REAL `rag.retrieve.build_query_text` over a
+  recommendation-shaped stub (wrap, never fork). Output: `queries.jsonl` +
+  `results/queries_build_report.json`. **Actual run: 50 scenarios, 26/29
+  cells, all 5 families and all 7 indicators covered, 6 candidates skipped.**
+- **`rag/eval/eval_retrieval.py` (step 2):** runs the real hybrid
+  `RagRetriever` (via `default_retriever()`) at k=16 per scenario; reports
+  study-level Recall@4/8/16 (relevant studies seen within the first k chunks)
+  and MRR (first chunk from a relevant study), overall and per family /
+  indicator, against both strict and family-level labels. Writes
+  `results/retrieval_metrics.json` (summary + per-scenario ranked era_codes)
+  and a md table (`results/retrieval_metrics.md`).
+- **`rag/eval/eval_faithfulness.py` (step 3):** runs the FULL production
+  stack per scenario — `recommender_service.recommend()` (canonical engine,
+  real rasters) then `explain_service.explain()` on the live LLM path, with a
+  `RecordingRetriever` shim so the audit sees the exact chunks explain() used
+  and a logging handler that counts numeric-guardrail trips/rejections.
+  Every numeric sentence of the explanation is audited: digit tokens re-checked
+  with the service's own `allowed_numbers`/`_number_variants` (production
+  rules, not a reimplementation) against all retrieved chunks AND against the
+  sentence's own `[n]`-cited passages (stricter `cited_support` column);
+  word-form numbers (one/two/…/half/third/quarter/twice/double/…) are
+  detected and checked so the known digit-only guardrail gap is measured, not
+  assumed. Markdown headings/list enumerators are stripped before sentence
+  splitting so "#### 1." never becomes a claim row. Outputs:
+  `results/faithfulness_audit.csv` (one row per claim sentence, blank
+  `human_verdict`/`human_notes` columns for the human pass),
+  `results/faithfulness_summary.json` (llm_used/grounded rates, guardrail
+  trips, verdict counts), `results/explanations.jsonl` (both conditions for
+  the expert study). Scenarios picked round-robin over cells (stratified ~30).
+- **`rag/eval/expert_study/` (step 4):** `protocol.md` — blinded
+  within-subject A/B design (A = deterministic model-only text via
+  `build_fallback_text(rec, [])`, B = model+RAG explanation; ~30 scenarios,
+  3–5 experts, Likert 1–5 on agronomic soundness / usefulness /
+  trustworthiness / clarity; randomized order, condition blinded; Wilcoxon +
+  Krippendorff's α analysis plan). `make_packets.py` (pure stdlib) — per-expert
+  CSV packets with opaque item codes, per-expert scenario shuffle, per-scenario
+  A/B position randomization, blank rating columns; `answer_key.csv` kept
+  separate with a do-not-send warning.
+- **`rag/eval/test_build_queries.py`:** 9 unit tests over the pure functions
+  (prefix stripping, label matching incl. corpus filter and family-level
+  fallback, skip counting, stratification/determinism/quota, recommendation
+  stub + real query-text composition, recall/MRR/aggregation).
+- **`rag/eval/README.md`:** run order, requirements per step, label/metric
+  definitions.
+
+**Files**
+- `rag/eval/build_queries.py`, `rag/eval/eval_retrieval.py`,
+  `rag/eval/eval_faithfulness.py`, `rag/eval/test_build_queries.py`,
+  `rag/eval/README.md` — new.
+- `rag/eval/expert_study/protocol.md`, `rag/eval/expert_study/make_packets.py`
+  — new.
+- `rag/eval/queries.jsonl`, `rag/eval/results/queries_build_report.json`,
+  `rag/eval/results/retrieval_metrics.{json,md}` — generated (real runs).
+- No changes to `app/` or `rag/retrieve.py` (scope guard respected).
+
+**Decisions**
+- Anchors are sampled from ALL ERA study rows in a cell (not pre-filtered to
+  corpus-backed studies) so the mandated skip count actually measures corpus
+  coverage; labels are then corpus-restricted per the assignment.
+- Recall@k is study-level at chunk depth k and MRR is chunk-rank based —
+  matches how the app consumes retrieval (chunks in, per-study citations out).
+- `eval_retrieval` uses `retriever.retrieve(query_text)` (single-practice
+  scenarios ⇒ identical to the per-practice app path for that practice);
+  `eval_faithfulness` uses the real engine + `explain()` end to end.
+- The faithfulness audit imports `explain_service`'s own regex/whitelist
+  helpers rather than re-implementing them, so it measures the production
+  guardrail exactly; word-form numbers get their own verdict classes
+  (`fail_wordform`/`fail_both`) to quantify the known gap.
+- Both A and B texts are frozen into `explanations.jsonl` at audit time, so
+  the expert study rates exactly what the system produced (and packets are
+  reproducible pure-stdlib artifacts).
+
+**Verified (sandbox — WSL, backend Windows venv via interop)**
+- `py_compile` clean on all 5 new Python files; `pytest test_build_queries.py`
+  → **9/9 green**.
+- `build_queries.py` executed for real: 50 scenarios / 6 skipped / full
+  family+indicator coverage (report above).
+- `eval_retrieval.py` executed for real over all 50 scenarios against the
+  frozen index (≈50 embedding calls): overall Recall@4/8/16 =
+  0.111/0.235/0.333, MRR = 0.321 (strict labels); family-level MRR = 0.402.
+  Weakest cells: water use efficiency (Recall@16 = 0.025) and Agro-forestry
+  (MRR = 0.069) — genuine findings for the paper, written to
+  `results/retrieval_metrics.{json,md}`.
+- `eval_faithfulness.py` smoke-tested end-to-end with `--n 2` (real engine +
+  rasters + live gpt-4o-mini): 2/2 scenarios completed, llm_used=grounded=1.0,
+  0 guardrail trips, 8 clean claim rows with correct digit extraction and
+  cited_support columns. Smoke outputs then deleted so `results/` only holds
+  full-run artifacts.
+- `make_packets.py` smoke-tested from the smoke explanations (2 experts) and
+  with a 30-scenario synthetic set: both conditions present per scenario,
+  X/Y slots carry both conditions (no positional leak), per-expert orders
+  differ, fully deterministic per seed; smoke packets deleted.
+- Backend regression: full `pytest -q` in `app/backend` → **46/46 green**
+  (this venv has rasterio + layers, so `test_api.py` ran too).
+
+**Needs local verification (owner)**
+- The full faithfulness run: `python rag/eval/eval_faithfulness.py --n 30`
+  (~30 gpt-4o-mini calls + embeddings) — then eyeball
+  `results/faithfulness_summary.json` and fill the `human_verdict` column of
+  `results/faithfulness_audit.csv` for the manuscript.
+- After that run: `python rag/eval/expert_study/make_packets.py --experts <3-5>`
+  and distribute packets per `expert_study/protocol.md` (never send
+  `answer_key.csv`).
+- Decide whether `rag/eval/queries.jsonl` + `results/` go into git (small,
+  reproducible; I left them on disk, nothing committed).

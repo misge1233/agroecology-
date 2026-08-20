@@ -1,0 +1,11 @@
+{
+  "n_scenarios": 50,
+  "n_target": 50,
+  "per_cell_quota": 2,
+  "n_cells_with_scenarios": 26,
+  "n_cells_total": 29,
+  "n_skipped_no_relevant_in_corpus": 6,
+  "n_families_covered": 5,
+  "n_indicators_covered": 7,
+  "seed": 42
+}
