@@ -7,13 +7,14 @@ import { postExplain } from "@/lib/api";
 import type { ExplainCitation, ExplainResponse, RecommendResponse } from "@/lib/types";
 import { useMetadata } from "./metadata-provider";
 
-/** Evidence-on-demand for a recommendation card (Phase P2c).
+/** Evidence-on-demand for a recommendation card (Phase P2c; two-tier P5a).
  *
  * Hidden entirely until /metadata reports rag_ready. On first open it lazily
  * POSTs the recommendation to /explain and caches the result: a grounded
- * explanation plus one chip per cited study (era_code · title · year),
- * linking to the DOI when present. Chat follow-up grounding is P2d — this
- * panel is purely client-side evidence display.
+ * explanation plus one chip per cited source. Tier "evidence" chips are ERA
+ * studies (era_code · title · year, linking to the DOI); tier "guidance"
+ * chips are GARDIAN implementation documents — visually distinct (accent
+ * ring + "Guidance" badge, own section) and linking to the source URL.
  */
 
 type FetchState =
@@ -22,25 +23,38 @@ type FetchState =
   | { status: "error"; message: string };
 
 function StudyChip({ citation }: { citation: ExplainCitation }) {
+  const isGuidance = citation.tier === "guidance";
   const label = [
     citation.era_code,
-    citation.title || "Untitled study",
+    citation.title || (isGuidance ? "Untitled document" : "Untitled study"),
     citation.year != null ? String(citation.year) : null,
   ]
     .filter(Boolean)
     .join(" · ");
+  const href = isGuidance
+    ? citation.url ?? (citation.doi ? `https://doi.org/${citation.doi}` : null)
+    : citation.doi
+      ? `https://doi.org/${citation.doi}`
+      : null;
   const body = (
     <>
+      {isGuidance && (
+        <span className="shrink-0 rounded-full bg-accent/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider text-accent">
+          Guidance
+        </span>
+      )}
       <span className="max-w-[16rem] truncate sm:max-w-[22rem]">{label}</span>
       {citation.n_passages > 1 && (
         <span className="shrink-0 text-mute">×{citation.n_passages}</span>
       )}
-      {citation.doi && <ExternalLink className="h-3 w-3 shrink-0 text-mute" aria-hidden />}
+      {href && <ExternalLink className="h-3 w-3 shrink-0 text-mute" aria-hidden />}
     </>
   );
-  const className =
-    "inline-flex max-w-full items-center gap-1.5 rounded-full border border-edge bg-elevated px-2.5 py-1 text-[11px] text-ink";
-  if (!citation.doi) {
+  const className = cn(
+    "inline-flex max-w-full items-center gap-1.5 rounded-full border bg-elevated px-2.5 py-1 text-[11px] text-ink",
+    isGuidance ? "border-accent/40" : "border-edge"
+  );
+  if (!href) {
     return (
       <li className={className} title={citation.snippet}>
         {body}
@@ -50,11 +64,17 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
   return (
     <li className="max-w-full">
       <a
-        href={`https://doi.org/${citation.doi}`}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         title={citation.snippet}
-        className={cn(className, "transition hover:border-leaf/40 hover:text-leaf-deep dark:hover:text-leaf-bright")}
+        className={cn(
+          className,
+          "transition",
+          isGuidance
+            ? "hover:border-accent hover:text-accent"
+            : "hover:border-leaf/40 hover:text-leaf-deep dark:hover:text-leaf-bright"
+        )}
       >
         {body}
       </a>
@@ -152,18 +172,42 @@ export function EvidencePanel({ data }: { data: RecommendResponse }) {
                 {state.result.explanation}
               </p>
 
-              {state.result.citations.length > 0 && (
-                <div>
-                  <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
-                    Source studies ({state.result.citations.length})
-                  </p>
-                  <ul className="flex flex-wrap gap-1.5">
-                    {state.result.citations.map((c, i) => (
-                      <StudyChip key={c.era_code ?? c.doi ?? c.title ?? i} citation={c} />
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {(() => {
+                const evidence = state.result.citations.filter(
+                  (c) => c.tier !== "guidance"
+                );
+                const guidance = state.result.citations.filter(
+                  (c) => c.tier === "guidance"
+                );
+                return (
+                  <>
+                    {evidence.length > 0 && (
+                      <div>
+                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
+                          Source studies ({evidence.length})
+                        </p>
+                        <ul className="flex flex-wrap gap-1.5">
+                          {evidence.map((c, i) => (
+                            <StudyChip key={c.era_code ?? c.doi ?? c.title ?? i} citation={c} />
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {guidance.length > 0 && (
+                      <div>
+                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
+                          Implementation guidance ({guidance.length})
+                        </p>
+                        <ul className="flex flex-wrap gap-1.5">
+                          {guidance.map((c, i) => (
+                            <StudyChip key={c.url ?? c.doi ?? c.title ?? i} citation={c} />
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </>
           )}
         </div>

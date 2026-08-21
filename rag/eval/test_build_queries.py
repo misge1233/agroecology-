@@ -10,8 +10,13 @@ from __future__ import annotations
 
 from typing import Any
 
+import re
+
 import build_queries as bq
+import eval_faithfulness as ef
 import eval_retrieval as er
+
+_NUM_RE = re.compile(r"\d+(?:\.\d+)?")  # mirror of the service's token regex
 
 
 # ------------------------------------------------------------------ fixtures
@@ -129,6 +134,16 @@ def test_recommendation_stub_and_query_text():
 
 
 # ---------------------------------------------------------- retrieval metrics
+def test_success_at_k():
+    ranked = ["A", "B", "A", "C", "D"]
+    assert er.success_at_k(ranked, {"C", "Z"}, 4) == 1.0  # C at rank 4
+    assert er.success_at_k(ranked, {"C", "Z"}, 3) == 0.0  # nothing in top-3
+    assert er.success_at_k(ranked, {"A"}, 1) == 1.0
+    assert er.success_at_k(ranked, {"Q"}, 5) == 0.0       # never retrieved
+    assert er.success_at_k(ranked, set(), 4) == 0.0       # empty labels -> 0
+    assert er.success_at_k([], {"A"}, 4) == 0.0           # nothing retrieved
+
+
 def test_recall_and_mrr():
     ranked = ["A", "B", "A", "C", "D"]
     relevant = {"C", "Z"}
@@ -147,6 +162,7 @@ def test_score_and_aggregate():
     m = er.score_scenario(["A", "B", "C"], scenario)
     assert m["recall@4"] == 1.0 and m["mrr"] == 0.5
     assert m["recall@4_family"] == 1.0 and m["mrr_family"] == 1.0
+    assert m["success@4"] == 1.0 and m["success@4_family"] == 1.0
     agg = er.aggregate([
         {"practice_family": "F1", "indicator": "I1", "metrics": m},
         {"practice_family": "F1", "indicator": "I2",
@@ -156,3 +172,32 @@ def test_score_and_aggregate():
     assert agg["overall"]["mrr"] == 0.25
     assert agg["per_family"]["F1"]["n"] == 2
     assert agg["per_indicator"]["I1"]["mrr"] == 0.5
+
+
+# ------------------------------------------------- faithfulness (two-tier)
+def test_faithfulness_strips_both_citation_marker_kinds():
+    assert ef.digit_tokens("cut 42.5% [1] [G12]", _NUM_RE) == ["42.5"]
+    assert ef.digit_tokens("[3][G4]", _NUM_RE) == []
+
+
+def test_faithfulness_guidance_marker_indices():
+    assert ef.cited_guidance_indices("see [G1] and [G3]", 2) == [0]  # G3 invalid
+    assert ef.cited_guidance_indices("see [1] only", 2) == []
+
+
+def test_audit_sentence_accepts_guidance_quoted_numbers():
+    # eval_faithfulness put BACKEND_DIR on sys.path at import time.
+    from app.services import explain_service as es
+
+    rec = {"recommendations": [{"practice": "Soil bunds"}]}
+    chunks = [{"era_code": "NN0001", "text": "bunds reduced runoff"}]
+    guidance = [{"chunk_id": "G_doc1_000", "era_code": None, "tier": "guidance",
+                 "text": "space bunds 15 m apart on slopes above 12 percent"}]
+    sentence = "Space bunds 15 m apart [G1]."
+    with_g = ef.audit_sentence(sentence, rec, chunks, es, guidance_chunks=guidance)
+    assert with_g["auto_verdict"] == "pass"
+    assert with_g["cite_markers"] == "G1"
+    assert with_g["cited_support"] == "yes"
+    without_g = ef.audit_sentence(sentence, rec, chunks, es)
+    assert without_g["auto_verdict"] == "fail_digits"
+    assert without_g["ungrounded_digits"] == "15"

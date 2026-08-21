@@ -83,9 +83,16 @@ export interface RecommendRequest {
   top_n?: number;
 }
 
-/** One cited study behind an explanation (deduped per era_code). */
+/** One cited source behind an explanation (deduped per study/document).
+ * tier "evidence" = ERA study (era_code links to training rows);
+ * tier "guidance" = GARDIAN implementation-guidance document (url links out).
+ */
 export interface ExplainCitation {
   era_code: string | null;
+  /** Defaults to "evidence" on the backend; optional for old payloads. */
+  tier?: "evidence" | "guidance";
+  /** Source link for guidance documents (null for most ERA studies). */
+  url?: string | null;
   doi: string | null;
   title: string | null;
   year: number | null;

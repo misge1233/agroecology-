@@ -18,9 +18,16 @@ parse_and_chunk.py): chunk ids are reassigned per study, so a study upgraded
 from abstract-only to full text reuses id <code>_000 with different text —
 resumable mode would silently keep the stale embedding.
 
+Two-tier corpora (P5a): --collection / --chunks parameterize the target, so
+the same script builds Tier 1 ("era_corpus", the default) and Tier 2
+("guidance_corpus" from corpus/guidance/chunks.jsonl). Building one
+collection never touches the other.
+
 Usage:
     python build_index.py --corpus ../corpus --index ../index/store
     python build_index.py --corpus ../corpus --index ../index/store --rebuild
+    python build_index.py --chunks ../corpus/guidance/chunks.jsonl \
+        --collection guidance_corpus --index ../index/store --rebuild
 """
 from __future__ import annotations
 
@@ -36,6 +43,13 @@ EMBED_MODEL = "text-embedding-3-small"
 EMBED_URL = "https://api.openai.com/v1/embeddings"
 BATCH = 96
 COLLECTION = "era_corpus"
+# The embeddings API rejects inputs over 8,192 tokens. A ~380-word chunk is
+# normally well under that, but pathological content (unbroken table/URL
+# strings, non-Latin scripts where tokens ≈ characters) can blow past it —
+# hit on the real GARDIAN corpus (P5a). The EMBEDDING input is clipped to
+# this many characters (worst case ≈ 1 token/char, so 7000 < 8192); the
+# STORED document text stays complete.
+EMBED_MAX_CHARS = 7000
 
 
 def find_api_key() -> str:
@@ -77,6 +91,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", default="../corpus")
     ap.add_argument("--index", default="../index/store")
+    ap.add_argument("--chunks", default="",
+                    help="chunks JSONL (default: <corpus>/chunks.jsonl)")
+    ap.add_argument("--collection", default=COLLECTION,
+                    help=f"target Chroma collection (default: {COLLECTION})")
     ap.add_argument("--rebuild", action="store_true",
                     help="drop the collection and re-embed all chunks "
                          "(required after the corpus changed)")
@@ -84,7 +102,7 @@ def main() -> int:
 
     import chromadb  # deferred: heavy import
 
-    chunks_path = Path(args.corpus) / "chunks.jsonl"
+    chunks_path = Path(args.chunks) if args.chunks else Path(args.corpus) / "chunks.jsonl"
     chunks = [json.loads(l) for l in chunks_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     if not chunks:
         raise SystemExit(f"No chunks found in {chunks_path} — run parse_and_chunk.py first.")
@@ -92,11 +110,11 @@ def main() -> int:
     client = chromadb.PersistentClient(path=str(Path(args.index)))
     if args.rebuild:
         try:
-            client.delete_collection(COLLECTION)
-            print(f"--rebuild: dropped existing collection '{COLLECTION}'.")
+            client.delete_collection(args.collection)
+            print(f"--rebuild: dropped existing collection '{args.collection}'.")
         except Exception:
             pass  # no existing collection — nothing to drop
-    col = client.get_or_create_collection(COLLECTION, metadata={"hnsw:space": "cosine"})
+    col = client.get_or_create_collection(args.collection, metadata={"hnsw:space": "cosine"})
 
     existing: set[str] = set()
     if col.count():
@@ -110,24 +128,28 @@ def main() -> int:
     done = 0
     for i in range(0, len(todo), BATCH):
         batch = todo[i : i + BATCH]
-        vecs = embed_batch([c["text"] for c in batch], api_key, session)
+        vecs = embed_batch(
+            [c["text"][:EMBED_MAX_CHARS] for c in batch], api_key, session
+        )
         col.add(
             ids=[c["chunk_id"] for c in batch],
             embeddings=vecs,
             documents=[c["text"] for c in batch],
             metadatas=[{
-                "era_code": c["era_code"],
+                "era_code": c.get("era_code") or "",   # "" for Tier-2 guidance
+                "tier": c.get("tier") or "evidence",
                 "doi": c.get("doi") or "",
                 "title": c.get("title") or "",
                 "year": int(c["year"]) if c.get("year") else 0,
                 "journal": c.get("journal") or "",
+                "url": c.get("url") or "",
                 "source": c["source"],
             } for c in batch],
         )
         done += len(batch)
         print(f"  indexed {done}/{len(todo)}")
 
-    print(f"Done. Collection '{COLLECTION}' now holds {col.count()} chunks at {args.index}.")
+    print(f"Done. Collection '{args.collection}' now holds {col.count()} chunks at {args.index}.")
     return 0
 
 

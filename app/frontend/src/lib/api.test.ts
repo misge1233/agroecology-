@@ -19,6 +19,8 @@ const explainResponse: ExplainResponse = {
   citations: [
     {
       era_code: "NN0123",
+      tier: "evidence",
+      url: null,
       doi: "10.1000/xyz1",
       title: "Mulching effects on erosion",
       year: 2019,
@@ -26,6 +28,18 @@ const explainResponse: ExplainResponse = {
       practice: "Mulching",
       snippet: "Mulch cover reduced soil loss…",
       n_passages: 2,
+    },
+    {
+      era_code: null,
+      tier: "guidance",
+      url: "https://gardian.example/doc1",
+      doi: null,
+      title: "Mulching implementation manual",
+      year: 2021,
+      journal: null,
+      practice: "Mulching",
+      snippet: "Apply mulch after first weeding…",
+      n_passages: 1,
     },
   ],
   grounded: true,
@@ -57,6 +71,9 @@ describe("postExplain", () => {
     });
     expect(result).toEqual(explainResponse);
     expect(result.citations[0].n_passages).toBe(2);
+    // Two-tier payload (P5a): guidance citations carry tier + source url.
+    expect(result.citations[1].tier).toBe("guidance");
+    expect(result.citations[1].url).toBe("https://gardian.example/doc1");
   });
 
   it("forwards question and k when given", async () => {

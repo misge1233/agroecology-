@@ -96,11 +96,51 @@ def make_settings(**overrides: Any) -> Settings:
     return Settings(_env_file=None, **defaults)
 
 
+@pytest.fixture(autouse=True)
+def _no_auto_guidance(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep unit tests hermetic: never auto-build the real Tier-2 retriever
+    (tests that want guidance inject one via ``guidance_retriever=``)."""
+    monkeypatch.setattr(es, "get_guidance_retriever", lambda: None)
+
+
 @pytest.fixture()
 def no_key_settings(monkeypatch: pytest.MonkeyPatch) -> Settings:
     settings = make_settings()
     monkeypatch.setattr(es, "get_settings", lambda: settings)
     return settings
+
+
+def make_guidance_chunks() -> list[dict[str, Any]]:
+    return [
+        {
+            "chunk_id": "G_doc1_000",
+            "era_code": None,
+            "tier": "guidance",
+            "doi": None,
+            "url": "https://gardian.example/doc1",
+            "title": "Soil bund construction manual for Ethiopian highlands",
+            "year": 2021,
+            "journal": None,
+            "source": "gardian",
+            "text": "Space bunds 15 m apart on steep land; maintain after "
+                    "each rainy season. Construction costs about 120 "
+                    "person-days per hectare.",
+            "for_practice": "Soil bunds",
+        },
+        {
+            "chunk_id": "G_doc1_001",
+            "era_code": None,
+            "tier": "guidance",
+            "doi": None,
+            "url": "https://gardian.example/doc1",
+            "title": "Soil bund construction manual for Ethiopian highlands",
+            "year": 2021,
+            "journal": None,
+            "source": "gardian",
+            "text": "Combine bunds with grass strips for stability.",
+            "for_practice": "Soil bunds",
+        },
+    ]
 
 
 # ----------------------------------------------------------- numeric guardrail
@@ -287,3 +327,130 @@ def test_prompt_contains_json_labeled_passages_and_question():
     assert '"practice_family": "Erosion control and water management"' in user
     assert "[1] (NN0123)" in user and "[2] (NN0456)" in user
     assert "How deep should bunds be?" in user
+
+
+# ------------------------------------------------- Tier-2 guidance (P5a)
+def test_guardrail_strips_guidance_markers():
+    rec, chunks = make_recommendation(), make_chunks()
+    assert es.numbers_are_grounded("build bunds as advised [G1] [G12]", rec, chunks)
+
+
+def test_guardrail_allows_numbers_quoted_from_guidance_chunks():
+    rec = make_recommendation()
+    combined = make_chunks() + make_guidance_chunks()
+    # 15 m spacing and 120 person-days exist only in the guidance text.
+    assert es.numbers_are_grounded(
+        "space bunds 15 m apart [G1]; budget 120 person-days", rec, combined
+    )
+    # Without the guidance chunks those same numbers are invented -> reject.
+    assert es.numbers_are_grounded(
+        "space bunds 15 m apart [G1]; budget 120 person-days", rec, make_chunks()
+    ) is False
+
+
+def test_guardrail_rejects_invented_numbers_with_guidance_present():
+    rec = make_recommendation()
+    combined = make_chunks() + make_guidance_chunks()
+    assert es.numbers_are_grounded("costs fall by 73%", rec, combined) is False
+
+
+def test_guardrail_does_not_whitelist_numbers_from_urls():
+    # URLs never appear in the prompt, so their digits (handle ids, dates)
+    # must not license numbers in the output (review hardening, P5a).
+    rec = make_recommendation()
+    chunks = make_guidance_chunks()
+    chunks[0]["url"] = "https://hdl.handle.net/10568/54321"
+    assert es.numbers_are_grounded("apply 54321 kg per plot", rec, chunks) is False
+
+
+def test_shape_citations_tags_guidance_tier_and_dedupes_per_document():
+    citations = es.shape_citations(make_guidance_chunks())
+    assert len(citations) == 1  # both chunks are the same document (same url)
+    c = citations[0]
+    assert c["tier"] == "guidance"
+    assert c["era_code"] is None
+    assert c["url"] == "https://gardian.example/doc1"
+    assert c["n_passages"] == 2
+
+
+def test_shape_citations_defaults_evidence_tier():
+    citations = es.shape_citations(make_chunks())
+    assert all(c["tier"] == "evidence" for c in citations)
+    assert all(c["url"] is None for c in citations)
+
+
+def test_prompt_contains_guidance_block_with_g_markers():
+    rec, chunks = make_recommendation(), make_chunks()
+    messages = es._build_messages(rec, None, chunks, make_guidance_chunks())
+    user = messages[1]["content"]
+    assert "GUIDANCE PASSAGES" in user
+    assert "[G1] Soil bund construction manual" in user
+    assert user.index("EVIDENCE PASSAGES") < user.index("GUIDANCE PASSAGES")
+
+
+def test_prompt_without_guidance_has_no_guidance_block():
+    messages = es._build_messages(make_recommendation(), None, make_chunks())
+    assert "GUIDANCE PASSAGES" not in messages[1]["content"]
+
+
+def test_explain_llm_path_appends_guidance_citations(monkeypatch: pytest.MonkeyPatch):
+    settings = make_settings(openai_api_key="sk-test")
+    monkeypatch.setattr(es, "get_settings", lambda: settings)
+    llm_text = "Mulching helps [1]; space bunds 15 m apart [G1]."
+    monkeypatch.setattr(es, "_call_llm", lambda messages: llm_text)
+    result = es.explain(
+        make_recommendation(),
+        retriever=FakeRetriever(make_chunks()),
+        guidance_retriever=FakeRetriever(make_guidance_chunks()),
+    )
+    assert result["llm_used"] is True
+    tiers = [c["tier"] for c in result["citations"]]
+    assert tiers == ["evidence", "evidence", "guidance"]
+    assert result["citations"][-1]["url"] == "https://gardian.example/doc1"
+
+
+def test_explain_fallback_path_excludes_guidance_citations(no_key_settings: Settings):
+    result = es.explain(
+        make_recommendation(),
+        retriever=FakeRetriever(make_chunks()),
+        guidance_retriever=FakeRetriever(make_guidance_chunks()),
+    )
+    assert result["llm_used"] is False
+    assert all(c["tier"] == "evidence" for c in result["citations"])
+
+
+def test_explain_guidance_retrieval_failure_degrades_to_evidence_only(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    settings = make_settings(openai_api_key="sk-test")
+    monkeypatch.setattr(es, "get_settings", lambda: settings)
+    monkeypatch.setattr(es, "_call_llm", lambda messages: "Mulching helps [1].")
+
+    class BrokenRetriever:
+        def retrieve_for_recommendation(self, recommendation, k=8):
+            raise RuntimeError("collection missing")
+
+    result = es.explain(
+        make_recommendation(),
+        retriever=FakeRetriever(make_chunks()),
+        guidance_retriever=BrokenRetriever(),
+    )
+    assert result["llm_used"] is True
+    assert all(c["tier"] == "evidence" for c in result["citations"])
+
+
+def test_get_guidance_retriever_none_when_chunks_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+):
+    # Bypass the autouse stub — exercise the REAL availability check.
+    monkeypatch.undo()
+    settings = make_settings(
+        RAG_GUIDANCE_CHUNKS_PATH=str(tmp_path / "no-such-guidance.jsonl"),
+    )
+    monkeypatch.setattr(es, "get_settings", lambda: settings)
+    es.set_guidance_retriever(None)  # reset cache + sticky flag
+    try:
+        assert es.get_guidance_retriever() is None
+        assert es.get_guidance_retriever() is None  # sticky, still no crash
+    finally:
+        es.set_guidance_retriever(None)

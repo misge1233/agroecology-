@@ -14,6 +14,9 @@ sentence of the generated explanation against the cited chunk text:
 - word-form numbers (one/two/…/half/third/twice/…) are detected and checked
   too — the production guardrail only sees digits, so this MEASURES the
   known word-form gap rather than assuming it away.
+- two-tier aware (P5a): Tier-2 guidance chunks retrieved by explain() are
+  recorded too; [Gn] markers are stripped like [n] and guidance-quoted
+  numbers count as grounded — exactly the production rules.
 
 Outputs (rag/eval/results/):
 - ``faithfulness_audit.csv``  — one row per numeric claim sentence: text,
@@ -72,6 +75,7 @@ WORD_NUM_RE = re.compile(
     re.IGNORECASE,
 )
 CITE_MARKER_RE = re.compile(r"\[(\d+)\]")
+GUIDANCE_MARKER_RE = re.compile(r"\[G(\d+)\]")
 SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+|\n+")
 
 
@@ -93,8 +97,9 @@ def split_sentences(text: str) -> list[str]:
 
 
 def digit_tokens(sentence: str, num_re: re.Pattern[str]) -> list[str]:
-    """Numeric digit tokens, with inline [n] citation markers stripped."""
-    return num_re.findall(CITE_MARKER_RE.sub(" ", sentence))
+    """Numeric digit tokens, with [n] and [Gn] citation markers stripped."""
+    stripped = GUIDANCE_MARKER_RE.sub(" ", sentence)
+    return num_re.findall(CITE_MARKER_RE.sub(" ", stripped))
 
 
 def word_tokens(sentence: str) -> list[str]:
@@ -110,11 +115,21 @@ def cited_chunk_indices(sentence: str, n_chunks: int) -> list[int]:
     ]
 
 
+def cited_guidance_indices(sentence: str, n_chunks: int) -> list[int]:
+    """0-based guidance-chunk indices for the sentence's [Gn] markers."""
+    return [
+        int(m) - 1
+        for m in GUIDANCE_MARKER_RE.findall(sentence)
+        if 1 <= int(m) <= n_chunks
+    ]
+
+
 def audit_sentence(
     sentence: str,
     recommendation: dict[str, Any],
     chunks: list[dict[str, Any]],
     es: Any,
+    guidance_chunks: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     """Audit one sentence; None when it contains no numeric content.
 
@@ -122,19 +137,24 @@ def audit_sentence(
     ``allowed_numbers`` / ``_number_variants`` are reused verbatim so the
     audit measures the production rules, not a reimplementation.
     """
+    guidance_chunks = guidance_chunks or []
     digits = digit_tokens(sentence, es._NUM_RE)
     words = word_tokens(sentence)
     if not digits and not words:
         return None
 
-    allowed_all = es.allowed_numbers(recommendation, chunks)
+    all_chunks = list(chunks) + list(guidance_chunks)
+    allowed_all = es.allowed_numbers(recommendation, all_chunks)
     cited_idx = cited_chunk_indices(sentence, len(chunks))
-    cited_chunks = [chunks[i] for i in cited_idx]
+    cited_g_idx = cited_guidance_indices(sentence, len(guidance_chunks))
+    cited_chunks = [chunks[i] for i in cited_idx] + [
+        guidance_chunks[i] for i in cited_g_idx
+    ]
     allowed_cited = (
         es.allowed_numbers(recommendation, cited_chunks) if cited_chunks else None
     )
     cited_text = " ".join((c.get("text") or "").lower() for c in cited_chunks)
-    all_text = " ".join((c.get("text") or "").lower() for c in chunks)
+    all_text = " ".join((c.get("text") or "").lower() for c in all_chunks)
 
     def _digit_ok(tok: str, allowed: set[float]) -> bool:
         value = float(tok)
@@ -173,9 +193,12 @@ def audit_sentence(
 
     return {
         "sentence": sentence,
-        "cite_markers": ",".join(str(i + 1) for i in cited_idx),
+        "cite_markers": ",".join(
+            [str(i + 1) for i in cited_idx]
+            + [f"G{i + 1}" for i in cited_g_idx]
+        ),
         "cited_era_codes": ",".join(
-            str(c.get("era_code")) for c in cited_chunks
+            str(c.get("era_code") or c.get("chunk_id")) for c in cited_chunks
         ),
         "digit_tokens": ",".join(digits),
         "ungrounded_digits": ",".join(digit_bad),
@@ -254,6 +277,10 @@ def main() -> None:
             "(rag/ingest/build_index.py)."
         )
     retriever = RecordingRetriever(es.get_retriever())
+    g_inner = es.get_guidance_retriever()  # None when Tier-2 is not built
+    guidance_retriever = RecordingRetriever(g_inner) if g_inner else None
+    if guidance_retriever is None:
+        logger.info("Guidance corpus not available — auditing evidence tier only.")
 
     trip_counter = GuardrailTripCounter()
     logging.getLogger(es.__name__).addHandler(trip_counter)
@@ -283,12 +310,20 @@ def main() -> None:
 
         trips_before = trip_counter.trips
         rejections_before = trip_counter.rejections
-        result = es.explain(recommendation, k=args.k, retriever=retriever)
+        retriever.last_chunks = []
+        if guidance_retriever is not None:
+            guidance_retriever.last_chunks = []  # not stale from prior scenario
+        result = es.explain(recommendation, k=args.k, retriever=retriever,
+                            guidance_retriever=guidance_retriever)
         chunks = retriever.last_chunks
+        guidance_chunks = (
+            guidance_retriever.last_chunks if guidance_retriever else []
+        )
         guardrail_tripped = trip_counter.rejections > rejections_before
 
         for i, sentence in enumerate(split_sentences(result["explanation"])):
-            row = audit_sentence(sentence, recommendation, chunks, es)
+            row = audit_sentence(sentence, recommendation, chunks, es,
+                                 guidance_chunks=guidance_chunks)
             if row is None:
                 continue
             audit_rows.append(

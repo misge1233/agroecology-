@@ -176,14 +176,18 @@ class MetadataResponse(BaseModel):
 
 
 class ExplainCitation(BaseModel):
-    """Provenance of one cited study (era_code links to training rows).
+    """Provenance of one cited source.
 
-    Deduped per study: retrieval may surface several chunks of the same
-    paper; ``n_passages`` says how many, ``snippet`` comes from the
-    highest-ranked one.
+    Tier "evidence" (default): an ERA study — era_code links to training
+    rows. Tier "guidance": a GARDIAN implementation-guidance document
+    (era_code is None, url links to the source). Deduped per study/document:
+    retrieval may surface several chunks of the same source; ``n_passages``
+    says how many, ``snippet`` comes from the highest-ranked one.
     """
 
     era_code: str | None = None
+    tier: str = "evidence"
+    url: str | None = None
     doi: str | None = None
     title: str | None = None
     year: int | None = None

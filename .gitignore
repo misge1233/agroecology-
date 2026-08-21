@@ -33,6 +33,11 @@ rag/corpus/pdfs/*.pdf
 rag/corpus/xml/*.xml
 rag/corpus/manifest.jsonl.bak
 rag/index/store/
+rag/index/store_pre_p5a_backup/
+# Tier-2 guidance bulk artifacts: rebuildable via fetch_gardian.py +
+# chunk_guidance.py; manifest.jsonl stays IN git (provenance for the paper)
+rag/corpus/guidance/texts/
+rag/corpus/guidance/chunks.jsonl
 
 # --- OS / editor noise ---
 .DS_Store

@@ -49,6 +49,12 @@ class Settings(BaseSettings):
         default="../../rag/corpus/chunks.jsonl",
         validation_alias=AliasChoices("RAG_CHUNKS_PATH"),
     )
+    # Tier-2 guidance corpus (Phase P5a) — optional; a missing file simply
+    # disables the guidance layer of /explain.
+    rag_guidance_chunks_path: str = Field(
+        default="../../rag/corpus/guidance/chunks.jsonl",
+        validation_alias=AliasChoices("RAG_GUIDANCE_CHUNKS_PATH"),
+    )
 
     # OpenAI chat — set OPENAI_API_KEY in backend/.env; model/URL live in openai_chat.py
     openai_api_key: str = ""
@@ -85,6 +91,12 @@ class Settings(BaseSettings):
     def resolved_rag_chunks_path(self) -> Path:
         """Absolute path of the corpus chunks JSONL (RAG_CHUNKS_PATH)."""
         p = Path(self.rag_chunks_path)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
+
+    @property
+    def resolved_rag_guidance_chunks_path(self) -> Path:
+        """Absolute path of the Tier-2 guidance chunks JSONL (optional)."""
+        p = Path(self.rag_guidance_chunks_path)
         return p if p.is_absolute() else (self.backend_root / p).resolve()
 
 

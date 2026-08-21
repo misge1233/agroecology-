@@ -10,8 +10,15 @@ Doctrine (docs/decisions/rag_design.md):
   imported lazily by putting the repo root on ``sys.path`` — the same pattern
   ``recommender_service`` uses for the canonical engine.
 
-The retriever is injectable (``set_retriever`` or the ``retriever=`` argument
-of :func:`explain`) so tests run without chromadb, the index, or the network.
+Two tiers, never mixed (P5a): Tier-1 ``era_corpus`` evidence passages carry
+the effect numbers and citations [n]; Tier-2 ``guidance_corpus`` passages
+(GARDIAN implementation guidance) may inform HOW-to advice only, cited as
+[Gn]. The numeric guardrail applies identically to both tiers. Guidance is
+optional — if its collection is not built, /explain works exactly as before.
+
+The retrievers are injectable (``set_retriever`` / ``set_guidance_retriever``
+or the ``retriever=`` / ``guidance_retriever=`` arguments of :func:`explain`)
+so tests run without chromadb, the index, or the network.
 """
 from __future__ import annotations
 
@@ -34,12 +41,14 @@ OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions"
 EXPLAIN_TEMPERATURE = 0.2
 
 SNIPPET_CHARS = 240  # citation snippet length (~240 chars of chunk text)
+GUIDANCE_K = 4       # Tier-2 guidance passages retrieved per explanation
 
 # Numeric tokens: integers and decimals ("12", "8.38", the "3" in "3-small").
 _NUM_RE = re.compile(r"\d+(?:\.\d+)?")
-# Inline citation markers like [1], [12] — stripped before the numeric check so
-# reference indices are never mistaken for invented quantities.
-_CITE_MARKER_RE = re.compile(r"\[\d+\]")
+# Inline citation markers like [1], [12], and guidance markers [G1], [G3] —
+# stripped before the numeric check so reference indices are never mistaken
+# for invented quantities.
+_CITE_MARKER_RE = re.compile(r"\[G?\d+\]")
 
 EXPLAIN_SYSTEM_PROMPT = (
     "You are the evidence-explanation layer of AgroAdvisor-ET, an advisor for "
@@ -58,6 +67,11 @@ EXPLAIN_SYSTEM_PROMPT = (
     "sizes, percentages, or study counts.\n"
     "- The model's ranking and effect estimates are authoritative; you explain "
     "them, you do not second-guess them.\n"
+    "- If GUIDANCE passages (numbered [G1], [G2], ...) are provided, they may "
+    "inform HOW to implement a practice (steps, timing, costs, failure "
+    "modes) ONLY — cite them inline as [Gn]. They are never evidence for "
+    "effect sizes or rankings, and any number quoted from a guidance passage "
+    "must appear verbatim in it and be cited [Gn].\n"
     "- Be concise and practical (short paragraphs or bullets, plain language "
     "for extension workers)."
 )
@@ -65,6 +79,8 @@ EXPLAIN_SYSTEM_PROMPT = (
 
 # ------------------------------------------------------------------ retriever
 _retriever: Any = None  # module-level cache; injectable for tests
+_guidance_retriever: Any = None      # Tier-2 cache; injectable for tests
+_guidance_unavailable = False        # sticky "not built" flag (reset via setter)
 
 
 def _ensure_repo_root_on_path() -> None:
@@ -78,6 +94,13 @@ def set_retriever(retriever: Any) -> None:
     """Inject a retriever (tests) or reset the cached one (pass ``None``)."""
     global _retriever
     _retriever = retriever
+
+
+def set_guidance_retriever(retriever: Any) -> None:
+    """Inject a Tier-2 retriever (tests) or reset the cache (pass ``None``)."""
+    global _guidance_retriever, _guidance_unavailable
+    _guidance_retriever = retriever
+    _guidance_unavailable = False
 
 
 def get_retriever() -> Any:
@@ -99,6 +122,45 @@ def get_retriever() -> Any:
             settings.resolved_rag_chunks_path,
         )
     return _retriever
+
+
+def get_guidance_retriever() -> Any:
+    """Tier-2 guidance retriever, or ``None`` when the corpus is not built.
+
+    Graceful no-op by design: a missing guidance chunks file or collection
+    logs once and disables the tier for the process — /explain then behaves
+    exactly as it did before P5a. Never raises.
+    """
+    global _guidance_retriever, _guidance_unavailable
+    if _guidance_retriever is not None:
+        return _guidance_retriever
+    if _guidance_unavailable:
+        return None
+    settings = get_settings()
+    chunks_path = settings.resolved_rag_guidance_chunks_path
+    if not chunks_path.is_file():
+        _guidance_unavailable = True
+        logger.info(
+            "Guidance corpus not built (%s missing) — Tier-2 disabled.",
+            chunks_path,
+        )
+        return None
+    try:
+        _ensure_repo_root_on_path()
+        from rag.retrieve import GUIDANCE_COLLECTION, RagRetriever
+
+        _guidance_retriever = RagRetriever(
+            index_dir=settings.resolved_rag_index_dir,
+            chunks_path=chunks_path,
+            api_key=settings.openai_api_key or None,
+            collection=GUIDANCE_COLLECTION,
+        )
+        logger.info("Guidance retriever ready (chunks=%s).", chunks_path)
+    except Exception as exc:
+        _guidance_unavailable = True
+        logger.warning("Guidance retriever unavailable (%s) — Tier-2 disabled.", exc)
+        return None
+    return _guidance_retriever
 
 
 def is_ready() -> bool:
@@ -135,16 +197,19 @@ def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     citations: list[dict[str, Any]] = []
     by_study: dict[Any, dict[str, Any]] = {}
     for i, c in enumerate(chunks):
-        # era_code is the join key; fall back to doi/title so studies without
-        # one are still deduped sensibly, and never collapse two unknowns.
-        key = c.get("era_code") or c.get("doi") or c.get("title") or f"chunk-{i}"
+        # era_code is the join key; guidance chunks (era_code=None) dedupe per
+        # document via url/doi/title instead; never collapse two unknowns.
+        key = (c.get("era_code") or c.get("url") or c.get("doi")
+               or c.get("title") or f"chunk-{i}")
         if key in by_study:
             by_study[key]["n_passages"] += 1
             continue
         text = (c.get("text") or "").strip()
         citation = {
             "era_code": c.get("era_code"),
+            "tier": c.get("tier") or "evidence",
             "doi": c.get("doi"),
+            "url": c.get("url"),
             "title": c.get("title"),
             "year": _safe_int(c.get("year")),
             "journal": c.get("journal"),
@@ -190,6 +255,10 @@ def allowed_numbers(
     Sources: the recommendation JSON (query/recommendations/details, all
     levels, rounded forms included) and each cited chunk's text plus its
     provenance metadata (title/year/era_code — e.g. '(Abera et al., 2019)').
+    Callers pass evidence AND guidance chunks together — the numeric rule
+    applies identically to both tiers. ``url`` is deliberately NOT harvested:
+    URLs never appear in the prompt, so their digits (handle ids, dates)
+    would whitelist numbers the LLM cannot legitimately be quoting.
     """
     allowed: set[float] = set()
     _collect_numbers(recommendation, allowed)
@@ -267,6 +336,7 @@ def _build_messages(
     recommendation: dict[str, Any],
     question: str | None,
     chunks: list[dict[str, Any]],
+    guidance_chunks: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, str]]:
     passages = []
     for i, c in enumerate(chunks, start=1):
@@ -279,6 +349,19 @@ def _build_messages(
         + "\n```\n\nEVIDENCE PASSAGES (cite as [n]):\n\n"
         + "\n\n".join(passages)
     )
+    if guidance_chunks:
+        guidance_passages = []
+        for i, c in enumerate(guidance_chunks, start=1):
+            header = f"[G{i}] {c.get('title')} ({c.get('year')})"
+            guidance_passages.append(f"{header}\n{(c.get('text') or '').strip()}")
+        user += (
+            "\n\nGUIDANCE PASSAGES (cite as [G1], [G2], ...) — practical "
+            "implementation guidance only. Use them for HOW-to advice "
+            "(steps, timing, costs, failure modes), never as evidence for "
+            "effect sizes or rankings; any number you quote from them must "
+            "be cited [Gn]:\n\n"
+            + "\n\n".join(guidance_passages)
+        )
     if question:
         user += (
             "\n\nUSER QUESTION (answer it, grounded in the same passages and "
@@ -326,12 +409,19 @@ def explain(
     question: str | None = None,
     k: int = 8,
     retriever: Any = None,
+    guidance_retriever: Any = None,
 ) -> dict[str, Any]:
     """Produce a grounded explanation of an engine recommendation.
 
     Returns ``{"explanation", "citations", "grounded", "llm_used"}``.
     ``grounded`` is True only when at least one evidence chunk backs the text;
     ``llm_used`` is True only when LLM output passed the numeric guardrail.
+
+    Two tiers: evidence retrieval (k chunks from ``era_corpus``) is unchanged;
+    guidance retrieval (GUIDANCE_K chunks from ``guidance_corpus``) is an
+    optional layer for HOW-to advice — absent corpus or retrieval failure
+    degrades to evidence-only, never an error. Guidance citations are only
+    returned on the LLM path (the deterministic fallback never cites [Gn]).
     """
     r = retriever if retriever is not None else get_retriever()
     chunks = r.retrieve_for_recommendation(recommendation, k=k)
@@ -351,11 +441,28 @@ def explain(
         }
 
     if get_settings().openai_api_key:
-        text = _call_llm(_build_messages(recommendation, question, chunks))
-        if text and numbers_are_grounded(text, recommendation, chunks):
+        # Guidance only feeds the LLM prompt (the deterministic fallback
+        # never cites [Gn]), so it is retrieved only on this path.
+        g = (guidance_retriever if guidance_retriever is not None
+             else get_guidance_retriever())
+        guidance_chunks: list[dict[str, Any]] = []
+        if g is not None:
+            try:
+                guidance_chunks = g.retrieve_for_recommendation(
+                    recommendation, k=GUIDANCE_K
+                )
+            except Exception as exc:  # guidance is optional — degrade, don't fail
+                logger.warning("Guidance retrieval failed (%s) — evidence only.", exc)
+                guidance_chunks = []
+        text = _call_llm(
+            _build_messages(recommendation, question, chunks, guidance_chunks)
+        )
+        if text and numbers_are_grounded(
+            text, recommendation, chunks + guidance_chunks
+        ):
             return {
                 "explanation": text,
-                "citations": citations,
+                "citations": citations + shape_citations(guidance_chunks),
                 "grounded": True,
                 "llm_used": True,
             }
@@ -365,7 +472,8 @@ def explain(
                 "returning deterministic fallback."
             )
 
-    # No key, LLM failure, or guardrail rejection → deterministic template.
+    # No key, LLM failure, or guardrail rejection → deterministic template
+    # (evidence-only: the template cites studies, never guidance).
     return {
         "explanation": build_fallback_text(recommendation, chunks),
         "citations": citations,

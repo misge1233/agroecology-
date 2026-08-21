@@ -36,8 +36,12 @@ Notes
   era_codes whose dataset rows match the scenario's practice family +
   indicator + top practice, restricted to studies with chunks in the corpus
   (`relevant_era_codes_family_level` drops the practice constraint).
-- Recall@k is study-level at chunk depth k; MRR is over the first chunk from
-  a relevant study.
+- Success@k (primary metric, P3.1) is 1 iff any relevant study's chunk is in
+  the top k; Recall@k is study-level coverage at chunk depth k; MRR is over
+  the first chunk from a relevant study.
+- Two-tier (P5a): eval_retrieval.py scores Tier-1 `era_corpus` only — the
+  guidance corpus never enters the labels or the metrics. The faithfulness
+  audit is guidance-aware ([Gn] markers, guidance-quoted numbers).
 - `faithfulness_audit.csv` has blank `human_verdict`/`human_notes` columns —
   the human audit pass fills those in.
 - `expert_study/answer_key.csv` unblinds the packets; never send it out.

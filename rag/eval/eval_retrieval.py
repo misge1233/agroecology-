@@ -4,6 +4,9 @@ Runs the REAL ``rag.retrieve.RagRetriever`` (hybrid dense+BM25, RRF fusion —
 the exact retriever behind /explain) over ``queries.jsonl`` and scores the
 ranked chunk list against the silver era_code labels:
 
+- Success@4/8/16 — 1.0 iff at least one relevant study's chunk appears
+  within the first k retrieved chunks. The PRIMARY metric (did this scenario
+  get grounded at all? — research_project_plan.md §2.4).
 - Recall@4/8/16 — fraction of a scenario's relevant studies whose chunks
   appear within the first k retrieved chunks (study-level, chunk-depth k).
 - MRR — reciprocal rank of the first chunk from any relevant study.
@@ -46,6 +49,13 @@ def recall_at_k(ranked_codes: list[str], relevant: set[str], k: int) -> float:
     return len(set(ranked_codes[:k]) & relevant) / len(relevant)
 
 
+def success_at_k(ranked_codes: list[str], relevant: set[str], k: int) -> float:
+    """1.0 iff at least one relevant study appears in the first k chunks."""
+    if not relevant:
+        return 0.0
+    return 1.0 if set(ranked_codes[:k]) & relevant else 0.0
+
+
 def mrr(ranked_codes: list[str], relevant: set[str]) -> float:
     """1/rank of the first chunk from a relevant study (0 if none)."""
     for i, code in enumerate(ranked_codes, start=1):
@@ -63,6 +73,8 @@ def score_scenario(
     out: dict[str, float] = {"mrr": mrr(ranked_codes, strict),
                              "mrr_family": mrr(ranked_codes, family)}
     for k in K_LEVELS:
+        out[f"success@{k}"] = success_at_k(ranked_codes, strict, k)
+        out[f"success@{k}_family"] = success_at_k(ranked_codes, family, k)
         out[f"recall@{k}"] = recall_at_k(ranked_codes, strict, k)
         out[f"recall@{k}_family"] = recall_at_k(ranked_codes, family, k)
     return out
@@ -100,7 +112,11 @@ def aggregate(per_scenario: list[dict[str, Any]]) -> dict[str, Any]:
 
 def to_markdown(summary: dict[str, Any]) -> str:
     """Compact md tables for the phase report / paper appendix."""
-    cols = [f"recall@{k}" for k in K_LEVELS] + ["mrr"]
+    cols = (
+        [f"success@{k}" for k in K_LEVELS]          # primary metric first
+        + [f"recall@{k}" for k in K_LEVELS]
+        + ["mrr"]
+    )
 
     def _row(name: str, n: int | str, m: dict[str, float]) -> str:
         return (
@@ -119,8 +135,10 @@ def to_markdown(summary: dict[str, Any]) -> str:
     lines = [
         "# Retrieval evaluation — hybrid RagRetriever vs silver era_code labels",
         "",
-        "Strict labels: family + indicator + practice. `(fam)` columns: "
-        "family + indicator only.",
+        "Success@k (≥1 relevant study in the top k — the primary metric) "
+        "precedes Recall@k (corpus-coverage diagnostic). Strict labels: "
+        "family + indicator + practice. `(fam)` columns: family + indicator "
+        "only.",
         "",
         header,
         sep,

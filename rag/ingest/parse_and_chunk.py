@@ -28,8 +28,6 @@ import json
 import re
 from pathlib import Path
 
-from pypdf import PdfReader
-
 CHUNK_WORDS = 380      # ~512 tokens
 OVERLAP_WORDS = 60
 
@@ -48,6 +46,9 @@ _TAG_RE = re.compile(r"<[^>]+>")
 
 
 def extract_pdf_text(path: Path) -> str:
+    from pypdf import PdfReader  # deferred: chunk_guidance.py imports this
+    # module for chunk_text() alone and must not require the PDF stack
+
     reader = PdfReader(str(path))
     pages = []
     for page in reader.pages:

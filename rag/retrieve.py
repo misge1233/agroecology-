@@ -10,6 +10,12 @@ same chunks), fused with reciprocal-rank fusion (RRF). Returns chunks with
 full provenance (era_code, doi, title, year) ready for cite-or-silent
 generation and for the era_code -> training-rows linkage.
 
+Two tiers, never mixed (P5a): the same class serves Tier 1 evidence
+("era_corpus", the default) and Tier 2 guidance ("guidance_corpus") — pass
+``collection=`` plus that tier's chunks file. Each instance builds its own
+BM25 over its own chunks, so the hybrid machinery is shared but the corpora
+stay strictly separate.
+
 Usage (library):
     from rag.retrieve import RagRetriever
     r = RagRetriever(index_dir=".../rag/index/store", chunks_path=".../rag/corpus/chunks.jsonl")
@@ -28,6 +34,7 @@ import requests
 EMBED_MODEL = "text-embedding-3-small"
 EMBED_URL = "https://api.openai.com/v1/embeddings"
 COLLECTION = "era_corpus"
+GUIDANCE_COLLECTION = "guidance_corpus"
 RRF_K = 60          # standard reciprocal-rank-fusion constant
 CANDIDATES = 40     # candidates per retriever before fusion
 
@@ -49,6 +56,40 @@ def _find_api_key() -> str:
     return ""
 
 
+def _find_index_dir(default: Path) -> Path:
+    """Index-store dir: RAG_INDEX_DIR (env, else app/backend/.env), else default.
+
+    Needed because Chroma's SQLite cannot operate across the Windows<->WSL
+    ``\\\\wsl.localhost`` bridge (locks fail for reads AND writes — measured
+    21 Aug 2026), so the store may live outside the repo, on the native
+    filesystem of the OS that runs Python. The backend already honors
+    RAG_INDEX_DIR via app/config.py; this gives the eval scripts and the
+    CLI (which use ``default_retriever()``) the same behaviour.
+    """
+    value = os.environ.get("RAG_INDEX_DIR", "").strip()
+    if not value:
+        env_path = Path(__file__).resolve().parents[1] / "app" / "backend" / ".env"
+        if env_path.exists():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                if line.strip().startswith("RAG_INDEX_DIR="):
+                    value = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    break
+    return Path(value) if value else default
+
+
+# Indicator-name synonyms appended to the query text (P5a, measured fix for
+# the WUE terminology gap found in P3: relevant studies say "water
+# productivity" where the dataset says "water use efficiency"). "SOM content"
+# and "soil loss" get the corpus's own spellings for the same reason —
+# abbreviation expanded, "erosion" vocabulary added. Purely additive: the
+# original indicator name always stays in the query.
+INDICATOR_SYNONYMS: dict[str, tuple[str, ...]] = {
+    "water use efficiency": ("water productivity",),
+    "SOM content": ("soil organic matter",),
+    "soil loss": ("soil erosion",),
+}
+
+
 def build_query_text(recommendation: dict[str, Any], practice: str | None = None) -> str:
     """Compose the retrieval query from the engine's recommendation JSON."""
     q = recommendation.get("query", {})
@@ -57,10 +98,12 @@ def build_query_text(recommendation: dict[str, Any], practice: str | None = None
     top_practice = practice or (
         (recommendation.get("recommendations") or [{}])[0].get("practice", "")
     )
+    indicator = q.get("indicator", "")
     parts = [
         top_practice,
         q.get("practice_family", ""),
-        f"effect on {q.get('indicator', '')}",
+        f"effect on {indicator}",
+        *INDICATOR_SYNONYMS.get(indicator, ()),
         "Ethiopia",
         str(ctx.get("aez_belt") or ""),
     ]
@@ -75,11 +118,11 @@ def build_query_text(recommendation: dict[str, Any], practice: str | None = None
 
 class RagRetriever:
     def __init__(self, index_dir: str | Path, chunks_path: str | Path,
-                 api_key: str | None = None):
+                 api_key: str | None = None, collection: str = COLLECTION):
         import chromadb  # deferred heavy import
 
         self._client = chromadb.PersistentClient(path=str(index_dir))
-        self._col = self._client.get_collection(COLLECTION)
+        self._col = self._client.get_collection(collection)
         self._chunks = [
             json.loads(l)
             for l in Path(chunks_path).read_text(encoding="utf-8").splitlines()
@@ -172,10 +215,23 @@ class RagRetriever:
 
 @lru_cache
 def default_retriever() -> RagRetriever:
-    """Retriever wired to the repo's standard locations (rag/ is this file's dir)."""
+    """Retriever wired to the standard locations (RAG_INDEX_DIR honored)."""
     root = Path(__file__).resolve().parent
-    return RagRetriever(index_dir=root / "index" / "store",
+    return RagRetriever(index_dir=_find_index_dir(root / "index" / "store"),
                         chunks_path=root / "corpus" / "chunks.jsonl")
+
+
+@lru_cache
+def default_guidance_retriever() -> RagRetriever:
+    """Tier-2 guidance retriever at the repo's standard locations.
+
+    Raises if the guidance collection/chunks are not built yet — callers that
+    want graceful degradation (explain_service) catch and no-op.
+    """
+    root = Path(__file__).resolve().parent
+    return RagRetriever(index_dir=_find_index_dir(root / "index" / "store"),
+                        chunks_path=root / "corpus" / "guidance" / "chunks.jsonl",
+                        collection=GUIDANCE_COLLECTION)
 
 
 if __name__ == "__main__":
