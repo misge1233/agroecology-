@@ -1,0 +1,48 @@
+{
+  "wocat_id": "SYNTH-0001",
+  "record_type": "technology",
+  "title": "SYNTHETIC TEST FIXTURE - stone bund terracing on steep cropland",
+  "country": "Testland",
+  "region": "Test Region",
+  "url": null,
+  "compiler": null,
+  "licence": "not applicable (synthetic test fixture, not WOCAT data)",
+  "provenance": "wocat_fixture",
+  "synthetic": true,
+  "_fixture_note": "NOT A WOCAT RECORD. Invented by the P6a implementation so that similar_context_technologies has a second, structurally different Technology to rank against #6644 (structural measures on steep land vs agronomic measures on gentle land). It must never be cited in user-facing output; the graph marks it synthetic=true and query.py surfaces that flag. Discovery of further real Ethiopian records needs the WOCAT research data export (the site's search is API-gated and bulk fetching is forbidden).",
+  "short_description": "Synthetic record: stone bunds and bench terraces with grass strips on steep cropland, used only to exercise the context-similarity and measure-overlap code paths.",
+  "slm_groups": ["cross-slope measure", "improved ground/ vegetation cover"],
+  "measures": ["S1", "S2", "V2"],
+  "degradation": ["Wt", "Wg"],
+  "land_use": ["Ca"],
+  "water_supply": "rainfed",
+  "rainfall_mm": 800,
+  "context": {
+    "rainfall_band": ["751-1,000 mm"],
+    "agroclimatic_zone": ["semi-arid"],
+    "slope_class": ["steep (31-60%)"],
+    "altitude_zone": ["1,501-2,000 m a.s.l."],
+    "soil_depth": ["shallow (21-50 cm)"],
+    "soil_texture": ["fine/ heavy (clay)"],
+    "topsoil_om": ["low (< 1%)"]
+  },
+  "landform": ["hill slopes"],
+  "activities": [
+    {"phase": "establishment", "description": "Lay out contour lines and build stone bunds.", "timing": "Dry season"},
+    {"phase": "maintenance", "description": "Repair breached bunds and cut grass on risers.", "timing": "After each rainy season"}
+  ],
+  "costs": {"currency": "USD", "per_hectare": true, "establishment_total": 500, "maintenance_total": 40},
+  "impacts": {
+    "soil loss": "very positive",
+    "surface runoff": "positive",
+    "crop production": "slightly positive",
+    "soil moisture": "positive",
+    "workload": "slightly negative"
+  },
+  "cost_benefit": {"establishment_short_term": "slightly negative", "establishment_long_term": "positive"},
+  "adoption": {"share_of_land_users": "10-50%", "share_spontaneous": "10-50%"},
+  "strengths": ["Synthetic: reduces soil loss on steep slopes."],
+  "weaknesses": ["Synthetic: high establishment labour."],
+  "references": [],
+  "linked_approaches": []
+}

@@ -1,0 +1,118 @@
+{
+  "wocat_id": "6644",
+  "record_type": "technology",
+  "title": "Crop Residue Management",
+  "country": "Ethiopia",
+  "region": "Oromia",
+  "url": "https://wocat.net/en/database/technologies/6644/",
+  "compiler": "Gerba Leta",
+  "licence": "CC BY-NC-SA 4.0",
+  "provenance": "wocat_fixture",
+  "synthetic": false,
+  "_fixture_note": "Hand-transcribed on 23 Oct 2026 from the PUBLIC record page at the url above, read once in a browser. Not fetched in bulk and not taken from the credentialed JSON API. Local name: Hafte Midhani. Documented under the ISFM+/ProSo(i)l project; facilitating institution: Alliance Bioversity and International Center for Tropical Agriculture. Attribution required: WOCAT and the compiler, with a link to the record.",
+  "short_description": "Crop residue management involves leaving stover and other trash from cereal crops (including tef, wheat and maize), as well as haulms of legumes, in the field. Crop residues keep the soil covered, retain organic matter and moisture in the soil, and help to ensure better production.",
+  "year_implemented": 2015,
+  "slm_groups": [
+    "integrated crop-livestock management",
+    "improved ground/ vegetation cover",
+    "integrated soil fertility management"
+  ],
+  "measures": ["A2", "A3", "A6", "A7", "M2"],
+  "degradation": ["Wt", "Cn", "Ca", "Pc", "Ps", "Bc", "Bq", "Bs", "Bl"],
+  "land_use": ["Ca"],
+  "water_supply": "rainfed",
+  "rainfall_mm": 1947,
+  "context": {
+    "rainfall_band": ["1 501 – 2 000 mm"],
+    "agroclimatic_zone": ["sub-humid"],
+    "slope_class": ["gentle (3-5%)", "moderate (6-10%)"],
+    "altitude_zone": ["1 501 – 2 000 m a.s.l."],
+    "soil_depth": ["very shallow (0-20 cm)", "shallow (21-50 cm)"],
+    "soil_texture": ["medium (loamy, silty)"],
+    "topsoil_om": ["medium (1-3%)"]
+  },
+  "landform": ["plateau/plains"],
+  "activities": [
+    {"phase": "establishment", "description": "Mowing the crop by leaving some proportion on the ground.", "timing": "Harvesting"},
+    {"phase": "establishment", "description": "Keep of livestock grazing", "timing": "Dry season"},
+    {"phase": "establishment", "description": "Plow over the crop residue early on.", "timing": "Late in the dry season."},
+    {"phase": "maintenance", "description": "Keep the farm with crop residue intact from livestock", "timing": "During off-season."}
+  ],
+  "costs": {
+    "currency": "ETB",
+    "usd_exchange_rate": 53.12,
+    "area_unit": "4 sanga",
+    "per_hectare": false,
+    "establishment_total": 2500,
+    "comments": "Costs were calculated per Technology area. The technology needs changing the mindset of the land users more than money for establishment and maintenance."
+  },
+  "impacts": {
+    "crop production": "slightly positive",
+    "crop quality": "slightly positive",
+    "fodder production": "negligible",
+    "fodder quality": "negligible",
+    "animal production": "negligible",
+    "risk of production failure": "slightly positive",
+    "product diversity": "negligible",
+    "production area": "negligible",
+    "land management": "slightly positive",
+    "drinking water availability": "negligible",
+    "drinking water quality": "negligible",
+    "expenses on agricultural inputs": "slightly positive",
+    "farm income": "slightly positive",
+    "diversity of income sources": "negligible",
+    "food security/ self-sufficiency": "slightly positive",
+    "health situation": "slightly positive",
+    "SLM/ land degradation knowledge": "very positive",
+    "water quantity": "slightly positive",
+    "water quality": "slightly positive",
+    "surface runoff": "slightly positive",
+    "excess water drainage": "positive",
+    "groundwater table/ aquifer": "negligible",
+    "evaporation": "positive",
+    "soil moisture": "positive",
+    "soil cover": "positive",
+    "soil loss": "slightly positive",
+    "soil accumulation": "slightly positive",
+    "soil crusting/ sealing": "slightly positive",
+    "soil compaction": "slightly positive",
+    "nutrient cycling/ recharge": "positive",
+    "soil organic matter/ below ground C": "positive",
+    "acidity": "slightly positive",
+    "vegetation cover": "slightly positive",
+    "biomass/ above ground C": "positive",
+    "beneficial species": "slightly positive",
+    "habitat diversity": "negligible",
+    "pests/ diseases": "slightly negative",
+    "drought impacts": "slightly positive",
+    "emission of carbon and greenhouse gases": "positive"
+  },
+  "cost_benefit": {
+    "maintenance_short_term": "positive",
+    "maintenance_long_term": "very positive"
+  },
+  "adoption": {
+    "share_of_land_users": "11 – 50 %",
+    "share_spontaneous": "91 – 100 %",
+    "comments": "Land users adopted the practice and plow over the crop residue when the first shower of rainfall intercepted."
+  },
+  "strengths": [
+    "It improves soil fertility on gradual basis.",
+    "It assists to reduce soil acidity.",
+    "Increases production and productivity.",
+    "Absorbs and retains soil moisture for the crop to rely on for growth and grain filling as a coping mechanism to the unpredictable distribution of rainfall.",
+    "It reduces soil temperature and smothers the weeds.",
+    "Sequesters carbon, beneficial for climate change/variability."
+  ],
+  "weaknesses": [
+    "Creates tillage inconvenience as mechanization is less common among smallholders. Overcome by using the excessive residue as trash line to support soil and water conservation.",
+    "Free grazing system and multiple uses of crop residue challenge retention of crop residue. Overcome by institutionalizing a controlled grazing system.",
+    "Less fodder available for livestock and other multiple uses of crop residues. Overcome by limiting retained residue to 15-30 percent of total non-grain biomass."
+  ],
+  "references": [
+    {"title": "Renard, C. 1997. Crop Residues in Sustainable Mixed Crop/Livestock Farming Systems. CAB International, Wallingford. ISBN 0851991777"},
+    {"title": "IIRR and ACT. 2005. Conservation Agriculture. A manual for farmers and extension workers in Africa. IIRR, Nairobi; African Conservation Tillage Network, Harare.", "url": "http://www.act-africa.org"},
+    {"title": "Best management practices: residue management", "url": "http://omaf.gov.on.ca/english/environment/bmp/AF179.pdf"}
+  ],
+  "linked_approaches": ["6732"]
+}

@@ -1364,3 +1364,390 @@ data-export request via the Alliance partnership; when
 
 **Launch (repo root):**
 `claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6a' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+## Phase P6a — Knowledge-graph foundation + WOCAT taxonomy & crosswalk scaffolding (23 Oct 2026)
+
+**Built** A new, data-independent graph layer `rag/graph/` (pure Python on
+`networkx`, node-link JSON store — zero new infrastructure) plus the WOCAT
+record scaffolding `rag/ingest/wocat/`. Nine modules, two test suites, one
+owner-facing crosswalk proposal. The graph joins the model's evidence base,
+the Tier-1 corpus and the WOCAT QT vocabularies; it generates no number and
+every edge carries a `source` provenance tag that `validate_graph()`
+enforces.
+
+**0 — Measurements (before building).** From
+`data/processed/CSA_ERA_final_model_ready.csv` (8,664 rows, 337 studies —
+204 ERA-only, 133 CSA-only; 5 families, 7 indicators, 12 AEZ belts, 14 crop
+groups):
+
+- **100 distinct `CSA_practices`** (as expected).
+- Naive splitting on `-` gives **46** tokens but is **wrong**: it shatters
+  `In-situ water harvesting` into `In` + `situ water harvesting`. With that
+  literal protected: **45 raw tokens → 44 canonical components.**
+- **This is 44, not the ~30 the brief expected.** The gap is a deliberate
+  decision, not an omission: aliasing merges only case/spelling variants of
+  the *same* label. The one real cross-source cluster is
+  `Deficit Irrigation` (ERA, 216 rows) / `Deficit irrigation` (CSA, 74).
+  Typos fixed by the alias map: `Drought tolerrant crops` →
+  `Drought Tolerant Crops`, `organic amedements` → `Organic Amendments`,
+  `agronomic/biological SWCP` → `Agronomic/Biological SWC Practices`,
+  `furrow irrigation_alternate` → `Alternate Furrow Irrigation`.
+  Reaching ~30 would require merging semantically adjacent but differently
+  named practices across sources — `Organic Fertilizer` (ERA) vs
+  `Organic Amendments` (CSA), `Reduced Tillage` (ERA) vs
+  `Conservation Tillage` (CSA), and the four SWC labels. That is a research
+  judgement for the owner, and the crosswalk already relates them downstream
+  by mapping both onto the same SLM measures (e.g. both fertiliser labels →
+  A2). **Flagged for your decision; say the word and the merge is a
+  three-line change to `ALIASES`.**
+
+**1–3 — Graph, taxonomy, indicator map.**
+`schema.py` (16 node types, 13 edge types, allowed endpoints, required
+attributes, 8 provenance values, `validate_graph()`, deterministic node-link
+(de)serialization); `practice_components.py` (the derived component layer);
+`build_graph.py`; `query.py` (all six functions the P6b retriever will call);
+`wocat_taxonomy.py`; `indicator_map.py`; `rag/graph/README.md` with the
+node/edge tables (written to drop straight into the manuscript).
+
+`wocat_taxonomy.py` is transcribed from the questionnaire itself, downloaded
+and read in full — **not** from the draft. Counts verified: **27 SLM groups,
+30 SLM measures (A1–A7, V1–V5, S1–S11, M1–M7, with the A3 tillage and A6
+residue sub-options), 32 degradation codes, 40 context-class values across
+7 kinds, 69 on-site impact variables** (25 socio-economic, 10 socio-cultural,
+34 ecological), the 7-point rating scale, §6.4 cost–benefit and §6.5
+adoption classes. Four corrections to
+`docs/decisions/wocat_taxonomy_draft.md`, all recorded in the module
+docstring:
+1. **QT §1.3 states CC BY-NC-SA 4.0 International**, not 3.0 Unported as the
+   draft recorded — so the questionnaire and the database agree, and the
+   data-availability text only needs one licence.
+2. §6.1 has one more variable than the draft captured: **`micro-climate`**
+   (worsened/improved) in the climate/DRR block.
+3. §6.5 adoption bands in the questionnaire are `single cases/experimental`,
+   `1-10%`, `10-50%`, `more than 50%`; the live database renders its own
+   (`11 – 50 %`, `91 – 100 %`). `normalize_adoption_band()` maps both.
+4. §6.1 **`pests/ diseases` has its poles printed inverted** relative to
+   every other harmful-outcome row (`decreased` as the negative end, where
+   `harmful species` uses `increased`). The poles are transcribed verbatim,
+   `good_direction` follows the substantive meaning, and the discrepancy is
+   recorded in the variable's `source_note` rather than silently "fixed".
+   The live record #6644 shows the same inversion, so it is the source's.
+
+The PDF URL in the brief (`.../448/Questionnaire_on_SLM_Technologies_-_English_FINAL.pdf`)
+**returns HTTP 404**; the DOCX URL works and is what was used.
+
+`indicator_map.py` maps the 7 indicators to QT §6.1 variables with one
+rationale line each (yield→crop production; biomass yield→fodder production
++ biomass/above-ground C; income→farm income; SOM content→soil organic
+matter/below-ground C; soil loss→soil loss; runoff→surface runoff; water use
+efficiency→soil moisture, `proxy=True`, + evaporation). **Direction
+semantics are never redefined here**: it imports `recommend.DIRECTION`, and
+if the engine's heavy deps are absent it reads the same literal out of
+`recommend.py` with `ast`. Both paths were exercised and agree;
+`direction_source()` reports which ran, and the build report records it.
+
+**4 — Crosswalk.** `crosswalk/propose_crosswalk.py` emits
+`docs/decisions/wocat_crosswalk_proposal.csv` — **44 rows, one per
+component** (not per combination), with the brief's exact columns. 26
+keyword rules (each citing the QT clause that justifies it) plus family
+priors as fallback; **every component got at least one measure**, mean
+confidence 0.87, lowest `Weeding` at 0.45 (no dedicated QT code — A7). Rules
+support negative keywords so the generic water-harvesting rule does not
+offer S5 dams/ponds for *in-situ* harvesting. The optional `--llm` pass
+(gpt-4o-mini, `temperature=0`, JSON output, QT definitions in the prompt,
+key via `build_index.find_api_key`, never printed) is wired and **not run** —
+that is yours. **The gate is tested**: `build_graph.py` admits a row only
+when `owner_decision`/`status` reads `validated`; `--include-proposed` admits
+proposed rows but tags them `crosswalk_auto`; `rejected` rows are admitted
+under neither flag; and `query.slm_measures_for()`/`explain_paths()` filter
+to `validated` regardless of how the graph was built.
+
+**5 — WOCAT records.** `rag/ingest/wocat/schema.py` (pydantic v2
+`WocatTechnology`/`WocatApproach` with every field the brief lists) and
+`normalize_wocat.py` (adapter interface + `PassThroughAdapter` +
+`KeyProbeAdapter`, and `--inspect` which prints the real key shape of
+whatever export arrives — the GARDIAN-style probe). Controlled vocabularies
+are normalized against the questionnaire and **anything outside them is
+dropped with a warning, never invented**.
+
+Fixtures — **please read this paragraph.** `technology_6644.json` ("Crop
+Residue Management", Ethiopia/Oromia, compiler Gerba Leta, ISFM+/ProSo(i)l,
+Alliance Bioversity-CIAT) and `approach_6732.json` (the ISFM Approach it
+links to) are hand-transcribed from the two PUBLIC record pages, read once
+each in a browser — 39 on-site impact ratings, 9 context classes, 5 measures,
+9 degradation types, costs, activities, adoption, strengths/weaknesses,
+references. **I could not obtain a second real Technology**: the site's
+search returns 0 results anonymously because it is served by the same
+credentialed `/api/database/` endpoint the decision record gates, and
+guessing record ids would be exactly the automated probing that is
+forbidden. Rather than fabricate a plausible-looking WOCAT record, the third
+fixture is `technology_synthetic_0001.json`, **explicitly flagged
+`synthetic: true`** with `licence: "not applicable (synthetic test
+fixture)"`, carried through to a `synthetic` flag on the graph node and in
+`similar_context_technologies()` output, and warned about by the normalizer
+CLI. It exists only so the context-similarity ranking has a structurally
+different second Technology to rank against. It must never be cited, and two
+more real fixtures should replace it when the export lands.
+
+**Files** New: `rag/graph/{__init__,schema,practice_components,wocat_taxonomy,indicator_map,build_graph,query,test_graph}.py`,
+`rag/graph/README.md`, `rag/graph/crosswalk/{__init__,propose_crosswalk}.py`,
+`rag/ingest/wocat/{__init__,schema,normalize_wocat,test_wocat}.py`,
+`rag/ingest/wocat/fixtures/{technology_6644,approach_6732,technology_synthetic_0001}.json`,
+`docs/decisions/wocat_crosswalk_proposal.csv`.
+Modified (2 lines each): `rag/requirements.txt` (`networkx>=3.2`,
+`pydantic>=2.7`), `.gitignore` (`rag/graph/store/`, `rag/corpus/wocat/`).
+**Scope guard honoured — zero changes under `app/`, and none to
+`rag/retrieve.py`, `explain_service.py`, the Tier-1/Tier-2 corpus files, or
+any frozen schema name.** (The repo-wide `M` flags on other files are the
+pre-existing CRLF churn from the 23 Oct repair: `git diff --ignore-all-space`
+over all of them is empty.)
+
+**Decisions**
+- **Split rule**: `-` only, with a protected-literals list; aliasing limited
+  to case/typo variants (rationale above).
+- **`ContextClass` kinds**: the seven the brief names. QT §5.2 **landform**
+  is transcribed in the taxonomy but kept as a Technology attribute, not a
+  node — the recommender's raster stack cannot supply it, so it cannot
+  participate in context matching.
+- **`GuidanceDoc`** is defined in the schema but **not populated**: no edge
+  type connects it yet, so the 1,459 Tier-2 docs would be isolated nodes.
+  Reserved for P6b when a Tier-2 edge type exists.
+- **Node-link endpoint keys are `from`/`to`, not `source`/`target`** —
+  networkx's default endpoint key would silently overwrite the mandatory
+  `source` provenance attribute on every edge. Round-trip is asserted.
+- **`build_graph --wocat` validates through the pydantic model**, so raw
+  fixtures and the normalized `.jsonl` behave identically.
+- **`rag/corpus/wocat/` is git-ignored** (rebuildable from the in-git
+  fixtures; the CC BY-NC-SA export is not redistributed through this repo).
+- `strip_era_prefix` is imported from `rag/eval/build_queries.py` rather than
+  re-implemented (wrap, never fork); it transitively needs `requests`, which
+  is already a declared `rag` dependency. No chromadb, no network.
+
+**Verified** (WSL, Python 3.12, clean venv from `rag/requirements.txt` +
+`app/backend/requirements.txt`)
+- `python -m py_compile` clean on all **14** touched Python files.
+- **`rag/graph/test_graph.py` — 40 passed**; **`rag/ingest/wocat/test_wocat.py`
+  — 20 passed** (synthetic CSV fixture; no network, no chromadb, no model).
+  Covers: decomposition + protected literals + aliasing; node/edge counts;
+  `source` present and valid on **every** edge; a `REPORTS_EFFECT` aggregate
+  equal to a hand-computed value (n_obs 3, mean 0.066667, median 0.1,
+  share_positive 0.666667, belts, crop groups); the validated-only gate in
+  all three states; all six query functions incl. the empty-graph degrade;
+  JSON round-trip; fixture ingestion and impact/context edges; schema
+  rejection of bad provenance, endpoints and status.
+- Existing suites green at the expected counts, **untouched**: eval **13**,
+  ingest **17**, backend explain **33** — and the full backend suite
+  (`app/backend/tests/`) **58 passed** once `rasterio` was installed, since
+  `geodata/layers` is present in this checkout.
+- **`build_graph.py` run for real on the repo data** (with fixtures):
+  **722 nodes, 1,981 edges, `validation: []`**, `direction_source:
+  "import recommend"`.
+  Nodes — Study 337, Practice 100, ImpactVariable 69, PracticeComponent 44,
+  ContextClass 40, DegradationType 32, SLMMeasure 30, SLMGroup 27, CropGroup
+  14, AEZBelt 12, Indicator 7, PracticeFamily 5, Technology 2, Country 2,
+  Approach 1.
+  Edges — REPORTS_EFFECT 867, STUDIED_IN 401, APPLIED_IN 340, COMPOSED_OF
+  179, IN_FAMILY 100, REPORTS_IMPACT 44, HAS_CONTEXT 16, ADDRESSES 11,
+  MEASURES 9, USES_MEASURE 8, IN_GROUP 5, LINKED_APPROACH 1.
+  Provenance — era_rows 1,262, csa_rows 622, wocat_fixture 88,
+  wocat_taxonomy 9.
+  Coverage — practices 100, **practices with ≥1 study 100 (100%)**,
+  components 44, components mapped to WOCAT **0** (correct: no validated
+  crosswalk yet), studies matched to manifest 204/204 ERA, **studies with
+  chunks 147**, with full text 35.
+- **Determinism/idempotence**: two consecutive builds produce byte-identical
+  `graph.json` (asserted in the suite and re-checked by `cmp`).
+
+**Needs local verification / your decisions**
+1. **Validate `docs/decisions/wocat_crosswalk_proposal.csv`** (44 rows) in
+   Excel — fill `owner_decision` with `validated`/`rejected`. Until then the
+   graph has zero `MAPS_TO` edges by design, so `slm_measures_for()` and
+   `measure_overlap` return empty. Optionally run `--llm` first.
+2. **The 44-vs-~30 component question** above — your call whether to merge
+   the cross-source near-duplicates.
+3. **Data-quality finding, reported not fixed (frozen dataset):**
+   `Supplemental Irrigation` and its two combinations (311 rows) are assigned
+   `practice_family = "Livestock production and management"`, contradicting
+   `docs/decisions/practice_family_mapping.md`, which puts all irrigation
+   under ECWM and even uses `Improved Varieties-Supplemental Irrigation →
+   ECWM` as a worked example. The crosswalk is keyword-driven so the
+   proposal is unaffected, but **the recommender ranks this practice inside
+   the wrong family**, which is a live `/recommend` issue beyond P6a's scope.
+4. **Replace the synthetic fixture** with two more real Ethiopian
+   Technologies once the WOCAT export arrives (see the §5 paragraph above
+   for why only one real Technology could be obtained).
+5. Not verifiable here: the `--llm` crosswalk pass (needs the key, owner
+   runs it) and the real WOCAT export adapter (no export yet — `--inspect`
+   is the tool for it).
+
+### Review (Senior Engineer) — P6a APPROVED with hardening applied ✅ (23 Oct 2026)
+Independent re-verification in a clean sandbox (upstream clone + the P6a files):
+- **Every count reproduces from the raw data:** 100 practices → 46 naive `-`
+  tokens → 45 with `In-situ water harvesting` protected → 44 canonical
+  components; 337 studies (204 ERA + 133 CSA); REPORTS_EFFECT 867 = distinct
+  (study, practice, indicator) triples; STUDIED_IN 401 = distinct (study,
+  belt) pairs; 147 of the 204 dataset ERA studies have corpus chunks (the
+  corpus's 208 contributing studies include studies dropped from the
+  model-ready dataset); 35 with full text; 14 crop groups; 12 belts.
+- **`build_graph.py` here produced a `graph.json` byte-identical to the one
+  on the owner's machine** (722 nodes, 1,981 edges, `validation: []`) — the
+  build is deterministic across machines and OSes.
+- Suites re-run: graph **40/40**, wocat **20/20**, eval **13/13**, ingest
+  **17/17**; `py_compile` clean.
+- Taxonomy counts re-derived from the module match the questionnaire
+  structure (27 / 30 / 32 / 40 context values in 7 kinds / 69 impact
+  variables = 25 + 10 + 34). The `pests/ diseases` pole inversion is real —
+  the live record #6644 renders it the same way (checked in the browser on
+  23 Oct). Licence: the DOCX (CC-licence version) states 4.0; the older PDF
+  this reviewer's partial read quoted (3.0 Unported) now 404s — cite the DOCX
+  and 4.0, as the module does.
+- Fixture #6644 cross-checked against the public page text captured on
+  23 Oct (measures, degradation types, context classes, rainfall 1,947 mm,
+  adoption bands, activities, costs): faithful.
+- The crosswalk gate works in all three states; `query.py` filters to
+  `validated` independently of how the graph was built — correct
+  belt-and-braces.
+
+**Hardening applied in review:** `rag/requirements.txt` floor raised to
+`networkx>=3.4` — `schema.py` calls `node_link_data(..., edges="links")`,
+and the `edges=` keyword only exists from 3.4 (verified against the 3.3
+wheel: its signature is `link="links"`); on 3.2/3.3 the build would raise
+`TypeError`. No code change needed.
+
+**Decisions (owner + reviewer, 23 Oct):**
+1. **Components stay at 44.** Cross-source near-duplicates (`Organic
+   Fertilizer`/`Organic Amendments`, `Reduced Tillage`/`Conservation
+   Tillage`) are NOT merged: the two sources define them differently and the
+   model treats the frozen strings as distinct categories; the crosswalk
+   relates them through shared SLM measures, which is the honest statement.
+2. **The synthetic fixture is accepted for P6a only.** P6b must (a) refuse
+   `synthetic: true` records in any build that feeds the app or an
+   evaluation (`--allow-synthetic` for tests only) and (b) replace it with
+   two real Ethiopian Technologies from the export.
+3. **Data-quality finding #3 is confirmed and must be fixed before any
+   evaluation run** — see P6a.1 below. Root cause: the LPM keyword
+   `"supplement"` (meant for feed supplementation) matches `Supplemental
+   Irrigation`, and LPM outranks ECWM in the priority rule. This reviewer's
+   audit of all 49 multi-keyword ERA practice names found it to be the ONLY
+   false keyword match; every other multi-hit resolves by the documented
+   priority order.
+
+**Tracked for P6b (not blockers):** (i) the graph modules import each other
+by bare name after `sys.path.insert(0, rag/graph)` (`import schema`,
+`from query import …`) — the backend must import only `rag.graph.query` /
+`rag.graph.schema`, and P6b should convert the package to relative imports
+(`from . import schema`) so no top-level `schema`/`query` module is ever
+created inside the API process; (ii) a `context_to_classes()` mapper is
+missing (engine context → QT classes: rainfall mm → band, slope % → class,
+altitude → zone, soil_clay → texture, lgp_days → agro-climatic zone) —
+`similar_context_technologies` cannot be called from `/explain` without it;
+(iii) **doctrine for graph numbers in prompts:** `REPORTS_EFFECT`
+aggregates (mean/median log RR) must NOT appear in generated text — they
+are dataset aggregates that can contradict the model's prediction for the
+user's context; only counts (n_studies, n_obs), directions
+(share_positive) and provenance go to the LLM, effect magnitudes stay the
+model's; (iv) Ethiopia-first ranking policy in `similar_context_technologies`.
+
+**Crosswalk validation notes for the owner** (reviewer's reading of the 44
+rows; decide in Excel, `owner_decision` = `validated` / `rejected`, edit
+`proposed_measures`/`proposed_groups` freely): `Water Harvesting` → prefer
+`S4; S2` (in-field micro-catchments and bunds; keep `S5` only if pond/dam
+systems are meant); `Mulch` → `A1` is the core, `A2` optional; `Weeding`
+(A7, 0.45) is fine; `IWM` (0.6) and `Crop Rotation` (A2; M2) deserve a
+second look; everything else reads correctly to me. `Supplemental
+Irrigation`'s `families` cell will change to ECWM after P6a.1 (the
+proposal itself is unaffected).
+
+### Maintenance — RAG artefact recovery, canonical store layout (23 Oct 2026)
+- The Tier-2 artefacts were not on the OneDrive checkout or the new clone;
+  the full 21-Aug store was found at `C:\Users\MTuse\OneDrive - CGIAR\
+  Documents\C\agroadvisor_data\chroma_store` (395 MB). New utility
+  `rag/ingest/index_tools.py` (`list` / `copy-collection` /
+  `export-chunks` / `compare`; refuses to create empty stores — the mistake
+  that created a stray store earlier that day) was tested in the sandbox
+  (exact Tier-1 round-trip; identical rankings after transplant) and run by
+  the owner: `guidance_corpus` (19,997) transplanted into the canonical
+  in-repo store `rag/index/store` next to `era_corpus` (1,191);
+  `rag/corpus/guidance/chunks.jsonl` regenerated from the collection
+  (19,997 chunks; only the diagnostic `kw_distinct` is null — nothing
+  downstream reads it). `compare` proved the August store's `era_corpus`
+  is **bit-identical** to the P3-evaluated one (provenance note for the
+  paper: the 21-Aug ablation ran on exactly the frozen evidence index).
+  Smoke: Tier-1 query returns the EO0016 full-text soil-loss passages;
+  guidance retriever returns hits.
+- **Layout decision:** everything lives under `C:\dev\agroadvisor-et` at the
+  repo's default paths; `RAG_INDEX_DIR` is no longer set. A local copy of
+  the full store at `rag/index/store_full_2026-08-21/` (git-ignored via
+  `rag/index/.gitignore`) can be deleted after P6b's smoke tests.
+  `rag/corpus/guidance/texts/` remains absent (only needed to re-chunk).
+
+### Next steps → Phase P6a.1 — practice_family data-quality fix + regenerated artefacts (assigned to Claude Code)
+Scope: fix ONE keyword collision and regenerate everything downstream of it
+through the existing pipeline — no hand edits to data files. Read CLAUDE.md
+first. The dataset column NAMES stay frozen; this phase changes VALUES of
+`practice_family` for exactly the 311 rows of `Supplemental Irrigation`,
+`Improved Varieties-Supplemental Irrigation` and `Inorganic
+Fertilizer-Supplemental Irrigation` (LPM → ECWM), as
+`docs/decisions/practice_family_mapping.md` already prescribes.
+1. **Fix + test.** `pipelines/dataset/build_practice_family.py`: in
+   `KW["LPM"]` replace `"supplement"` by `"supplementation"` and
+   `"feed supplement"`. Add `pipelines/dataset/test_practice_family.py`
+   (pytest, pure function `classify_era`): the three irrigation labels →
+   ECWM; the mapping doc's worked examples (`Improved
+   Varieties-Supplemental Irrigation` → ECWM, `Mulch-Reduced Tillage` →
+   ECWM, `Inorganic Fertilizer` → ISFM, `Improved Varieties` → CPM,
+   `Water Harvesting` → ECWM, `Agroforestry Fallow` → FAF); a feed
+   supplementation label → LPM. Update the keyword list and add an
+   "Erratum (23 Oct 2026)" paragraph in `practice_family_mapping.md`.
+2. **Paths.** The pipeline and training scripts still point at legacy
+   `*/dataset/` locations (`build_practice_family.py` `F=…/dataset/
+   CSA_ERA_merged_model_ready.csv`, `train_model.py`
+   `F=…/dataset/CSA_ERA_final_model_ready.csv`). Parameterize both with
+   `--dataset`/`--out` arguments defaulting to the repo layout
+   (`data/processed/…`, `model/artifacts/…`), keeping the frozen file
+   names. Document the chain in `docs/reports/merged_dataset_notes.md`:
+   merged → (practice_family) → final; the three copies
+   (`data/processed/*_merged_*`, `data/processed/*_final_*`,
+   `app/backend/dataset/*_final_*`) must be byte-identical after the run.
+3. **Regenerate the dataset** by running the script (owner may run it if
+   pandas is unavailable to you): assert exactly 311 rows changed, only in
+   `practice_family`, only LPM → ECWM; row order, all other columns and the
+   row count (8,664) unchanged. Report the new family × source table.
+4. **Retrain** (`model/train_model.py`; sklearn 1.7.2 pinned; seconds):
+   new `csa_model.joblib` + `model_metrics.json` in `model/artifacts/`,
+   copied to `app/backend/artifacts/`. Report before/after: CV R², RMSE,
+   baseline R², per-indicator R², per-source, and the **confidence flags**
+   (any flag that flips is a UI-visible change — list it). `practice_family`
+   is a model feature, so small drift is expected; large drift is a bug.
+5. **Evaluation re-run on the corrected dataset (owner runs; ≈100 embedding
+   calls, well under $1).** Add `--no-query-expansion` to
+   `rag/eval/build_queries.py`, implemented as an `expand: bool = True`
+   parameter on `rag.retrieve.build_query_text` (additive; default
+   behaviour byte-identical). Then: `build_queries.py --no-query-expansion
+   --out rag/eval/queries_v2_baseline.jsonl`, `build_queries.py --out
+   rag/eval/queries_v2.jsonl`, `eval_retrieval.py` on each (give
+   `eval_retrieval.py` `--queries`/`--out` arguments if it lacks them),
+   writing `results/retrieval_metrics_v2_baseline.{json,md}` and
+   `results/retrieval_metrics_v2.{json,md}`. The P3/21-Aug numbers stay in
+   this log as the history on dataset v1; the manuscript reports v2. Note
+   that the stratified sample itself changes (families moved), so v1→v2 is
+   not a paired comparison — say so in the report.
+6. **Graph + crosswalk.** Make `propose_crosswalk.py` preserve existing
+   `owner_decision`/`owner_note`/edited target cells when re-run over an
+   existing CSV (merge by `component`; new rows appended; report what was
+   preserved). Re-run it, then `build_graph.py --wocat
+   rag/ingest/wocat/fixtures`; report the new counts (IN_FAMILY edges move;
+   nodes unchanged). Tests for the merge behaviour.
+7. **Backend.** Full `pytest -q` in `app/backend` (58 expected): adjust
+   only assertions whose expected values legitimately changed with the
+   family move, and list each one. `/recommend` smoke: `Erosion control and
+   water management` × `yield` must now be able to return `Supplemental
+   Irrigation`; `Livestock production and management` must not.
+8. **Scope guard:** no changes to `rag/retrieve.py` beyond the additive
+   `expand` parameter; none to `explain_service.py`, the Tier-1/Tier-2
+   corpora, `era_corpus`/`guidance_corpus`, or any column/file name.
+9. Append the phase report per CLAUDE.md (include the full before/after
+   metrics tables) and stop.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6a.1' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`

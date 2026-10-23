@@ -38,6 +38,12 @@ rag/index/store_pre_p5a_backup/
 # chunk_guidance.py; manifest.jsonl stays IN git (provenance for the paper)
 rag/corpus/guidance/texts/
 rag/corpus/guidance/chunks.jsonl
+# Knowledge-graph store: rebuilt by rag/graph/build_graph.py
+rag/graph/store/
+# Tier-3 WOCAT records: rebuilt by rag/ingest/wocat/normalize_wocat.py from
+# the fixtures (which stay IN git) or from the owner's research data export.
+# The export is CC BY-NC-SA 4.0 and is not redistributed through this repo.
+rag/corpus/wocat/
 
 # --- OS / editor noise ---
 .DS_Store

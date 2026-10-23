@@ -1,0 +1,19 @@
+{
+  "wocat_id": "6732",
+  "record_type": "approach",
+  "title": "Integrated Soil Fertility Management (ISFM)",
+  "country": "Ethiopia",
+  "region": "Addis Ababa",
+  "url": "https://wocat.net/en/database/approaches/6732/",
+  "compiler": "Gerba Leta",
+  "licence": "CC BY-NC-SA 4.0",
+  "provenance": "wocat_fixture",
+  "synthetic": false,
+  "_fixture_note": "Hand-transcribed on 23 Oct 2026 from the PUBLIC record page at the url above, reached by the link on Technology #6644. Local names: Qindoomina Misooma Gabbina Biyyee (Afaan Oromoo) / Yeteqenaje ye Afer Limat (Amharic). Documented under the ISFM+/ProSo(i)l project; facilitating institution: Alliance Bioversity and International Center for Tropical Agriculture.",
+  "short_description": "The Integrated Soil Fertility Management (ISFM) approach has been adopted under the Integrated Soil Fertility Management Project (ISFM+). It was introduced as a quick-win solution to increase both crop and biomass production through the incremental promotion of varied but complementary technology packages.",
+  "aims": "To promote the integration of technologies, collective learning, and action for treating degraded soil, increasing soil fertility and crop productivity while ensuring sustainable use of land.",
+  "approach_type": "project/ programme based",
+  "year_initiated": 2015,
+  "year_terminated": 2025,
+  "linked_technologies": ["6644"]
+}

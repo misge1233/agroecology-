@@ -3,5 +3,7 @@ tqdm>=4.66
 pypdf>=4.0
 chromadb>=0.5
 rank-bm25>=0.2
+networkx>=3.4   # node_link_data(edges=...) needs 3.4+ (rag/graph/schema.py)
+pydantic>=2.7
 # Evaluation-time only (heavier install; add when running the RAG evaluation):
 # ragas>=0.1
