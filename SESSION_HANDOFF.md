@@ -106,3 +106,73 @@ Warm, direct, decisive; no flattery padding. Reviews: read the actual code,
 verify claims against data, verdicts as "APPROVED / APPROVED with hardening
 applied / rework", findings tracked with phase assignments. When something
 was the reviewer's own miss, say so in progress.md.
+## ADDENDUM — 15 Oct 2026 session: frontend toolchain aligned to Next 16
+
+**Symptom.** `npm install -D tailwindcss@3.4.17 postcss autoprefixer eslint@9
+eslint-config-next@16.4.1` failed with ERESOLVE: vitest@5.0.5 wants
+`@types/node ^22 || >=24`, the root pinned `@types/node ^20`.
+
+**Root cause.** `app/frontend/package.json` had drifted into a mixed state
+(next ^16.4.1, vitest ^5, tailwindcss ^4.3.3, eslint-config-next ^14.2.35).
+Four separate breakages hide behind the one npm error: (1) vitest 5 / vite 8
+need Node >= 22.12 and `@types/node` >= 22; (2) Tailwind v4 does not match
+our v3-style setup (`tailwind.config.ts`, `@tailwind` directives in
+globals.css, `tailwindcss: {}` in postcss.config.mjs); (3) `next lint` was
+removed in Next 16; (4) eslint-config-next 16 ships native flat config and
+can no longer be loaded through FlatCompat/@eslint/eslintrc.
+
+**Fix applied (app/frontend, via the bridge).**
+- package.json: `@types/node ^22`; `tailwindcss ^3.4.17` + `autoprefixer
+  ^10.4.21`; `eslint-config-next ^16.4.1`; `vitest ^5.0.5` kept;
+  `@eslint/eslintrc` dropped; `lint` script -> `eslint .`.
+- package-lock.json regenerated (platform-complete; win32 entries present).
+- eslint.config.mjs rewritten to native flat config. The two new
+  React-Compiler-era rules (`react-hooks/set-state-in-effect`,
+  `react-hooks/refs`) are set to **warn**: they flag 10 long-standing,
+  working sites (chat/page.tsx, home/hero.tsx, location-picker.tsx x5,
+  metadata-provider.tsx, theme-provider.tsx, ui/motion.tsx). Refactoring
+  those is follow-up F-1 below, not part of this dependency fix.
+- postcss.config.mjs (tailwindcss + autoprefixer) and tsconfig.json
+  (Next 16's own edits: jsx react-jsx, .next/dev/types include) left as-is.
+
+**Verification (clean clone of origin/main fa1d412 + these files, Node 22):**
+`npm install` clean (no ERESOLVE) · `tsc --noEmit` clean · `eslint .`
+0 errors / 10 warnings · `vitest run` 16/16 · `next build` (Next 16.4.1,
+Turbopack) OK, routes /, /chat, /dashboard, /_not-found; Tailwind utilities
+present in emitted CSS. The build check used a sandbox-only stub for
+`next/font/google` (no font network in the sandbox); nothing of that is in
+the repo. A `npm install --dry-run` on the owner's actual tree also resolves
+(adds 325, removes 26, changes 5 packages).
+
+**Owner checklist (Misganu):**
+1. `node --version` must be >= 22.12 (Dockerfile already uses node:22-alpine;
+   Node 20 reached end-of-life Apr 2026). If it prints 20.x, install Node 22
+   or 24 LTS first — vitest 5 will refuse to run on 20.
+2. `git pull` at the repo root FIRST: this checkout is behind origin/main by
+   fa1d412 (P3.1+P5a: Success@k, GARDIAN Tier-2 corpus, +492 lines in
+   progress.md, frontend evidence-panel/types/api.test changes). The pull is
+   conflict-free with the four modified frontend files.
+3. `cd app/frontend && npm ci` (clean reinstall from the new lockfile; drops
+   Tailwind 4 and the stale tree), then `npm test && npm run lint && npm run
+   build`, then `npm run dev` and eyeball the UI once (Tailwind 3 styling
+   back, dark mode toggle, map, chat).
+4. Commit: "Frontend: align toolchain to Next 16 (Tailwind 3.4, ESLint flat
+   config, vitest 5, @types/node 22)" and push.
+5. Delete the `_to_delete/` folder at the repo root (see incident).
+
+**Incident (reviewer's own miss).** My first `git status` through the bridge
+created `.git/index.lock`, and the bridge shell cannot delete files, so the
+lock stayed behind. I moved it to `_to_delete/index.lock` so git is usable
+again. Rule for bridge sessions from now on: only read-only git, and always
+`GIT_OPTIONAL_LOCKS=0 git status` (never bare `git status`/`git diff HEAD`).
+
+**Follow-up F-1 (small, separate PR):** refactor the 10 flagged hook sites to
+React 19 idioms — `useSyncExternalStore` for localStorage/sessionStorage
+reads, derived state/`key` for prop->input sync, `useEffectEvent` (or set
+the ref inside an effect) for the latest-callback pattern — then restore
+`react-hooks/set-state-in-effect` and `react-hooks/refs` to `error`.
+
+**Pending bookkeeping:** append this fix as a short "Maintenance" entry to
+progress.md AFTER step 2 (appending before the pull would conflict with
+fa1d412's progress.md additions). Decide which clone Claude Code runs in —
+the P3.1+P5a commit was pushed from a checkout other than this OneDrive one.

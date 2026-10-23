@@ -1148,3 +1148,219 @@ problem — the WUE-relevant studies are mostly abstract-only in Tier 1, which
 is the corpus limitation the paper already reports. Both result sets go in
 Section 8 as the ablation row; the paper's headline retrieval numbers remain
 the frozen P3 baseline.
+
+## Maintenance — frontend toolchain (15 Oct 2026) + repo repair & sync (23 Oct 2026)
+- **15 Oct (reviewer, via bridge):** frontend toolchain aligned to Next 16 — details
+  in the SESSION_HANDOFF.md addendum: `package.json` (`@types/node ^22`,
+  `tailwindcss ^3.4.17` + `autoprefixer`, `eslint-config-next ^16.4.1`,
+  `vitest ^5`, `lint` → `eslint .`), lockfile regenerated, `eslint.config.mjs`
+  rewritten as native flat config (two React-Compiler rules at *warn* → follow-up
+  F-1), `postcss.config.mjs`, `tsconfig.json`. Verified in a clean clone of
+  fa1d412 + these files (Node 22): `npm install` clean, `tsc --noEmit` clean,
+  `eslint .` 0 errors / 10 warnings, `vitest run` 16/16, `next build` OK.
+  **Not yet committed** (owner commits from Windows).
+- **23 Oct (reviewer, via bridge):** the OneDrive checkout's `.git` was found
+  damaged — OneDrive had dehydrated most loose objects (`git fsck`: objects
+  missing), so `git stash`/`git pull` failed. Repair: `.git` replaced by a fresh
+  clone's `.git` (single packfile, `fsck` clean, HEAD = origin/main fa1d412);
+  working tree brought to fa1d412 content file-by-file; the six uncommitted
+  15-Oct files preserved and verified byte-identical to pre-sync backups;
+  `git status` now shows exactly those six files. Nothing committed.
+- **Bridge constraints discovered (binding for every bridge session from now
+  on):** the Cowork mount of this folder CANNOT rename files — a rename leaves a
+  phantom directory entry and the data is lost (`git config`, `git reset`,
+  `mv`, `sed -i`, `os.replace` all break this way; this is also the mechanism
+  behind the 15-Oct `index.lock` incident). Therefore via the bridge: git is
+  READ-ONLY (`GIT_OPTIONAL_LOCKS=0 git status/diff/log` only); writes are
+  direct only (`cat >`, `cat >>`, python `open(..., 'w')`, `cp`); `rm` works
+  once delete permission is granted. Recommendation to the owner: move the
+  canonical clone OUT of OneDrive (e.g. `C:\dev\agroadvisor-et`) or mark the
+  folder "Always keep on this device"; OneDrive + git is not reliable.
+- **Owner M0 checklist (Windows, repo root):** `git status` (expect the six
+  files) → `cd app\frontend && npm ci && npm test && npm run lint && npm run build`
+  → `git commit -m "Frontend: align toolchain to Next 16 (Tailwind 3.4, ESLint flat config, vitest 5, @types/node 22)"`
+  → `git push` → add `RAG_INDEX_DIR=<path of the Chroma store holding era_corpus
+  1,191 + guidance_corpus 19,997>` to `app/backend/.env` (this checkout has no
+  such line, so it would run on the in-repo, evidence-only store) → decide the
+  repo location.
+
+### DECISION RECORD — WOCAT practice records + knowledge graph; P5b dropped (23 Oct 2026, owner + reviewer)
+Supervisor's direction: use **WOCAT** (Global SLM Database, https://wocat.net)
+to go beyond Ethiopia. Facts verified by the reviewer in the browser on 23 Oct:
+2,124 SLM practices in 110 countries (1,541 Technologies + 583 Approaches);
+**Ethiopia: 102**, several documented by the Alliance Bioversity–CIAT (ProSoil /
+ISFM+, e.g. Technology #6644 "Crop Residue Management", compiler Gerba Leta).
+Every Technology follows the standardized 2019 questionnaire (QT): SLM groups,
+SLM measures (A/V/S/M codes), degradation types; context classes (rainfall band
++ mm, agro-climatic zone, slope, altitude, soil depth/texture/OM); establishment
+and maintenance activities with timing, inputs and costs per ha; ~40 on-site
+impact ratings (crop production, fodder production, farm income, soil moisture,
+soil loss, surface runoff, soil organic matter …) that map almost 1:1 onto our
+7 indicators; cost–benefit; adoption; strengths/weaknesses and how to overcome
+them; references; linked Approaches. Licence **CC BY-NC-SA 4.0** (attribution to
+WOCAT + compilers, link to the original, share-alike for derived data, notify
+wocat.cde@unibe.ch on reuse). The JSON API (`wocat.net/api/database/...`)
+requires credentials and will soon need an API Access Agreement; the site asks
+researchers to contact the Secretariat before analysis. The **Alliance
+Bioversity–CIAT is a WOCAT Consortium Partner** (listed contact: Job Kihara,
+Alliance, Nairobi).
+
+Decisions:
+1. **Tier 3 "practice records" (WOCAT) + a knowledge graph** are the next
+   engineering phases (P6a–P6c). Tier 1 stays FROZEN; Tier 2 unchanged; tiers
+   never mixed; numeric guardrail EXTENDED (citations `[Wn]`), never bypassed.
+2. **P5b (CGSpace REST) is DROPPED:** 1,247 of the 1,459 GARDIAN guidance
+   documents are already CGSpace bitstreams (checked in the manifest).
+3. **"Beyond Ethiopia" in this manuscript** = context-matched cross-country
+   practice records in the advisory + a new, expert-free experiment: agreement
+   between the ML model's predicted effect direction and WOCAT practitioner-
+   reported impact direction per (practice, indicator), in-country vs
+   out-of-country. Geographic expansion of the recommender itself (ERA is
+   pan-African; WorldClim/SoilGrids/SRTM are global) = Discussion/roadmap and
+   a follow-up paper.
+4. **Graph store = NetworkX + serialized node-link JSON** (zero-ops, like
+   Chroma). No new infrastructure. Neo4j only if a live graph UI is ever needed.
+5. **Data access:** OWNER requests a research data export (Technologies +
+   Approaches, EN, JSON/CSV, all countries) through the Alliance partnership
+   (supervisor → Job Kihara / wocat.cde@unibe.ch; state research use, CC BY-NC-SA,
+   attribution). **Bulk or automated fetching of wocat.net is forbidden.**
+   Derived WOCAT data files released with the paper carry CC BY-NC-SA.
+Sequence: **P6a** (graph foundation + WOCAT taxonomy & crosswalk scaffolding —
+data-independent, starts now) → **P6b** (WOCAT ingestion from the export, graph
+enrichment, Tier-3 retrieval + `/explain` + UI) → **P6c** (evaluation: direction
+agreement; retrieval ablation hybrid vs hybrid+graph) → faithfulness run →
+blinded expert study on the Tier 1+2+3 system → **P4** manuscript (+ a section
+"Knowledge graph and cross-country practice transfer"). Methods sections 3–5 of
+the manuscript are drafted by the reviewer in parallel.
+
+### Next steps → Phase P6a — Knowledge-graph foundation + WOCAT taxonomy & crosswalk scaffolding (assigned to Claude Code)
+Data-independent by design: everything below is built and tested WITHOUT the
+WOCAT export (the owner is requesting it). Read CLAUDE.md first. Priority order
+if budget runs short: items 0–4 complete and tested, then 5. The scope guard
+(item 7) is binding.
+
+0. **Measure before building** (numbers go in the phase report). From
+   `data/processed/CSA_ERA_final_model_ready.csv`: distinct `CSA_practices`
+   (expect 100). Decompose each into ATOMIC COMPONENTS by splitting on `-`
+   (e.g. `Biochar-Inorganic Fertilizer-Organic Fertilizer` → 3 components;
+   `Intercropping or Rotation` stays one component). Report the number of
+   distinct components (expect ~30) and the alias/typo clusters you find
+   (`Deficit Irrigation`/`Deficit irrigation`, `Drought tolerrant crops`,
+   `organic amedements`, …). `CSA_practices` strings are FROZEN (data contract):
+   components are a NEW derived layer with normalized labels + an alias map —
+   never rewrite the dataset.
+1. **Package `rag/graph/`** (new; pure Python on `networkx`; add
+   `networkx>=3.2` to `rag/requirements.txt`; add `rag/graph/store/` to
+   `.gitignore`).
+   - `schema.py` — node types: `PracticeFamily` (5), `Practice` (100; label =
+     frozen `CSA_practices` string), `PracticeComponent` (~30, normalized),
+     `Indicator` (7), `Study` (`era_code`; attrs: source ERA/CSA, title/year/doi
+     from `rag/corpus/manifest.jsonl` when present, `corpus_status` ∈
+     {full_text, abstract, none}, `n_chunks` from `rag/corpus/chunks.jsonl`),
+     `AEZBelt`, `CropGroup`, `Country`, `SLMGroup`, `SLMMeasure`,
+     `DegradationType`, `ContextClass` (kinds: rainfall_band, agroclimatic_zone,
+     slope_class, altitude_zone, soil_texture, soil_depth, topsoil_om),
+     `ImpactVariable` (QT §6.1), `Technology` and `Approach` (WOCAT — EMPTY in
+     P6a except fixtures), `GuidanceDoc` (Tier 2, optional). Edge types, each
+     with `source` provenance ∈ {era_rows, csa_rows, manifest, wocat_taxonomy,
+     crosswalk_auto, crosswalk_validated, wocat_fixture, wocat_export}:
+     `IN_FAMILY`, `COMPOSED_OF`, `REPORTS_EFFECT` (Study→Practice; attrs:
+     indicator, n_obs, mean_log_rr, median_log_rr, share_positive, aez_belts,
+     crop_groups — aggregates of dataset rows, i.e. the data's numbers, never
+     generated), `STUDIED_IN` (Study→AEZBelt), `MEASURES` (Indicator↔
+     ImpactVariable; attrs: direction_good, proxy), `MAPS_TO`
+     (PracticeComponent→SLMMeasure / SLMGroup; attrs: confidence, status ∈
+     {proposed, validated, rejected}), and the WOCAT-record edges
+     `USES_MEASURE`, `IN_GROUP`, `ADDRESSES`, `APPLIED_IN`, `HAS_CONTEXT`,
+     `REPORTS_IMPACT`, `LINKED_APPROACH` (defined now, populated in P6b).
+     Document everything in `rag/graph/README.md` with a table that can become
+     the manuscript's graph-schema table.
+   - `build_graph.py` — CLI; builds nodes/edges from the CSV + manifest +
+     chunks + the taxonomy module + the crosswalk CSV (validated rows only
+     unless `--include-proposed`); writes `rag/graph/store/graph.json`
+     (node-link JSON) and `rag/graph/store/graph_report.json` (node/edge counts
+     per type; coverage: practices with ≥1 study, studies with chunks,
+     components mapped). Deterministic and idempotent.
+   - `query.py` — the functions P6b's retriever will call:
+     `evidence_summary(practice, indicator)` (studies with n_obs, mean effect,
+     contexts, corpus_status), `components_of(practice)`,
+     `slm_measures_for(practice)` (via validated crosswalk only),
+     `related_practices(practice, k)` (shared components / shared studies),
+     `similar_context_technologies(context, practice, k)` (Jaccard over
+     ContextClass nodes + measure overlap; returns `[]` when no Technology
+     nodes exist), `explain_paths(practice, indicator, max_paths)`.
+   - `test_graph.py` — pytest on a synthetic CSV fixture (no network, no
+     chromadb): decomposition + aliasing; node/edge counts; provenance present
+     on every edge; a `REPORTS_EFFECT` aggregate equal to a hand-computed value;
+     the validated-only gate; every query function; JSON round-trip.
+2. **`rag/graph/wocat_taxonomy.py`** — controlled vocabularies transcribed from
+   the public *Questionnaire on SLM Technologies (2019)* — download it yourself
+   (DOCX https://wocat.net/documents/447/QT_English_2019_CClicence.docx, PDF
+   https://wocat.net/documents/448/Questionnaire_on_SLM_Technologies_-_English_FINAL.pdf;
+   cite it + its CC BY-NC-SA licence in the module docstring): §3.5 SLM groups,
+   §3.6 SLM measures (A1–A7, V1–V5, S1–S11, M1–M7 + A3 tillage and A6 residue
+   sub-options), §3.7 degradation types (W/E/C/P/B/H codes), §5.1–5.3 context
+   classes, §6.1 on-site impact variables by category + the rating scale,
+   §6.4 cost–benefit classes, §6.5 adoption classes. The reviewer's DRAFT from
+   a partial read is in `docs/decisions/wocat_taxonomy_draft.md` — verify every
+   label against the questionnaire; do not trust the draft. Tests: code
+   uniqueness, expected counts, every impact variable has a `good_direction`.
+3. **`rag/graph/indicator_map.py`** — the 7 indicators ↔ WOCAT impact
+   variables: yield→crop production; biomass yield→fodder production (secondary
+   biomass/above-ground C); income→farm income; SOM content→soil organic
+   matter/below-ground C; soil loss→soil loss; runoff→surface runoff; water use
+   efficiency→soil moisture (`proxy=True`; secondary evaporation). Direction
+   semantics import `recommend.DIRECTION` (wrap, never fork). One documented
+   rationale line per mapping.
+4. **Crosswalk proposal** — `rag/graph/crosswalk/propose_crosswalk.py`: for
+   every PracticeComponent (NOT the 100 combinations) propose SLM groups + SLM
+   measure codes with (a) deterministic rules — family priors + a keyword table
+   you write (e.g. Mulch→A1 + improved ground/vegetation cover; Physical SWC
+   measures→S1/S2 + cross-slope measure; Water Harvesting→S4/S5/S7 + water
+   harvesting; Biochar→A2 + ISFM; Exclosure→area closure + M1; Parklands→V1 +
+   agroforestry; Reduced Tillage→A3 reduced tillage + minimal soil disturbance;
+   Improved Varieties→A5 + improved plant varieties …) and (b) an OPTIONAL
+   `--llm` pass (gpt-4o-mini, temperature 0, JSON output, taxonomy definitions
+   in the prompt; key via the existing find-api-key fallback; never printed;
+   the owner runs it). Output `docs/decisions/wocat_crosswalk_proposal.csv`
+   with columns: component, aliases, families, n_rows, proposed_groups,
+   proposed_measures, confidence, rationale, status=proposed, owner_decision
+   (blank), owner_note. `build_graph.py` admits only `status=validated` rows
+   into `MAPS_TO` (tested). The owner validates in Excel — same procedure as
+   `docs/decisions/practice_family_mapping.md`.
+5. **WOCAT record schema + normalizer (data-independent)** —
+   `rag/ingest/wocat/schema.py` (pydantic v2 `WocatTechnology`,
+   `WocatApproach`: id, title, country, region, slm_groups, measures,
+   degradation, land_use, water_supply, context classes, rainfall_mm,
+   activities[], costs (establishment/maintenance, currency, per-ha),
+   impacts{variable: rating}, cost_benefit, adoption, strengths[],
+   weaknesses[], references[], url, compiler, licence, linked_approaches[]) and
+   `rag/ingest/wocat/normalize_wocat.py` with an adapter interface and
+   `--inspect` (prints the real keys of whatever export format arrives —
+   GARDIAN-style probing) → `rag/corpus/wocat/technologies.jsonl`. Fixtures:
+   hand-build 2–3 records in `rag/ingest/wocat/fixtures/` from PUBLIC Ethiopian
+   technology pages read individually (e.g. Technology #6644 "Crop Residue
+   Management"; record URL, compiler, licence in each fixture). Reading two or
+   three pages by hand is fine; **any bulk or automated fetching of wocat.net
+   is FORBIDDEN.** Tests: fixtures normalize; `build_graph.py --wocat
+   <fixtures>` ingests them (Technology nodes + `USES_MEASURE`/`HAS_CONTEXT`/
+   `REPORTS_IMPACT` edges with `source=wocat_fixture`);
+   `similar_context_technologies` returns them for a matching context.
+6. **Verify:** `python -m py_compile` on everything touched; `pytest` for
+   `rag/graph` and `rag/ingest/wocat`; run `build_graph.py` for real on the
+   repo data and report node/edge counts, component count, coverage; existing
+   suites untouched and green where runnable (eval 13, ingest 17, backend
+   explain 33).
+7. **Scope guard:** NO changes to `app/`, `rag/retrieve.py`,
+   `explain_service.py`, Tier-1/Tier-2 corpus files, `era_corpus` /
+   `guidance_corpus`, or frozen schema names. Retrieval/explain/UI integration
+   is P6b. No network calls except downloading the questionnaire and reading
+   ≤3 public pages for fixtures.
+8. Append the phase report per CLAUDE.md and stop.
+
+**Owner actions in parallel:** M0 checklist (Maintenance entry above); WOCAT
+data-export request via the Alliance partnership; when
+`docs/decisions/wocat_crosswalk_proposal.csv` lands, validate the ~30 rows.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6a' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
