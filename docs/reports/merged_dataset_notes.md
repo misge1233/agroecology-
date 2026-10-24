@@ -1,8 +1,47 @@
 # Merged Modeling Dataset — CSA + ERA
 
-**File:** `dataset/CSA_ERA_merged_model_ready.csv` — **8,664 rows × 20 columns, 0 missing.**
+**File:** `data/processed/CSA_ERA_merged_model_ready.csv` — **8,664 rows × 20 columns
+(22 after `practice_family` and the stack join), 0 missing.**
 Objective: predict the CSA-practice **response ratio** (`log_response_ratio`) from
 practice + agroecological context + indicator, for zone-level recommendations.
+
+## Build chain (who writes what)
+
+```
+data/processed/CSA_ERA_merged_model_ready.csv          merged sources + Study_No_ prefixes
+        │
+        │  pipelines/dataset/build_practice_family.py   --dataset / --out
+        │     recomputes the practice_family VALUES (column names are frozen)
+        ▼
+data/processed/CSA_ERA_final_model_ready.csv           the model-ready dataset
+        │
+        ├─ --sync-copies (default) writes byte-identical copies to
+        │     data/processed/CSA_ERA_merged_model_ready.csv   (the input, back in place)
+        │     app/backend/dataset/CSA_ERA_final_model_ready.csv (the copy the API loads)
+        │
+        │  model/train_model.py                        --dataset / --artifacts / --copy-to
+        ▼
+model/artifacts/{csa_model.joblib, model_metrics.json}
+        └─ --copy-to (default) app/backend/artifacts/   (the copies the API serves)
+```
+
+**The three dataset copies must be byte-identical after a run.**
+`build_practice_family.py` prints their md5s so this is checked every time; the
+script preserves the input file's line terminator (the canonical files are
+CRLF) so a re-run shows only the rows that genuinely changed.
+
+Both scripts default to the paths above and need no arguments; the
+`--dataset`/`--out`/`--artifacts` flags exist so the chain can be re-run
+against a copy without touching the repo's canonical files (used in P6a.1 to
+retrain the *previous* dataset as a control).
+
+Re-running the chain end to end:
+
+```bash
+python pipelines/dataset/build_practice_family.py
+python model/train_model.py
+python -m pytest pipelines/dataset/test_practice_family.py -q
+```
 
 ## What the merge did
 - Concatenated the two model-ready files (identical 19-col schema).
@@ -15,6 +54,11 @@ practice + agroecological context + indicator, for zone-level recommendations.
 - Target: `log_response_ratio` (recommended) and `response_ratio` (raw).
 
 ## Things to consider before modeling
+
+> **Note (23 Oct 2026, P6a.1):** `practice_family` is computed by
+> `build_practice_family.py`, not stored by hand. One keyword collision sent
+> 311 rows of `Supplemental Irrigation` to the wrong family; it is fixed and
+> documented in the erratum in `docs/decisions/practice_family_mapping.md`.
 
 **1. Practice vocabularies barely overlap (most important).**
 `CSA_practices` has two disjoint taxonomies: 20 CSA categories (Physical SWC measures,

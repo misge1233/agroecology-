@@ -560,3 +560,142 @@ def test_validate_graph_catches_wrong_endpoints_and_bad_status():
 def test_context_id_rejects_unknown_kind():
     with pytest.raises(ValueError, match="unknown ContextClass kind"):
         sch.context_id("landform", "ridges")
+
+
+# ------------------------------------------- crosswalk re-run merge (P6a.1)
+import csv as _csv  # noqa: E402
+
+from crosswalk.propose_crosswalk import (  # noqa: E402
+    COLUMNS as CW_COLUMNS,
+    merge_row,
+    read_existing,
+    write_csv as cw_write_csv,
+)
+from crosswalk.propose_crosswalk import Proposal as CwProposal  # noqa: E402
+
+
+def _cw_proposal(component="Mulch", groups=("improved ground/ vegetation cover",),
+                 measures=("A1", "A2"), families=("Erosion control and water management",),
+                 n_rows=326):
+    return CwProposal(
+        component=component, aliases=[component], families=list(families),
+        n_rows=n_rows, groups=set(groups), measures=set(measures),
+        confidence=0.9, rationales=["rule rationale"],
+    )
+
+
+def _read_rows(path):
+    with open(path, encoding="utf-8-sig", newline="") as fh:
+        return {r["component"]: r for r in _csv.DictReader(fh)}
+
+
+def test_crosswalk_first_run_writes_blank_owner_columns(tmp_path):
+    path, preserved = cw_write_csv([_cw_proposal()], tmp_path / "cw.csv")
+    assert preserved == {}
+    row = _read_rows(path)["Mulch"]
+    assert list(row) == list(CW_COLUMNS)
+    assert row["status"] == "proposed"
+    assert row["owner_decision"] == "" and row["owner_note"] == ""
+
+
+def test_crosswalk_rerun_preserves_owner_decision_and_note(tmp_path):
+    path = tmp_path / "cw.csv"
+    cw_write_csv([_cw_proposal()], path)
+    rows = _read_rows(path)
+    rows["Mulch"].update(owner_decision="validated", owner_note="checked against QT")
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = _csv.DictWriter(fh, fieldnames=list(CW_COLUMNS))
+        w.writeheader()
+        w.writerow(rows["Mulch"])
+
+    _, preserved = cw_write_csv([_cw_proposal()], path)
+    row = _read_rows(path)["Mulch"]
+    assert row["owner_decision"] == "validated"
+    assert row["owner_note"] == "checked against QT"
+    assert row["status"] == "validated"          # status follows the decision
+    assert "owner_decision" in preserved["Mulch"]
+
+
+def test_crosswalk_rerun_keeps_edited_targets_on_a_decided_row(tmp_path):
+    path = tmp_path / "cw.csv"
+    cw_write_csv([_cw_proposal()], path)
+    rows = _read_rows(path)
+    rows["Mulch"].update(owner_decision="validated", proposed_measures="A1")
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = _csv.DictWriter(fh, fieldnames=list(CW_COLUMNS))
+        w.writeheader()
+        w.writerow(rows["Mulch"])
+
+    _, preserved = cw_write_csv([_cw_proposal()], path)   # rules still say A1; A2
+    row = _read_rows(path)["Mulch"]
+    assert row["proposed_measures"] == "A1"               # the owner's edit wins
+    assert "proposed_measures" in preserved["Mulch"]
+
+
+def test_crosswalk_rerun_refreshes_targets_on_an_undecided_row(tmp_path):
+    """A row the owner never decided must track the rules, not freeze."""
+    path = tmp_path / "cw.csv"
+    cw_write_csv([_cw_proposal(measures=("A1",))], path)
+    _, preserved = cw_write_csv([_cw_proposal(measures=("A1", "A2"))], path)
+    assert _read_rows(path)["Mulch"]["proposed_measures"] == "A1; A2"
+    assert "Mulch" not in preserved
+
+
+def test_crosswalk_rerun_always_refreshes_the_measured_columns(tmp_path):
+    """families/n_rows must move — that is what the P6a.1 fix changes."""
+    path = tmp_path / "cw.csv"
+    cw_write_csv([_cw_proposal(families=("Livestock production and management",),
+                               n_rows=311)], path)
+    rows = _read_rows(path)
+    rows["Mulch"]["owner_decision"] = "validated"
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = _csv.DictWriter(fh, fieldnames=list(CW_COLUMNS))
+        w.writeheader()
+        w.writerow(rows["Mulch"])
+
+    cw_write_csv([_cw_proposal(families=("Erosion control and water management",),
+                               n_rows=326)], path)
+    row = _read_rows(path)["Mulch"]
+    assert row["families"] == "Erosion control and water management"
+    assert row["n_rows"] == "326"
+    assert row["owner_decision"] == "validated"      # decision still intact
+
+
+def test_crosswalk_rerun_appends_new_components_and_drops_absent_ones(tmp_path):
+    path = tmp_path / "cw.csv"
+    cw_write_csv([_cw_proposal("Mulch"), _cw_proposal("Gone Away")], path)
+    cw_write_csv([_cw_proposal("Mulch"), _cw_proposal("Brand New")], path)
+    rows = _read_rows(path)
+    assert set(rows) == {"Brand New", "Mulch"}
+    assert list(rows) == sorted(rows)                 # still sorted by component
+
+
+def test_crosswalk_no_merge_discards_owner_work(tmp_path):
+    path = tmp_path / "cw.csv"
+    cw_write_csv([_cw_proposal()], path)
+    rows = _read_rows(path)
+    rows["Mulch"]["owner_decision"] = "validated"
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = _csv.DictWriter(fh, fieldnames=list(CW_COLUMNS))
+        w.writeheader()
+        w.writerow(rows["Mulch"])
+
+    _, preserved = cw_write_csv([_cw_proposal()], path, merge=False)
+    assert preserved == {}
+    assert _read_rows(path)["Mulch"]["owner_decision"] == ""
+
+
+def test_merge_row_is_a_pure_function():
+    fresh = {"component": "Mulch", "proposed_measures": "A1; A2",
+             "owner_decision": "", "owner_note": "", "status": "proposed"}
+    existing = {"component": "Mulch", "proposed_measures": "A1",
+                "owner_decision": "validated", "owner_note": "note"}
+    row, preserved = merge_row(fresh, existing)
+    assert fresh["proposed_measures"] == "A1; A2"     # input untouched
+    assert row["proposed_measures"] == "A1"
+    assert row["status"] == "validated"
+    assert set(preserved) >= {"proposed_measures", "owner_decision", "owner_note"}
+
+
+def test_read_existing_returns_empty_for_a_missing_file(tmp_path):
+    assert read_existing(tmp_path / "nope.csv") == {}

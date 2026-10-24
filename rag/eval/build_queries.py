@@ -18,7 +18,10 @@ exercises exactly the query the app would send (wrap, never fork).
 
 Usage (from repo root or rag/eval, any Python with ``requests`` installed):
     python rag/eval/build_queries.py [--n-target 50] [--seed 42]
-Writes ``rag/eval/queries.jsonl`` and ``rag/eval/results/queries_build_report.json``.
+    python rag/eval/build_queries.py --no-query-expansion \
+        --out rag/eval/queries_v2_baseline.jsonl
+Writes the scenarios to ``--out`` (default ``rag/eval/queries.jsonl``) and a
+build report next to it in ``rag/eval/results/``.
 """
 from __future__ import annotations
 
@@ -142,6 +145,7 @@ def build_scenarios(
     corpus_codes: set[str],
     n_target: int = 50,
     seed: int = 42,
+    expand: bool = True,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Sample ~n_target scenarios stratified over (family, indicator) cells.
 
@@ -149,6 +153,11 @@ def build_scenarios(
     study rows (distinct studies first), so every scenario is a real study
     location. Candidates whose relevant-study set contributes zero chunks to
     the corpus are skipped and counted. Returns (scenarios, report).
+
+    ``expand`` is passed straight to ``build_query_text``: False builds the
+    no-query-expansion ablation arm, where only the INDICATOR_SYNONYMS terms
+    are dropped and the sampling is otherwise identical (same seed, same
+    anchors, same silver labels), so the two arms are directly comparable.
     """
     rng = random.Random(seed)
     era = era_rows(rows)
@@ -196,7 +205,7 @@ def build_scenarios(
                     "aez_belt": anchor.get("aez_belt") or None,
                     "recommendation": rec,
                     "query_text": build_query_text(
-                        rec, practice=anchor["CSA_practices"]
+                        rec, practice=anchor["CSA_practices"], expand=expand
                     ),
                     "relevant_era_codes": relevant,
                     "relevant_era_codes_family_level": relevant_studies(
@@ -220,6 +229,7 @@ def build_scenarios(
         "n_families_covered": len(families),
         "n_indicators_covered": len(indicators),
         "seed": seed,
+        "query_expansion": expand,
     }
     return scenarios, report
 
@@ -232,6 +242,15 @@ def main() -> None:
     parser.add_argument("--dataset", type=Path, default=DATASET_PATH)
     parser.add_argument("--chunks", type=Path, default=CHUNKS_PATH)
     parser.add_argument("--out", type=Path, default=QUERIES_PATH)
+    parser.add_argument(
+        "--no-query-expansion", dest="expand", action="store_false",
+        help="drop the INDICATOR_SYNONYMS terms from every query text "
+             "(the ablation arm); sampling is otherwise identical",
+    )
+    parser.add_argument(
+        "--report", type=Path, default=None,
+        help="build-report path (default: results/<out-stem>_build_report.json)",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -239,15 +258,20 @@ def main() -> None:
     rows = load_rows(args.dataset)
     corpus_codes = load_corpus_codes(args.chunks)
     scenarios, report = build_scenarios(
-        rows, corpus_codes, n_target=args.n_target, seed=args.seed
+        rows, corpus_codes, n_target=args.n_target, seed=args.seed,
+        expand=args.expand,
     )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as fh:
         for s in scenarios:
             fh.write(json.dumps(s, ensure_ascii=False) + "\n")
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    report_path = args.report or (
+        REPORT_PATH if args.out == QUERIES_PATH
+        else REPORT_PATH.parent / f"{args.out.stem}_build_report.json"
+    )
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
     logger.info("Wrote %d scenarios to %s", len(scenarios), args.out)
     logger.info(

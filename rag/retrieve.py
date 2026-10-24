@@ -90,8 +90,20 @@ INDICATOR_SYNONYMS: dict[str, tuple[str, ...]] = {
 }
 
 
-def build_query_text(recommendation: dict[str, Any], practice: str | None = None) -> str:
-    """Compose the retrieval query from the engine's recommendation JSON."""
+def build_query_text(
+    recommendation: dict[str, Any],
+    practice: str | None = None,
+    expand: bool = True,
+) -> str:
+    """Compose the retrieval query from the engine's recommendation JSON.
+
+    ``expand`` controls the indicator-synonym expansion documented above.
+    It defaults to True, so the query the app sends is byte-identical to
+    before this parameter existed; ``expand=False`` drops only the
+    ``INDICATOR_SYNONYMS`` terms and is used by the evaluation harness to
+    measure the expansion's contribution (``build_queries.py
+    --no-query-expansion``).
+    """
     q = recommendation.get("query", {})
     d = recommendation.get("details", {})
     ctx = d.get("context", {}) or {}
@@ -103,7 +115,7 @@ def build_query_text(recommendation: dict[str, Any], practice: str | None = None
         top_practice,
         q.get("practice_family", ""),
         f"effect on {indicator}",
-        *INDICATOR_SYNONYMS.get(indicator, ()),
+        *(INDICATOR_SYNONYMS.get(indicator, ()) if expand else ()),
         "Ethiopia",
         str(ctx.get("aez_belt") or ""),
     ]

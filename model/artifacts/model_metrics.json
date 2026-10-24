@@ -1,46 +1,46 @@
 {
-  "model": "RandomForest",
-  "cv_r2": 0.18975884978496405,
-  "cv_rmse": 0.5846054747851869,
-  "baseline_r2": 0.1884023097611196,
+  "model": "HistGBM",
+  "cv_r2": 0.2339351738171821,
+  "cv_rmse": 0.5684450528313315,
+  "baseline_r2": 0.16722514860728988,
   "per_indicator": {
     "SOM content": [
       111,
-      -0.646
+      -0.432
     ],
     "biomass yield": [
       1525,
-      0.022
+      0.058
     ],
     "income": [
       208,
-      0.002
+      -0.065
     ],
     "runoff": [
       359,
-      -0.164
+      -0.182
     ],
     "soil loss": [
       296,
-      -0.23
+      -0.144
     ],
     "water use efficiency": [
       255,
-      -0.194
+      -0.007
     ],
     "yield": [
       5910,
-      0.025
+      0.092
     ]
   },
   "per_source": {
-    "CSA": 0.324,
-    "ERA": 0.117
+    "CSA": 0.356,
+    "ERA": 0.167
   },
   "indicator_confidence": {
     "SOM content": "low",
     "biomass yield": "medium",
-    "income": "medium",
+    "income": "low",
     "runoff": "low",
     "soil loss": "low",
     "water use efficiency": "low",

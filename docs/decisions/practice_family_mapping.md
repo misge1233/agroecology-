@@ -53,8 +53,8 @@ management (CPM) as the base default.
 Keyword themes:
 - **FAF:** agroforestry, parkland, multistrata, alley crop, afforestation/reforestation,
   exclosure, silvopasture, prosopis, woodlot, natural regeneration, pruning, tree/shrub.
-- **LPM:** feed, forage, fodder, grazing, livestock, animal, breed, supplement, silage,
-  dairy, pasture, herd.
+- **LPM:** feed, forage, fodder, grazing, livestock, animal, breed, **supplementation /
+  feed supplement** (see the erratum below), silage, destock, dairy, pasture, herd.
 - **ISFM:** fertilizer (inorganic/organic), biochar, compost/vermicompost, manure, lime,
   gypsum, pH control, nutrient, bio-fertiliser, bioslurry, green manure, residue
   incorporation, microdose, amendment, inoculant.
@@ -80,6 +80,48 @@ Exclosure (FAF/ECWM/LPM → FAF), Silvo-pastoral (LPM/FAF → LPM via feed, or F
 agroforestry keyword → FAF by priority), Alley cropping (FAF/ECWM → FAF), Conservation
 agriculture (CPM/ECWM), Tied-ridge (ECWM/ISFM → ISFM if "+4R" else ECWM), Intercropping
 (CPM/ISFM/ECWM → CPM), Mulch/residue (ECWM/ISFM/CPM), Liming & green manure (CPM/ISFM → ISFM).
+
+## Erratum (23 Oct 2026) — `Supplemental Irrigation` was mis-filed as LPM
+
+**What was wrong.** The LPM keyword set carried the bare token `supplement`,
+intended for *feed supplementation*. It also matches **`Supplemental
+Irrigation`**, and because LPM outranks ECWM in the priority rule, all **311
+rows** of `Supplemental Irrigation` (277), `Improved Varieties-Supplemental
+Irrigation` (24) and `Inorganic Fertilizer-Supplemental Irrigation` (10) were
+assigned to *Livestock production and management* — contradicting this very
+document, which places all irrigation under ECWM and uses
+`Improved Varieties-Supplemental Irrigation → ECWM` as a worked example.
+
+**Consequence while it stood.** `practice_family` is both a model feature and
+the recommender's candidate filter, so these three practices were ranked
+inside the wrong family: `/recommend` could offer supplemental irrigation to a
+livestock question and never to a water-management one.
+
+**Fix.** In `pipelines/dataset/build_practice_family.py`, `KW["LPM"]` now reads
+`supplementation` and `feed supplement` instead of `supplement`. Neither can
+match an irrigation label, and the feed practices in the data
+(`Feed Addition-Feed Processing`, `Feed Substitution`, `Animal feed
+management`) match on `feed` regardless. An audit of all 49 multi-keyword ERA
+practice names found this to be the **only** false keyword match; every other
+multi-hit resolves correctly by the documented priority.
+
+**Where the 311 rows went.** The priority rule was *not* changed, so the three
+labels land where it sends them:
+
+| `CSA_practices` | rows | before | after |
+|---|---:|---|---|
+| `Supplemental Irrigation` | 277 | LPM | **ECWM** |
+| `Improved Varieties-Supplemental Irrigation` | 24 | LPM | **ECWM** (irrigation beats crop mgmt) |
+| `Inorganic Fertilizer-Supplemental Irrigation` | 10 | LPM | **ISFM** (fertilizer beats water) |
+
+The last row is deliberate: its keyword signature is identical to the worked
+example `Inorganic Fertilizer-Water Harvesting → ISFM` above, so forcing it to
+ECWM would special-case it against the stated rule. Net move: **301 → ECWM,
+10 → ISFM**.
+
+**Regression cover.** `pipelines/dataset/test_practice_family.py` pins the
+three labels, the worked examples in this document, and the keyword-table
+invariants, so the rule and this document cannot drift apart again.
 
 ## Notes
 - Assignments follow the paper wherever it lists a practice; ambiguous combined ERA practices

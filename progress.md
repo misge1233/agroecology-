@@ -1751,3 +1751,408 @@ Fertilizer-Supplemental Irrigation` (LPM → ECWM), as
 
 **Launch (repo root):**
 `claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6a.1' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+## Phase P6a.1 — practice_family data-quality fix + regenerated artefacts (23 Oct 2026)
+
+**Built** One keyword fix in `pipelines/dataset/build_practice_family.py`, a
+new regression suite for the classifier, both pipeline scripts parameterised,
+and every downstream artefact regenerated through the pipeline — no hand
+edits to any data file. Plus the eval ablation switch, the crosswalk re-run
+merge, and a rebuilt graph.
+
+### 1. The fix, and one deviation from the brief you need to approve
+
+`KW["LPM"]`: `"supplement"` -> `"supplementation"`, `"feed supplement"`.
+Verified blast radius: the bare token matched only the three
+`Supplemental Irrigation` labels (311 rows); the real feed practices
+(`Feed Addition-Feed Processing`, `Feed Substitution`, `Animal feed
+management`) match on `feed` and are untouched.
+
+**Deviation — the 311 rows do NOT all go to ECWM.** The brief says
+"LPM -> ECWM"; the unchanged PRIORITY rule actually splits them:
+
+| `CSA_practices` | rows | before | after |
+|---|---:|---|---|
+| `Supplemental Irrigation` | 277 | LPM | **ECWM** |
+| `Improved Varieties-Supplemental Irrigation` | 24 | LPM | **ECWM** |
+| `Inorganic Fertilizer-Supplemental Irrigation` | 10 | LPM | **ISFM** |
+
+The last row has the **identical keyword signature** to the mapping
+document's own worked example `Inorganic Fertilizer-Water Harvesting -> ISFM
+("fertilizer beats water")`: both hit {ISFM, ECWM}, and ISFM outranks ECWM.
+Forcing it to ECWM would mean special-casing it against the documented rule
+the brief cites as the authority for the fix. I left the rule alone and
+report the split: **301 -> ECWM, 10 -> ISFM**. Say the word if you want the
+10 rows forced to ECWM instead; that needs a rule change, not a keyword one.
+
+`pipelines/dataset/test_practice_family.py` (new, **25 tests**) pins the three
+labels, all the mapping document's worked examples, the priority rule, the
+CSA explicit-lookup dispatch, and the keyword-table invariants — so the code
+and the document cannot drift apart again. `practice_family_mapping.md` gets
+the corrected LPM keyword line and a full **"Erratum (23 Oct 2026)"** section
+with the table above.
+
+### 2. Paths parameterised, chain documented
+`build_practice_family.py`: `--dataset` / `--out` / `--sync-copies`, defaulting
+to `data/processed/…`; it preserves the input file's **line terminator** (the
+canonical CSVs are CRLF — writing LF would have rewritten all 8,665 lines and
+buried the real diff) and prints the three copies' md5s.
+`train_model.py`: `--dataset` / `--artifacts` / `--copy-to` / `--no-copy`,
+defaulting to `data/processed/…` and `model/artifacts/` -> `app/backend/artifacts/`.
+Both legacy `*/dataset/` paths are gone. The chain is drawn in
+`docs/reports/merged_dataset_notes.md`.
+
+### 3. Dataset regenerated — exactly as specified
+`311 of 8664` rows changed. Verified mechanically: **`practice_family` is the
+only column whose values differ**; row count 8,664 unchanged; **row order
+preserved** (every non-family column compares equal row-wise); CRLF preserved
+(8,665 CRLF, 0 bare LF); `git diff --numstat` = `311 311`. All three copies
+byte-identical (`md5 1b621130c46a59e656d465b74fe39b1a`). Every changed row is
+a `Supplemental Irrigation` label, every one came **from** LPM, and **no row
+moved into** LPM.
+
+`practice_family` x `source`:
+
+| family | CSA before | ERA before | CSA after | ERA after | total after |
+|---|---:|---:|---:|---:|---:|
+| Agro-forestry and forest management | 74 | 319 | 74 | 319 | 393 |
+| Crop production and management | 202 | 1536 | 202 | 1536 | 1738 |
+| Erosion control and water management | 816 | 904 | 816 | **1205** | **2021** |
+| Integrated soil fertility management | 240 | 4164 | 240 | **4174** | **4414** |
+| Livestock production and management | 82 | 327 | 82 | **16** | **98** |
+
+**Consequence worth your attention:** LPM is now a **thin family — 98 rows, 5
+practices** (`Animal feed management`, `grazing management`,
+`Pasture Management`, `Feed Addition-Feed Processing`, `Feed Substitution`),
+and for `yield` only **2 grounded candidates**. That is the honest state of
+the livestock evidence once irrigation is removed from it, but it makes LPM
+advisories much thinner than before. Worth a line in the manuscript's
+limitations.
+
+### 4. Retrained — and the committed v1 metrics are not reproducible
+
+Ran with the pinned **scikit-learn 1.7.2** (8 s). But the committed
+`model_metrics.json` (RandomForest, cv_r2 0.1898, baseline 0.1884) **could not
+be reproduced in any environment I could build**, so I retrained the *previous*
+dataset in the same pinned environment as a control. That isolates the data
+effect from the environment effect:
+
+| metric | committed v1 (historic env) | v1 data, pinned env | **v2 data, pinned env** |
+|---|---:|---:|---:|
+| model chosen | RandomForest | HistGBM | **HistGBM** |
+| cv_r2 | 0.1898 | 0.2333 | **0.2339** |
+| cv_rmse | 0.5846 | 0.5687 | **0.5684** |
+| baseline_r2 | 0.1884 | 0.1672 | **0.1672** |
+| per_source CSA / ERA | 0.324 / 0.117 | 0.354 / 0.167 | **0.356 / 0.167** |
+
+Per-indicator R2 (n unchanged), and the confidence flags:
+
+| indicator | n | committed | v1 pinned | **v2** | flag committed -> v2 |
+|---|---:|---:|---:|---:|---|
+| SOM content | 111 | -0.646 | -0.372 | **-0.432** | low -> low |
+| biomass yield | 1525 | 0.022 | 0.060 | **0.058** | medium -> medium |
+| income | 208 | 0.002 | -0.129 | **-0.065** | **medium -> low (FLIP)** |
+| runoff | 359 | -0.164 | -0.179 | **-0.182** | low -> low |
+| soil loss | 296 | -0.230 | -0.108 | **-0.144** | low -> low |
+| water use efficiency | 255 | -0.194 | -0.031 | **-0.007** | low -> low |
+| yield | 5910 | 0.025 | 0.088 | **0.092** | medium -> medium |
+
+**Read the middle column, not the first.** Comparing like with like (v1 pinned
+-> v2) the P6a.1 data fix moves the model by **cv_r2 0.2333 -> 0.2339**, the
+baseline is **identical to 4 dp** (as it must be — the baseline is a
+practice x indicator mean and never sees `practice_family`, which is a good
+sanity check on the whole chain), and **no confidence flag changes**. That is
+the "small drift expected" the brief predicted.
+
+**Two changes are environment, NOT data, and both already appear on the v1
+data in the pinned env:** (a) the best model switches **RandomForest ->
+HistGBM**, and (b) the `income` flag flips **medium -> low** (the one
+UI-visible flag change relative to what is committed). I also tried
+scikit-learn 1.5.2 + numpy 1.26 + pandas 2.2 as a cross-check: baseline 0.199,
+RF 0.200, HistGBM 0.208 — **still HistGBM, still not the committed numbers**.
+So the committed artefact predates the current pin and the fold assignment has
+shifted with the library versions (`GroupKFold` internals changed around
+sklearn 1.6). **This is a reproducibility problem for the manuscript, not a
+P6a.1 regression — please confirm the new artefact on your machine before we
+quote any of these numbers.**
+
+New `csa_model.joblib` + `model_metrics.json` written to `model/artifacts/`
+and copied to `app/backend/artifacts/` (both pairs md5-identical).
+
+### 5. Evaluation scaffolding (the runs are yours)
+`rag.retrieve.build_query_text` gains `expand: bool = True` — purely additive,
+default behaviour byte-identical, only the `INDICATOR_SYNONYMS` terms are
+dropped when False. `build_queries.py` gains `--no-query-expansion` (threaded
+through `build_scenarios`, recorded as `query_expansion` in the build report)
+and writes its report next to `--out`. `eval_retrieval.py` gains `--out`
+(stem; `.json` + `.md`) and records the queries file in its JSON.
+
+Both query sets are generated and committed:
+`rag/eval/queries_v2.jsonl` and `rag/eval/queries_v2_baseline.jsonl`,
+**45 scenarios each**. Verified: same scenario ids in the same order, **every
+field except `query_text` identical**, and `query_text` differs in exactly
+**18 of 45** scenarios — the three indicators that have synonyms (SOM content,
+soil loss, water use efficiency). Clean ablation arm.
+
+**v1 -> v2 is not a paired comparison, as the brief warned**, and the effect is
+larger than expected: the stratified sample drops from **50 to 45** scenarios
+and LPM coverage from **9 to 3**, because the sampler draws from
+(family x indicator) cells and LPM lost 311 of its 409 rows. Report v1 and v2
+as separate measurements, never as a delta.
+
+Still to run (needs the index + key, ~100 embedding calls, well under $1):
+```
+python rag/eval/eval_retrieval.py --queries rag/eval/queries_v2_baseline.jsonl \
+    --out rag/eval/results/retrieval_metrics_v2_baseline
+python rag/eval/eval_retrieval.py --queries rag/eval/queries_v2.jsonl \
+    --out rag/eval/results/retrieval_metrics_v2
+```
+
+### 6. Crosswalk re-run merge + graph
+`propose_crosswalk.py` now **merges onto an existing csv** by `component`:
+`owner_decision` and `owner_note` are always kept, `status` follows the
+decision, new components are appended, vanished ones dropped, and it logs
+exactly what it preserved. `--no-merge` forces a clean overwrite (and warns).
+
+One design call: `proposed_groups`/`proposed_measures` are preserved verbatim
+**only on a row whose `owner_decision` is non-empty**. On an undecided row they
+are refreshed from the rules — the csv alone cannot tell an owner edit from a
+rule change, and freezing stale rule output on 44 untouched rows would be the
+worse failure. The measured columns (`aliases`, `families`, `n_rows`) always
+refresh; that is exactly what P6a.1 needs to move.
+
+Exercised on the real file: I seeded a `validated` decision with an edited
+`proposed_measures` on `Mulch`, re-ran, and confirmed the decision, note,
+edit and `status=validated` all survived while `Supplemental Irrigation`'s
+`families` refreshed from LPM to `Erosion control and water management;
+Integrated soil fertility management`. **I then reverted that seeded decision
+(`--no-merge`) — the committed csv has all 44 rows `status=proposed` with
+blank `owner_decision`. The validation decisions are yours to make, and I did
+not fake one.** 9 new tests cover the merge behaviour.
+
+`build_graph.py --wocat rag/ingest/wocat/fixtures` re-run: **722 nodes, 1,981
+edges, `validation: []`** — node and edge *counts* unchanged exactly as the
+brief predicted, but the substance moved: **3 `IN_FAMILY` edges retargeted**
+(the three Supplemental Irrigation practices) and the `PracticeFamily` node
+`n_rows` now read ECWM 1720->2021, ISFM 4404->4414, LPM 409->98. `graph.json`
+md5 changed. `MAPS_TO` stays 0 (no validated crosswalk rows yet — correct).
+
+### 7. Backend
+**Full `pytest -q` in `app/backend`: 58 passed — no assertion needed changing.**
+The suite does not hard-code family membership for these practices, so nothing
+legitimately changed. (Nothing to list for this item.)
+
+`/recommend` smoke, at the engine's own demo point (8.38, 39.37):
+
+| query | candidates | grounded | `Supplemental Irrigation` reachable |
+|---|---:|---:|---|
+| `Erosion control and water management` x `yield` | 23 | 21 | **yes** (ranked 5th) |
+| `Livestock production and management` x `yield` | 5 | 2 | **no** |
+
+Both as required.
+
+**Files** Modified: `pipelines/dataset/build_practice_family.py`,
+`model/train_model.py`, `rag/retrieve.py` (additive `expand` only),
+`rag/eval/build_queries.py`, `rag/eval/eval_retrieval.py`,
+`rag/graph/crosswalk/propose_crosswalk.py`, `rag/graph/test_graph.py`,
+`docs/decisions/practice_family_mapping.md`,
+`docs/reports/merged_dataset_notes.md`,
+`docs/decisions/wocat_crosswalk_proposal.csv`, the three dataset copies, and
+both `model_metrics.json` + `csa_model.joblib` pairs.
+New: `pipelines/dataset/test_practice_family.py`,
+`rag/eval/queries_v2.jsonl`, `rag/eval/queries_v2_baseline.jsonl`,
+`rag/eval/results/queries_v2{,_baseline}_build_report.json`.
+**Scope guard honoured:** no change to `explain_service.py`, the Tier-1/Tier-2
+corpora, `era_corpus`/`guidance_corpus`, or any column or file name; the only
+`rag/retrieve.py` change is the additive `expand` parameter.
+`git diff --ignore-all-space --stat` lists exactly these 15 tracked files and
+nothing else (the repo-wide `M` flags remain the pre-existing CRLF churn).
+
+**Decisions**
+- `Inorganic Fertilizer-Supplemental Irrigation` -> ISFM, not ECWM (§1).
+- Line terminators preserved on CSV rewrite, so the diff is only the 311 rows.
+- Crosswalk target cells are owner-owned only once `owner_decision` is set (§6).
+- The regenerated crosswalk is left fully undecided; no simulated validation.
+- Reported the pinned-environment v1 re-train as the control for §4 rather
+  than comparing against non-reproducible committed numbers.
+- **Line endings.** `progress.md` and the two docs I edited are LF in HEAD
+  but had been left CRLF in the working tree by the earlier repo repair, so
+  editing them would have shown a whole-file rewrite. I normalised **only the
+  four files this phase touches** (`progress.md`,
+  `practice_family_mapping.md`, `merged_dataset_notes.md`, and the crosswalk
+  csv) back to HEAD's LF, which is why their diffs now show just the real
+  changes (+44/-2, +45/-1, +3/-3 and a clean +253/-0 append). The hundreds of
+  other CRLF-churned files are left exactly as they were — not my phase to
+  touch. `propose_crosswalk.py` now passes `lineterminator="\n"` to its
+  `DictWriter` (the csv module defaults to CRLF on every platform), so the
+  churn cannot come back on each re-run. The CSV **datasets** stay CRLF,
+  which is what HEAD has for them.
+
+**Verified** (WSL, Python 3.12, fresh venv: scikit-learn **1.7.2** pinned,
+pandas 2.3, numpy 2.2, networkx 3.7, rasterio 1.5.2)
+- `python -m py_compile` clean on all 8 touched Python files.
+- **pipelines/dataset 25 · rag/graph 49 (40 + 9 new) · rag/ingest/wocat 20 ·
+  rag/eval 13 · rag/ingest 17 · app/backend 58 — 182 passed, 0 failed.**
+- Dataset regeneration mechanically verified (§3); three copies md5-identical.
+- Retraining run three times (v2 pinned, v1 pinned control, v1 under sklearn
+  1.5.2) to separate data effect from environment effect.
+- Ablation arms verified to differ only in `query_text`, and only by synonyms.
+- Crosswalk merge verified on the real 44-row file and by 9 unit tests.
+- Graph rebuild verified down to the individual retargeted edges.
+- `/recommend` smoke run against the real rasters and the new model.
+
+**Needs local verification / your decisions**
+1. **Approve or reject the ISFM split** for the 10
+   `Inorganic Fertilizer-Supplemental Irrigation` rows (§1).
+2. **Confirm the retrained model on your machine** (§4). The committed v1
+   metrics are not reproducible here; the best model is HistGBM in every
+   environment I tried, on both datasets, and `income` drops to a `low`
+   confidence flag — a UI-visible change. If your machine reproduces
+   RandomForest/0.1898 on the v1 data, tell me and I will pin whatever that
+   environment is before we quote numbers in the manuscript.
+3. **Run the two retrieval evaluations** (§5) and paste the results back;
+   report v1 and v2 side by side, never as a delta.
+4. **Validate the 44 crosswalk rows** — still all `proposed`, so the graph
+   still has 0 `MAPS_TO` edges.
+5. Consider noting the **thin LPM family** (98 rows, 2 grounded yield
+   candidates) in the manuscript's limitations (§3).
+
+### Review (Senior Engineer) — P6a.1 APPROVED ✅, with a corrected diagnosis of the reproducibility finding (24 Oct 2026)
+Independently re-verified in a clean sandbox (upstream clone + the P6a.1 files):
+- **Dataset change is exactly as reported:** 311 rows differ, `practice_family`
+  is the only column that differs, row count/order unchanged; 301 → ECWM,
+  10 (`Inorganic Fertilizer-Supplemental Irrigation`) → ISFM. **Decision: the
+  ISFM split is APPROVED** — it is the documented priority rule ("fertilizer
+  beats water", the mapping document's own worked example), not a
+  special case.
+- Suites re-run here: pipelines/dataset 25, graph 49, eval 13, ingest 17,
+  wocat 20 — all green. `expand=False` verified: unmapped indicators
+  byte-identical, mapped ones differ only by their synonym terms; the two v2
+  query arms are identical except `query_text` (18/45 scenarios differ, as
+  expected for the three mapped indicators); v2 = 45 scenarios, 25/28 cells,
+  LPM 3 (the honest size of that family now).
+- **Reproducibility finding — corrected diagnosis.** In this reviewer's
+  sandbox (scikit-learn 1.7.2, pandas 3.0.5, numpy 2.5.3) `train_model.py` on
+  the v1 data reproduces the committed metrics **exactly** (RandomForest,
+  cv_r² 0.190, baseline 0.188, every per-indicator value identical), and on
+  the v2 data gives RandomForest 0.212 (baseline 0.188, unchanged as it must
+  be). The implementation agent's environment (pandas 2.3, numpy 2.2) gave
+  HistGBM 0.233 / baseline 0.167, and its sklearn-1.5.2 cross-check a third
+  set. So the committed artefact IS reproducible; what is not stable is the
+  **fold assignment**: `GroupKFold` orders groups by size with
+  `np.argsort`, and **298 of the 337 studies share their row count with at
+  least one other study**, so fold membership is decided by numpy's
+  tie-breaking, which differs between numpy versions/CPU code paths. Three
+  environments → three fold assignments → three baselines, and even the
+  winning model family flips (RF here, HistGBM there). This is a real
+  methodological hazard for the manuscript and is fixed in P7 (persisted
+  deterministic folds + repeated grouped CV). **Until P7 lands, no model
+  number is quotable**; the v2 artefact written by P6a.1 (HistGBM) is
+  accepted as an INTERIM serving model only.
+- The LPM thinness (98 rows, 5 practices) goes into the limitations as
+  suggested. Line-ending normalisation of the four touched files: accepted.
+
+**Owner actions to close P6a.1:** run the two retrieval evaluations (venv
+active, repo root; ~100 embedding calls):
+```
+python rag/eval/eval_retrieval.py --queries rag/eval/queries_v2_baseline.jsonl --out rag/eval/results/retrieval_metrics_v2_baseline
+python rag/eval/eval_retrieval.py --queries rag/eval/queries_v2.jsonl --out rag/eval/results/retrieval_metrics_v2
+```
+paste both summary tables back (reported side by side with v1, never as a
+delta), then commit: `git add -A ; git commit -m "P6a.1: practice_family fix (supplement keyword), dataset v2, interim retrain, eval scaffolding (reviewed)"`.
+
+### Owner question (24 Oct 2026): drop GroupKFold to raise R²? — reviewer's analysis and recommendation
+Measured on dataset v2 in the sandbox (RandomForest, same hyper-parameters):
+| protocol | R² |
+|---|---:|
+| grouped 5-fold by study (current, honest) | **0.212** |
+| random 5-fold (rows of the same study in train and test) | 0.507 |
+| in-sample ceiling: (study, practice, indicator) cell means | 0.563 |
+| study effect alone: (study, indicator) means | 0.493 |
+| (practice, indicator) means, no study information | 0.386 |
+Reading: the random-split number is leakage, not skill — half of the
+variance in the target is the study (site/season/management) effect, which a
+random split lets the model memorise and which is unavailable for a new pin.
+Even an oracle that knows the exact study cell only reaches 0.56, because 44%
+of the variance is within-cell replicate noise. A study-blind R² of ~0.2 is
+therefore respectable, not embarrassing — but R² is also the wrong headline
+for a *ranking* tool. Under the same honest grouped CV the model's **ranking
+skill** is already measurable: within the 68 (study × indicator) cells that
+compare ≥3 practices, Spearman ρ(predicted, observed) = 0.45 (median 0.50),
+the predicted-best practice is the observed-best **59%** of the time (chance:
+27.5%) and lands in the observed top half 68% of the time. (Sign accuracy
+0.73 equals the 73% base rate of beneficial observations — the model does not
+separate beneficial from harmful; balanced accuracy/AUC will say so honestly.)
+**Recommendation: keep grouped CV as the primary protocol; report the
+random-split number as the leakage ablation; make ranking metrics the
+headline; add the noise-ceiling analysis; and fix fold determinism.** This is
+Phase P7 — scheduled BEFORE P6b because every downstream result (faithfulness
+run, expert study, manuscript tables) depends on a stable model.
+
+### Next steps → Phase P7 — Model evaluation protocol: deterministic folds, repeated grouped CV, ranking metrics, leakage ablation (assigned to Claude Code)
+Read CLAUDE.md first. Doctrine: the artefact format `recommend.py` loads
+(`{model, cat_maps, features, cat, num, cat_mask, target, model_name,
+indicator_confidence}`) is a contract — keep it byte-compatible; dataset
+column names frozen; `recommend.py`/`advisor_agent.py` untouched.
+1. **Deterministic folds** — new `pipelines/dataset/assign_folds.py`: writes
+   `data/processed/cv_folds.csv` (`Study_No_`, `fold_rep00` … `fold_rep09`):
+   10 repetitions of a 5-fold grouped assignment. Repetition 0 = studies
+   ordered by (row count desc, `Study_No_` asc) then greedy balanced
+   assignment (fewest rows first); repetitions 1–9 = the same greedy
+   assignment after a seeded shuffle (`random.Random(rep)`) of the study
+   order. Pure Python, no numpy sort involved. Tests: determinism across
+   runs, every study in exactly one fold per repetition, fold-size balance
+   within 5%, repetition 0 reproducible from the rule by hand on a toy set.
+2. **Evaluation protocol** — new `model/evaluate.py` (importable functions +
+   CLI), used by `train_model.py` (wrap: `train_model.py` keeps its CLI and
+   artefact outputs, delegates CV to `evaluate.py`). For each of
+   {mean baseline (practice × indicator), RandomForest, HistGBM}, run
+   grouped CV over all 10 fold repetitions, per repetition collecting
+   out-of-fold predictions; report **mean ± sd across repetitions** of:
+   R², RMSE (overall, per indicator, per source); ranking metrics within
+   (study, indicator) cells with ≥3 distinct practices after direction
+   alignment with `recommend.DIRECTION` (import it): Spearman ρ, top-1 hit
+   rate, top-half hit rate, pairwise concordance (C-index), plus the chance
+   level for top-1; direction metrics: balanced accuracy and ROC-AUC for
+   "beneficial" (sign of direction-aligned log RR) with the base rate
+   stated. Add two reference rows: **random 5-fold (leakage ablation)** and
+   the **noise ceiling** (R² of cell means, study means, practice×indicator
+   means, in-sample). Model selection = highest mean grouped R² with
+   ranking metrics reported alongside; ties → simpler model.
+   **Confidence flags** = from the mean per-indicator grouped R² across
+   repetitions (thresholds unchanged: ≥0.10 high, ≥0 medium, else low), so
+   flags no longer flip with fold luck.
+3. **Hyper-parameters (small, honest grid)** inside the same protocol: RF
+   `min_samples_leaf ∈ {3, 5, 10}`, `n_estimators ∈ {150, 400}`; HistGBM
+   `learning_rate ∈ {0.03, 0.06}`, `max_iter ∈ {400, 800}`,
+   `min_samples_leaf ∈ {20, 50}`. Report the full table; choose by mean
+   grouped R². `--quick` flag (2 repetitions, 1 setting) for tests/CI.
+4. **Feature ablation row (report only, do NOT adopt):** the 13 features
+   plus `lgp_days`, `soil_ph`, `soil_soc` (present in the dataset and the
+   raster stack; currently explanation-only in `recommend.py`). If the gain
+   exceeds one sd, say so; adoption is a separate decision because it
+   changes the serving feature contract.
+5. **Outputs:** `model/artifacts/model_eval.json` (every number above),
+   `docs/reports/model_evaluation_report.md` (paper-ready tables: protocol
+   comparison incl. leakage and ceiling rows; model comparison; per-
+   indicator; ranking metrics; hyper-parameter grid), final
+   `csa_model.joblib` + `model_metrics.json` (same keys as today, plus
+   `protocol: "grouped-cv-10x5-deterministic"`, `cv_r2_sd`,
+   `ranking_metrics`, `fold_file`) in `model/artifacts/` and copied to
+   `app/backend/artifacts/`.
+6. **Tests:** `model/test_evaluate.py` — fold loader, metric functions on a
+   synthetic dataset with known answers (a perfect ranker → ρ=1, top-1=1;
+   a reversed one → ρ=-1), direction alignment, flag derivation, artefact
+   key compatibility with `recommend.py` (load the bundle and run one
+   prediction through `recommend._load`-style access without rasters).
+   Existing suites green (backend 58 incl. `test_api.py` if rasters present).
+7. **Scope guard:** no changes to `recommend.py`, `advisor_agent.py`, the
+   backend, RAG code, or data column names. `cv_folds.csv` is a NEW file
+   (additive), the dataset files are untouched.
+8. Append the phase report with the full tables (mean ± sd), the chosen
+   model and why, which flags changed vs the committed v1 and why, and
+   stop. The owner runs the full protocol if it exceeds your budget
+   (`--quick` for your own verification).
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P7' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`

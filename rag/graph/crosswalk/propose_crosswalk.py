@@ -18,6 +18,13 @@ Two passes:
   keyed on substrings of the canonical component label, plus
   :data:`FAMILY_PRIORS` as the fallback for a component no rule matches.
   Reproducible, no network, no key.
+Re-running is safe: the script **merges onto an existing csv** by
+``component``, keeping the owner's ``owner_decision``, ``owner_note`` and any
+hand-edited ``proposed_groups``/``proposed_measures``, refreshing only the
+measured columns (``aliases``, ``families``, ``n_rows``), appending new
+components and reporting exactly what it preserved. ``--no-merge`` forces a
+clean overwrite.
+
 * **``--llm``** (optional, the OWNER runs it) — one ``gpt-4o-mini`` call per
   component at ``temperature=0`` with JSON output and the QT definitions in
   the prompt. Codes the model returns are checked against
@@ -401,15 +408,93 @@ def to_row(proposal: Proposal) -> dict[str, Any]:
     }
 
 
-def write_csv(proposals: list[Proposal], path: Path) -> Path:
-    """Write the proposal csv (sorted by component, so reruns are stable)."""
+#: Columns the OWNER owns. A re-run never overwrites a non-empty value in
+#: these; the script only ever refreshes the derived columns.
+OWNER_COLUMNS: tuple[str, ...] = (
+    "proposed_groups", "proposed_measures", "owner_decision", "owner_note",
+)
+#: Columns recomputed from the data on every run.
+DERIVED_COLUMNS: tuple[str, ...] = ("aliases", "families", "n_rows")
+
+
+def read_existing(path: Path) -> dict[str, dict[str, str]]:
+    """Existing csv as ``{component: row}``; empty when there is no file."""
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8-sig", newline="") as fh:
+        return {
+            (row.get("component") or "").strip(): row
+            for row in csv.DictReader(fh)
+            if (row.get("component") or "").strip()
+        }
+
+
+def merge_row(fresh: dict[str, Any], existing: dict[str, str]) -> tuple[dict[str, Any], list[str]]:
+    """Merge a freshly computed row onto the owner's existing one.
+
+    The owner validates this file by hand in Excel, so a re-run must never
+    discard that work. A row is treated as **owner-owned** once
+    ``owner_decision`` is non-empty:
+
+    * ``owner_decision`` and ``owner_note`` are always kept verbatim;
+    * ``proposed_groups`` / ``proposed_measures`` are kept verbatim **only on
+      an owner-owned row**. On a row the owner has not decided yet they are
+      refreshed from the rules — otherwise a stale rule output would be
+      frozen in place forever, since the csv alone cannot tell an owner edit
+      apart from a rule change;
+    * ``status`` follows the decision (``validated`` / ``rejected``);
+    * ``aliases``, ``families``, ``n_rows`` are always refreshed from the
+      data — they are measurements, not judgements, and the P6a.1
+      practice_family fix is exactly why they must be allowed to move.
+
+    Returns ``(row, preserved_field_names)``.
+    """
+    row = dict(fresh)
+    preserved: list[str] = []
+    decision = (existing.get("owner_decision") or "").strip()
+    owner_owned = bool(decision)
+
+    for column in OWNER_COLUMNS:
+        old_value = (existing.get(column) or "").strip()
+        if not old_value:
+            continue
+        if column in ("proposed_groups", "proposed_measures") and not owner_owned:
+            continue
+        if old_value == str(row.get(column, "")).strip():
+            continue          # identical — nothing to preserve
+        row[column] = old_value
+        preserved.append(column)
+
+    if decision.lower() in ("validated", "rejected"):
+        row["status"] = decision.lower()
+        preserved.append("status")
+    return row, preserved
+
+
+def write_csv(proposals: list[Proposal], path: Path,
+              merge: bool = True) -> tuple[Path, dict[str, list[str]]]:
+    """Write the proposal csv, preserving the owner's edits by default.
+
+    Sorted by component so re-runs are stable. Returns
+    ``(path, {component: preserved_fields})``.
+    """
+    existing = read_existing(path) if merge else {}
+    preserved_by_component: dict[str, list[str]] = {}
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=list(COLUMNS))
+        # lineterminator="\n": the csv module defaults to CRLF on every
+        # platform, which would rewrite the whole file in git on each run.
+        writer = csv.DictWriter(fh, fieldnames=list(COLUMNS), lineterminator="\n")
         writer.writeheader()
         for proposal in sorted(proposals, key=lambda p: p.component):
-            writer.writerow(to_row(proposal))
-    return path
+            row = to_row(proposal)
+            prior = existing.get(proposal.component)
+            if prior:
+                row, preserved = merge_row(row, prior)
+                if preserved:
+                    preserved_by_component[proposal.component] = preserved
+            writer.writerow(row)
+    return path, preserved_by_component
 
 
 def propose(rows: list[dict[str, str]], use_llm: bool = False) -> tuple[list[Proposal], list[str]]:
@@ -431,13 +516,37 @@ def main(argv: list[str] | None = None) -> int:
         "--llm", action="store_true",
         help="refine with one gpt-4o-mini call per component (owner runs this)",
     )
+    parser.add_argument(
+        "--no-merge", dest="merge", action="store_false",
+        help="overwrite the csv from scratch, DISCARDING the owner's "
+             "decisions and edits (default: merge onto them)",
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+    existing_before = read_existing(args.out) if args.merge else {}
     proposals, warnings = propose(load_rows(args.dataset), use_llm=args.llm)
     for warning in warnings:
         logger.warning("%s", warning)
-    path = write_csv(proposals, args.out)
+    path, preserved = write_csv(proposals, args.out, merge=args.merge)
+
+    fresh = {p.component for p in proposals}
+    if existing_before:
+        added = sorted(fresh - set(existing_before))
+        dropped = sorted(set(existing_before) - fresh)
+        logger.info(
+            "merged onto %d existing row(s): %d preserved the owner's values, "
+            "%d new component(s) appended%s, %d gone from the data%s",
+            len(existing_before), len(preserved), len(added),
+            f" ({', '.join(added)})" if added else "",
+            len(dropped), f" ({', '.join(dropped)})" if dropped else "",
+        )
+        for component, fields in sorted(preserved.items()):
+            logger.info("  preserved %-36s %s", component, ", ".join(fields))
+    elif args.merge:
+        logger.info("no existing csv at %s — writing a fresh proposal", args.out)
+    else:
+        logger.warning("--no-merge: any previous owner decisions were DISCARDED")
 
     no_measure = [p.component for p in proposals if not p.measures]
     logger.info("%d components -> %s", len(proposals), path)
@@ -446,7 +555,14 @@ def main(argv: list[str] | None = None) -> int:
         sum(p.confidence for p in proposals) / len(proposals),
         len(no_measure), f": {no_measure}" if no_measure else "",
     )
-    logger.info("All rows are status=proposed — the owner validates before build_graph.py uses them.")
+    statuses: Counter[str] = Counter()
+    with open(path, encoding="utf-8-sig", newline="") as fh:
+        for row in csv.DictReader(fh):
+            statuses[(row.get("status") or "proposed").strip()] += 1
+    logger.info(
+        "row status: %s — only status=validated rows enter the graph",
+        ", ".join(f"{n} {status}" for status, n in sorted(statuses.items())),
+    )
     return 0
 
 

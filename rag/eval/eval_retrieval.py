@@ -17,7 +17,8 @@ family+indicator). Needs OPENAI_API_KEY (env or app/backend/.env) for query
 embeddings; ~1 embedding call per scenario, no LLM calls.
 
 Usage:  python rag/eval/eval_retrieval.py [--k-max 16] [--limit N]
-Writes ``rag/eval/results/retrieval_metrics.json`` and ``.md``.
+Writes ``<--out>.json`` and ``<--out>.md``
+(default ``rag/eval/results/retrieval_metrics.{json,md}``).
 """
 from __future__ import annotations
 
@@ -166,6 +167,11 @@ def load_queries(path: Path) -> list[dict[str, Any]]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--queries", type=Path, default=QUERIES_PATH)
+    parser.add_argument(
+        "--out", type=Path, default=None,
+        help="output stem; .json and .md are written next to it "
+             "(default: results/retrieval_metrics)",
+    )
     parser.add_argument("--k-max", type=int, default=max(K_LEVELS))
     parser.add_argument("--limit", type=int, default=0,
                         help="evaluate only the first N scenarios (smoke test)")
@@ -205,14 +211,20 @@ def main() -> None:
         )
 
     summary = aggregate(per_scenario)
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    out_json = RESULTS_DIR / "retrieval_metrics.json"
+    stem = args.out or (RESULTS_DIR / "retrieval_metrics")
+    stem = stem.with_suffix("")          # tolerate --out ...json
+    stem.parent.mkdir(parents=True, exist_ok=True)
+    out_json = stem.with_suffix(".json")
     out_json.write_text(
-        json.dumps({"summary": summary, "per_scenario": per_scenario}, indent=2)
+        json.dumps(
+            {"queries": str(args.queries), "summary": summary,
+             "per_scenario": per_scenario},
+            indent=2,
+        )
         + "\n",
         encoding="utf-8",
     )
-    out_md = RESULTS_DIR / "retrieval_metrics.md"
+    out_md = stem.with_suffix(".md")
     out_md.write_text(to_markdown(summary), encoding="utf-8")
     logger.info("Wrote %s and %s", out_json, out_md)
     logger.info("Overall: %s", json.dumps(summary["overall"]))
