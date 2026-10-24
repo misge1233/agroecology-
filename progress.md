@@ -2156,3 +2156,366 @@ column names frozen; `recommend.py`/`advisor_agent.py` untouched.
 
 **Launch (repo root):**
 `claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P7' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+**P6a.1 closure (owner runs, 24 Oct 2026):** retrieval evaluation on dataset
+v2 (45 scenarios, same frozen index). Baseline arm (no query expansion):
+Success@4/8/16 = 0.378 / **0.556** / 0.600, Recall@8 0.230, MRR 0.351;
+expansion arm: 0.378 / **0.556** / 0.622, Recall@8 0.241, Recall@16 0.339,
+MRR 0.328. Same picture as v1 (Success@8 0.56 on 50 scenarios; expansion
+non-decreasing on Success@k with coverage gains at k=16 and a small MRR
+dip). Manuscript reports v2; v1 stays here as history. Committed as
+aab597e. **P6a.1 closed.** ✅
+
+## Phase P7 — Model evaluation protocol: deterministic folds, repeated grouped CV, ranking metrics, leakage ablation (24 Oct 2026)
+
+**Built** Deterministic persisted folds, a repeated-CV protocol module that
+`train_model.py` now delegates to, ranking/direction metrics, the leakage and
+noise-ceiling reference rows, a 14-setting hyper-parameter grid, a feature
+ablation, and a generated paper-ready report. 43 new tests.
+
+### The headline: the reproducibility hazard is gone, and it is provable
+
+The P6a.1 review's diagnosis was exactly right. With folds persisted,
+**the baseline R² in this environment is now 0.188 ± 0.009 — matching the
+reviewer's sandbox (0.188) to three decimals**, where before the same code
+gave 0.167 here and 0.188 there. The baseline depends only on the fold
+assignment, never on model internals, so it is the clean test of the fix:
+it now agrees across environments because the split is read from a file
+instead of being recomputed by `np.argsort`.
+
+### 1. Deterministic folds — `pipelines/dataset/assign_folds.py`
+
+Writes `data/processed/cv_folds.csv` (337 studies × `fold_rep00`…`fold_rep09`,
+LF, sorted, 10 KB). Pure Python; no numpy sort anywhere. Repetition 0 is the
+brief's rule exactly: order by (row count desc, `Study_No_` asc), then assign
+each study to the fold holding the fewest rows (ties → lowest index).
+
+**One refinement to the brief, measured.** The brief specifies a full
+`random.Random(rep)` shuffle for repetitions 1–9. Implemented literally, that
+destroys fold balance — a 539-row study arriving last lands wholly in one
+fold, and **the worst fold deviated 21.5% from the mean row count**, far
+outside the 5% the brief's own test requires, and itself a source of the
+variance this phase exists to remove. I tried shuffling only *within size
+ties*: perfect balance, but it pins the 39 uniquely sized studies (including
+the five largest) to the same fold in every repetition, which would
+understate the uncertainty. The adopted rule is a **local shuffle**: sort by
+size, then shuffle only within consecutive blocks of 4. Measured outcome:
+
+| shuffle rule | worst fold deviation | studies pinned to one fold | studies moving between rep0/rep1 |
+|---|---:|---:|---:|
+| full shuffle (brief, literal) | **21.5%** | — | — |
+| within size ties only | 0.05% | 39 (incl. all 5 largest) | 234 |
+| **within blocks of 4 (adopted)** | **0.05%** | **1** | **252** |
+
+All ten repetitions balance to 1733/1733/1733/1733/1732 rows. `--block` is a
+CLI argument so the choice is auditable.
+
+### 2–3. Protocol and grid — `model/evaluate.py`
+
+Importable functions plus a CLI. `train_model.py` keeps its CLI and artefact
+outputs and now **delegates all CV to this module** — it re-exports
+`FEATURES`/`CAT`/`NUM`/`build_cat_maps`/`encode` from it rather than keeping a
+second copy (asserted by a test). Direction semantics import
+`recommend.DIRECTION` (plain import when rasterio is present, `ast` parse of
+the same literal otherwise — the mechanism `rag/graph/indicator_map.py`
+already uses).
+
+**Protocol comparison (10 reps × 5 folds, mean ± sd):**
+
+| protocol | R² | reading |
+|---|---:|---|
+| **Grouped CV by study (primary)** | **0.251 ± 0.015** | what a new pin actually gets |
+| Random 5-fold (leakage ablation) | 0.511 ± 0.004 | same study on both sides — not skill |
+| Ceiling: (study, practice, indicator) means | 0.563 | oracle knowing the exact cell |
+| Ceiling: (study, indicator) means | 0.493 | the study effect alone |
+| Ceiling: (practice, indicator) means | 0.386 | practice effect, no study info |
+
+All three ceilings reproduce the reviewer's sandbox exactly (0.563 / 0.493 /
+0.386), as do the 68 scored cells and the 27.5% top-1 chance level — four
+independent reimplementations agreeing is good evidence both are right.
+~44% of the target is within-cell replicate noise no model can reach.
+
+**Model comparison — selected: `HistGBM(learning_rate=0.03, max_iter=400,
+min_samples_leaf=50)`, R² 0.251 ± 0.015.** Full 14-setting grid in
+`docs/reports/model_evaluation_report.md` §5; the top and bottom:
+
+| setting | R² | Spearman ρ | top-1 |
+|---|---:|---:|---:|
+| HistGBM lr=0.03, iter=400, leaf=50 **← selected** | **0.251 ± 0.015** | 0.39 ± 0.03 | 52.2% ± 3.1% |
+| HistGBM lr=0.03, iter=400, leaf=20 | 0.248 ± 0.015 | 0.39 ± 0.04 | 51.6% ± 4.0% |
+| RandomForest leaf=10, n=400 | 0.242 ± 0.013 | 0.36 ± 0.03 | 45.6% ± 5.2% |
+| RandomForest leaf=3, n=150 (the old default) | 0.218 ± 0.018 | 0.36 ± 0.04 | 48.8% ± 3.5% |
+| Baseline (practice × indicator mean) | 0.188 ± 0.009 | 0.30 ± 0.03 | 44.3% ± 2.4% |
+
+Tuning is worth more than the model family: the best HistGBM beats the worst
+by 0.029 R², and **every one of the 14 settings beats the baseline**. Note
+the honest tension — the R²-selected model is *not* the best ranker in the
+grid (HistGBM lr=0.06/iter=800/leaf=50 reaches ρ 0.40 ± 0.04 at R² 0.223).
+The difference is well inside one sd, so I applied the brief's rule (highest
+mean grouped R²) rather than second-guessing it, and report both.
+
+**Ranking skill of the selected model** (68 cells, ≥3 practices, direction-aligned):
+
+| metric | value | chance |
+|---|---:|---|
+| Spearman ρ (mean / median over cells) | 0.39 ± 0.03 / 0.51 ± 0.03 | 0 |
+| top-1 hit rate | 52.2% ± 3.1% | 27.5% |
+| top-half hit rate | 77.1% ± 2.3% | ~50% |
+| C-index (584 pairs) | 0.70 ± 0.02 | 0.50 |
+
+**Direction** — base rate of beneficial observations 73.1%; accuracy
+74.6% ± 0.9% (i.e. barely above the base rate and therefore meaningless on
+its own), **balanced accuracy 0.608 ± 0.013, ROC-AUC 0.682 ± 0.009**. The
+model does separate beneficial from harmful, but weakly; quote the balanced
+figures, never the plain accuracy.
+
+**Per-indicator (selected model):**
+
+| indicator | n | R² | flag |
+|---|---:|---:|---|
+| yield | 5910 | 0.100 ± 0.026 | high |
+| biomass yield | 1525 | 0.078 ± 0.044 | medium |
+| soil loss | 296 | -0.001 ± 0.050 | low |
+| water use efficiency | 255 | -0.077 ± 0.068 | low |
+| runoff | 359 | -0.138 ± 0.064 | low |
+| income | 208 | -0.150 ± 0.100 | low |
+| SOM content | 111 | -0.718 ± 0.492 | low |
+
+Per source: CSA 0.374 ± 0.023, ERA 0.184 ± 0.015.
+
+### 4. Feature ablation (report only, NOT adopted)
+
+Adding `lgp_days`, `soil_ph`, `soil_soc` to the 13 serving features:
+**R² 0.251 ± 0.016 vs 0.251 ± 0.015 — gain +0.0000, far inside one sd.**
+There is no evidence of a gain, so there is nothing to trade against changing
+the serving feature contract. Not adopted, as instructed.
+
+### 5. Confidence flags — exactly one changes, and it is a coin flip
+
+Flags now come from the **mean** per-indicator grouped R² across the ten
+repetitions, so they no longer move with fold luck. Against the committed
+v1 artefact, **one flag changes: `yield` medium → high.** That is
+UI-visible (it drives the advisory's confidence wording).
+
+**Please read this before accepting it.** `yield` scores
+**R² = 0.10037 against a 0.10 threshold — a margin of +0.0004, which is 1.4%
+of its own sd (0.0264)**. `soil loss` is the mirror image: -0.0012 against
+the 0.0 threshold, 2.4% of its sd. Both flags are effectively undetermined;
+which side they fall is a policy choice about where the thresholds sit, not
+a measurement. Six of the fourteen grid settings put `yield` below 0.10. The
+report now detects this automatically (`threshold_margins()`) and prints a
+"Flags sitting on a threshold" table, so it can never be read as a finding.
+**My recommendation: either widen to a band (e.g. high ≥ 0.15) or require
+the lower confidence bound to clear the threshold. Your call — I did not
+change the thresholds, since the brief said to keep them.**
+
+### 6. Outputs
+
+- `model/artifacts/model_eval.json` (81 KB) — every number above, including
+  all 14 grid settings per repetition. Committed as the report's evidence.
+- `docs/reports/model_evaluation_report.md` — **generated** from that JSON by
+  `evaluate.format_report()`, so the tables cannot drift from the data. Seven
+  sections incl. protocol comparison, grid, per-indicator, and reproduction.
+- `model/artifacts/csa_model.joblib` + `model_metrics.json`, copied to
+  `app/backend/artifacts/`. `model_metrics.json` keeps every published key
+  with its exact shape (`per_indicator` is still `{indicator: [n, r2]}`;
+  `metadata_service.py` reads `model`/`cv_r2`) and adds `protocol`,
+  `cv_r2_sd`, `cv_rmse_sd`, `baseline_r2_sd`, `fold_file`, `n_reps`,
+  `n_folds`, `model_params`, `model_label`, `ranking_metrics`,
+  `direction_metrics`, `per_indicator_detail`, `noise_ceiling`,
+  `leakage_ablation_r2`.
+- Side benefit: the artefact drops from **15 MB to 1.97 MB** (HistGBM vs a
+  150-tree forest) — still git-ignored, but smaller images and faster startup.
+- `model_eval.json` is deliberately **not** copied to `app/backend/artifacts/`:
+  the API reads only the joblib and `model_metrics.json`, and copying it would
+  commit 81 KB twice.
+
+**Files** New: `pipelines/dataset/assign_folds.py`,
+`pipelines/dataset/test_assign_folds.py`, `model/evaluate.py`,
+`model/test_evaluate.py`, `data/processed/cv_folds.csv`,
+`model/artifacts/model_eval.json`, `docs/reports/model_evaluation_report.md`.
+Modified: `model/train_model.py` (delegates CV; keeps its CLI, gains
+`--folds`, `--quick`, `--no-grid`, `--no-ablations`, `--reuse-eval`,
+`--report`), `model/artifacts/model_metrics.json` +
+`app/backend/artifacts/model_metrics.json` (regenerated), both
+`csa_model.joblib` (git-ignored).
+**Scope guard honoured:** `git diff` over `app/backend/recommend.py`,
+`advisor_agent.py`, `app/backend/app/`, all of `rag/`, and the dataset CSVs is
+**empty**. `cv_folds.csv` is additive; no column or file name changed.
+
+**Decisions**
+- Local block shuffle (block 4) for repetitions 1–9 instead of a full
+  shuffle — the only way to satisfy both the brief's balance test and its
+  requirement that repetitions differ (§1).
+- Selection by mean grouped R² per the brief, even though a different
+  setting ranks marginally better; both reported (§2–3).
+- Thresholds left unchanged; the near-threshold condition is *detected and
+  printed* rather than silently resolved (§5).
+- `train_model.py` re-exports the shared contract from `evaluate.py` rather
+  than keeping a second definition (wrap, never fork).
+- The markdown report is generated, never hand-written.
+
+**Verified** (WSL, Python 3.12, scikit-learn **1.7.2** pinned, pandas 2.3.3,
+numpy 2.2.6, joblib 1.6.0)
+- `python -m py_compile` clean on all 5 touched Python files.
+- **225 tests pass, 0 fail:** folds **16** (new) · model **27** (new) ·
+  pipelines/dataset family 25 · rag/graph 49 · wocat 20 · rag/eval 13 ·
+  rag/ingest 17 · **app/backend 58 (full suite incl. `test_api.py` with the
+  rasters present) — no assertion needed changing.**
+- New tests cover: the hand-worked repetition-0 rule on a toy set,
+  determinism across runs and across dict ordering, partition completeness,
+  the <5% balance bound on the real study-size distribution, that
+  repetitions genuinely differ, LF/sorted round-trip, **and that the
+  committed `cv_folds.csv` is exactly what the script reproduces**; a perfect
+  ranker scoring ρ=1/top-1=1 and a reversed one ρ=-1/top-1=0, tie handling in
+  ranks and concordance, per-practice averaging, direction alignment, flag
+  derivation at the thresholds, grouped folds never splitting a study, and
+  **the serving-artefact contract** (load the bundle and push one row through
+  it exactly as `recommend.py` does — no rasters needed).
+- `cv_folds.csv` byte-identical on re-run (`cmp`).
+- `/recommend` smoke against the real rasters and the new model: ECWM×yield →
+  In-situ water harvesting / Water Harvesting / Biological SWC (confidence
+  high); ISFM×yield and ECWM×soil loss also sane.
+- Full protocol wall time ~19 min (14 settings × 10 reps × 5 folds + baseline
+  + 2 ablations). `--quick` (2 reps, 1 setting, ~19 s) is what the tests use.
+
+**Needs local verification / your decisions**
+1. **The `yield` flag (§5).** It clears the "high" threshold by 0.0004.
+   Decide whether to keep the thresholds, widen them, or require a lower
+   confidence bound — this is the one UI-visible change in the phase.
+2. **Re-run `python model/train_model.py` on your machine** and confirm the
+   selection. The folds are now fixed, so the baseline (0.188) and the
+   ceilings must match exactly; the model R²s may still move a little with
+   library versions, and the grid's top three are within 0.003 of each other,
+   so a different environment could legitimately pick a different HistGBM
+   setting. If that happens the right fix is to pin the setting, not to
+   re-tune.
+3. **Confirm the model-family change is acceptable for serving** —
+   RandomForest → HistGBM, now on a measured basis (0.251 vs 0.242 for the
+   best RF) rather than the P6a.1 interim accident.
+4. Nothing in this phase re-ran the retrieval evaluation or touched the RAG
+   layer; P6a.1's numbers stand.
+
+### Review (Senior Engineer) — P7 APPROVED with hardening applied ✅ (24 Oct 2026)
+Independently re-verified in a clean sandbox:
+- **Fold determinism achieved and proven across machines:** `assign_folds.py`
+  regenerated here produces a `cv_folds.csv` **byte-identical** to the
+  owner's; all ten repetitions balance to 0.05%; 336/337 studies change fold
+  across repetitions (the report's "~250" undercounts — cosmetic). The
+  block-of-4 shuffle refinement is accepted: it fixes the balance problem a
+  literal per-rep shuffle would have had, without pinning the large studies.
+- **Headline metrics reproduce exactly** from my own independent
+  implementation over the persisted folds (selected HistGBM, 10 × 5):
+  R² 0.251 ± 0.015, Spearman 0.390 ± 0.031, top-1 0.522 ± 0.031 (chance
+  0.275), balanced accuracy 0.608, AUC 0.682, yield R² 0.100 ± 0.026;
+  baseline 0.188 ± 0.009 = the committed v1 baseline, closing the
+  reproducibility incident. Noise ceilings 0.563 / 0.493 / 0.386 and the 68
+  scored cells also match.
+- Suites: pipelines/dataset 40 (+1 skip), model 27 → 28 after hardening.
+- Two definitional notes for the manuscript (not defects): (i) the C-index
+  gives prediction ties half credit (Harrell's convention); ties are 6.7% of
+  comparable pairs because HistGBM returns identical predictions for rare
+  practices in the same study — report the tie share with the C-index
+  (strict version ≈ 0.66); (ii) **"top-half hit" has a chance level of
+  0.635** (cells of three practices make the "upper half" two of three), so
+  0.771 is a modest gain and MUST be reported with its chance level or
+  dropped — decision: **drop it from the headline; lead with top-1 (0.52 vs
+  0.275 chance), Spearman and the C-index.**
+- An honest finding worth a sentence in the paper: for *direction*
+  (beneficial or not), the practice × indicator mean baseline is as good as
+  or better than every model (balanced accuracy 0.627 vs 0.608, AUC 0.700 vs
+  0.682); the models' advantage is in *ranking* (Spearman 0.39 vs 0.30,
+  C-index 0.70 vs 0.64) and magnitude (R² 0.251 vs 0.188). That is exactly
+  the claim the system makes.
+
+**Decisions:**
+1. **Model selection by mean grouped R² stands** (HistGBM lr 0.03, 400
+   iterations, min leaf 50); the marginally better ranker (ρ 0.398 at R²
+   0.223) is within one sd on both metrics. Tuning mattered more than model
+   family; the feature ablation gain is +0.0000, so the serving contract
+   stays as is.
+2. **Confidence-flag rule hardened (reviewer, applied):** a flag is granted
+   only when the LOWER end of the mean ± 1 sd band clears the threshold
+   (`evaluate.confidence_flags`, `CONFIDENCE_K_SD = 1.0`;
+   `train_model.py --reuse-eval` now refreshes flags under the current rule
+   and rewrites the payload so payload, report and artefact agree; test
+   added, 28/28). Effect: `yield` → **medium** (0.100 − 0.026 < 0.10),
+   `income` → low (was medium in v1; its v1 R² of 0.002 was never
+   defensible), everything else unchanged. The thresholds themselves are
+   untouched.
+3. The interim P6a.1 artefact is superseded; after the owner's `--reuse-eval`
+   run the artefact is **quotable** (protocol `grouped-cv-10x5-deterministic`).
+
+**Owner actions to close P7** (venv active, repo root; ~20 s, no re-evaluation):
+```
+cd model ; python -m pytest test_evaluate.py -q ; cd ..
+python model/train_model.py --reuse-eval
+cd app/backend ; python -m pytest -q ; cd ../..
+git add -A ; git commit -m "P7: deterministic folds, repeated grouped CV, ranking metrics, leakage/ceiling ablations; flags from the lower CV band (reviewed)" ; git push origin main
+```
+Expected: "confidence flags refreshed … yield → medium"; backend 58 passed;
+`docs/reports/model_evaluation_report.md` regenerated with the new flag
+paragraph.
+
+### Next steps → Phase P6b-i — Graph integration that needs no WOCAT data (assigned to Claude Code)
+The WOCAT export is pending; this phase lands everything in the P6b design
+that does not depend on it, so P6b-ii (ingestion + practice records) is a
+short step when the data arrives. Read CLAUDE.md first; doctrine 1 applies
+with the P6a review's rule: **graph aggregates of effect magnitude
+(`mean_log_rr`, `median_log_rr`) never reach the LLM prompt or the UI —
+only counts, directions (`share_positive`) and provenance do.**
+1. **Package hygiene** — convert `rag/graph/` (and `rag/ingest/wocat/`) to
+   package-relative imports (`from . import schema`, `from .schema import …`);
+   remove the `sys.path.insert(0, GRAPH_DIR)` hacks; tests run as
+   `python -m pytest rag/graph rag/ingest/wocat` from the repo root (add a
+   root `conftest.py` or `pytest.ini` with `pythonpath = .` if needed). No
+   top-level module named `schema`, `query` or `build_graph` may exist in
+   the API process (test: import `rag.graph.query` and assert
+   `"schema" not in sys.modules`).
+2. **`rag/graph/context_classes.py`** — `context_to_classes(ctx: dict) ->
+   dict[kind, value]` mapping the engine's resolved context (keys as
+   `recommend.extract_context` returns them: `Rainfall` mm, `slope` %,
+   `Altitude_r` m, `soil_clay` %, `lgp_days`, `temp_mean_annual`) onto the
+   QT classes in `wocat_taxonomy.CONTEXT_CLASSES`: rainfall band, slope
+   class, altitude zone, soil texture from clay % (USDA-style bands:
+   < 18 % coarse, 18–35 medium, > 35 fine — document the rule), agro-climatic
+   zone from `lgp_days` (FAO LGP bands: < 75 arid, 75–180 semi-arid,
+   180–270 sub-humid, > 270 humid — document and cite). Exhaustive tests on
+   band edges; unmappable inputs → omitted key, never a guess.
+3. **Synthetic guard** — `build_graph.py` refuses records with
+   `synthetic: true` unless `--allow-synthetic`; `query.similar_context_
+   technologies` drops synthetic nodes unless `include_synthetic=True`;
+   tests for both. The fixture directory keeps the synthetic record for
+   tests only.
+4. **Graph evidence block in `/explain` (Tier-1 data only).** In
+   `explain_service.explain()`, after evidence retrieval, call
+   `rag.graph.query.evidence_summary(practice, indicator)` for each
+   recommended practice (graceful no-op when `rag/graph/store/graph.json`
+   is absent: log once, skip). Add to the response an additive
+   `evidence_base` field per practice: `{n_studies, n_obs, aez_belts,
+   crop_groups, corpus_status: {full_text, abstract, none}, studies:
+   [{era_code, title, year, doi, corpus_status}]}` — counts and provenance
+   only, NO effect magnitudes. Prompt: a short "EVIDENCE BASE" line per
+   practice ("backed by N studies / M field observations in <belts>; K of
+   the studies are in the retrievable corpus") placed before the passages;
+   extend `allowed_numbers` with these counts (extend, never bypass). The
+   deterministic fallback text gains the same sentence. `ExplainResponse`
+   schema additive; `/metadata` gains `graph_ready: bool`.
+5. **UI** — the Evidence panel shows the evidence-base line above the
+   chips (counts + belts), with a tooltip listing the studies; hidden when
+   `graph_ready` is false. Types updated; `npm test` + `npm run build`.
+6. **Graph build in the owner workflow** — `rag/README.md` documents
+   `python -m rag.graph.build_graph` as a step after the index build;
+   `build_graph.py` default run (no `--wocat`) must succeed without
+   fixtures and without pydantic (core graph only).
+7. **Tests:** backend explain tests for the evidence block (present /
+   absent graph, numbers whitelisted, fallback sentence), context mapper
+   edges, synthetic guard, import hygiene; all existing suites green
+   (backend 58 + new, graph 49 + new, frontend 16 + new).
+8. **Scope guard:** Tier-1/Tier-2 corpora, `era_corpus`/`guidance_corpus`,
+   `rag/retrieve.py`, `recommend.py`, the model artefacts and the dataset
+   are untouched. No WOCAT fetching of any kind.
+9. Append the phase report per CLAUDE.md and stop.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6b-i' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
