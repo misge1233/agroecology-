@@ -16,9 +16,21 @@ the effect numbers and citations [n]; Tier-2 ``guidance_corpus`` passages
 [Gn]. The numeric guardrail applies identically to both tiers. Guidance is
 optional — if its collection is not built, /explain works exactly as before.
 
+Tier-1 EVIDENCE BASE (P6b-i): when the knowledge graph has been built
+(``rag/graph/store/graph.json``), each recommended practice also carries a
+count-and-provenance summary of the dataset rows behind it — how many
+studies and field observations, in which AEZ belts and crop groups, and how
+many of those studies are retrievable in the corpus. **Effect magnitudes
+from the graph (``mean_log_rr``, ``median_log_rr``) are deliberately never
+read**: the model owns every number, and a dataset aggregate can contradict
+the model's prediction for this particular pin (CLAUDE.md doctrine 1, P6a
+review). The graph is optional — absent store, absent networkx or a load
+failure logs once and /explain behaves exactly as before.
+
 The retrievers are injectable (``set_retriever`` / ``set_guidance_retriever``
 or the ``retriever=`` / ``guidance_retriever=`` arguments of :func:`explain`)
-so tests run without chromadb, the index, or the network.
+so tests run without chromadb, the index, or the network. The graph query is
+injectable the same way (``set_graph_query``).
 """
 from __future__ import annotations
 
@@ -67,6 +79,11 @@ EXPLAIN_SYSTEM_PROMPT = (
     "sizes, percentages, or study counts.\n"
     "- The model's ranking and effect estimates are authoritative; you explain "
     "them, you do not second-guess them.\n"
+    "- An EVIDENCE BASE block, when present, states how many studies and "
+    "field observations stand behind each practice and where they were "
+    "measured. Those are counts and provenance, NOT effect sizes: you may "
+    "quote them to say how well-evidenced a practice is, but never present "
+    "them as a magnitude of benefit.\n"
     "- If GUIDANCE passages (numbered [G1], [G2], ...) are provided, they may "
     "inform HOW to implement a practice (steps, timing, costs, failure "
     "modes) ONLY — cite them inline as [Gn]. They are never evidence for "
@@ -163,6 +180,148 @@ def get_guidance_retriever() -> Any:
     return _guidance_retriever
 
 
+# --------------------------------------------------------------- graph layer
+_graph_query: Any = None             # cache; injectable for tests
+_graph_unavailable = False           # sticky "not built" flag
+
+
+def set_graph_query(graph_query: Any) -> None:
+    """Inject a GraphQuery (tests) or reset the cache (pass ``None``)."""
+    global _graph_query, _graph_unavailable
+    _graph_query = graph_query
+    _graph_unavailable = False
+
+
+def graph_is_ready() -> bool:
+    """True when the knowledge-graph store exists on disk.
+
+    Cheap filesystem check, mirroring :func:`is_ready` — no networkx import,
+    no graph load.
+    """
+    return _graph_store_path().is_file()
+
+
+def _graph_store_path():
+    """``rag/graph/store/graph.json`` under the repo root."""
+    return (
+        get_settings().backend_root.parents[1]
+        / "rag" / "graph" / "store" / "graph.json"
+    )
+
+
+def get_graph_query() -> Any:
+    """Lazily load the knowledge graph, or ``None`` when it is unavailable.
+
+    Graceful no-op by design (CLAUDE.md doctrine 5): a missing store, a
+    missing networkx or a corrupt file logs once and disables the layer for
+    the process — /explain then behaves exactly as it did before P6b-i.
+    Never raises.
+    """
+    global _graph_query, _graph_unavailable
+    if _graph_query is not None:
+        return _graph_query
+    if _graph_unavailable:
+        return None
+    store = _graph_store_path()
+    if not store.is_file():
+        _graph_unavailable = True
+        logger.info("Knowledge graph not built (%s) — evidence base disabled.", store)
+        return None
+    try:
+        _ensure_repo_root_on_path()
+        from rag.graph.query import GraphQuery  # networkx — deferred
+
+        _graph_query = GraphQuery.load(store)
+        logger.info("Knowledge graph ready (%s).", store)
+    except Exception as exc:  # optional layer — degrade, never fail
+        _graph_unavailable = True
+        logger.warning("Knowledge graph unavailable (%s) — evidence base disabled.", exc)
+        return None
+    return _graph_query
+
+
+#: Corpus-coverage buckets always present in an evidence-base summary.
+CORPUS_STATUSES = ("full_text", "abstract", "none")
+
+
+def build_evidence_base(
+    recommendation: dict[str, Any], graph_query: Any = None
+) -> dict[str, dict[str, Any]]:
+    """Counts and provenance per recommended practice, from the graph.
+
+    Returns ``{practice: {n_studies, n_obs, aez_belts, crop_groups,
+    corpus_status: {full_text, abstract, none}, studies: [...]}}`` — and
+    **nothing else**. The graph's ``mean_log_rr`` / ``median_log_rr`` fields
+    are not copied: the model owns effect magnitudes, so a dataset aggregate
+    must never reach the prompt or the UI where it could contradict the
+    prediction for this pin.
+
+    Returns ``{}`` when the graph is unavailable or the indicator is missing.
+    """
+    gq = graph_query if graph_query is not None else get_graph_query()
+    if gq is None:
+        return {}
+    indicator = (recommendation.get("query") or {}).get("indicator")
+    if not indicator:
+        return {}
+
+    out: dict[str, dict[str, Any]] = {}
+    for rec in recommendation.get("recommendations") or []:
+        practice = rec.get("practice")
+        if not practice or practice in out:
+            continue
+        try:
+            summary = gq.evidence_summary(practice, indicator)
+        except Exception as exc:  # one bad practice must not sink the response
+            logger.warning("Evidence summary failed for %r (%s).", practice, exc)
+            continue
+        if not summary.get("found"):
+            continue
+        counts = summary.get("corpus_status") or {}
+        out[practice] = {
+            "n_studies": int(summary.get("n_studies") or 0),
+            "n_obs": int(summary.get("n_obs") or 0),
+            "aez_belts": list(summary.get("aez_belts") or []),
+            "crop_groups": list(summary.get("crop_groups") or []),
+            "corpus_status": {k: int(counts.get(k, 0)) for k in CORPUS_STATUSES},
+            "studies": [
+                {
+                    "era_code": st.get("era_code"),
+                    "title": st.get("title"),
+                    "year": _safe_int(st.get("year")),
+                    "doi": st.get("doi"),
+                    "corpus_status": st.get("corpus_status"),
+                }
+                for st in (summary.get("studies") or [])
+            ],
+        }
+    return out
+
+
+def n_studies_in_corpus(entry: dict[str, Any]) -> int:
+    """Studies behind a practice that contribute at least one corpus chunk."""
+    counts = entry.get("corpus_status") or {}
+    return int(counts.get("full_text", 0)) + int(counts.get("abstract", 0))
+
+
+def evidence_base_sentence(practice: str, entry: dict[str, Any]) -> str:
+    """One human sentence of counts and provenance — no effect magnitudes."""
+    parts = [
+        f"{practice}: backed by {entry['n_studies']} "
+        f"{'study' if entry['n_studies'] == 1 else 'studies'} / "
+        f"{entry['n_obs']} field "
+        f"{'observation' if entry['n_obs'] == 1 else 'observations'}"
+    ]
+    if entry.get("aez_belts"):
+        parts.append(f" in {', '.join(entry['aez_belts'])}")
+    in_corpus = n_studies_in_corpus(entry)
+    parts.append(
+        f"; {in_corpus} of the studies "
+        f"{'is' if in_corpus == 1 else 'are'} in the retrievable corpus"
+    )
+    return "".join(parts) + "."
+
+
 def is_ready() -> bool:
     """Cheap filesystem check — no chromadb import, no index open.
 
@@ -248,7 +407,9 @@ def _collect_numbers(obj: Any, out: set[float]) -> None:
 
 
 def allowed_numbers(
-    recommendation: dict[str, Any], chunks: list[dict[str, Any]]
+    recommendation: dict[str, Any],
+    chunks: list[dict[str, Any]],
+    evidence_base: dict[str, dict[str, Any]] | None = None,
 ) -> set[float]:
     """Every number the LLM is allowed to state.
 
@@ -259,17 +420,34 @@ def allowed_numbers(
     applies identically to both tiers. ``url`` is deliberately NOT harvested:
     URLs never appear in the prompt, so their digits (handle ids, dates)
     would whitelist numbers the LLM cannot legitimately be quoting.
+
+    ``evidence_base`` EXTENDS the whitelist with exactly the three numbers
+    the EVIDENCE BASE prompt sentence states per practice — ``n_studies``,
+    ``n_obs`` and the number of studies in the corpus — and nothing else.
+    Study titles/years, era codes and the per-bucket ``corpus_status``
+    counts are NOT harvested: they never appear in the prompt (the UI shows
+    them, the LLM does not see them), so admitting their digits would
+    whitelist numbers the LLM cannot legitimately be quoting — the same
+    rule that keeps URL digits out. The evidence base holds no effect
+    magnitudes, so nothing it adds can whitelist an invented effect.
     """
     allowed: set[float] = set()
     _collect_numbers(recommendation, allowed)
     for c in chunks:
         for field in ("text", "title", "year", "era_code"):
             _collect_numbers(c.get(field), allowed)
+    for entry in (evidence_base or {}).values():
+        _collect_numbers(entry.get("n_studies"), allowed)
+        _collect_numbers(entry.get("n_obs"), allowed)
+        _collect_numbers(n_studies_in_corpus(entry), allowed)
     return allowed
 
 
 def numbers_are_grounded(
-    text: str, recommendation: dict[str, Any], chunks: list[dict[str, Any]]
+    text: str,
+    recommendation: dict[str, Any],
+    chunks: list[dict[str, Any]],
+    evidence_base: dict[str, dict[str, Any]] | None = None,
 ) -> bool:
     """True iff every numeric token in ``text`` is grounded.
 
@@ -278,7 +456,7 @@ def numbers_are_grounded(
     positions, "the 2 top practices", …). Citation markers [n] are stripped
     first. Any other number means the LLM invented a quantity — reject.
     """
-    allowed = allowed_numbers(recommendation, chunks)
+    allowed = allowed_numbers(recommendation, chunks, evidence_base)
     stripped = _CITE_MARKER_RE.sub(" ", text)
     for tok in _NUM_RE.findall(stripped):
         value = float(tok)
@@ -292,13 +470,19 @@ def numbers_are_grounded(
 
 # ------------------------------------------------------------------- fallback
 def build_fallback_text(
-    recommendation: dict[str, Any], chunks: list[dict[str, Any]]
+    recommendation: dict[str, Any],
+    chunks: list[dict[str, Any]],
+    evidence_base: dict[str, dict[str, Any]] | None = None,
 ) -> str:
     """Deterministic, citation-grounded explanation — no generated content.
 
     One sentence per recommended practice: the engine's own effect string plus
     up to two retrieved sources (title + era_code). Used when the LLM is
     unavailable or its output fails the numeric guardrail.
+
+    When an ``evidence_base`` entry exists for a practice, its counts-and-
+    provenance sentence is appended — the same sentence the LLM prompt gets,
+    so both paths state the same facts.
     """
     query = recommendation.get("query") or {}
     indicator = query.get("indicator") or "the selected objective"
@@ -324,6 +508,9 @@ def build_fallback_text(
         if cites:
             sentence += f", supported by evidence from {cites}"
         sentences.append(sentence + ".")
+        entry = (evidence_base or {}).get(practice)
+        if entry:
+            sentences.append(evidence_base_sentence(practice, entry))
     if not sentences:
         sentences.append(
             f"No practices were recommended for {indicator} in this context."
@@ -337,6 +524,7 @@ def _build_messages(
     question: str | None,
     chunks: list[dict[str, Any]],
     guidance_chunks: list[dict[str, Any]] | None = None,
+    evidence_base: dict[str, dict[str, Any]] | None = None,
 ) -> list[dict[str, str]]:
     passages = []
     for i, c in enumerate(chunks, start=1):
@@ -346,7 +534,23 @@ def _build_messages(
         "RECOMMENDATION JSON (authoritative — the only source of effect "
         "numbers):\n```json\n"
         + json.dumps(recommendation, indent=2, default=str)
-        + "\n```\n\nEVIDENCE PASSAGES (cite as [n]):\n\n"
+        + "\n```\n"
+    )
+    if evidence_base:
+        # Counts and provenance only — deliberately no effect magnitudes.
+        lines = "\n".join(
+            evidence_base_sentence(practice, entry)
+            for practice, entry in evidence_base.items()
+        )
+        user += (
+            "\nEVIDENCE BASE (how much field evidence stands behind each "
+            "practice — counts and provenance only; these are NOT effect "
+            "sizes and must not be described as such):\n"
+            + lines
+            + "\n"
+        )
+    user += (
+        "\nEVIDENCE PASSAGES (cite as [n]):\n\n"
         + "\n\n".join(passages)
     )
     if guidance_chunks:
@@ -410,10 +614,13 @@ def explain(
     k: int = 8,
     retriever: Any = None,
     guidance_retriever: Any = None,
+    graph_query: Any = None,
 ) -> dict[str, Any]:
     """Produce a grounded explanation of an engine recommendation.
 
-    Returns ``{"explanation", "citations", "grounded", "llm_used"}``.
+    Returns ``{"explanation", "citations", "grounded", "llm_used",
+    "evidence_base"}``. ``evidence_base`` is ``{}`` whenever the knowledge
+    graph is not built — the field is always present, never null.
     ``grounded`` is True only when at least one evidence chunk backs the text;
     ``llm_used`` is True only when LLM output passed the numeric guardrail.
 
@@ -426,6 +633,7 @@ def explain(
     r = retriever if retriever is not None else get_retriever()
     chunks = r.retrieve_for_recommendation(recommendation, k=k)
     citations = shape_citations(chunks)
+    evidence_base = build_evidence_base(recommendation, graph_query)
 
     if not chunks:
         # Cite or stay silent — with nothing retrieved we make no claims.
@@ -438,6 +646,7 @@ def explain(
             "citations": [],
             "grounded": False,
             "llm_used": False,
+            "evidence_base": evidence_base,
         }
 
     if get_settings().openai_api_key:
@@ -455,16 +664,19 @@ def explain(
                 logger.warning("Guidance retrieval failed (%s) — evidence only.", exc)
                 guidance_chunks = []
         text = _call_llm(
-            _build_messages(recommendation, question, chunks, guidance_chunks)
+            _build_messages(
+                recommendation, question, chunks, guidance_chunks, evidence_base
+            )
         )
         if text and numbers_are_grounded(
-            text, recommendation, chunks + guidance_chunks
+            text, recommendation, chunks + guidance_chunks, evidence_base
         ):
             return {
                 "explanation": text,
                 "citations": citations + shape_citations(guidance_chunks),
                 "grounded": True,
                 "llm_used": True,
+                "evidence_base": evidence_base,
             }
         if text:
             logger.warning(
@@ -475,8 +687,9 @@ def explain(
     # No key, LLM failure, or guardrail rejection → deterministic template
     # (evidence-only: the template cites studies, never guidance).
     return {
-        "explanation": build_fallback_text(recommendation, chunks),
+        "explanation": build_fallback_text(recommendation, chunks, evidence_base),
         "citations": citations,
         "grounded": True,
         "llm_used": False,
+        "evidence_base": evidence_base,
     }

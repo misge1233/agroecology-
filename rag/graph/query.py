@@ -21,18 +21,13 @@ from __future__ import annotations
 
 import json
 import logging
-import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
 import networkx as nx
 
-GRAPH_DIR = Path(__file__).resolve().parent
-if str(GRAPH_DIR) not in sys.path:
-    sys.path.insert(0, str(GRAPH_DIR))
-
-from schema import (  # noqa: E402
+from .schema import (
     CONTEXT_CLASS_KINDS,
     EdgeType,
     NodeType,
@@ -40,6 +35,8 @@ from schema import (  # noqa: E402
     from_node_link,
     node_id,
 )
+
+GRAPH_DIR = Path(__file__).resolve().parent
 
 logger = logging.getLogger(__name__)
 
@@ -246,7 +243,8 @@ class GraphQuery:
         return results[:k]
 
     def similar_context_technologies(
-        self, context: dict[str, Any], practice: str | None = None, k: int = 5
+        self, context: dict[str, Any], practice: str | None = None, k: int = 5,
+        include_synthetic: bool = False,
     ) -> list[dict[str, Any]]:
         """WOCAT Technologies matching a biophysical context (and practice).
 
@@ -262,8 +260,16 @@ class GraphQuery:
 
         Returns ``[]`` when the graph holds no Technology nodes, which is the
         P6a default: WOCAT records arrive in P6b.
+
+        Nodes flagged ``synthetic`` are test scaffolding, not WOCAT data, and
+        are **dropped** unless ``include_synthetic=True`` — belt and braces
+        with ``build_graph.py``'s own refusal, so a synthetic record cannot
+        surface in an advisory even if one reaches the store.
         """
-        technologies = self._nodes_of(NodeType.TECHNOLOGY)
+        technologies = [
+            tid for tid in self._nodes_of(NodeType.TECHNOLOGY)
+            if include_synthetic or not self._attrs(tid).get("synthetic")
+        ]
         if not technologies:
             return []
 
@@ -426,10 +432,13 @@ def related_practices(practice: str, k: int = 5) -> list[dict[str, Any]]:
 
 
 def similar_context_technologies(
-    context: dict[str, Any], practice: str | None = None, k: int = 5
+    context: dict[str, Any], practice: str | None = None, k: int = 5,
+    include_synthetic: bool = False,
 ) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.similar_context_technologies`."""
-    return default_query().similar_context_technologies(context, practice, k)
+    return default_query().similar_context_technologies(
+        context, practice, k, include_synthetic
+    )
 
 
 def explain_paths(practice: str, indicator: str, max_paths: int = 5) -> list[dict[str, Any]]:

@@ -2519,3 +2519,343 @@ only counts, directions (`share_positive`) and provenance do.**
 
 **Launch (repo root):**
 `claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6b-i' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+## Phase P6b-i — Graph integration that needs no WOCAT data (25 Oct 2026)
+
+**Built** The whole P6b design that does not depend on the pending export:
+`rag/graph` and `rag/ingest/wocat` converted to real packages, a context
+mapper, a two-sided synthetic guard, the Tier-1 evidence base through
+`/explain` to the UI, and the graph build documented in the owner workflow.
+124 new tests.
+
+### 1. Package hygiene — the API process can no longer be shadowed
+
+Every `sys.path.insert(0, GRAPH_DIR)` is gone from `rag/graph` and
+`rag/ingest/wocat`; the modules now import each other relatively
+(`from . import schema`, `from .schema import …`). A new repo-root
+`pytest.ini` (`pythonpath = .`, plus `norecursedirs` so a bare `pytest` at
+the root does not wander into `.venv`/`node_modules`) is all that is needed
+for `python -m pytest rag/graph rag/ingest/wocat`.
+
+The assertion the brief asked for is a test:
+`test_importing_the_graph_creates_no_top_level_modules` imports
+`rag.graph.query`, `rag.graph.schema`, `rag.graph.build_graph` and
+`rag.graph.context_classes` and asserts that **none** of `schema`, `query`,
+`build_graph`, `wocat_taxonomy`, `practice_components`, `indicator_map`,
+`context_classes` exists in `sys.modules`. A second test asserts importing
+the graph does not mutate `sys.path` at all.
+
+A pleasant consequence: `rag/ingest/wocat/schema.py` needed a 20-line
+`importlib.util.spec_from_file_location` hack in P6a purely because
+`rag/graph/schema.py` shares its name. With both as packages the collision
+cannot happen, so the hack is deleted — `from rag.graph.schema import
+CONTEXT_CLASS_KINDS` now says exactly what it means, and a test pins that
+the wocat module really does get the graph's object (`is` identity).
+
+**Consequence to know:** `python rag/graph/build_graph.py` now fails with
+`attempted relative import with no known parent package`. That is inherent
+to relative imports, not a bug — the CLIs are `python -m rag.graph.build_graph`
+and `python -m rag.graph.crosswalk.propose_crosswalk`, documented in both
+READMEs with a line explaining why.
+
+### 2. `rag/graph/context_classes.py` — the engine context → QT classes
+
+`context_to_classes(ctx)` maps `recommend.extract_context` output onto the
+QT §5.1-§5.3 vocabularies. Five mappings, each with its source cited in the
+module docstring:
+
+| engine key | QT kind | rule |
+|---|---|---|
+| `Rainfall` mm | rainfall_band | QT §5.1 verbatim |
+| `slope` % | slope_class | QT §5.2 verbatim |
+| `Altitude_r` m | altitude_zone | QT §5.2 verbatim |
+| `soil_clay` % | soil_texture | USDA-style: < 18 coarse, 18-35 medium, > 35 fine |
+| `lgp_days` | agroclimatic_zone | FAO/QT LGP: < 75 arid, 75-180 semi-arid, 180-270 sub-humid, > 270 humid |
+
+Two judgement calls, both documented in the module rather than hidden:
+
+* **The questionnaire's bands have one-unit gaps** (`< 250 mm` then
+  `251-500 mm`; `flat (0-2%)` then `gentle (3-5%)`) because it expects
+  integer answers, but raster values are continuous. The gaps are closed
+  **upward**: a value goes in the first band whose upper bound it does not
+  exceed, so 250.4 mm is `< 250 mm` and 250.6 mm is `251-500 mm`. Both sides
+  of every boundary are tested.
+* **`temp_mean_annual`, `soil_depth`, `topsoil_om` are not mapped.** The QT
+  has no temperature class, and the serving stack carries neither soil depth
+  nor organic matter. `soil_soc` is organic *carbon*; turning it into
+  organic *matter* needs the Van Bemmelen factor (~1.724) — an assumption I
+  will not make silently. It is a two-line addition if you want it.
+
+Unmappable input (missing, NaN, non-numeric, or a nodata sentinel like
+-9999, or out of physical range) **omits the key** rather than guessing a
+nearest band. Every emitted label is validated against
+`wocat_taxonomy.CONTEXT_CLASSES`, so a typo in the band table raises instead
+of inventing a class. **98 tests**, including one that parses
+`recommend.STACK` with `ast` to prove the source keys are names the engine
+actually produces.
+
+### 3. Synthetic guard — two independent barriers
+
+* `build_graph.py` **refuses** records with `synthetic: true` unless
+  `--allow-synthetic`, logging which ids it dropped; with the flag it warns
+  that the graph must not feed the app or an evaluation. The flag is
+  recorded in `graph_report.json`.
+* `query.similar_context_technologies()` **drops** synthetic nodes unless
+  `include_synthetic=True` — belt and braces, so even a graph that somehow
+  contains one cannot surface it in an advisory. The test proves the filter
+  is load-bearing: on a steep semi-arid context the synthetic record would
+  otherwise rank **first**.
+
+The canonical store is rebuilt accordingly: **720 nodes, 1,961 edges**, one
+Technology (#6644) and one Approach (#6732), `validation: []`,
+byte-identical on re-run.
+
+### 4. Evidence base in `/explain` — counts and provenance, never magnitudes
+
+`explain_service` gains a graph layer with the same shape as the Tier-2
+guidance layer: `graph_is_ready()` (cheap file check), `get_graph_query()`
+(lazy, caches, logs once and disables itself on any failure) and
+`set_graph_query()` for injection. `build_evidence_base()` calls
+`rag.graph.query.evidence_summary(practice, indicator)` per recommended
+practice and copies **only** `{n_studies, n_obs, aez_belts, crop_groups,
+corpus_status: {full_text, abstract, none}, studies: [{era_code, title,
+year, doi, corpus_status}]}`.
+
+**Doctrine 1 is enforced, not assumed.** `evidence_summary` returns
+`mean_log_rr`, `median_log_rr` and `share_positive`; none is copied. The
+test fixture deliberately *includes* those fields and then asserts they are
+absent from the serialized output and that the key sets are exactly the
+allowed ones — so the test fails if someone widens the copy later.
+
+* **Prompt:** an `EVIDENCE BASE` block before the passages, one sentence per
+  practice, introduced as "counts and provenance only; these are NOT effect
+  sizes and must not be described as such", plus a matching system-prompt
+  rule. Tested for position (before the passages) and for the absence of
+  `mean_log_rr`.
+* **Guardrail:** `allowed_numbers()` **extends** (never bypasses) with the
+  study/observation counts and study years, because those now appear in the
+  prompt. Two tests pin both halves: a sentence quoting "3 studies and 17
+  field observations" is rejected without the evidence base and accepted
+  with it, while "cuts soil loss by 77.4%" is still rejected either way.
+* **Fallback:** the deterministic template gains the identical sentence, so
+  both paths state the same facts.
+* `ExplainResponse.evidence_base` is additive and always present (`{}` when
+  the graph is absent, never null); `/metadata` gains `graph_ready`.
+
+Smoke-tested against the **real** graph: `Water Harvesting` × `soil loss`
+returns "backed by 11 studies / 107 field observations in Dry Dega, Dry
+Kolla, … ; 8 of the studies are in the retrievable corpus", with the eleven
+studies and their DOIs in `studies`, and no magnitude anywhere in the
+payload.
+
+### 5. UI
+
+`EvidencePanel` shows an **Evidence base** list above the citation chips,
+hidden unless `/metadata` reports `graph_ready`, with the full study list
+(era_code · title · year — full text / abstract only / not in the corpus) in
+the `title` tooltip.
+
+The panel's vitest environment is `node`, not jsdom, so rendering tests
+would have meant adding `jsdom` + `@testing-library/react`. Instead the
+presentation logic lives in a new `src/lib/evidence-base.ts`
+(`evidenceBaseEntries`, `evidenceBaseSentence`, `studiesInCorpus`,
+`studyLine`, `studiesTooltip`) and is unit-tested there — the repo's own
+pattern (`chat-flow.test.ts`), a thinner component, and the sentence stays
+word-for-word identical to the backend's. **9 new frontend tests**, one of
+which asserts the sentence never contains `%` or `log|ratio|mean|median`.
+
+### 6. Owner workflow
+
+`rag/README.md` gains step 4 (`python -m rag.graph.build_graph`), the
+optional flags, the `-m`-not-a-path explanation, and what `graph_ready`
+turns on. `rag/graph/README.md` is updated for the package layout and gains
+a "Synthetic records" section. **Verified: the default build (no `--wocat`)
+succeeds with pydantic blocked** — 718 nodes, `validation: []`, `pydantic`
+never imported; `--wocat` without pydantic degrades with a clear message
+instead of crashing.
+
+### A defect I found in my own P7 work, and fixed
+
+`model/test_evaluate.py` called `train_model.main([...])` without
+`--no-report`, and `--report` defaults to the **real**
+`docs/reports/model_evaluation_report.md`. Every run of the model suite
+therefore overwrote the repo's evaluation report with one generated from the
+96-row synthetic fixture (I caught it because the working copy's report said
+`Protocol: SENTINEL-NOT-RECOMPUTED … 96 rows, 12 studies`). All four calls
+now pass `--no-report`, and I regenerated the real report with
+`train_model.py --reuse-eval`: **it came back byte-identical to the
+committed one**, and a cmp-before-and-after test run confirms the suite no
+longer touches it. That `--reuse-eval` also rewrote
+`model/artifacts/model_metrics.json`, which is now **semantically identical
+to the committed version** (it had drifted to 5,240 bytes in the working
+tree before my session started — mtime 00:34, before my first edit at
+00:39). `model_eval.json` I did not touch; it is semantically equal to HEAD,
+differing only in formatting from your closure run.
+
+**Files** New: `rag/graph/context_classes.py`,
+`rag/graph/test_context_classes.py`, `pytest.ini`,
+`app/frontend/src/lib/evidence-base.ts`,
+`app/frontend/src/lib/evidence-base.test.ts`.
+Modified: `rag/graph/{query,build_graph,indicator_map,test_graph}.py`,
+`rag/graph/crosswalk/propose_crosswalk.py`,
+`rag/ingest/wocat/{schema,normalize_wocat,test_wocat}.py`,
+`app/backend/app/services/explain_service.py`, `app/backend/app/schemas.py`,
+`app/backend/app/metadata_service.py`, `app/backend/tests/test_explain.py`,
+`app/frontend/src/lib/types.ts`,
+`app/frontend/src/components/evidence-panel.tsx`, `rag/README.md`,
+`rag/graph/README.md`, `model/test_evaluate.py`, and the regenerated
+`docs/reports/model_evaluation_report.md` + `model_metrics.json` pair.
+**Scope guard honoured:** `git diff` over `recommend.py`,
+`advisor_agent.py`, `rag/retrieve.py`, `rag/corpus/`, `rag/index/`,
+`data/processed/` and `app/backend/dataset/` is **empty**. No WOCAT fetching
+of any kind. `rag/README.md` was normalised to HEAD's LF (it had drifted to
+CRLF in the working tree) so its diff shows only the 41 added lines.
+
+**Decisions**
+- `--allow-synthetic` + `include_synthetic` as two independent guards rather
+  than one, so neither a bad build nor a bad query can leak scaffolding.
+- Band gaps closed upward, and unmappable context omitted rather than
+  snapped to the nearest band (§2).
+- `soil_soc` → `topsoil_om` deliberately NOT mapped: it needs a conversion
+  factor that is a research assumption, not a lookup.
+- Frontend logic extracted to `lib/evidence-base.ts` instead of adding jsdom
+  to the toolchain (§5).
+- Four P6a graph tests were updated because the synthetic record is now
+  refused by default — `test_fixtures_ingest_as_technology_and_approach_nodes`
+  (2 → 1 technologies) and three that need the synthetic record now opt in
+  with `allow_synthetic=True` / `include_synthetic=True`. These are
+  intended-behaviour changes, not weakened assertions.
+
+**Verified** (WSL, Python 3.12 / scikit-learn 1.7.2 venv; frontend via the
+Windows Node 24.19 in `node_modules`)
+- `python -m py_compile` clean on all 16 touched Python files.
+- **349 Python tests pass, 0 fail:** rag/graph + rag/ingest/wocat **174**
+  (49 → 174: +98 context mapper, +7 synthetic/hygiene, +20 wocat), pipelines
+  + model **69**, rag/eval **13**, rag/ingest **17**, **app/backend 76**
+  (58 → 76: +18 evidence base). Plus **25 frontend tests** (16 → 25).
+- Import hygiene proven by test and by hand: importing `rag.graph.query`
+  leaves `sys.modules` free of every bare name and `sys.path` unmodified.
+- `/metadata` over the real app returns `rag_ready = True, graph_ready = True`.
+- Real-graph `/explain` smoke (above) with no magnitude in the payload.
+- Core build with **pydantic blocked**: 718 nodes, `validation: []`.
+- Graph store rebuilt: 720 nodes / 1,961 edges, byte-identical on re-run.
+- Frontend `tsc --noEmit` clean; `eslint .` **0 errors**, 10 warnings — all
+  pre-existing React-Compiler warnings (follow-up F-1), **none in the files
+  I touched**.
+- An autouse `_no_auto_graph` fixture was added to the backend suite: without
+  it the existing tests would silently depend on whether a graph store
+  happens to exist on the machine.
+
+**Needs local verification / your decisions**
+1. **`npm run build` could not be verified here.** It fails in this
+   environment with `next/font/google queries have exactly one entry` /
+   `Can't resolve '@vercel/turbopack-next/internal/font/google/font'` —
+   a Turbopack font-resolution failure in `src/app/layout.tsx`, a file I did
+   not touch. I proved it is not mine: **reverting my two changed frontend
+   files and rebuilding gives the identical error.** It is most likely the
+   Windows-installed `node_modules` being driven from WSL. Please run
+   `npm run build` on Windows; `npm test` (25) and `tsc --noEmit` both pass
+   here.
+2. **Check `model/artifacts/model_metrics.json` and `model_eval.json`** are
+   what you expect after the repair described above — they were already
+   modified in the working tree when this session began.
+3. Decide whether `soil_soc` → `topsoil_om` should be mapped (§2); it needs
+   your call on the carbon→organic-matter factor.
+4. P6b-ii remains: ingest the WOCAT export, replace the synthetic fixture
+   with two real Ethiopian Technologies, and wire
+   `similar_context_technologies` into `/explain` using
+   `context_to_classes` — which is now the only missing piece on that path.
+
+### Review (Senior Engineer) — P6b-i APPROVED with hardening applied ✅ (25 Oct 2026)
+Independently re-verified in a clean sandbox (upstream clone + the P6b-i files):
+- Suites from the repo root: rag/graph + rag/ingest/wocat **174/174**; backend
+  `test_explain.py` **51/51** (52 after hardening); model **28/28**; context
+  mapper **98/98**. Import hygiene confirmed in a fresh interpreter: after
+  `import rag.graph.query, rag.graph.build_graph, rag.ingest.wocat.schema` no
+  top-level `schema`/`query`/`build_graph` module exists and `sys.path` is
+  untouched. The model suite no longer overwrites
+  `docs/reports/model_evaluation_report.md` (checked: unchanged after a run).
+- **The P7 artefacts the agent asked us to sanity-check are intact:**
+  `model_metrics.json` (both copies), `model_eval.json` and the evaluation
+  report differ from HEAD only in line endings — zero content changes;
+  flags still `yield: medium`, `income: low`.
+- Evidence-base block: doctrine 1 holds end to end — the response, prompt
+  sentence and fallback carry counts/belts/provenance only; the test that
+  plants `mean_log_rr` in the fixture and asserts its absence is the right
+  kind of test. Synthetic guard verified as two independent barriers.
+- `context_to_classes`: bands are QT-verbatim, edges tested; rule = first
+  band whose upper bound the value does not exceed (inclusive).
+
+**Hardening applied in review (backend 52/52):**
+1. `allowed_numbers` now harvests from the evidence base **exactly the three
+   numbers the prompt sentence states** (n_studies, n_obs, studies in
+   corpus). Study years/era codes and per-bucket corpus counts were being
+   whitelisted although they never reach the prompt — the same class of
+   hole as the URL digits fixed in P5a. Regression test added
+   (`test_guardrail_whitelists_only_the_numbers_the_prompt_states`).
+2. `context_classes.py` docstring aligned with the implemented rule (it
+   claimed 250.4 mm → "< 250 mm"; the code and the 98 tests say 250.0 →
+   "< 250 mm", 250.1 → "251-500 mm"; likewise clay 18.0 / LGP 75.0).
+
+Accepted as reported: the four P6a graph tests updated for the synthetic
+guard (intended behaviour); `npm run build` failing under WSL on the
+Windows-installed `node_modules` (owner builds on Windows).
+
+**Owner actions to close P6b-i** (Windows, venv active):
+```
+cd app\backend ; python -m pytest -q ; cd ..\..
+cd app\frontend ; npm test ; npm run build ; cd ..\..
+python -m rag.graph.build_graph
+git add -A ; git commit -m "P6b-i: graph integration without WOCAT data — relative imports, context classes, synthetic guard, evidence-base block in /explain + UI (reviewed, hardened)" ; git push origin main
+```
+Expected: backend 77 passed; frontend 25 passed + build OK; graph 722 nodes.
+Then `npm run dev` + uvicorn once: the Evidence panel should show
+"backed by N studies / M field observations in …" above the chips.
+
+### Next steps → Phase P8 — Expert-study readiness: citation numbering, Tier-2 chunk quality, audit dry run (assigned to Claude Code)
+Purpose: make the texts the experts will rate clean and defensible, whether
+or not the WOCAT export arrives in time. Read CLAUDE.md first.
+1. **Per-study citation numbering (P2c tracked finding).** Today the prompt
+   numbers evidence passages per CHUNK (`[n]`) while the UI chips and the
+   citation list are per STUDY, so a reader sees `[6]` with four chips.
+   Change `_build_messages` so passages are grouped and numbered per study
+   (`[1]` = first study; several passages of one study share its number and
+   are shown as `[1a]`, `[1b]` … in the prompt but cited as `[1]`), the
+   guardrail's marker regex and `shape_citations` numbering follow, the
+   Evidence panel shows the same `[n]` on each chip, and the faithfulness
+   auditor's `cite_markers`/`cited_support` logic maps markers to studies.
+   Tier 2 keeps `[Gn]` per document (already per document). Tests for
+   prompt numbering, marker stripping, citation ↔ chip consistency, auditor
+   mapping. Existing P3 artefacts are not re-run.
+2. **Tier-2 chunk quality filter.** 11.1% of the 19,997 guidance chunks are
+   tables, reference lists or OCR-shattered text (reviewer sample, 25 Oct:
+   alpha ratio < 0.70, or short-token share > 0.35, or all-caps share
+   > 0.30). Add `rag/ingest/quality.py` with a documented, tested
+   `chunk_quality(text) -> {score, flags}` (alpha ratio, short-token share,
+   caps share, digit share, mean word length, reference-list and table
+   patterns) and a `--min-quality` gate in `chunk_guidance.py`; add
+   `rag/ingest/prune_collection.py` that deletes failing chunk ids from an
+   existing Chroma collection and rewrites the chunks file (no
+   re-embedding; uses `index_tools`-style safety: refuses to create stores,
+   prints the funnel). Calibrate the threshold on a labelled sample of 100
+   chunks (you label them, write the sample + labels to
+   `rag/ingest/quality_sample.csv` for the owner to spot-check), target
+   ≥ 95% precision on "garbage". Tier 1 is NOT filtered (frozen). Report the
+   expected removal count; the owner runs the prune.
+3. **Faithfulness audit dry run.** `eval_faithfulness.py --n 2` against the
+   live stack (owner runs; needs key + rasters) must work with the new
+   numbering, the evidence base and guidance; fix whatever breaks; confirm
+   the audit CSV columns and that `explanations.jsonl` carries both A and B
+   conditions. `make_packets.py --experts 3` dry run on those two
+   scenarios, then delete the smoke outputs.
+4. **Protocol check.** Read `rag/eval/expert_study/protocol.md` against the
+   current system and list in the report every statement that is now stale
+   (tiers, citation style, evidence-base line) — do not rewrite the
+   protocol; the reviewer will.
+5. Scope guard: no changes to Tier-1 corpus/index, the model, the dataset,
+   `recommend.py`; `era_corpus` untouched; guidance pruning is a deletion
+   of flagged ids only, never a re-chunk of Tier 1.
+6. Append the phase report per CLAUDE.md and stop.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P8' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`

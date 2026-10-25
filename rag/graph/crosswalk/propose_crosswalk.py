@@ -49,16 +49,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .. import practice_components as pc
+from .. import wocat_taxonomy as wt
+from ..build_graph import DATASET_PATH, load_rows
+
 CROSSWALK_DIR = Path(__file__).resolve().parent
 GRAPH_DIR = CROSSWALK_DIR.parent
 REPO_ROOT = GRAPH_DIR.parents[1]
-for _path in (str(GRAPH_DIR), str(REPO_ROOT)):
-    if _path not in sys.path:
-        sys.path.insert(0, _path)
-
-import practice_components as pc  # noqa: E402
-import wocat_taxonomy as wt  # noqa: E402
-from build_graph import DATASET_PATH, load_rows  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

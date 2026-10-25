@@ -32,6 +32,8 @@ export interface Metadata {
   model: ModelMeta;
   /** True when the RAG index is built — gates the Evidence panel. */
   rag_ready?: boolean;
+  /** True when the knowledge graph is built — gates the evidence-base line. */
+  graph_ready?: boolean;
 }
 
 /** The clean, default-view item (practice + one-line effect). */
@@ -103,11 +105,39 @@ export interface ExplainCitation {
   n_passages: number;
 }
 
+/** One study behind a practice — provenance only, never an effect size. */
+export interface EvidenceBaseStudy {
+  era_code: string | null;
+  title: string | null;
+  year: number | null;
+  doi: string | null;
+  /** "full_text" | "abstract" | "none" — how much of it is retrievable. */
+  corpus_status: string | null;
+}
+
+/** How much field evidence stands behind one recommended practice.
+ *
+ * Counts and provenance ONLY. Effect magnitudes stay with the model: the
+ * knowledge graph's dataset aggregates are deliberately not exposed, because
+ * a dataset-wide average can contradict the model's prediction for this pin.
+ */
+export interface EvidenceBaseEntry {
+  n_studies: number;
+  n_obs: number;
+  aez_belts: string[];
+  crop_groups: string[];
+  /** counts keyed by full_text / abstract / none */
+  corpus_status: Record<string, number>;
+  studies: EvidenceBaseStudy[];
+}
+
 export interface ExplainResponse {
   explanation: string;
   citations: ExplainCitation[];
   grounded: boolean;
   llm_used: boolean;
+  /** practice -> evidence base; empty when the knowledge graph is not built. */
+  evidence_base?: Record<string, EvidenceBaseEntry>;
 }
 
 export interface ExplainRequestPayload {

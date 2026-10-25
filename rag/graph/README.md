@@ -25,10 +25,12 @@ that were previously only implicitly related:
 | `practice_components.py` | Derived component layer: splits the frozen `CSA_practices` labels on `-` and normalizes the pieces via an alias map |
 | `wocat_taxonomy.py` | QT 2019 controlled vocabularies, transcribed from the questionnaire, plus normalizers for the live database's spellings |
 | `indicator_map.py` | The 7 model indicators ↔ QT §6.1 impact variables; direction semantics read from `recommend.DIRECTION` |
+| `context_classes.py` | The engine's resolved context (mm, %, m) → QT §5.1-§5.3 context classes; refuses to guess rather than mis-file a pin |
 | `build_graph.py` | CLI that builds `store/graph.json` + `store/graph_report.json`, deterministically and idempotently |
 | `query.py` | The read-only API P6b's retriever calls |
 | `crosswalk/propose_crosswalk.py` | Writes the component → SLM-vocabulary **proposal** the owner validates |
 | `test_graph.py` | pytest on a synthetic CSV fixture — no network, no chromadb, no raster stack |
+| `test_context_classes.py` | exhaustive band-edge tests for the context mapper |
 
 ## Node types
 
@@ -123,19 +125,27 @@ not the ~30 a more aggressive merge would give.
 
 ## Usage
 
+This is a **package**: run its CLIs with `python -m` from the repo root, not
+as file paths. Package-relative imports (`from . import schema`) are what
+keep a top-level `schema` / `query` module from ever existing in the API
+process, and they cannot work when a module is run as a script.
+
 ```bash
 # Build from the repo data (no WOCAT records, no crosswalk admitted yet)
-python rag/graph/build_graph.py
+python -m rag.graph.build_graph
 
-# Build including the hand-built WOCAT fixtures
-python rag/graph/build_graph.py --wocat rag/ingest/wocat/fixtures
+# Build including the hand-built WOCAT fixtures (the synthetic one is refused)
+python -m rag.graph.build_graph --wocat rag/ingest/wocat/fixtures
+
+# TESTS ONLY: also admit records flagged synthetic:true
+python -m rag.graph.build_graph --wocat rag/ingest/wocat/fixtures --allow-synthetic
 
 # Propose the crosswalk for the owner to validate in Excel
-python rag/graph/crosswalk/propose_crosswalk.py
-python rag/graph/crosswalk/propose_crosswalk.py --llm     # owner only
+python -m rag.graph.crosswalk.propose_crosswalk
+python -m rag.graph.crosswalk.propose_crosswalk --llm     # owner only
 
 # Tests (no network, no chromadb, no raster stack)
-python -m pytest rag/graph/test_graph.py rag/ingest/wocat/test_wocat.py -q
+python -m pytest rag/graph rag/ingest/wocat -q
 ```
 
 ```python
@@ -160,6 +170,21 @@ confused, and `rejected` rows are admitted under neither flag.
 `query.slm_measures_for()` and `explain_paths()` filter to
 `status == "validated"` regardless of how the graph was built, so an
 unvalidated guess can never reach an advisory.
+
+## Synthetic records
+
+`rag/ingest/wocat/fixtures/technology_synthetic_0001.json` is **not WOCAT
+data** — it is invented scaffolding so the context-similarity ranking has a
+second, structurally different Technology to rank against. Two independent
+guards keep it out of anything real:
+
+* `build_graph.py` **refuses** any record with `synthetic: true` unless
+  `--allow-synthetic` is passed, and warns loudly either way;
+* `query.similar_context_technologies()` **drops** synthetic nodes unless
+  `include_synthetic=True`, so even a graph that contains one cannot surface
+  it in an advisory.
+
+P6b-ii replaces it with two real Ethiopian Technologies from the export.
 
 ## Store
 

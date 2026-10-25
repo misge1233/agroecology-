@@ -42,26 +42,18 @@ import csv
 import json
 import logging
 import statistics
-import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-GRAPH_DIR = Path(__file__).resolve().parent
-REPO_ROOT = GRAPH_DIR.parents[1]
-if str(GRAPH_DIR) not in sys.path:
-    sys.path.insert(0, str(GRAPH_DIR))
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-import practice_components as pc  # noqa: E402
-import wocat_taxonomy as wt  # noqa: E402
-from indicator_map import (  # noqa: E402
+from . import practice_components as pc
+from . import wocat_taxonomy as wt
+from .indicator_map import (
     INDICATOR_MAPPINGS,
     direction_map,
     direction_source,
 )
-from schema import (  # noqa: E402
+from .schema import (
     CONTEXT_CLASS_KINDS,
     SCHEMA_VERSION,
     EdgeType,
@@ -76,7 +68,10 @@ from schema import (  # noqa: E402
 )
 
 # The era_code join key is defined once, in the eval harness — wrap, never fork.
-from rag.eval.build_queries import strip_era_prefix  # noqa: E402
+from rag.eval.build_queries import strip_era_prefix
+
+GRAPH_DIR = Path(__file__).resolve().parent
+REPO_ROOT = GRAPH_DIR.parents[1]
 
 logger = logging.getLogger(__name__)
 
@@ -560,7 +555,7 @@ def add_wocat_records(graph, records: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def load_wocat(path: Path | None) -> list[dict[str, Any]]:
+def load_wocat(path: Path | None, allow_synthetic: bool = False) -> list[dict[str, Any]]:
     """Load WOCAT records from a .jsonl file or a fixture directory.
 
     Every record is passed through ``rag.ingest.wocat.schema.parse_record``
@@ -569,6 +564,11 @@ def load_wocat(path: Path | None) -> list[dict[str, Any]]:
     vocabularies are normalized to their questionnaire spelling and anything
     outside them is dropped with a warning rather than inserted as an
     invented code.
+
+    **Records flagged ``synthetic: true`` are refused** unless
+    ``allow_synthetic`` is set (P6a review decision 2). The fixture directory
+    keeps one synthetic Technology so the context-similarity code path can be
+    tested; it must never reach a build that feeds the app or an evaluation.
     """
     if path is None:
         return []
@@ -599,11 +599,28 @@ def load_wocat(path: Path | None) -> list[dict[str, Any]]:
         return []
 
     records: list[dict[str, Any]] = []
+    refused: list[str] = []
     for payload in raw:
         try:
-            records.append(parse_record(payload).model_dump(mode="json"))
+            record = parse_record(payload).model_dump(mode="json")
         except Exception as exc:
             logger.error("skipping WOCAT record %r: %s", payload.get("wocat_id"), exc)
+            continue
+        if record.get("synthetic") and not allow_synthetic:
+            refused.append(str(record.get("wocat_id")))
+            continue
+        records.append(record)
+    if refused:
+        logger.warning(
+            "refused %d SYNTHETIC record(s) (%s) — they are test scaffolding, "
+            "not WOCAT data; pass --allow-synthetic only when building a graph "
+            "for tests", len(refused), ", ".join(refused),
+        )
+    if allow_synthetic and any(r.get("synthetic") for r in records):
+        logger.warning(
+            "--allow-synthetic: this graph CONTAINS synthetic records and must "
+            "not be used for the app or for any evaluation"
+        )
     return records
 
 
@@ -623,6 +640,7 @@ def build(
     crosswalk_path: Path = CROSSWALK_PATH,
     wocat_path: Path | None = None,
     include_proposed: bool = False,
+    allow_synthetic: bool = False,
 ):
     """Build the graph and its report. Returns ``(graph, report)``."""
     graph = new_graph()
@@ -637,7 +655,9 @@ def build(
     crosswalk_stats = add_crosswalk(
         graph, load_crosswalk(crosswalk_path, include_proposed)
     )
-    wocat_stats = add_wocat_records(graph, load_wocat(wocat_path))
+    wocat_stats = add_wocat_records(
+        graph, load_wocat(wocat_path, allow_synthetic)
+    )
 
     node_counts: dict[str, int] = defaultdict(int)
     for _, attrs in graph.nodes(data=True):
@@ -667,6 +687,7 @@ def build(
             "crosswalk": _relative(crosswalk_path),
             "wocat": _relative(wocat_path) if wocat_path else None,
             "include_proposed": include_proposed,
+            "allow_synthetic": allow_synthetic,
         },
         "direction_source": direction_source(),
         "nodes_total": graph.number_of_nodes(),
@@ -724,6 +745,11 @@ def main(argv: list[str] | None = None) -> int:
         "--include-proposed", action="store_true",
         help="also admit status=proposed crosswalk rows (tagged crosswalk_auto)",
     )
+    parser.add_argument(
+        "--allow-synthetic", action="store_true",
+        help="admit records flagged synthetic:true — TESTS ONLY; such a graph "
+             "must never feed the app or an evaluation",
+    )
     parser.add_argument("--out-dir", type=Path, default=STORE_DIR)
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(argv)
@@ -734,7 +760,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     graph, report = build(
         args.dataset, args.manifest, args.chunks, args.crosswalk,
-        args.wocat, args.include_proposed,
+        args.wocat, args.include_proposed, args.allow_synthetic,
     )
     graph_path, report_path = write_store(graph, report, args.out_dir)
     logger.info("graph  -> %s (%d nodes, %d edges)",

@@ -173,6 +173,9 @@ class MetadataResponse(BaseModel):
     bounds: BoundsMeta
     model: ModelMeta
     rag_ready: bool
+    #: True when rag/graph/store/graph.json exists — gates the evidence-base
+    #: line in the UI's Evidence panel.
+    graph_ready: bool = False
 
 
 class ExplainCitation(BaseModel):
@@ -197,11 +200,42 @@ class ExplainCitation(BaseModel):
     n_passages: int = Field(default=1, ge=1)
 
 
+class EvidenceBaseStudy(BaseModel):
+    """One study behind a practice — provenance only, no effect numbers."""
+
+    era_code: str | None = None
+    title: str | None = None
+    year: int | None = None
+    doi: str | None = None
+    corpus_status: str | None = None
+
+
+class EvidenceBaseEntry(BaseModel):
+    """How much field evidence stands behind one recommended practice.
+
+    Counts and provenance ONLY. Effect magnitudes stay with the model
+    (CLAUDE.md doctrine 1): the knowledge graph's ``mean_log_rr`` /
+    ``median_log_rr`` aggregates are deliberately not exposed here, because a
+    dataset-wide aggregate can contradict the model's prediction for the
+    user's specific pin.
+    """
+
+    n_studies: int
+    n_obs: int
+    aez_belts: list[str] = Field(default_factory=list)
+    crop_groups: list[str] = Field(default_factory=list)
+    #: counts keyed by full_text / abstract / none
+    corpus_status: dict[str, int] = Field(default_factory=dict)
+    studies: list[EvidenceBaseStudy] = Field(default_factory=list)
+
+
 class ExplainResponse(BaseModel):
     explanation: str
     citations: list[ExplainCitation]
     grounded: bool
     llm_used: bool
+    #: practice -> evidence base; empty when the knowledge graph is not built.
+    evidence_base: dict[str, EvidenceBaseEntry] = Field(default_factory=dict)
 
 
 class HealthResponse(BaseModel):

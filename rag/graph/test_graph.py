@@ -17,18 +17,15 @@ from pathlib import Path
 
 import pytest
 
+from rag.graph import build_graph as bg
+from rag.graph import indicator_map as im
+from rag.graph import practice_components as pc
+from rag.graph import schema as sch
+from rag.graph import wocat_taxonomy as wt
+from rag.graph.query import GraphQuery
+
 GRAPH_DIR = Path(__file__).resolve().parent
 REPO_ROOT = GRAPH_DIR.parents[1]
-for _path in (str(GRAPH_DIR), str(REPO_ROOT)):
-    if _path not in sys.path:
-        sys.path.insert(0, _path)
-
-import build_graph as bg  # noqa: E402
-import indicator_map as im  # noqa: E402
-import practice_components as pc  # noqa: E402
-import schema as sch  # noqa: E402
-import wocat_taxonomy as wt  # noqa: E402
-from query import GraphQuery  # noqa: E402
 
 FIXTURE_DIR = REPO_ROOT / "rag" / "ingest" / "wocat" / "fixtures"
 
@@ -150,6 +147,12 @@ def _build(dataset, manifest, chunks, crosswalk, **kwargs):
 @pytest.fixture
 def graph_and_report(dataset, manifest, chunks, crosswalk):
     return _build(dataset, manifest, chunks, crosswalk)
+
+
+@pytest.fixture
+def graph_and_report_args(dataset, manifest, chunks, crosswalk):
+    """The four standard build inputs, for tests that vary the extra flags."""
+    return (dataset, manifest, chunks, crosswalk)
 
 
 # -------------------------------------------------------------- decomposition
@@ -467,7 +470,9 @@ def graph_with_fixtures(dataset, manifest, chunks, crosswalk):
 def test_fixtures_ingest_as_technology_and_approach_nodes(graph_with_fixtures):
     graph, report = graph_with_fixtures
     assert report["validation"] == []
-    assert report["wocat"]["technologies"] == 2
+    # P6b-i: the synthetic fixture is refused by default, so only the real
+    # Technology #6644 and its Approach #6732 are ingested here.
+    assert report["wocat"]["technologies"] == 1
     assert report["wocat"]["approaches"] == 1
     tech = graph.nodes[sch.node_id(sch.NodeType.TECHNOLOGY, "6644")]
     assert tech["country"] == "Ethiopia"
@@ -503,27 +508,37 @@ def test_reports_impact_edges_record_rating_and_direction(graph_with_fixtures):
     assert attrs["good_direction"] == "decrease"
 
 
-def test_similar_context_technologies_ranks_by_matching_context(graph_with_fixtures):
-    graph, _ = graph_with_fixtures
+def test_similar_context_technologies_ranks_by_matching_context(
+    graph_and_report_args,
+):
+    """Ranking needs two contrasting Technologies, so this build opts in to
+    the synthetic one explicitly (P6b-i) and asks to see it."""
+    graph, _ = _build(*graph_and_report_args, wocat_path=FIXTURE_DIR,
+                      allow_synthetic=True)
     gq = GraphQuery(graph)
     assert gq.has_technologies() is True
     sub_humid = gq.similar_context_technologies(
-        {"agroclimatic_zone": "sub-humid", "slope_class": "gentle (3-5%)"}, k=5
+        {"agroclimatic_zone": "sub-humid", "slope_class": "gentle (3-5%)"},
+        k=5, include_synthetic=True,
     )
     assert sub_humid[0]["wocat_id"] == "6644"
     assert sub_humid[0]["context_jaccard"] > 0
     steep = gq.similar_context_technologies(
-        {"agroclimatic_zone": "semi-arid", "slope_class": "steep (31-60%)"}, k=5
+        {"agroclimatic_zone": "semi-arid", "slope_class": "steep (31-60%)"},
+        k=5, include_synthetic=True,
     )
     assert steep[0]["wocat_id"] == "SYNTH-0001"
     assert steep[0]["synthetic"] is True
 
 
-def test_measure_overlap_uses_validated_crosswalk(graph_with_fixtures):
-    graph, _ = graph_with_fixtures
-    # The validated Mulch row maps to A1+A2; Technology 6644 uses A2.
+def test_measure_overlap_uses_validated_crosswalk(graph_and_report_args):
+    # The validated Mulch row maps to A1+A2; Technology 6644 uses A2 and the
+    # synthetic one (opted in here) uses none of them.
+    graph, _ = _build(*graph_and_report_args, wocat_path=FIXTURE_DIR,
+                      allow_synthetic=True)
     results = GraphQuery(graph).similar_context_technologies(
-        {"agroclimatic_zone": "sub-humid"}, practice="Mulch", k=5
+        {"agroclimatic_zone": "sub-humid"}, practice="Mulch", k=5,
+        include_synthetic=True,
     )
     by_id = {r["wocat_id"]: r for r in results}
     assert by_id["6644"]["shared_measures"] == ["A2"]
@@ -565,13 +580,13 @@ def test_context_id_rejects_unknown_kind():
 # ------------------------------------------- crosswalk re-run merge (P6a.1)
 import csv as _csv  # noqa: E402
 
-from crosswalk.propose_crosswalk import (  # noqa: E402
+from rag.graph.crosswalk.propose_crosswalk import (  # noqa: E402
     COLUMNS as CW_COLUMNS,
     merge_row,
     read_existing,
     write_csv as cw_write_csv,
 )
-from crosswalk.propose_crosswalk import Proposal as CwProposal  # noqa: E402
+from rag.graph.crosswalk.propose_crosswalk import Proposal as CwProposal  # noqa: E402
 
 
 def _cw_proposal(component="Mulch", groups=("improved ground/ vegetation cover",),
@@ -699,3 +714,95 @@ def test_merge_row_is_a_pure_function():
 
 def test_read_existing_returns_empty_for_a_missing_file(tmp_path):
     assert read_existing(tmp_path / "nope.csv") == {}
+
+
+# ------------------------------------------------- synthetic guard (P6b-i)
+def test_build_refuses_synthetic_records_by_default(graph_and_report_args):
+    """A synthetic fixture must never enter a normal build."""
+    graph, report = _build(*graph_and_report_args, wocat_path=FIXTURE_DIR)
+    ids = {
+        attrs["wocat_id"] for _, attrs in graph.nodes(data=True)
+        if attrs.get("type") == sch.NodeType.TECHNOLOGY.value
+    }
+    assert "SYNTH-0001" not in ids
+    assert ids == {"6644"}
+    assert report["wocat"]["technologies"] == 1
+    assert report["inputs"]["allow_synthetic"] is False
+    assert not any(
+        attrs.get("synthetic") for _, attrs in graph.nodes(data=True)
+        if attrs.get("type") == sch.NodeType.TECHNOLOGY.value
+    )
+
+
+def test_allow_synthetic_admits_it(graph_and_report_args):
+    graph, report = _build(*graph_and_report_args, wocat_path=FIXTURE_DIR,
+                           allow_synthetic=True)
+    ids = {
+        attrs["wocat_id"] for _, attrs in graph.nodes(data=True)
+        if attrs.get("type") == sch.NodeType.TECHNOLOGY.value
+    }
+    assert ids == {"6644", "SYNTH-0001"}
+    assert report["inputs"]["allow_synthetic"] is True
+    assert report["validation"] == []
+
+
+def test_load_wocat_filters_synthetic_records():
+    """Only the synthetic record is dropped — the real pair still loads."""
+    assert {r["wocat_id"] for r in bg.load_wocat(FIXTURE_DIR)} == {"6644", "6732"}
+    allowed = {r["wocat_id"] for r in bg.load_wocat(FIXTURE_DIR, allow_synthetic=True)}
+    assert allowed == {"6644", "6732", "SYNTH-0001"}
+
+
+def test_similar_context_technologies_drops_synthetic_nodes(graph_and_report_args):
+    """Belt and braces: even in a graph that contains one, it stays hidden."""
+    graph, _ = _build(*graph_and_report_args, wocat_path=FIXTURE_DIR,
+                      allow_synthetic=True)
+    gq = GraphQuery(graph)
+    context = {"agroclimatic_zone": "semi-arid", "slope_class": "steep (31-60%)"}
+    visible = gq.similar_context_technologies(context, k=5)
+    assert [r["wocat_id"] for r in visible] == ["6644"]
+    assert all(r["synthetic"] is False for r in visible)
+    with_synth = gq.similar_context_technologies(context, k=5, include_synthetic=True)
+    assert {r["wocat_id"] for r in with_synth} == {"6644", "SYNTH-0001"}
+    # ...and it would have ranked FIRST on this context, so the filter is load-bearing
+    assert with_synth[0]["wocat_id"] == "SYNTH-0001"
+
+
+# ------------------------------------------------ import hygiene (P6b-i)
+def test_importing_the_graph_creates_no_top_level_modules():
+    """The API process must never gain a top-level `schema` or `query`.
+
+    Before P6b-i these modules inserted rag/graph onto sys.path and imported
+    each other by bare name, so importing the graph from the backend would
+    shadow any other `schema` module in the process.
+    """
+    import importlib
+
+    for name in ("schema", "query", "build_graph", "wocat_taxonomy",
+                 "practice_components", "indicator_map", "context_classes"):
+        sys.modules.pop(name, None)
+    for module in ("rag.graph.query", "rag.graph.schema", "rag.graph.build_graph",
+                   "rag.graph.context_classes"):
+        importlib.import_module(module)
+    leaked = [
+        name for name in ("schema", "query", "build_graph", "wocat_taxonomy",
+                          "practice_components", "indicator_map", "context_classes")
+        if name in sys.modules
+    ]
+    assert leaked == [], f"top-level modules leaked into sys.modules: {leaked}"
+
+
+def test_graph_modules_do_not_mutate_sys_path_on_import():
+    before = list(sys.path)
+    import importlib
+
+    importlib.reload(importlib.import_module("rag.graph.query"))
+    assert sys.path == before
+
+
+def test_wocat_schema_imports_the_graph_schema_not_its_own_namesake():
+    from rag.ingest.wocat import schema as wocat_schema
+
+    from rag.graph.schema import CONTEXT_CLASS_KINDS as graph_kinds
+
+    assert wocat_schema.CONTEXT_CLASS_KINDS is graph_kinds

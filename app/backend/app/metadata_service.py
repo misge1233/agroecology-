@@ -81,4 +81,7 @@ def build_metadata() -> dict[str, Any]:
         "model": model_meta,
         # True when the RAG evidence index exists on disk (POST /explain usable).
         "rag_ready": explain_service.is_ready(),
+        # True when the knowledge graph is built — gates the evidence-base
+        # line in the UI's Evidence panel.
+        "graph_ready": explain_service.graph_is_ready(),
     }

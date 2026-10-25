@@ -4,7 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { BookOpen, ChevronDown, ExternalLink, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { postExplain } from "@/lib/api";
-import type { ExplainCitation, ExplainResponse, RecommendResponse } from "@/lib/types";
+import type {
+  EvidenceBaseEntry,
+  ExplainCitation,
+  ExplainResponse,
+  RecommendResponse,
+} from "@/lib/types";
+import {
+  evidenceBaseEntries,
+  evidenceBaseSentence,
+  studiesTooltip,
+} from "@/lib/evidence-base";
 import { useMetadata } from "./metadata-provider";
 
 /** Evidence-on-demand for a recommendation card (Phase P2c; two-tier P5a).
@@ -15,6 +25,12 @@ import { useMetadata } from "./metadata-provider";
  * studies (era_code · title · year, linking to the DOI); tier "guidance"
  * chips are GARDIAN implementation documents — visually distinct (accent
  * ring + "Guidance" badge, own section) and linking to the source URL.
+ *
+ * P6b-i adds the EVIDENCE BASE line above the chips when /metadata reports
+ * graph_ready: how many studies and field observations stand behind each
+ * recommended practice and where they were measured, with the study list in
+ * the tooltip. Counts and provenance only — effect magnitudes belong to the
+ * model and are never shown here.
  */
 
 type FetchState =
@@ -82,6 +98,38 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
   );
 }
 
+/** Counts + provenance per practice. Never an effect size (doctrine 1).
+ *
+ * The strings come from ``@/lib/evidence-base`` so they are unit-tested and
+ * stay word-for-word identical to the backend's own sentence.
+ */
+function EvidenceBase({
+  base,
+}: {
+  base?: Record<string, EvidenceBaseEntry>;
+}) {
+  const entries = evidenceBaseEntries(base);
+  if (entries.length === 0) return null;
+  return (
+    <div>
+      <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
+        Evidence base
+      </p>
+      <ul className="space-y-1">
+        {entries.map(([practice, entry]) => (
+          <li
+            key={practice}
+            title={studiesTooltip(entry)}
+            className="text-[12px] leading-relaxed text-mute"
+          >
+            {evidenceBaseSentence(practice, entry)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function EvidencePanel({ data }: { data: RecommendResponse }) {
   const { meta } = useMetadata();
   const [open, setOpen] = useState(false);
@@ -97,6 +145,8 @@ export function EvidencePanel({ data }: { data: RecommendResponse }) {
 
   // Evidence is only offered when the backend has a built RAG index.
   if (!meta?.rag_ready) return null;
+  // The evidence-base line additionally needs the knowledge graph.
+  const graphReady = Boolean(meta?.graph_ready);
 
   const load = () => {
     setState({ status: "loading" });
@@ -171,6 +221,8 @@ export function EvidencePanel({ data }: { data: RecommendResponse }) {
               <p className="whitespace-pre-line text-sm leading-relaxed text-ink">
                 {state.result.explanation}
               </p>
+
+              {graphReady && <EvidenceBase base={state.result.evidence_base} />}
 
               {(() => {
                 const evidence = state.result.citations.filter(

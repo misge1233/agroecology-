@@ -20,11 +20,11 @@ Nothing here fetches anything. Bulk or automated fetching of wocat.net is
 forbidden by the project's data-access decision; records come from the
 export or from the hand-built fixtures in ``fixtures/``.
 
-Usage::
+Usage (run as a module from the repo root — this is a package)::
 
-    python rag/ingest/wocat/normalize_wocat.py --inspect <export>
-    python rag/ingest/wocat/normalize_wocat.py --input rag/ingest/wocat/fixtures
-    python rag/ingest/wocat/normalize_wocat.py --input <export> --adapter key_probe
+    python -m rag.ingest.wocat.normalize_wocat --inspect <export>
+    python -m rag.ingest.wocat.normalize_wocat --input rag/ingest/wocat/fixtures
+    python -m rag.ingest.wocat.normalize_wocat --input <export> --adapter key_probe
 """
 from __future__ import annotations
 
@@ -36,10 +36,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
 
-try:  # package import (repo root on path) or sibling-script import
-    from rag.ingest.wocat.schema import WocatApproach, WocatTechnology, parse_record
-except ImportError:  # pragma: no cover - exercised when run as a script
-    from schema import WocatApproach, WocatTechnology, parse_record  # type: ignore
+from .schema import WocatApproach, WocatTechnology, parse_record
 
 logger = logging.getLogger(__name__)
 

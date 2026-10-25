@@ -6,6 +6,7 @@ never pulls ``recommend.py``) and inject a fake retriever.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -101,6 +102,17 @@ def _no_auto_guidance(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep unit tests hermetic: never auto-build the real Tier-2 retriever
     (tests that want guidance inject one via ``guidance_retriever=``)."""
     monkeypatch.setattr(es, "get_guidance_retriever", lambda: None)
+
+
+@pytest.fixture(autouse=True)
+def _no_auto_graph(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Same for the P6b-i knowledge graph: never load the real store.
+
+    Without this the suite would quietly depend on whether
+    ``rag/graph/store/graph.json`` happens to exist on the machine. Tests
+    that want a graph inject one via ``graph_query=``.
+    """
+    monkeypatch.setattr(es, "get_graph_query", lambda: None)
 
 
 @pytest.fixture()
@@ -454,3 +466,257 @@ def test_get_guidance_retriever_none_when_chunks_missing(
         assert es.get_guidance_retriever() is None  # sticky, still no crash
     finally:
         es.set_guidance_retriever(None)
+
+
+# ------------------------------------------------- graph evidence base (P6b-i)
+class FakeGraphQuery:
+    """Minimal stand-in for ``rag.graph.query.GraphQuery``.
+
+    Returns the shape ``evidence_summary`` really returns — including the
+    ``mean_log_rr`` / ``median_log_rr`` aggregates, so the tests can prove
+    those are dropped rather than merely absent from the fixture.
+    """
+
+    def __init__(self, summaries: dict[str, dict[str, Any]] | None = None,
+                 raises: bool = False):
+        self.summaries = summaries if summaries is not None else _default_summaries()
+        self.raises = raises
+        self.calls: list[tuple[str, str]] = []
+
+    def evidence_summary(self, practice: str, indicator: str) -> dict[str, Any]:
+        self.calls.append((practice, indicator))
+        if self.raises:
+            raise RuntimeError("graph exploded")
+        return self.summaries.get(
+            practice,
+            {"practice": practice, "indicator": indicator, "found": False,
+             "studies": [], "n_studies": 0, "n_obs": 0, "aez_belts": [],
+             "crop_groups": [], "corpus_status": {}},
+        )
+
+
+def _default_summaries() -> dict[str, dict[str, Any]]:
+    return {
+        "Mulching": {
+            "practice": "Mulching",
+            "indicator": "soil loss",
+            "found": True,
+            "n_studies": 3,
+            "n_obs": 17,
+            "aez_belts": ["Dry Dega", "Moist Weyna Dega"],
+            "crop_groups": ["Cereal"],
+            "corpus_status": {"full_text": 1, "abstract": 1, "none": 1},
+            "studies": [
+                {"study_no": "ERA_NN0123", "era_code": "NN0123",
+                 "title": "Mulching effects on erosion", "year": 2019,
+                 "doi": "10.1000/xyz1", "corpus_status": "full_text",
+                 "n_chunks": 4, "n_obs": 9,
+                 # magnitudes the service must NOT copy through:
+                 "mean_log_rr": -0.55123, "median_log_rr": -0.5,
+                 "share_positive": 0.11, "aez_belts": ["Dry Dega"],
+                 "crop_groups": ["Cereal"]},
+                {"study_no": "ERA_NN0999", "era_code": "NN0999",
+                 "title": "Residue cover trial", "year": 2016,
+                 "doi": None, "corpus_status": "abstract",
+                 "n_chunks": 1, "n_obs": 5, "mean_log_rr": -0.21,
+                 "median_log_rr": -0.2, "share_positive": 0.2,
+                 "aez_belts": ["Moist Weyna Dega"], "crop_groups": ["Cereal"]},
+                {"study_no": "CSA_7", "era_code": None, "title": None,
+                 "year": None, "doi": None, "corpus_status": "none",
+                 "n_chunks": 0, "n_obs": 3, "mean_log_rr": -0.3,
+                 "median_log_rr": -0.3, "share_positive": 0.0,
+                 "aez_belts": ["Dry Dega"], "crop_groups": ["Cereal"]},
+            ],
+        }
+    }
+
+
+def test_evidence_base_reports_counts_and_provenance():
+    gq = FakeGraphQuery()
+    base = es.build_evidence_base(make_recommendation(), gq)
+    assert set(base) == {"Mulching"}          # "Soil bunds" has found=False
+    entry = base["Mulching"]
+    assert entry["n_studies"] == 3 and entry["n_obs"] == 17
+    assert entry["aez_belts"] == ["Dry Dega", "Moist Weyna Dega"]
+    assert entry["crop_groups"] == ["Cereal"]
+    assert entry["corpus_status"] == {"full_text": 1, "abstract": 1, "none": 1}
+    assert [st["era_code"] for st in entry["studies"]] == ["NN0123", "NN0999", None]
+    assert entry["studies"][0]["year"] == 2019
+    assert gq.calls == [("Mulching", "soil loss"), ("Soil bunds", "soil loss")]
+
+
+def test_evidence_base_never_exposes_effect_magnitudes():
+    """Doctrine 1: the graph's dataset aggregates must not reach the API."""
+    base = es.build_evidence_base(make_recommendation(), FakeGraphQuery())
+    blob = json.dumps(base)
+    for forbidden in ("mean_log_rr", "median_log_rr", "share_positive",
+                      "-0.55123", "0.11"):
+        assert forbidden not in blob, forbidden
+    allowed_keys = {"n_studies", "n_obs", "aez_belts", "crop_groups",
+                    "corpus_status", "studies"}
+    assert set(base["Mulching"]) == allowed_keys
+    assert set(base["Mulching"]["studies"][0]) == {
+        "era_code", "title", "year", "doi", "corpus_status"}
+
+
+def test_evidence_base_is_empty_without_a_graph():
+    assert es.build_evidence_base(make_recommendation(), None) == {}
+
+
+def test_evidence_base_survives_a_failing_graph_query():
+    """One bad practice must not sink the whole response."""
+    assert es.build_evidence_base(
+        make_recommendation(), FakeGraphQuery(raises=True)
+    ) == {}
+
+
+def test_evidence_base_needs_an_indicator():
+    rec = make_recommendation()
+    rec["query"].pop("indicator")
+    assert es.build_evidence_base(rec, FakeGraphQuery()) == {}
+
+
+def test_evidence_base_sentence_states_counts_and_corpus_coverage():
+    entry = es.build_evidence_base(make_recommendation(), FakeGraphQuery())["Mulching"]
+    sentence = es.evidence_base_sentence("Mulching", entry)
+    assert "3 studies" in sentence and "17 field observations" in sentence
+    assert "Dry Dega, Moist Weyna Dega" in sentence
+    assert "2 of the studies are in the retrievable corpus" in sentence
+    assert "%" not in sentence          # no magnitudes, ever
+
+
+def test_evidence_base_sentence_uses_singulars():
+    entry = {"n_studies": 1, "n_obs": 1, "aez_belts": [],
+             "corpus_status": {"full_text": 1, "abstract": 0, "none": 0}}
+    sentence = es.evidence_base_sentence("P", entry)
+    assert "1 study / 1 field observation" in sentence
+    assert "1 of the studies is in the retrievable corpus" in sentence
+
+
+def test_prompt_contains_the_evidence_base_block():
+    base = es.build_evidence_base(make_recommendation(), FakeGraphQuery())
+    messages = es._build_messages(
+        make_recommendation(), None, make_chunks(), None, base
+    )
+    user = messages[1]["content"]
+    assert "EVIDENCE BASE" in user
+    assert "backed by 3 studies / 17 field observations" in user
+    assert "NOT effect sizes" in user
+    # it must sit before the passages
+    assert user.index("EVIDENCE BASE") < user.index("EVIDENCE PASSAGES")
+    assert "mean_log_rr" not in user
+
+
+def test_prompt_without_a_graph_has_no_evidence_base_block():
+    user = es._build_messages(make_recommendation(), None, make_chunks(), None, {})[1]
+    assert "EVIDENCE BASE" not in user["content"]
+
+
+def test_guardrail_whitelists_the_evidence_base_counts():
+    base = es.build_evidence_base(make_recommendation(), FakeGraphQuery())
+    rec, chunks = make_recommendation(), make_chunks()
+    text = "Mulching is backed by 3 studies and 17 field observations."
+    assert not es.numbers_are_grounded(text, rec, chunks)      # 17 not in the JSON
+    assert es.numbers_are_grounded(text, rec, chunks, base)
+
+
+def test_guardrail_still_rejects_invented_numbers_with_an_evidence_base():
+    """Extending the whitelist must not open a hole."""
+    base = es.build_evidence_base(make_recommendation(), FakeGraphQuery())
+    assert not es.numbers_are_grounded(
+        "Mulching cuts soil loss by 77.4% across 3 studies.",
+        make_recommendation(), make_chunks(), base,
+    )
+
+
+def test_guardrail_whitelists_only_the_numbers_the_prompt_states():
+    """Reviewer hardening (25 Oct 2026): the evidence base contributes exactly
+    n_studies, n_obs and the in-corpus count. Study years, era codes and the
+    per-bucket corpus counts are not in the prompt, so they are not admitted."""
+    base = es.build_evidence_base(make_recommendation(), FakeGraphQuery())
+    rec, chunks = make_recommendation(), make_chunks()
+    # 2019 / 2016 are study years in the evidence base, NOT in any retrieved chunk
+    years_in_chunks = {c.get("year") for c in chunks}
+    assert 2016 not in years_in_chunks
+    assert not es.numbers_are_grounded(
+        "A 2016 residue trial backs Mulching.", rec, chunks, base
+    )
+    # 2 studies in the corpus (1 full text + 1 abstract) IS stated in the sentence
+    assert es.numbers_are_grounded(
+        "2 of the 3 studies behind Mulching are in the retrievable corpus.",
+        rec, chunks, base,
+    )
+    # the per-bucket count "1" is admitted only because 0-10 integers always are;
+    # a bucket-sized number outside that range must not pass
+    big = {k: dict(v) for k, v in base.items()}
+    big["Mulching"]["corpus_status"] = {"full_text": 40, "abstract": 3, "none": 2}
+    big["Mulching"]["n_studies"], big["Mulching"]["n_obs"] = 45, 300
+    assert es.numbers_are_grounded("Mulching: 45 studies, 300 observations, 43 in corpus.", rec, chunks, big)
+    assert not es.numbers_are_grounded("40 of them are full-text studies.", rec, chunks, big)
+
+
+def test_fallback_text_includes_the_evidence_base_sentence():
+    base = es.build_evidence_base(make_recommendation(), FakeGraphQuery())
+    text = es.build_fallback_text(make_recommendation(), make_chunks(), base)
+    assert "the model estimates ~42% decrease in soil loss" in text
+    assert "backed by 3 studies / 17 field observations" in text
+
+
+def test_fallback_text_unchanged_without_a_graph():
+    rec, chunks = make_recommendation(), make_chunks()
+    assert es.build_fallback_text(rec, chunks) == es.build_fallback_text(rec, chunks, {})
+
+
+def test_explain_returns_the_evidence_base(no_key_settings: Settings):
+    result = es.explain(
+        make_recommendation(), retriever=FakeRetriever(make_chunks()),
+        graph_query=FakeGraphQuery(),
+    )
+    assert set(result["evidence_base"]) == {"Mulching"}
+    assert result["evidence_base"]["Mulching"]["n_studies"] == 3
+    assert "backed by 3 studies" in result["explanation"]
+
+
+def test_explain_evidence_base_is_empty_not_null_without_a_graph(
+    no_key_settings: Settings,
+):
+    result = es.explain(make_recommendation(), retriever=FakeRetriever(make_chunks()))
+    assert result["evidence_base"] == {}
+
+
+def test_explain_with_no_chunks_still_reports_the_evidence_base(
+    no_key_settings: Settings,
+):
+    """Nothing retrieved is not the same as no evidence existing."""
+    result = es.explain(
+        make_recommendation(), retriever=FakeRetriever([]),
+        graph_query=FakeGraphQuery(),
+    )
+    assert result["grounded"] is False
+    assert result["evidence_base"]["Mulching"]["n_studies"] == 3
+
+
+def test_graph_is_ready_follows_the_store_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    backend_root = tmp_path / "repo" / "app" / "backend"
+    backend_root.mkdir(parents=True)
+    monkeypatch.setattr(es, "get_settings",
+                        lambda: make_settings(backend_root=backend_root))
+    assert es.graph_is_ready() is False
+    store = tmp_path / "repo" / "rag" / "graph" / "store"
+    store.mkdir(parents=True)
+    (store / "graph.json").write_text("{}", encoding="utf-8")
+    assert es.graph_is_ready() is True
+
+
+def test_get_graph_query_degrades_when_the_store_is_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    backend_root = tmp_path / "repo" / "app" / "backend"
+    backend_root.mkdir(parents=True)
+    monkeypatch.setattr(es, "get_settings",
+                        lambda: make_settings(backend_root=backend_root))
+    monkeypatch.setattr(es, "_graph_query", None)
+    monkeypatch.setattr(es, "_graph_unavailable", False)
+    assert es.get_graph_query() is None          # logs once, never raises

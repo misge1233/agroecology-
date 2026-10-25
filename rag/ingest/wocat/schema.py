@@ -20,42 +20,12 @@ the original record, and share-alike on anything derived from it.
 from __future__ import annotations
 
 import logging
-import sys
-from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-GRAPH_DIR = Path(__file__).resolve().parents[3] / "rag" / "graph"
-if str(GRAPH_DIR) not in sys.path:
-    sys.path.insert(0, str(GRAPH_DIR))
-
-import wocat_taxonomy as wt  # noqa: E402
-
-
-def _load_graph_schema():
-    """Load ``rag/graph/schema.py`` under an unambiguous module name.
-
-    This file is also called ``schema.py``, so a plain ``import schema``
-    resolves to whichever directory happens to come first on ``sys.path``.
-    Loading it by path removes the ambiguity and keeps
-    ``CONTEXT_CLASS_KINDS`` defined in exactly one place.
-    """
-    import importlib.util
-
-    name = "agroadvisor_graph_schema"
-    if name in sys.modules:
-        return sys.modules[name]
-    spec = importlib.util.spec_from_file_location(name, GRAPH_DIR / "schema.py")
-    if spec is None or spec.loader is None:  # pragma: no cover
-        raise ImportError(f"cannot load graph schema from {GRAPH_DIR / 'schema.py'}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
-CONTEXT_CLASS_KINDS: tuple[str, ...] = _load_graph_schema().CONTEXT_CLASS_KINDS
+from rag.graph import wocat_taxonomy as wt
+from rag.graph.schema import CONTEXT_CLASS_KINDS
 
 logger = logging.getLogger(__name__)
 

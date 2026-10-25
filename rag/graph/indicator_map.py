@@ -29,7 +29,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from wocat_taxonomy import IMPACT_BY_NAME
+from .wocat_taxonomy import IMPACT_BY_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +202,7 @@ def directions_agree(indicator: str, rating: str) -> bool | None:
     This is the primitive the P6c direction-agreement experiment builds on;
     it reports agreement, it never alters a number.
     """
-    from wocat_taxonomy import IMPACT_RATING_KEYS, normalize_rating
+    from .wocat_taxonomy import IMPACT_RATING_KEYS, normalize_rating
 
     key = normalize_rating(rating)
     if key is None or key == "negligible":

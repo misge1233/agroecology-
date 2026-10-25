@@ -19,6 +19,8 @@ indicator), not the user's free text.
 | `corpus/xml/` | Europe PMC full-text JATS XML (git-ignored) |
 | `corpus/manifest.jsonl` | acquisition ledger: per study — OA status, files, licence, `pdf_source`/`abstract_source`/`fulltext_xml` provenance |
 | `eval/` | retrieval Recall@k/MRR, RAGAS-style faithfulness, expert-study materials |
+| `graph/` | knowledge graph: dataset + corpus + WOCAT vocabularies (`build_graph.py` → `graph/store/graph.json`, `query.py` for the API) |
+| `ingest/wocat/` | WOCAT practice-record schema + normalizer (data arrives via the owner's research export; nothing here fetches) |
 
 ## Building the corpus + index (run from `rag/`)
 
@@ -46,6 +48,45 @@ python ingest/build_index.py --corpus corpus --index index/store --rebuild
 # sanity check
 python retrieve.py "soil bunds effect on soil loss Ethiopia"
 ```
+
+### 4) Build the knowledge graph (run from the **repo root**)
+
+```bash
+python -m rag.graph.build_graph
+```
+
+Writes `rag/graph/store/{graph.json, graph_report.json}` from the dataset, the
+corpus manifest and the WOCAT vocabularies. Deterministic and idempotent: two
+runs over unchanged inputs produce byte-identical files.
+
+The graph modules are a **package** — run them with `python -m`, not as file
+paths (`python rag/graph/build_graph.py` raises `attempted relative import
+with no known parent package`, by design: package-relative imports are what
+keep a top-level `schema` / `query` module out of the API process).
+
+Optional flags:
+
+```bash
+# include the hand-built WOCAT fixtures (real Technology #6644 + Approach #6732)
+python -m rag.graph.build_graph --wocat rag/ingest/wocat/fixtures
+
+# admit status=proposed crosswalk rows, tagged crosswalk_auto
+python -m rag.graph.build_graph --include-proposed
+
+# TESTS ONLY — admits records flagged synthetic:true. Such a graph must never
+# feed the app or an evaluation; the default build refuses them and says so.
+python -m rag.graph.build_graph --wocat rag/ingest/wocat/fixtures --allow-synthetic
+```
+
+The core build needs only `networkx` — no pydantic, no fixtures, no WOCAT
+data. `--wocat` additionally needs `pydantic>=2`; without it the records are
+skipped with a clear message and the core graph still builds.
+
+Once the store exists, `/metadata` reports `graph_ready: true` and `/explain`
+adds a per-practice **evidence base** (how many studies and field
+observations stand behind each recommendation, in which AEZ belts, and how
+many are retrievable). The graph is optional everywhere: with no store,
+`/explain` behaves exactly as it did before.
 
 Expected outcome (typical OA rates for this literature): full text for roughly
 half the corpus, abstract + metadata for the rest — every study contributes at

@@ -16,12 +16,7 @@ import pytest
 
 WOCAT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = WOCAT_DIR.parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
 
-# Imported by PACKAGE path on purpose: rag/graph/schema.py is also called
-# "schema", and the taxonomy import puts rag/graph first on sys.path, so a
-# bare ``import schema`` here would resolve to the wrong module.
 from rag.ingest.wocat import normalize_wocat as nw  # noqa: E402
 from rag.ingest.wocat.schema import (  # noqa: E402
     WocatApproach,

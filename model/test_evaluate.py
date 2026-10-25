@@ -308,7 +308,7 @@ def test_artefact_keys_and_one_prediction(df, folds_file, tmp_path):
     df.to_csv(dataset, index=False)
     art = tmp_path / "art"
     assert tm.main(["--dataset", str(dataset), "--folds", str(folds_file),
-                    "--artifacts", str(art), "--no-copy", "--quick",
+                    "--artifacts", str(art), "--no-copy", "--no-report", "--quick",
                     "--no-ablations"]) == 0
 
     bundle = joblib.load(art / "csa_model.joblib")
@@ -337,7 +337,7 @@ def test_model_metrics_keeps_its_published_shape(df, folds_file, tmp_path):
     df.to_csv(dataset, index=False)
     art = tmp_path / "art"
     tm.main(["--dataset", str(dataset), "--folds", str(folds_file),
-             "--artifacts", str(art), "--no-copy", "--quick", "--no-ablations"])
+             "--artifacts", str(art), "--no-copy", "--no-report", "--quick", "--no-ablations"])
     metrics = json.loads((art / "model_metrics.json").read_text(encoding="utf-8"))
 
     # keys the backend and the frontend read, with their original shapes
@@ -359,7 +359,7 @@ def test_reuse_eval_does_not_rerun_the_protocol(df, folds_file, tmp_path):
     df.to_csv(dataset, index=False)
     art = tmp_path / "art"
     tm.main(["--dataset", str(dataset), "--folds", str(folds_file),
-             "--artifacts", str(art), "--no-copy", "--quick", "--no-ablations"])
+             "--artifacts", str(art), "--no-copy", "--no-report", "--quick", "--no-ablations"])
     payload = json.loads((art / "model_eval.json").read_text(encoding="utf-8"))
     payload["best"] = payload["runs"][-1]["label"]
     marker = "SENTINEL-NOT-RECOMPUTED"
@@ -367,7 +367,7 @@ def test_reuse_eval_does_not_rerun_the_protocol(df, folds_file, tmp_path):
     (art / "model_eval.json").write_text(json.dumps(payload), encoding="utf-8")
 
     tm.main(["--dataset", str(dataset), "--folds", str(folds_file),
-             "--artifacts", str(art), "--no-copy", "--reuse-eval"])
+             "--artifacts", str(art), "--no-copy", "--no-report", "--reuse-eval"])
     metrics = json.loads((art / "model_metrics.json").read_text(encoding="utf-8"))
     assert metrics["protocol"] == marker        # it read the file, did not re-run
 
