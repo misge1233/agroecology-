@@ -1,8 +1,10 @@
 import type {
+  ApiLanguage,
   ChatMessage,
   ChatStreamEvent,
   ContextResponse,
   ExplainResponse,
+  GeocodeResponse,
   Metadata,
   RecommendRequest,
   RecommendResponse,
@@ -46,12 +48,14 @@ export async function fetchContext(
 }
 
 export async function postRecommend(
-  body: RecommendRequest
+  body: RecommendRequest,
+  signal?: AbortSignal
 ): Promise<RecommendResponse> {
   const res = await fetch(`${API_BASE}/recommend`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    signal,
   });
   if (!res.ok) throw new Error(await parseError(res));
   return res.json();
@@ -59,7 +63,7 @@ export async function postRecommend(
 
 export async function postExplain(
   recommendation: RecommendResponse,
-  opts?: { question?: string; k?: number; signal?: AbortSignal }
+  opts?: { question?: string; k?: number; signal?: AbortSignal; language?: ApiLanguage }
 ): Promise<ExplainResponse> {
   const res = await fetch(`${API_BASE}/explain`, {
     method: "POST",
@@ -68,6 +72,8 @@ export async function postExplain(
       recommendation,
       question: opts?.question ?? null,
       k: opts?.k ?? 8,
+      // U1: the explanation is written in the UI language; numbers stay the model's.
+      language: opts?.language ?? "en",
     }),
     signal: opts?.signal,
   });
@@ -81,6 +87,7 @@ export async function* streamChat(opts: {
   lastRecommendation?: RecommendResponse | null;
   topN?: number;
   signal?: AbortSignal;
+  language?: ApiLanguage;
 }): AsyncGenerator<ChatStreamEvent> {
   const res = await fetch(`${API_BASE}/chat`, {
     method: "POST",
@@ -91,6 +98,7 @@ export async function* streamChat(opts: {
       last_recommendation: opts.lastRecommendation ?? null,
       stream: true,
       top_n: opts.topN ?? 1,
+      language: opts.language ?? "en",
     }),
     signal: opts.signal,
   });
@@ -120,6 +128,16 @@ export async function* streamChat(opts: {
       }
     }
   }
+}
+
+/** Offline gazetteer lookup for the Advisor's place search (U1). */
+export async function fetchGeocode(q: string, signal?: AbortSignal): Promise<GeocodeResponse> {
+  const res = await fetch(`${API_BASE}/geocode?q=${encodeURIComponent(q)}`, {
+    cache: "no-store",
+    signal,
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
 }
 
 export { API_BASE };

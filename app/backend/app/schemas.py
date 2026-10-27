@@ -67,6 +67,9 @@ class ExplainRequest(BaseModel):
     )
     question: str | None = Field(default=None, max_length=2000)
     k: int = Field(default=8, ge=1, le=20, description="Evidence chunks to retrieve.")
+    #: UI language (U1). Selects the catalog for deterministic texts and adds a
+    #: "Reply in …" line to the LLM prompt; numbers and the data contract stay English.
+    language: Literal["en", "am", "om"] = "en"
 
     @field_validator("question")
     @classmethod
@@ -90,6 +93,8 @@ class ChatRequest(BaseModel):
     # Most recent two-tier recommendation so follow-ups (why / thanks / how)
     # can reuse details without the LLM re-calling the tool.
     last_recommendation: dict[str, Any] | None = None
+    #: UI language (U1) — see ExplainRequest.language.
+    language: Literal["en", "am", "om"] = "en"
 
     @field_validator("history")
     @classmethod
@@ -164,6 +169,27 @@ class ModelMeta(BaseModel):
     note: str
 
 
+class EvidenceCounts(BaseModel):
+    """Size of the field-evidence base behind the model — counts only (U1)."""
+
+    n_observations: int
+    n_studies: int
+    n_practices: int
+    n_belts: int
+    n_crop_types: int
+
+
+class GeocodeResponse(BaseModel):
+    """GET /geocode — an Ethiopian place name resolved by the offline gazetteer (U1)."""
+
+    query: str
+    found: bool
+    name: str | None = None
+    lat: float | None = None
+    lon: float | None = None
+    source: str | None = None
+
+
 class MetadataResponse(BaseModel):
     practice_families: list[str]
     indicators: list[IndicatorMeta]
@@ -176,6 +202,10 @@ class MetadataResponse(BaseModel):
     #: True when rag/graph/store/graph.json exists — gates the evidence-base
     #: line in the UI's Evidence panel.
     graph_ready: bool = False
+    #: UI languages the API can answer in (U1): en, am, om.
+    languages: list[str] = Field(default_factory=lambda: ["en", "am", "om"])
+    # Additive (U1): headline evidence counts for the UI trust strip.
+    evidence: EvidenceCounts | None = None
 
 
 class ExplainCitation(BaseModel):

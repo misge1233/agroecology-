@@ -1,0 +1,394 @@
+{
+  "common": {
+    "appName": "AgroAdvisor-ET",
+    "tagline": "Deeggarsa murtii Agro-ekoloojii+",
+    "loading": "Fe'aa jira…",
+    "retry": "Irra deebi'ii yaali",
+    "close": "Cufi",
+    "back": "Duubatti",
+    "next": "Itti aanu",
+    "continue": "Itti fufi",
+    "optional": "filannoo",
+    "dismiss": "Dhiisi",
+    "skipToContent": "Gara qabiyyeetti darbi",
+    "opensNewTab": "taaboo haaraa keessatti banama",
+    "menu": "Baafata"
+  },
+  "nav": {
+    "home": "Mana",
+    "advisor": "Gorsaa",
+    "chat": "Haasaa",
+    "about": "Waa'ee",
+    "main": "Naanna'iinsa ijoo",
+    "bottom": "Kutaalee",
+    "theme": {
+      "toLight": "Gara haala ifaatti jijjiiri",
+      "toDark": "Gara haala dukkanaatti jijjiiri"
+    },
+    "language": {
+      "label": "Afaan",
+      "change": "Afaan jijjiiri",
+      "current": "Afaan ammaa: {name}",
+      "draft": "Hiika ofumaan qophaa'e — dubbattoota afaanichaatiin gamaaggamamaa jira"
+    }
+  },
+  "footer": {
+    "attribution": "Alliance of Bioversity International fi CIAT, Finfinnee fi Akraatiin kan hojjetame.",
+    "disclaimer": "Ragaadhaan sadarkeeffame malee raaga miti. Gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbeentaan tilmaama moodeelaa amantaa ibsame waliin.",
+    "sources": "Maddawwan daataa",
+    "method": "Akkamitti akka hojjetu",
+    "version": "Gosa {version}",
+    "versionUnknown": "Gosni hin argamu",
+    "licence": "Hayyama fi daataa",
+    "rights": "© {year} AgroAdvisor-ET"
+  },
+  "status": {
+    "apiUnreachable": "Tajaajilli gorsaa hin argamu. Hanga deebi'utti gorsi hin jiru.",
+    "apiStarting": "Tajaajilli gorsaa jalqabaa jira.",
+    "checking": "Tajaajila mirkaneessaa jira…",
+    "retry": "Amma irra deebi'ii yaali"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Ragaa dirree · Haala jiyoo-ispaashaalii · Sadarkeessuu iftoomina qabu",
+      "title": "Gorsa gochaa qonnaan bultoota Itoophiyaatiif, ragaa dirreetiin sadarkeeffame.",
+      "subtitle": "Mallattoo kaa'aa, rakkoo fi kaayyoo himaa. AgroAdvisor-ET gochaalee agro-ekoloojii bu'aa isaanii haalawwan akka keessanii keessatti safarameen sadarkeessa, qorannoowwan tokkoon tokkoon isaanii duuba jiranis ni agarsiisa.",
+      "ctaAdvisor": "Gorsa argadhu",
+      "ctaChat": "Gorsaa gaafadhu"
+    },
+    "how": {
+      "eyebrow": "Akkamitti akka hojjetu",
+      "title": "Mallattoo irraa gara gochaatti tarkaanfii sadiin",
+      "steps": {
+        "location": {
+          "title": "Bakka kaa'i",
+          "body": "Mallattoo kaa'aa ykn koordineetii barreessaa. Roobni, biyyeen, lafti fi godinni agro-ekoloojii tarreewwan jiyoo-ispaashaalii irraa ofumaan dubbifamu."
+        },
+        "goal": {
+          "title": "Rakkoo fi kaayyoo filadhu",
+          "body": "Maatii rakkoo shanan keessaa tokko fi bu'aa jijjiiruu barbaaddan filadhaa."
+        },
+        "results": {
+          "title": "Gochaalee sadarkeeffaman gamaaggami",
+          "body": "Gochaaleen bu'aa yaaliiwwan dirree cimdii irraa eegamuun tartiibeffaman, tokkoon tokkoon amantaa isaa fi qorannoowwan duuba jiran waliin."
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "Bu'uura ragaa",
+      "observations": "daawwannaawwan dirree",
+      "studies": "qorannoowwan",
+      "practices": "gochaalee",
+      "belts": "godinaalee agro-ekoloojii",
+      "families": "maatiiwwan rakkoo",
+      "objectives": "kaayyoowwan",
+      "loading": "Lakkoofsota fe'aa jira…",
+      "unavailable": "Tajaajilli sarara ala yoo ta'e lakkoofsonni hin argaman"
+    },
+    "families": {
+      "eyebrow": "Maatiiwwan rakkoo",
+      "title": "Dirreewwan rakkoo shan",
+      "subtitle": "Sadarkeessuun maatii filattan keessatti, bakka kaa'attaniif raawwatama.",
+      "open": "{family}n jalqabi"
+    }
+  },
+  "advisor": {
+    "title": "Gorsaa",
+    "subtitle": "Gaaffii tarkaanfii afuriin qajeelfame. Lakkoofsi agarsiifamu hundi moodeela yaalii dirree irraa dhufa.",
+    "steps": {
+      "location": "Bakka",
+      "challenge": "Rakkoo",
+      "objective": "Kaayyoo",
+      "crop": "Midhaan",
+      "results": "Bu'aawwan"
+    },
+    "stepOf": "Tarkaanfii {current} kan {total}",
+    "progress": "Adeemsa",
+    "summary": {
+      "title": "Gaaffii keessan",
+      "location": "Bakka",
+      "challenge": "Rakkoo",
+      "objective": "Kaayyoo",
+      "crop": "Midhaan",
+      "notSet": "Ammatti hin kaa'amne",
+      "anyCrop": "Midhaan kamiyyuu",
+      "edit": "{step} gulaali",
+      "startOver": "Irra deebi'ii jalqabi",
+      "belt": "Godina"
+    },
+    "location": {
+      "title": "Qonni eessa jira?",
+      "help": "Kaartaa tuqaa, bakka keessan fayyadamaa, bakka barbaadaa, ykn koordineetii barreessaa.",
+      "latitude": "Laatitiyuudii",
+      "longitude": "Longitiyuudii",
+      "coordinateHint": "Digrii kurnyee, fkn 8.38",
+      "search": "Bakka Itoophiyaa keessaa barbaadi",
+      "searchPlaceholder": "fkn Dabra Birhaan",
+      "searching": "Barbaadaa jira…",
+      "searchNone": "Bakki hin argamne — barreeffama biraa yaalaa ykn mallattoo kaa'aa",
+      "useMyLocation": "Bakka koo fayyadami",
+      "locating": "Bakka keessan barbaadaa jira…",
+      "outside": "Qabxiin sun Itoophiyaa alatti argama (laatitiyuudii {latMin}–{latMax}, longitiyuudii {lonMin}–{lonMax}). Mallattoo biyya keessatti sochoosaa.",
+      "gpsUnavailable": "Bakki biraawzarii kana irratti hin argamu.",
+      "gpsOutside": "Bakki meeshaa keessanii Itoophiyaa alatti argama. Bakka isaa kaartaa irratti qabxii filadhaa.",
+      "gpsFailed": "Bakka keessan dubbisuun hin danda'amne. Hayyama mirkaneessaa ykn kaartaa fayyadamaa.",
+      "zone": "Godina agro-ekoloojii",
+      "zoneLoading": "Godina adda baasaa jira…",
+      "zoneUnavailable": "Qabxii kanaaf godinni hin argamu",
+      "mapLoading": "Kaartaa fe'aa jira…",
+      "mapLabel": "Kaartaa Itoophiyaa. Mallattoo kaa'uuf tuqaa, ykn dirreewwan koordineetii armaan gadii gabatee cuqoodhaan fayyadamaa.",
+      "noPin": "Ammatti mallattoon hin jiru",
+      "pinAt": "Mallattoo {lat}, {lon} irratti"
+    },
+    "challenge": {
+      "title": "Rakkoon maali?",
+      "help": "Gochaaleen maatii filattan keessatti sadarkeeffamu."
+    },
+    "objective": {
+      "title": "Maal jijjiiruu barbaaddu?",
+      "help": "Kaayyoowwan rakkoo kanaaf ragaa dirree qaban qofatu dhihaata.",
+      "none": "Rakkoo kanaaf kaayyoon ragaa qabu hin jiru."
+    },
+    "crop": {
+      "title": "Midhaan kam?",
+      "help": "Filannoo. Midhaan sanaaf ragaan yoo jiraate haala dhiphisa; midhaan kamiyyuuf duwwaa dhiisaa.",
+      "placeholder": "Midhaan barbaadi…",
+      "any": "Midhaan kamiyyuu",
+      "noMatch": "Midhaan walsimu hin jiru",
+      "label": "Midhaan"
+    },
+    "getRecommendation": "Gorsa argadhu",
+    "results": {
+      "title": "Gochaalee gorfaman",
+      "rankedWithin": "{family} keessatti sadarkeeffame",
+      "withEvidence": "Gochaalee {candidates} keessaa {grounded} kaayyoo kanaaf ragaa dirree qabu",
+      "topN": "Gochaalee agarsiifaman",
+      "topNLabel": "Olaanaa {n}",
+      "loading": "Haala keessaniif gochaalee sadarkeessaa jira…",
+      "newRequest": "Gaaffii haaraa",
+      "share": "Liinkii gorsa kanaa garagalchi",
+      "shared": "Liinkiin garagalfame",
+      "disclaimer": "Tilmaama ragaa dirree haalawwan walfakkaatan keessaa — sadarkeessuu malee wabii miti.",
+      "source": {
+        "label": "Madda sadarkeessuu kanaa"
+      },
+      "context": {
+        "title": "Haala keessan",
+        "belt": "Godina agro-ekoloojii",
+        "rainfall": "Rooba waggaa",
+        "altitude": "Ol ka'iinsa",
+        "slope": "Gadee lafaa",
+        "clay": "Dhoqqee biyyee gubbaa",
+        "ph": "pH biyyee",
+        "soc": "Kaarboonii orgaanikii biyyee",
+        "lgp": "Yeroo guddinaa",
+        "temp": "Ho'a giddugaleessaa",
+        "meaning": {
+          "belt": "godinaalee aadaa ol ka'iinsaa–jiidhinaa Itoophiyaa",
+          "rainfall": "ida'ama waggaa giddugaleessaa mallattoo irratti",
+          "altitude": "ol ka'iinsa galaana gubbaa",
+          "slope": "hammam akka lafti gad bu'u",
+          "clay": "qooda dhoqqee biyyee gubbaa keessaa",
+          "ph": "asiidummaa biyyee; 7 giddugaleessa",
+          "soc": "kaarboonii biyyee gubbaa keessatti kuufame",
+          "lgp": "guyyoota waggaatti jiidhina gahaa guddinaaf qaban",
+          "temp": "giddugaleessa waggaa"
+        },
+        "units": {
+          "mm": "mm",
+          "m": "m",
+          "percent": "%",
+          "days": "guyyoota",
+          "celsius": "°C"
+        }
+      },
+      "card": {
+        "rank": "#{rank}",
+        "topMatch": "Walsimannaa olaanaa",
+        "observations": "{n, plural, =0 {daawwannaa dirree hin jiru} one {daawwannaa dirree #} other {daawwannaawwan dirree #}}",
+        "why": "Maaliif kana?",
+        "hideWhy": "Bal'ina dhoksi",
+        "evidence": "Ragaa",
+        "howTo": "Akkamitti hojiirra oolcha",
+        "howToEmpty": "Qajeelfamni hojiirra oolmaa yommuu kuusaan qajeelfamaa gochaa kanaaf sanadoota qabu asitti mul'ata. Waan jiru ilaaluuf Ragaa banaa.",
+        "confidence": "Amantaa",
+        "estimated": "Bu'aa tilmaamame fi ragaa",
+        "change": "jijjiirama",
+        "image": "Fakkii {practice}",
+        "imageMissing": "Ammatti fakkiin hin jiru",
+        "apiEffect": "Hima moodeelaa: {effect}"
+      },
+      "empty": {
+        "title": "Ammatti gochaan agarsiifamu hin jiru",
+        "body": "Tarkaanfiiwwan afran xumuraa, gochaaleen sadarkeeffaman asitti mul'atu."
+      },
+      "noEvidence": {
+        "title": "Walitti dhufeenya kanaaf ragaan dirree hin jiru",
+        "body": "Bu'uurri ragaa kuusaa daataa keessatti rakkoo fi kaayyoo kanaaf yaalii hin qabu. Kaayyoo biraa, ykn bakka dhihoo yaalaa."
+      },
+      "apiDown": {
+        "title": "Tajaajilli gorsaa hin argamu",
+        "body": "Gaaffiin keessan sarara teessoo keessatti qabamee jira. Walqunnamtiin yommuu deebi'u irra deebi'aa yaalaa."
+      },
+      "error": {
+        "title": "Gaaffichi madaalamuu hin dandeenye"
+      },
+      "live": "{n, plural, one {gochaan # gorfame} other {gochaaleen # gorfaman}}",
+      "explainInChat": "Marii keessatti ibsi"
+    }
+  },
+  "evidence": {
+    "title": "Ragaa",
+    "loading": "Qorannoowwan madda irraa ragaa baasaa jira…",
+    "unavailable": "Ragaan hin argamu",
+    "grounded": "Barreeffama saayinsii irratti hundaa'e",
+    "notGrounded": "Ragaan hin argamne",
+    "aiSummary": "Cuunfaa AI",
+    "deterministic": "Cuunfaa murtaa'aa",
+    "sourceStudies": "Qorannoowwan madda ({n})",
+    "guidance": "Qajeelfama hojiirra oolmaa ({n})",
+    "untitledStudy": "Qorannoo mata-duree hin qabne",
+    "untitledDocument": "Sanada mata-duree hin qabne",
+    "passages": "×{n}",
+    "evidenceBase": {
+      "title": "Bu'uura ragaa",
+      "sentence": "{practice}: {studies} / {observations}{belts}n deeggarame; qorannoowwan keessaa {inCorpus} kuusaa argamuu danda'u keessa {verb}.",
+      "studies": "{n, plural, one {qorannoo #} other {qorannoowwan #}}",
+      "observations": "{n, plural, one {daawwannaa dirree #} other {daawwannaawwan dirree #}}",
+      "inBelts": " {belts} keessatti",
+      "verb": "{n, plural, one {jira} other {jiru}}",
+      "fullText": "barreeffama guutuu",
+      "abstractOnly": "cuunfaa qofa",
+      "notInCorpus": "kuusaa keessa hin jiru"
+    },
+    "tier": {
+      "evidence": "Ragaa dirree",
+      "guidance": "Qajeelfama",
+      "practice": "Galmee gochaa"
+    }
+  },
+  "chat": {
+    "eyebrow": "Gorsaa gochaa Agro-ekoloojii+",
+    "title": "Haala qonnaa ibsaa.",
+    "titleLine2": "Gocha caalaa walsimu fudhadhaa.",
+    "intro": "Qonna afaan salphaadhaan ibsaa — maqaa bakkaa ykn mallattoo kaartaa, rakkoo fi kaayyoo. Gochaaleen godinaaf ragaa dirree irraa sadarkeeffamu malee hin uumaman.",
+    "placeholderHero": "Waa'ee oomishaa, dhiqama biyyee, yaa'insa bishaanii gaafadhu…",
+    "placeholder": "Qonna fi kaayyoo keessan ibsaa…",
+    "ask": "Gaafadhu",
+    "send": "Ergi",
+    "message": "Ergaa",
+    "pickOnMap": "Kaartaa irratti filadhu",
+    "useMyLocation": "Bakka koo fayyadami",
+    "tryExample": "Fakkeenya yaali",
+    "examples": {
+      "one": "Dirree gadee koo Dabra Birhaan bira jiru irratti dhiqama biyyee hir'isuu barbaada",
+      "two": "Qonni koo 8.38, 39.37 irra jira — dhiqama biyyee akkamitti hir'isa?",
+      "three": "9.03, 38.74 irratti qamadii nan oomisha. Oomisha akkamitti dabaluu danda'a?"
+    },
+    "loadingMeta": "Odeeffannoo moodeelaa fe'aa jira…",
+    "backendUnreachable": "Tajaajilli duubaa hin argamu: {error}",
+    "thinking": "Yaadaa jira…",
+    "mapOffer": {
+      "title": "Mallattoo kaa'uuf kaartaa bani",
+      "body": "Daangaan Itoophiyaa ni mirkanaa'a; laatitiyuudii fi longitiyuudiin walsimee tura"
+    },
+    "mapOfferReply": "Gaarii — kaartaa armaan gadii irratti mallattoo kaa'aa (ykn laatitiyuudii/longitiyuudii barreessaa). Erga kaa'amee booda bakka sana gorsaaf nan fayyadama.",
+    "errorFallback": "Gorsaa bira gahuun rakkoon uumame. Gorsaa yaalaa, ykn irra deebi'aa yaalaa.",
+    "chatFailed": "Haasaan hin milkoofne",
+    "loadMoreFailed": "Gochaalee dabalataa fe'uun hin danda'amne",
+    "pickLocation": "Bakka qonna keessanii filadhaa",
+    "useThisLocation": "Bakka kana fayyadami",
+    "practicesShown": "Gochaalee agarsiifaman",
+    "topN": "Olaanaa {n}",
+    "yourSetup": "Qophii keessan",
+    "stage": {
+      "challenge": "Rakkoo",
+      "objective": "Kaayyoo",
+      "location": "Bakka",
+      "locationSet": "Bakki kaa'ame",
+      "complete": "Qophii"
+    },
+    "quick": {
+      "chooseChallenge": "Rakkoo keessan filadhaa",
+      "pickObjective": "Kaayyoo keessan filadhaa",
+      "setLocation": "Bakka qonna keessanii kaa'aa",
+      "locationHelp": "Itoophiyaa keessatti mallattoo kaa'aa, GPS fayyadamaa, ykn saanduqa armaan gadii keessatti koordineetii barreessaa.",
+      "changeChallenge": "Rakkoo jijjiiri",
+      "openMap": "Kaartaa bani",
+      "evidenceRanked": "Gochaalee dirree kana keessatti ragaadhaan sadarkeeffaman"
+    },
+    "protocol": {
+      "farmAt": "My farm is at {lat}, {lon}.",
+      "challenge": "My challenge is {family}.",
+      "objective": "My objective is to {objective}.",
+      "challengeNote": "Challenge: {family}.",
+      "objectiveNote": "Objective: {objective}.",
+      "explain": "I'm at {lat}, {lon}{crop}. For \"{family}\" with the goal to {direction} {indicator}, you recommended {practices}. Why these, and how sure are you?",
+      "growing": " growing {crop}"
+    },
+    "contextChips": {
+      "label": "Hamileewwan hubataman",
+      "lat": "laat",
+      "lon": "long",
+      "challenge": "rakkoo",
+      "objective": "kaayyoo",
+      "crop": "midhaan",
+      "clear": "{key} haqi"
+    },
+    "geoUnavailable": "Jiyoolookeeshiniin biraawzarii kana irratti hin argamu.",
+    "geoFailed": "Bakka keessan dubbisuun hin danda'amne. Bakka isaa kaartaa yaalaa."
+  },
+  "about": {
+    "title": "Waa'ee AgroAdvisor-ET",
+    "lead": "Gorsaa ragaa irratti hundaa'e kan gochaalee agro-ekoloojii bakka murtaa'aa Itoophiyaa keessaatiif sadarkeessu fi qorannoowwan dirree gorsa hunda duuba jiran agarsiisu.",
+    "what": {
+      "title": "Maal akka ta'e",
+      "body": "AgroAdvisor-ET haala agro-ekoloojii mallattoo kaartaa jala jiru — rooba, ho'a, ol ka'iinsa, gadee lafaa, biyyee fi yeroo guddinaa kuusaa jiyoo-ispaashaalii 250 m irraa — dubbisa, gochaalees moodeela daawwannaawwan dirree cimdii kumaatamaan lakkaa'aman waliin/malee yaaliiwwan Itoophiyaa irraa leenji'een sadarkeessa. Achiis tarreen baasuu gorsa hunda kutaalee qorannoowwan moodeelichi irraa barate irraa fudhatamaniin ibsa."
+    },
+    "confidence": {
+      "title": "Amantaa akkamitti dubbisuu",
+      "body": "Kun meeshaa sadarkeessuu malee raaga oomishaa miti. Dandeettiin mirkaneeffannaa qaxxaamuraa amanamaan giddugaleessa, kanaaf dhibbeentaa sirrii caalaa tartiiba gochaalee amanaa.",
+      "high": "haalawwan akka keessanii keessatti yaaliiwwan dirreetiin sirriitti deeggarame",
+      "medium": "ragaa gahaa; tartiiba akka mallattootti fudhadhaa",
+      "low": "ragaa qal'aa — qabxii jalqabaa malee raaga miti. Gorsaan kijibuu mannaa kana jedha."
+    },
+    "sources": {
+      "title": "Maddawwan daataa",
+      "evidence": "Evidence for Resilient Agriculture (ERA) — kutaa Itoophiyaa daawwannaawwan dirree cimdii, qorannoowwan qonna haala qilleensaatiin ogummaa qabu Adimaasuu fi kkf waliin.",
+      "geo": "Haala qilleensaa WorldClim, biyyee SoilGrids, ol ka'iinsa fi gadee Copernicus, uwwisa lafaa ESA WorldCover, daataa yeroo guddinaa FAO, fi godinaalee agro-ekoloojii Itoophiyaa.",
+      "guidance": "Qajeelfama hojiirra oolmaa GARDIAN / CGSpace (oomishaalee beekumsaa CGIAR) tarree akkamitti-gochuutiif.",
+      "practice": "Galmeewwan gochaa WOCAT Global SLM Database (CC BY-NC-SA 4.0), haala biyyoota gidduu gad-lakkiisa booda dhufuuf."
+    },
+    "authors": {
+      "title": "Barreessitoota",
+      "body": "Misganu Tuse (Alliance of Bioversity International fi CIAT, Finfinnee) fi Wuletawu Abera (Alliance of Bioversity International fi CIAT, Akraa)."
+    },
+    "licence": {
+      "title": "Hayyama",
+      "body": "Sooftiweerii qorannoo. Kuusaawwan daataa bu'uuraa hayyama mataa isaanii qabu; daataan WOCAT irraa argame CC BY-NC-SA 4.0 dha. Hiikkaawwan Afaan Amaaraa fi Afaan Oromoo wixinee maashinii dubbattoota afaanichaatiin gamaaggamamaa jiranidha."
+    },
+    "cta": "Gorsaa bani"
+  },
+  "errors": {
+    "title": "Wanti tokko dogoggore",
+    "body": "Fuulli dogoggora hin eegamne mudate. Gaaffiin keessan hin badne — irra deebi'aa yaalaa ykn gara jalqabaatti deebi'aa.",
+    "retry": "Irra deebi'ii yaali",
+    "home": "Gara jalqabaatti deemi",
+    "details": "Bal'ina teeknikaa"
+  },
+  "notFound": {
+    "title": "Fuulli hin argamne",
+    "body": "Teessoon sun hin jiru. Gorsaa fi haasaan tuqaa tokko fagaatu.",
+    "home": "Gara jalqabaatti deemi"
+  },
+  "a11y": {
+    "mapRegion": "Kaartaa Itoophiyaa",
+    "pinSetByKeyboard": "Mallattoo gabatee cuqoodhaan kaa'uuf dirreewwan laatitiyuudii fi longitiyuudii fayyadamaa.",
+    "stepper": "Tarkaanfiiwwan gaaffii",
+    "currentStep": "tarkaanfii ammaa",
+    "completedStep": "xumurame",
+    "resultsRegion": "Gochaalee gorfaman",
+    "themeToggle": "Haala",
+    "externalLink": "liinkii alaa"
+  }
+}

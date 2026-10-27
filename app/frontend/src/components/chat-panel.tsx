@@ -1,31 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  Bot,
-  Loader2,
-  MapPinned,
-  Navigation,
-  Send,
-  Sparkles,
-  User,
-} from "lucide-react";
+import { Bot, Loader2, MapPinned, Navigation, Send, Sparkles, User, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { postRecommend, streamChat } from "@/lib/api";
 import type { ChatMessage, ChatSlotsEvent, RecommendResponse } from "@/lib/types";
+import { deriveChatSetup, type ChatSlotsPayload } from "@/lib/chat-flow";
+import { familyShort, indicatorLabel } from "@/i18n/glossary";
+import type { Locale } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 import { useMetadata } from "./metadata-provider";
-import { ContextChips, SuggestionChips } from "./chips";
-import { RecommendationPanel } from "./recommendation-card";
 import { AssistantMarkdown } from "./assistant-markdown";
-import { LocationPicker } from "./location-picker";
 import { ChatQuickReplies } from "./chat-quick-replies";
-import {
-  deriveChatSetup,
-  indicatorLabelForFamily,
-  type ChatSlotsPayload,
-} from "@/lib/chat-flow";
-import { Chip } from "./ui/motion";
+import { RecommendationPanel } from "./advisor/recommendation-panel";
+import { LocationPicker } from "./advisor/location-step";
+import { useZone } from "./advisor/use-zone";
+import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { Chip } from "./ui/chip";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet";
 
 const TOP_N_OPTIONS = [1, 2, 3, 5] as const;
 
@@ -34,17 +27,9 @@ function trimRecommendation(data: RecommendResponse, n: number): RecommendRespon
   return {
     ...data,
     recommendations: data.recommendations.slice(0, n),
-    details: {
-      ...data.details,
-      ranked: data.details.ranked.slice(0, n),
-    },
+    details: { ...data.details, ranked: data.details.ranked.slice(0, n) },
   };
 }
-const EXAMPLES = [
-  "I want to reduce soil loss on my sloping field near Debre Birhan",
-  "My farm is at 8.38, 39.37 — how do I cut soil erosion?",
-  "At 9.03, 38.74 I grow wheat. How can I raise yield?",
-];
 
 const MAP_OFFER_RE =
   /\b(map|pin|location|where\s+(is|are)\s+your|drop\s+a\s+pin|latitude|longitude|coordinates)\b/i;
@@ -59,9 +44,19 @@ interface Turn {
   showMap?: boolean;
 }
 
+/**
+ * The conversational advisor. Logic is unchanged from P5 (slots, protocol
+ * messages, map offer); U1 restyles it on the design system, moves every
+ * string to the catalog and sends the UI language to the backend. A seed
+ * message (from the Advisor's "Explain in chat") pre-fills the composer —
+ * the user sends it, nothing fires on mount.
+ */
 export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
+  const t = useTranslations("chat");
+  const tc = useTranslations("common");
+  const locale = useLocale() as Locale;
   const { meta, loading: metaLoading, error: metaError } = useMetadata();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(seedMessage ?? "");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,28 +70,16 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   const [reopenChallengePicker, setReopenChallengePicker] = useState(false);
   const [serverSlots, setServerSlots] = useState<ChatSlotsPayload | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const seeded = useRef(false);
+  const zone = useZone(mapLat, mapLon, meta?.bounds ?? null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [turns, busy, mapOpen]);
-
-  useEffect(() => {
-    if (seedMessage && !seeded.current) {
-      seeded.current = true;
-      void send(seedMessage);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seedMessage]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [turns, busy]);
 
   const history = useMemo<ChatMessage[]>(
-    () =>
-      turns
-        .filter((t) => t.content)
-        .map((t) => ({ role: t.role, content: t.content })),
+    () => turns.filter((x) => x.content).map((x) => ({ role: x.role, content: x.content })),
     [turns]
   );
-
   const lastQuery = useMemo(() => {
     for (let i = turns.length - 1; i >= 0; i--) {
       const q = turns[i].recommendation?.query;
@@ -104,38 +87,22 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     }
     return null;
   }, [turns]);
-
   const lastRecommendation = useMemo(() => {
     for (let i = turns.length - 1; i >= 0; i--) {
       if (turns[i].recommendation) return turns[i].recommendation!;
     }
     return null;
   }, [turns]);
-
   const needsLocation = !lastQuery && !mapLat;
 
   const derivedSetup = useMemo(
-    () =>
-      deriveChatSetup(
-        turns,
-        lastQuery,
-        mapLat,
-        mapLon,
-        meta ?? null,
-        serverSlots
-      ),
+    () => deriveChatSetup(turns, lastQuery, mapLat, mapLon, meta ?? null, serverSlots),
     [turns, lastQuery, mapLat, mapLon, meta, serverSlots]
   );
-
   const chatSetup = useMemo(() => {
     if (lastQuery) return derivedSetup;
     if (reopenChallengePicker) {
-      return {
-        stage: "challenge" as const,
-        family: null,
-        indicatorKey: null,
-        hasLocation: derivedSetup.hasLocation,
-      };
+      return { stage: "challenge" as const, family: null, indicatorKey: null, hasLocation: derivedSetup.hasLocation };
     }
     return derivedSetup;
   }, [derivedSetup, lastQuery, reopenChallengePicker]);
@@ -143,7 +110,6 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   async function applyTopN(n: number) {
     setTopN(n);
     if (!lastQuery) return;
-
     const patchLastRec = (rec: RecommendResponse) => {
       setTurns((prev) => {
         for (let i = prev.length - 1; i >= 0; i--) {
@@ -155,13 +121,11 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
         return prev;
       });
     };
-
     const currentLen = lastRecommendation?.recommendations.length ?? 0;
     if (n <= currentLen && lastRecommendation) {
       patchLastRec(trimRecommendation(lastRecommendation, n));
       return;
     }
-
     setRefreshingRec(true);
     setError(null);
     try {
@@ -175,7 +139,7 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
       });
       patchLastRec(res);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load more practices");
+      setError(e instanceof Error ? e.message : t("loadMoreFailed"));
     } finally {
       setRefreshingRec(false);
     }
@@ -187,23 +151,13 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     setError(null);
     setInput("");
 
-    // Affirmative reply to map offer → open map UI locally.
-    const lastAssistant = [...turns].reverse().find((t) => t.role === "assistant");
-    if (
-      AFFIRM_RE.test(msg) &&
-      lastAssistant &&
-      (lastAssistant.showMap || MAP_OFFER_RE.test(lastAssistant.content))
-    ) {
+    // Affirmative reply to a map offer → open the map locally.
+    const lastAssistant = [...turns].reverse().find((x) => x.role === "assistant");
+    if (AFFIRM_RE.test(msg) && lastAssistant && (lastAssistant.showMap || MAP_OFFER_RE.test(lastAssistant.content))) {
       setTurns((prev) => [
         ...prev,
         { id: `u-${Date.now()}`, role: "user", content: msg },
-        {
-          id: `a-${Date.now()}`,
-          role: "assistant",
-          content:
-            "Great — drop a pin on the map below (or type lat/long). Once set, I'll use that location for recommendations.",
-          showMap: true,
-        },
+        { id: `a-${Date.now()}`, role: "assistant", content: t("mapOfferReply"), showMap: true },
       ]);
       setMapOpen(true);
       return;
@@ -219,29 +173,17 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
       }
       const obj = msg.match(/^My objective is to (.+)\.$/i)?.[1]?.trim();
       if (obj) {
-        const ind = meta.indicators.find(
-          (i) => i.label.toLowerCase() === obj.toLowerCase()
-        );
+        const ind = meta.indicators.find((i) => i.label.toLowerCase() === obj.toLowerCase());
         if (ind) setPendingIndicator(ind.key);
       }
     }
-    setTurns((prev) => [
-      ...prev,
-      userTurn,
-      { id: assistantId, role: "assistant", content: "" },
-    ]);
+    setTurns((prev) => [...prev, userTurn, { id: assistantId, role: "assistant", content: "" }]);
     setBusy(true);
 
     try {
       let recommendation: RecommendResponse | null = null;
       let reply = "";
-
-      for await (const ev of streamChat({
-        message: msg,
-        history,
-        lastRecommendation,
-        topN,
-      })) {
+      for await (const ev of streamChat({ message: msg, history, lastRecommendation, topN, language: locale })) {
         if (ev.type === "slots" && ev.data) {
           const slots = ev.data as ChatSlotsEvent;
           setServerSlots(slots);
@@ -256,57 +198,27 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
           }
         }
         if (ev.type === "recommendation" && ev.data) {
-          recommendation = trimRecommendation(
-            ev.data as RecommendResponse,
-            topN
-          );
+          recommendation = trimRecommendation(ev.data as RecommendResponse, topN);
           const rec = recommendation;
-          setTurns((prev) =>
-            prev.map((t) =>
-              t.id === assistantId ? { ...t, recommendation: rec } : t
-            )
-          );
+          setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, recommendation: rec } : x)));
         }
         if (ev.type === "token" && ev.text) {
           reply += ev.text;
           const snapshot = reply;
-          setTurns((prev) =>
-            prev.map((t) =>
-              t.id === assistantId ? { ...t, content: snapshot } : t
-            )
-          );
+          setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, content: snapshot } : x)));
         }
-        if (ev.type === "error") {
-          setError(ev.message || "Chat failed");
-        }
+        if (ev.type === "error") setError(ev.message || t("chatFailed"));
       }
-
       if (recommendation) {
         const rec = recommendation;
-        setTurns((prev) =>
-          prev.map((t) =>
-            t.id === assistantId ? { ...t, recommendation: rec } : t
-          )
-        );
+        setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, recommendation: rec } : x)));
       } else if (reply && MAP_OFFER_RE.test(reply) && needsLocation) {
-        setTurns((prev) =>
-          prev.map((t) =>
-            t.id === assistantId ? { ...t, showMap: true } : t
-          )
-        );
+        setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, showMap: true } : x)));
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Chat failed");
+      setError(e instanceof Error ? e.message : t("chatFailed"));
       setTurns((prev) =>
-        prev.map((t) =>
-          t.id === assistantId && !t.content
-            ? {
-                ...t,
-                content:
-                  "Something went wrong reaching the assistant. Try the form, or retry.",
-              }
-            : t
-        )
+        prev.map((x) => (x.id === assistantId && !x.content ? { ...x, content: t("errorFallback") } : x))
       );
     } finally {
       setBusy(false);
@@ -316,13 +228,12 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   function applyMapAndContinue() {
     if (mapLat == null || mapLon == null) return;
     const bits = [
-      `My farm is at ${mapLat.toFixed(4)}, ${mapLon.toFixed(4)}.`,
-      pendingFamily ? `Challenge: ${pendingFamily}.` : null,
+      t("protocol.farmAt", { lat: mapLat.toFixed(4), lon: mapLon.toFixed(4) }),
+      pendingFamily ? t("protocol.challengeNote", { family: pendingFamily }) : null,
       pendingIndicator
-        ? `Objective: ${
-            meta?.indicators.find((i) => i.key === pendingIndicator)?.label ||
-            pendingIndicator
-          }.`
+        ? t("protocol.objectiveNote", {
+            objective: meta?.indicators.find((i) => i.key === pendingIndicator)?.label || pendingIndicator,
+          })
         : null,
     ].filter(Boolean);
     setMapOpen(false);
@@ -330,8 +241,8 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   }
 
   function useMyLocation() {
-    if (!navigator.geolocation) {
-      setError("Geolocation is not available in this browser.");
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setError(t("geoUnavailable"));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -340,11 +251,10 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
         const lo = Number(pos.coords.longitude.toFixed(4));
         setMapLat(la);
         setMapLon(lo);
-        setMapOpen(true);
-        void send(`My farm is at ${la}, ${lo}.`);
+        void send(t("protocol.farmAt", { lat: la.toFixed(4), lon: lo.toFixed(4) }));
       },
-      () => setError("Could not read your location. Try the map instead."),
-      { enableHighAccuracy: true, timeout: 10000 }
+      () => setError(t("geoFailed")),
+      { enableHighAccuracy: true, timeout: 10_000 }
     );
   }
 
@@ -356,32 +266,23 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     !!turns[turns.length - 1]?.content &&
     !turns[turns.length - 1]?.recommendation;
 
+  const examples = [t("examples.one"), t("examples.two"), t("examples.three")];
+
   return (
-    <div className="relative flex h-[calc(100dvh-var(--header-h))] flex-col bg-[radial-gradient(ellipse_60%_40%_at_50%_-6%,color-mix(in_oklab,var(--leaf)_7%,transparent),transparent_70%)]">
+    <div className="flex h-[calc(100dvh-var(--header-h)-var(--bottombar-h))] flex-col md:h-[calc(100dvh-var(--header-h))]">
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl space-y-5 px-4 py-5 sm:px-6 sm:py-8 lg:max-w-4xl">
-          {turns.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="flex min-h-[min(56vh,480px)] flex-col items-center justify-center text-center"
-            >
-              <p className="eyebrow mb-4 inline-flex items-center gap-2 rounded-lg border border-edge bg-elevated px-3.5 py-1.5 normal-case tracking-normal shadow-sm">
-                <Sparkles className="h-3.5 w-3.5 text-leaf" />
-                <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-mute">
-                  Agroecology+ practice advisor
-                </span>
+        <div className="mx-auto w-full max-w-3xl space-y-5 px-4 py-5 sm:px-6 sm:py-8">
+          {turns.length === 0 ? (
+            <div className="flex min-h-[min(56vh,480px)] flex-col items-center justify-center text-center">
+              <p className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
+                <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
+                {t("eyebrow")}
               </p>
-              <h1 className="font-display text-[2.4rem] font-semibold leading-[1.08] tracking-tight text-ink sm:text-[3.1rem]">
-                Describe the farm context.
-                <span className="block text-body">Receive the best-fit practice</span>
+              <h1 className="mt-5 text-balance text-3xl sm:text-4xl">
+                {t("title")}
+                <span className="block text-muted">{t("titleLine2")}</span>
               </h1>
-              <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-mute sm:text-base">
-                Describe your farm in plain language — place name or map pin, challenge,
-                and goal. Practices are ranked from field evidence for your zone, not
-                invented advice.
-              </p>
+              <p className="mt-4 max-w-lg text-base text-muted">{t("intro")}</p>
 
               <div className="mt-8 w-full max-w-xl">
                 <Composer
@@ -390,119 +291,109 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                   onChange={setInput}
                   onSend={() => void send(input)}
                   busy={busy}
-                  placeholder="Ask about yield, soil loss, runoff…"
+                  placeholder={t("placeholderHero")}
                   large
                 />
               </div>
 
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
-                <Chip onClick={() => setMapOpen(true)}>
-                  <MapPinned className="h-3.5 w-3.5" /> Pick on map
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                <Chip onClick={() => setMapOpen(true)} icon={<MapPinned className="h-4 w-4 text-primary" aria-hidden />}>
+                  {t("pickOnMap")}
                 </Chip>
-                <Chip onClick={useMyLocation}>
-                  <Navigation className="h-3.5 w-3.5" /> Use my location
+                <Chip onClick={useMyLocation} icon={<Navigation className="h-4 w-4 text-primary" aria-hidden />}>
+                  {t("useMyLocation")}
                 </Chip>
               </div>
 
               <div className="mt-7 w-full space-y-3">
-                <p className="text-[11px] font-medium uppercase tracking-widest text-mute">
-                  Try an example
-                </p>
-                <SuggestionChips items={EXAMPLES} onPick={(t) => void send(t)} />
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{t("tryExample")}</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {examples.map((ex) => (
+                    <button
+                      key={ex}
+                      type="button"
+                      onClick={() => void send(ex)}
+                      className="rounded-control border border-border bg-surface px-3.5 py-2 text-left text-sm text-text transition-colors duration-base hover:border-primary/50 hover:bg-surface-2"
+                    >
+                      {ex}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {(metaLoading || metaError) && (
-                <p className="mt-4 text-xs text-mute">
-                  {metaLoading
-                    ? "Loading model metadata…"
-                    : `Backend unreachable: ${metaError}`}
+              {metaLoading || metaError ? (
+                <p className="mt-4 text-xs text-muted">
+                  {metaLoading ? t("loadingMeta") : t("backendUnreachable", { error: metaError ?? "" })}
                 </p>
-              )}
-            </motion.div>
-          )}
+              ) : null}
+            </div>
+          ) : null}
 
-          <AnimatePresence initial={false}>
-            {turns.map((t) => (
-              <motion.div
-                key={t.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={
-                  t.role === "user" ? "flex justify-end gap-2" : "flex justify-start gap-2"
-                }
-              >
-                {t.role === "assistant" && (
-                  <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-leaf text-white shadow-soft">
-                    <Bot className="h-4 w-4" aria-hidden />
-                  </span>
+          {turns.map((turn) => (
+            <div key={turn.id} className={cn("rise-in flex gap-2", turn.role === "user" ? "justify-end" : "justify-start")}>
+              {turn.role === "assistant" ? (
+                <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-primary-fg">
+                  <Bot className="h-4 w-4" aria-hidden />
+                </span>
+              ) : null}
+              <div className={turn.role === "user" ? "max-w-[88%] rounded-card rounded-br-sm bg-text px-4 py-3 text-base text-background" : "max-w-[94%] min-w-0 flex-1 space-y-3"}>
+                {turn.role === "assistant" ? (
+                  <>
+                    {turn.content ? (
+                      <div className="rounded-card rounded-bl-sm border border-border bg-surface px-4 py-3.5 shadow-1 sm:px-5">
+                        <AssistantMarkdown content={turn.content} />
+                        {busy && turns[turns.length - 1]?.id === turn.id && !turn.recommendation ? (
+                          <Loader2 className="ml-1 inline h-3.5 w-3.5 animate-spin text-muted" aria-hidden />
+                        ) : null}
+                      </div>
+                    ) : busy && turns[turns.length - 1]?.id === turn.id ? (
+                      <div className="inline-flex items-center gap-2 rounded-card border border-border bg-surface px-4 py-3 text-sm text-muted" role="status">
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
+                        {t("thinking")}
+                      </div>
+                    ) : null}
+                    {turn.showMap && meta && !mapOpen ? (
+                      <button
+                        type="button"
+                        onClick={() => setMapOpen(true)}
+                        className="flex w-full items-center gap-3 rounded-card border border-dashed border-primary/50 bg-primary-soft/60 px-4 py-3 text-left transition-colors duration-base hover:bg-primary-soft"
+                      >
+                        <span className="flex h-10 w-10 items-center justify-center rounded-control bg-primary text-primary-fg">
+                          <MapPinned className="h-5 w-5" aria-hidden />
+                        </span>
+                        <span>
+                          <span className="block text-sm font-semibold text-text">{t("mapOffer.title")}</span>
+                          <span className="block text-xs text-muted">{t("mapOffer.body")}</span>
+                        </span>
+                      </button>
+                    ) : null}
+                    {turn.recommendation ? <RecommendationPanel data={turn.recommendation} /> : null}
+                  </>
+                ) : (
+                  turn.content
                 )}
-                <div
-                  className={
-                    t.role === "user"
-                      ? "max-w-[88%] rounded-[22px] rounded-br-md bg-ink px-4 py-3 text-[15px] leading-relaxed text-elevated shadow-lift"
-                      : "max-w-[94%] space-y-3"
-                  }
-                >
-                  {t.role === "assistant" ? (
-                    <>
-                      {t.content ? (
-                        <div className="rounded-[22px] rounded-bl-md border border-edge/80 bg-elevated/95 px-4 py-3.5 shadow-soft backdrop-blur sm:px-5">
-                          <AssistantMarkdown content={t.content} />
-                          {busy &&
-                            turns[turns.length - 1]?.id === t.id &&
-                            !t.recommendation && (
-                              <Loader2 className="ml-1 inline h-3.5 w-3.5 animate-spin text-mute" />
-                            )}
-                        </div>
-                      ) : (
-                        busy &&
-                        turns[turns.length - 1]?.id === t.id && (
-                          <div className="inline-flex items-center gap-2 rounded-[22px] border border-edge bg-elevated px-4 py-3 text-sm text-mute shadow-soft">
-                            <Loader2 className="h-4 w-4 animate-spin text-leaf" />
-                            Thinking…
-                          </div>
-                        )
-                      )}
-                      {t.showMap && meta && (
-                        <MapOfferCard
-                          onOpen={() => setMapOpen(true)}
-                          open={mapOpen && turns[turns.length - 1]?.id === t.id}
-                        />
-                      )}
-                      {t.recommendation && (
-                        <div className="overflow-hidden rounded-[1.75rem] border border-edge/90 bg-elevated/98 shadow-lift backdrop-blur sm:rounded-[28px]">
-                          <RecommendationPanel
-                            data={t.recommendation}
-                            variant="hero"
-                          />
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    t.content
-                  )}
-                </div>
-                {t.role === "user" && (
-                  <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-elevated">
-                    <User className="h-4 w-4" aria-hidden />
-                  </span>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+              {turn.role === "user" ? (
+                <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-text">
+                  <User className="h-4 w-4" aria-hidden />
+                </span>
+              ) : null}
+            </div>
+          ))}
 
-          {showQuickReplies && meta && (
+          {showQuickReplies && meta ? (
             <ChatQuickReplies
               meta={meta}
               setup={chatSetup}
               onPickChallenge={(f) => {
                 setPendingFamily(f);
                 setReopenChallengePicker(false);
-                void send(`My challenge is ${f}.`);
+                void send(t("protocol.challenge", { family: f }));
               }}
-              onPickObjective={(ind) => {
-                setPendingIndicator(ind.key);
-                void send(`My objective is to ${ind.label.toLowerCase()}.`);
+              onPickObjective={(key) => {
+                const ind = meta.indicators.find((i) => i.key === key);
+                setPendingIndicator(key);
+                void send(t("protocol.objective", { objective: (ind?.label ?? key).toLowerCase() }));
               }}
               onChangeChallenge={() => {
                 setReopenChallengePicker(true);
@@ -512,137 +403,116 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
               onOpenMap={() => setMapOpen(true)}
               onUseLocation={useMyLocation}
             />
-          )}
-
-          {mapOpen && meta && (
-            <div className="rounded-[28px] border border-edge bg-elevated/95 p-4 shadow-lift sm:p-5">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="font-display text-xl tracking-tight text-ink">
-                  Pick your farm location
-                </h2>
-                <button
-                  type="button"
-                  className="text-xs font-medium text-mute hover:text-ink"
-                  onClick={() => setMapOpen(false)}
-                >
-                  Close
-                </button>
-              </div>
-              <LocationPicker
-                lat={mapLat}
-                lon={mapLon}
-                bounds={meta.bounds}
-                onChange={(la, lo) => {
-                  setMapLat(la);
-                  setMapLon(lo);
-                }}
-              />
-              <div className="mt-4 flex justify-end">
-                <Button
-                  variant="gradient"
-                  disabled={mapLat == null || mapLon == null}
-                  onClick={applyMapAndContinue}
-                >
-                  Use this location
-                </Button>
-              </div>
-            </div>
-          )}
+          ) : null}
 
           <div ref={bottomRef} />
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl shrink-0 border-t border-edge/60 bg-canvas/85 px-4 pb-5 pt-3 backdrop-blur-md sm:px-6 lg:max-w-4xl">
-        {lastQuery && (
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-edge/80 bg-elevated/70 px-3 py-2.5 shadow-sm">
-            <p className="text-[13px] font-medium text-ink">
-              Practices shown
-              {refreshingRec && (
-                <Loader2 className="ml-2 inline h-3.5 w-3.5 animate-spin text-mute" />
-              )}
+      <div className="mx-auto w-full max-w-3xl shrink-0 border-t border-border bg-background/95 px-4 pb-4 pt-3 backdrop-blur sm:px-6">
+        {lastQuery ? (
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-medium text-text">
+              {t("practicesShown")}
+              {refreshingRec ? <Loader2 className="ml-2 inline h-3.5 w-3.5 animate-spin text-muted" aria-hidden /> : null}
             </p>
-            <div className="flex gap-1 rounded-full bg-panel/80 p-1">
+            <div className="flex gap-1" role="group" aria-label={t("practicesShown")}>
               {TOP_N_OPTIONS.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  disabled={refreshingRec || busy}
-                  onClick={() => void applyTopN(n)}
-                  className={
-                    topN === n
-                      ? "rounded-lg bg-leaf px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm"
-                      : "rounded-full px-3.5 py-1.5 text-[13px] font-medium text-mute transition hover:text-ink"
-                  }
-                >
-                  {n === 1 ? "Top 1" : `Top ${n}`}
-                </button>
+                <Chip key={n} selected={topN === n} disabled={refreshingRec || busy} onClick={() => void applyTopN(n)} className="min-h-9 px-3 py-1">
+                  {t("topN", { n })}
+                </Chip>
               ))}
             </div>
           </div>
-        )}
-        {meta && turns.length > 0 && !lastQuery && chatSetup.stage !== "complete" && (
-          <div className="mb-2 flex flex-wrap items-center gap-2 rounded-2xl border border-edge/60 bg-elevated/50 px-3 py-2 text-[12px] text-mute">
-            <span className="font-medium text-ink">Your setup</span>
-            <span aria-hidden>·</span>
-            <span>
-              {chatSetup.family ? chatSetup.family.replace(/ and management$/i, "") : "Challenge"}
-            </span>
-            <span aria-hidden>→</span>
-            <span>
-              {chatSetup.indicatorKey
-                ? indicatorLabelForFamily(
-                    chatSetup.family,
-                    meta.indicators.find((i) => i.key === chatSetup.indicatorKey) ?? {
-                      key: chatSetup.indicatorKey,
-                      label: chatSetup.indicatorKey,
-                      direction: "increase",
-                    }
-                  )
-                : "Objective"}
-            </span>
-            <span aria-hidden>→</span>
-            <span>{chatSetup.hasLocation ? "Location set" : "Location"}</span>
-          </div>
-        )}
+        ) : null}
 
-        {lastQuery && (
-          <div className="mb-2">
-            <ContextChips
-              slots={{
-                lat: lastQuery.lat,
-                lon: lastQuery.lon,
-                challenge: lastQuery.practice_family,
-                objective: lastQuery.indicator,
-                crop: lastQuery.crop_type ?? undefined,
-              }}
-            />
-          </div>
-        )}
-        {error && (
-          <p className="mb-2 text-xs text-soil" role="alert">
-            {error}{" "}
-            <button
-              type="button"
-              className="underline"
-              onClick={() => setError(null)}
-            >
-              dismiss
+        {meta && turns.length > 0 && !lastQuery && chatSetup.stage !== "complete" ? (
+          <p className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted">
+            <span className="font-medium text-text">{t("yourSetup")}</span>
+            <span aria-hidden>·</span>
+            <span>{chatSetup.family ? familyShort(chatSetup.family, locale) : t("stage.challenge")}</span>
+            <span aria-hidden>·</span>
+            <span>{chatSetup.indicatorKey ? indicatorLabel(chatSetup.indicatorKey, locale) : t("stage.objective")}</span>
+            <span aria-hidden>·</span>
+            <span>{chatSetup.hasLocation ? t("stage.locationSet") : t("stage.location")}</span>
+          </p>
+        ) : null}
+
+        {lastQuery ? (
+          <ul className="mb-2 flex flex-wrap gap-1.5" aria-label={t("contextChips.label")}>
+            {(
+              [
+                ["lat", String(lastQuery.lat)],
+                ["lon", String(lastQuery.lon)],
+                ["challenge", familyShort(lastQuery.practice_family, locale)],
+                ["objective", indicatorLabel(lastQuery.indicator, locale)],
+                ["crop", lastQuery.crop_type ?? ""],
+              ] as const
+            )
+              .filter(([, v]) => v)
+              .map(([k, v]) => (
+                <li key={k}>
+                  <Badge variant="outline-neutral" className="font-normal">
+                    <span>{t(`contextChips.${k}`)}:</span>
+                    <span className="font-medium text-text">{v}</span>
+                  </Badge>
+                </li>
+              ))}
+          </ul>
+        ) : null}
+
+        {error ? (
+          <p className="mb-2 flex items-center gap-2 text-sm text-danger-text" role="alert">
+            {error}
+            <button type="button" className="underline" onClick={() => setError(null)}>
+              {tc("dismiss")}
             </button>
           </p>
-        )}
-        {(turns.length > 0 || mapOpen) && (
+        ) : null}
+
+        {turns.length > 0 ? (
           <Composer
             id="chat-input"
             value={input}
             onChange={setInput}
             onSend={() => void send(input)}
             busy={busy}
-            placeholder="Describe your farm and goal…"
+            placeholder={t("placeholder")}
             onMap={() => setMapOpen(true)}
           />
-        )}
+        ) : null}
       </div>
+
+      <Sheet open={mapOpen && !!meta} onOpenChange={setMapOpen}>
+        <SheetContent closeLabel={tc("close")} className="sm:max-w-2xl">
+          <SheetHeader>
+            <SheetTitle>{t("pickLocation")}</SheetTitle>
+            <SheetDescription>{t("quick.locationHelp")}</SheetDescription>
+          </SheetHeader>
+          {meta ? (
+            <LocationPicker
+              lat={mapLat}
+              lon={mapLon}
+              bounds={meta.bounds}
+              zone={zone}
+              onChange={(la, lo) => {
+                setMapLat(la);
+                setMapLon(lo);
+              }}
+              mapClassName="h-56 overflow-hidden rounded-card border border-border sm:h-64"
+            />
+          ) : null}
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setMapOpen(false)}>
+              <X className="h-4 w-4" aria-hidden />
+              {tc("close")}
+            </Button>
+            <Button disabled={mapLat == null || mapLon == null} onClick={applyMapAndContinue}>
+              {t("useThisLocation")}
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
@@ -666,26 +536,22 @@ function Composer({
   large?: boolean;
   onMap?: () => void;
 }) {
+  const t = useTranslations("chat");
   return (
     <form
-      className="flex items-end gap-2 rounded-2xl border border-edge bg-elevated p-1.5 shadow-soft"
+      className="flex items-end gap-2 rounded-card border border-border bg-surface p-1.5 shadow-1 focus-within:border-primary/60"
       onSubmit={(e) => {
         e.preventDefault();
         onSend();
       }}
     >
-      {onMap && (
-        <button
-          type="button"
-          onClick={onMap}
-          className="mb-0.5 rounded-lg p-2.5 text-mute transition hover:bg-panel hover:text-ink"
-          aria-label="Open map"
-        >
-          <MapPinned className="h-4 w-4" />
-        </button>
-      )}
+      {onMap ? (
+        <Button type="button" variant="ghost" size="icon" onClick={onMap} aria-label={t("pickOnMap")} className="mb-0.5 h-10 w-10">
+          <MapPinned className="h-4 w-4" aria-hidden />
+        </Button>
+      ) : null}
       <label className="sr-only" htmlFor={id}>
-        Message
+        {t("message")}
       </label>
       <textarea
         id={id}
@@ -699,63 +565,23 @@ function Composer({
           }
         }}
         placeholder={placeholder}
-        className={
-          large
-            ? "max-h-28 min-h-[56px] flex-1 resize-none bg-transparent px-3 py-3 text-[15px] text-ink outline-none placeholder:text-mute/80"
-            : "max-h-32 min-h-[44px] flex-1 resize-none bg-transparent px-3.5 py-2.5 text-sm text-ink outline-none placeholder:text-mute"
-        }
+        className={cn(
+          "flex-1 resize-none bg-transparent px-3 text-text outline-none placeholder:text-muted",
+          large ? "max-h-28 min-h-[56px] py-3 text-base" : "max-h-32 min-h-[44px] py-2.5 text-sm"
+        )}
         disabled={busy}
       />
-      <button
+      <Button
         type="submit"
+        size={large ? "lg" : "icon"}
         disabled={busy || !value.trim()}
-        className={
-          large
-            ? "mb-0.5 inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-leaf px-4 text-[13px] font-semibold text-white shadow-soft transition hover:bg-leaf-deep disabled:opacity-35"
-            : "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-leaf text-white shadow-soft transition hover:bg-leaf-deep disabled:opacity-35"
-        }
-        aria-label="Send"
+        loading={busy}
+        aria-label={large ? undefined : t("send")}
+        className="mb-0.5"
       >
-        {busy ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : large ? (
-          <>
-            Ask
-            <Send className="h-3.5 w-3.5" />
-          </>
-        ) : (
-          <Send className="h-4 w-4" />
-        )}
-      </button>
+        {large ? t("ask") : null}
+        {!busy ? <Send className="h-4 w-4" aria-hidden /> : null}
+      </Button>
     </form>
-  );
-}
-
-function MapOfferCard({
-  onOpen,
-  open,
-}: {
-  onOpen: () => void;
-  open?: boolean;
-}) {
-  if (open) return null;
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="flex w-full items-center gap-3 rounded-2xl border border-dashed border-leaf/40 bg-leaf/5 px-4 py-3 text-left transition hover:bg-leaf/10"
-    >
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-leaf/15 text-leaf-deep dark:text-leaf-bright">
-        <MapPinned className="h-5 w-5" />
-      </span>
-      <span>
-        <span className="block text-sm font-semibold text-ink">
-          Open map to drop a pin
-        </span>
-        <span className="block text-xs text-mute">
-          Ethiopia bounds validated · lat/long stay in sync
-        </span>
-      </span>
-    </button>
   );
 }

@@ -1,12 +1,27 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import en from "../../messages/en.json";
+import am from "../../messages/am.json";
 import {
   evidenceBaseEntries,
   evidenceBaseSentence,
   studiesInCorpus,
   studiesTooltip,
   studyLine,
+  type StudyLabels,
 } from "./evidence-base";
 import type { EvidenceBaseEntry } from "./types";
+
+// The English catalog drives the sentence; the test proves it still reads
+// word-for-word like the backend's (``explain_service.evidence_base_sentence``).
+const tEn = createTranslator({ locale: "en", messages: en, namespace: "evidence.evidenceBase" });
+const tAm = createTranslator({ locale: "am", messages: am, namespace: "evidence.evidenceBase" });
+const labels: StudyLabels = {
+  untitled: en.evidence.untitledStudy,
+  fullText: en.evidence.evidenceBase.fullText,
+  abstractOnly: en.evidence.evidenceBase.abstractOnly,
+  notInCorpus: en.evidence.evidenceBase.notInCorpus,
+};
 
 const mulching: EvidenceBaseEntry = {
   n_studies: 3,
@@ -72,21 +87,30 @@ describe("evidenceBaseEntries", () => {
 
 describe("evidenceBaseSentence", () => {
   it("states counts, belts and corpus coverage", () => {
-    expect(evidenceBaseSentence("Mulching", mulching)).toBe(
+    expect(evidenceBaseSentence("Mulching", mulching, tEn)).toBe(
       "Mulching: backed by 3 studies / 17 field observations in Dry Dega, " +
         "Moist Weyna Dega; 2 of the studies are in the retrievable corpus."
     );
   });
 
   it("uses singular forms and omits belts when there are none", () => {
-    expect(evidenceBaseSentence("Soil bunds", bunds)).toBe(
+    expect(evidenceBaseSentence("Soil bunds", bunds, tEn)).toBe(
       "Soil bunds: backed by 1 study / 1 field observation; 1 of the studies " +
         "is in the retrievable corpus."
     );
   });
 
+  it("localises the frame and the names but keeps the counts (am)", () => {
+    const sentence = evidenceBaseSentence("Mulching", mulching, tAm, { practice: () => "ሙልች" });
+    expect(sentence).toContain("ሙልች");
+    expect(sentence).toMatch(/[ሀ-፿]/);
+    expect(sentence).toContain("3");
+    expect(sentence).toContain("17");
+    expect(sentence).not.toContain("%");
+  });
+
   it("never shows an effect magnitude", () => {
-    const sentence = evidenceBaseSentence("Mulching", mulching);
+    const sentence = evidenceBaseSentence("Mulching", mulching, tEn);
     expect(sentence).not.toContain("%");
     expect(sentence).not.toMatch(/log|ratio|mean|median/i);
   });
@@ -94,17 +118,17 @@ describe("evidenceBaseSentence", () => {
 
 describe("studyLine / studiesTooltip", () => {
   it("renders provenance and retrievability per study", () => {
-    expect(studyLine(mulching.studies[0])).toBe(
+    expect(studyLine(mulching.studies[0], labels)).toBe(
       "NN0123 · Mulching effects on erosion (2019) — full text"
     );
-    expect(studyLine(mulching.studies[1])).toBe(
+    expect(studyLine(mulching.studies[1], labels)).toBe(
       "NN0999 · Residue cover trial (2016) — abstract only"
     );
-    expect(studyLine(mulching.studies[2])).toBe("Untitled study — not in the corpus");
+    expect(studyLine(mulching.studies[2], labels)).toBe("Untitled study — not in the corpus");
   });
 
   it("joins the studies into one tooltip, or none when the list is empty", () => {
-    expect(studiesTooltip(mulching)?.split("\n")).toHaveLength(3);
-    expect(studiesTooltip(bunds)).toBeUndefined();
+    expect(studiesTooltip(mulching, labels)?.split("\n")).toHaveLength(3);
+    expect(studiesTooltip(bunds, labels)).toBeUndefined();
   });
 });

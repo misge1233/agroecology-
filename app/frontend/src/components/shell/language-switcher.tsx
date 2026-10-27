@@ -1,0 +1,48 @@
+"use client";
+
+import { Languages } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { LOCALES, LOCALE_NAMES, type Locale } from "@/i18n/routing";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+/** Switches /[locale] while preserving the current route AND query string. */
+export function LanguageSwitcher({ className }: { className?: string }) {
+  const t = useTranslations("nav.language");
+  const locale = useLocale() as Locale;
+  const pathname = usePathname();
+  const router = useRouter();
+  const search = useSearchParams();
+
+  function change(next: string) {
+    if (next === locale) return;
+    const query = search.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { locale: next as Locale });
+  }
+
+  return (
+    <div className={className}>
+      <Select value={locale} onValueChange={change}>
+        <SelectTrigger aria-label={t("change")} className="h-9 w-auto min-w-[8.5rem] gap-2">
+          <Languages className="h-4 w-4 text-muted" aria-hidden />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {LOCALES.map((l) => (
+            <SelectItem key={l} value={l} lang={l}>
+              {LOCALE_NAMES[l]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <span className="sr-only">{t("current", { name: LOCALE_NAMES[locale] })}</span>
+    </div>
+  );
+}

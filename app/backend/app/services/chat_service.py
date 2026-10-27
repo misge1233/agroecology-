@@ -26,6 +26,7 @@ from app.services.openai_chat import (
     generate_turn,
     make_client,
 )
+from app.i18n import reply_instruction, t
 from app.services.slot_extraction import (
     clarification_message,
     evidence_summary,
@@ -95,16 +96,9 @@ def _prior_recommendation_context(rec: dict[str, Any]) -> str:
     )
 
 
-def _social_reply(has_prior: bool) -> str:
-    if has_prior:
-        return (
-            "You're welcome — glad it helped. Ask anytime if you want to know why, "
-            "how to apply it, or try a different location, crop, or goal."
-        )
-    return (
-        "You're welcome. Share a map location, challenge area, and objective "
-        "whenever you're ready and I'll recommend suitable practices."
-    )
+def _social_reply(has_prior: bool, language: str = "en") -> str:
+    """Thanks/ok/bye reply — catalogued per language (U1)."""
+    return t(language, "social.with_prior" if has_prior else "social.no_prior")
 
 
 async def _stream_text(text: str) -> AsyncIterator[str]:
@@ -167,10 +161,15 @@ async def stream_chat(
     history: list[dict[str, str]],
     last_recommendation: dict[str, Any] | None = None,
     top_n: int = 1,
+    language: str = "en",
 ) -> AsyncIterator[str]:
-    """SSE async generator. Emits slots / token / recommendation / done / error."""
+    """SSE async generator. Emits slots / token / recommendation / done / error.
+
+    ``language`` (U1) selects the catalog for every deterministic text and adds
+    a "Reply in …" line to the LLM prompts; nothing else changes.
+    """
     if _is_social_ack(message):
-        async for chunk in _stream_text(_social_reply(bool(last_recommendation))):
+        async for chunk in _stream_text(_social_reply(bool(last_recommendation), language)):
             yield chunk
         return
 
@@ -186,18 +185,14 @@ async def stream_chat(
     # Prior result still valid (no slot changes): follow-ups / chitchat / repeat asks.
     if last_recommendation and not _slots_changed(slots, last_recommendation):
         if slots.is_followup or not slots.wants_advice:
-            async for chunk in _stream_followup(
-                message, history, last_recommendation, settings
-            ):
+            async for chunk in _stream_followup(message, history, last_recommendation, settings, language):
                 yield chunk
             return
         # Same complete request again — reuse scored evidence, don't invent new practices.
         if slots.is_complete:
             rec = _trim_recommendation(last_recommendation, top_n)
             yield _evt({"type": "recommendation", "data": rec})
-            narrative = await _narrative_for_recommendation(
-                message, history, rec, settings
-            )
+            narrative = await _narrative_for_recommendation(message, history, rec, settings, language)
             for piece in _chunk(narrative):
                 yield _evt({"type": "token", "text": piece})
             yield _evt({"type": "done"})
@@ -205,7 +200,7 @@ async def stream_chat(
 
     if not slots.is_complete:
         # Never invent agronomic advice when evidence can't be scored yet.
-        async for chunk in _stream_text(clarification_message(slots)):
+        async for chunk in _stream_text(clarification_message(slots, language)):
             yield chunk
         return
 
@@ -216,37 +211,19 @@ async def stream_chat(
         )
     except Exception as exc:
         logger.exception("Recommend from slots failed: %s", exc)
-        yield _evt({"type": "error", "message": _error_message(exc)})
+        yield _evt({"type": "error", "message": _error_message(exc, language)})
         return
 
     yield _evt({"type": "recommendation", "data": recommendation})
 
-    narrative = await _narrative_for_recommendation(
-        message, history, recommendation, settings
-    )
+    narrative = await _narrative_for_recommendation(message, history, recommendation, settings, language)
     for piece in _chunk(narrative):
         yield _evt({"type": "token", "text": piece})
     yield _evt({"type": "done"})
 
 
-async def _stream_followup(
-    message: str,
-    history: list[dict[str, str]],
-    last_recommendation: dict[str, Any],
-    settings,
-) -> AsyncIterator[str]:
-    """Answer why/how from prior evidence — no new invented practices."""
-    if not settings.openai_api_key:
-        async for chunk in _stream_offline_followup(message, last_recommendation):
-            yield chunk
-        return
-    try:
-        client = make_client(settings.openai_api_key, settings.openai_timeout_seconds)
-    except Exception:
-        async for chunk in _stream_offline_followup(message, last_recommendation):
-            yield chunk
-        return
-
+def followup_system_instruction(last_recommendation: dict[str, Any], language: str = "en") -> str:
+    """System prompt for a why/how follow-up (pure; tested in test_i18n.py)."""
     system_instruction = SYSTEM_PROMPT + "\n\n" + _prior_recommendation_context(
         last_recommendation
     )
@@ -255,6 +232,29 @@ async def _stream_followup(
         "Do NOT invent new practices or numbers. Do NOT call recommend unless "
         "the user clearly changed location, challenge, objective, or crop."
     )
+    return system_instruction + "\n\n" + reply_instruction(language)
+
+
+async def _stream_followup(
+    message: str,
+    history: list[dict[str, str]],
+    last_recommendation: dict[str, Any],
+    settings,
+    language: str = "en",
+) -> AsyncIterator[str]:
+    """Answer why/how from prior evidence — no new invented practices."""
+    if not settings.openai_api_key:
+        async for chunk in _stream_offline_followup(message, last_recommendation, language):
+            yield chunk
+        return
+    try:
+        client = make_client(settings.openai_api_key, settings.openai_timeout_seconds)
+    except Exception:
+        async for chunk in _stream_offline_followup(message, last_recommendation, language):
+            yield chunk
+        return
+
+    system_instruction = followup_system_instruction(last_recommendation, language)
     messages = build_messages(history, message, system_instruction)
     try:
         async with client:
@@ -265,7 +265,7 @@ async def _stream_followup(
                 )
                 if function_calls:
                     # Ignore tool calls on pure follow-ups — keep evidence fixed.
-                    text = evidence_summary(last_recommendation)
+                    text = evidence_summary(last_recommendation, language)
                     for piece in _chunk(text):
                         yield _evt({"type": "token", "text": piece})
                     yield _evt({"type": "done"})
@@ -277,17 +277,27 @@ async def _stream_followup(
                             yield _evt({"type": "token", "text": piece})
                     yield _evt({"type": "done"})
                     return
-            async for chunk in _stream_offline_followup(message, last_recommendation):
+            async for chunk in _stream_offline_followup(message, last_recommendation, language):
                 yield chunk
     except Exception as exc:
         logger.exception("Follow-up stream failed: %s", exc)
-        async for chunk in _stream_offline_followup(message, last_recommendation):
+        async for chunk in _stream_offline_followup(message, last_recommendation, language):
             yield chunk
 
 
 async def _stream_offline_followup(
-    message: str, last_recommendation: dict[str, Any]
+    message: str, last_recommendation: dict[str, Any], language: str = "en"
 ) -> AsyncIterator[str]:
+    """Rule-based follow-up without an LLM.
+
+    The canonical ``AgroAdvisor._offline`` heuristics phrase English prose and
+    are not forked for other languages (CLAUDE.md doctrine 3); for ``am``/``om``
+    the deterministic, catalogued evidence summary is returned instead.
+    """
+    if language != "en":
+        async for chunk in _stream_text(evidence_summary(last_recommendation, language)):
+            yield chunk
+        return
     from advisor_agent import AgroAdvisor
 
     advisor = AgroAdvisor()
@@ -298,14 +308,27 @@ async def _stream_offline_followup(
         yield chunk
 
 
+def narrative_system_instruction(recommendation: dict[str, Any], language: str = "en") -> str:
+    """System prompt for phrasing a server-computed recommendation (pure; tested)."""
+    return (
+        SYSTEM_PROMPT
+        + "\n\nCRITICAL: A recommendation was ALREADY computed by the server. "
+        "Phrase the DEFAULT clean answer using ONLY this JSON. "
+        "Do not call tools. Do not invent practices, percentages, or coordinates.\n"
+        + json.dumps(recommendation, default=str)
+        + "\n\n" + reply_instruction(language)
+    )
+
+
 async def _narrative_for_recommendation(
     message: str,
     history: list[dict[str, str]],
     recommendation: dict[str, Any],
     settings,
+    language: str = "en",
 ) -> str:
     """Phrase the default answer from scored evidence; never free-invent practices."""
-    fallback = evidence_summary(recommendation)
+    fallback = evidence_summary(recommendation, language)
     if not settings.openai_api_key:
         return fallback
     try:
@@ -313,13 +336,7 @@ async def _narrative_for_recommendation(
     except Exception:
         return fallback
 
-    system_instruction = (
-        SYSTEM_PROMPT
-        + "\n\nCRITICAL: A recommendation was ALREADY computed by the server. "
-        "Phrase the DEFAULT clean answer using ONLY this JSON. "
-        "Do not call tools. Do not invent practices, percentages, or coordinates.\n"
-        + json.dumps(recommendation, default=str)
-    )
+    system_instruction = narrative_system_instruction(recommendation, language)
     messages = build_messages(history, message, system_instruction)
     # Remove tools from this narrative turn by using a lightweight completion.
     try:
@@ -356,13 +373,14 @@ async def run_chat(
     history: list[dict[str, str]],
     last_recommendation: dict[str, Any] | None = None,
     top_n: int = 1,
+    language: str = "en",
 ) -> dict[str, Any]:
     """Non-streaming turn — aggregates the SSE stream into a single JSON payload."""
     reply = ""
     recommendation: dict[str, Any] | None = None
     slots: dict[str, Any] | None = None
     error: str | None = None
-    async for chunk in stream_chat(message, history, last_recommendation, top_n):
+    async for chunk in stream_chat(message, history, last_recommendation, top_n, language):
         raw = chunk[len("data: ") :].strip()
         if not raw:
             continue
@@ -384,7 +402,10 @@ async def run_chat(
     }
 
 
-def _error_message(exc: Exception) -> str:
+def _error_message(exc: Exception, language: str = "en") -> str:
+    """User-facing error text. Engine validation errors pass through verbatim
+    (they are the data contract's own English wording); the two generic
+    messages come from the catalog."""
     msg = str(exc)
     low = msg.lower()
     if "outside ethiopia" in low or "outside" in low and "ethiopia" in low:
@@ -392,11 +413,5 @@ def _error_message(exc: Exception) -> str:
     if "not supported" in low or "objective" in low:
         return msg
     if "429" in low or "rate limit" in low or "resource exhausted" in low:
-        return (
-            "The AI text service has reached its usage limit for now. Please wait a "
-            "few minutes and try again, or use the form for instant recommendations."
-        )
-    return (
-        "I couldn't score practices for that request. Check the location is in "
-        "Ethiopia and that the challenge/objective pair is supported, then try again."
-    )
+        return t(language, "error.rate_limit")
+    return t(language, "error.generic")

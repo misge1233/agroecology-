@@ -1,39 +1,59 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Design tokens — "Ethiopian highland" palette (U1).
+ * Every colour is a CSS variable set in globals.css for light and dark, so
+ * components never hard-code a hex. See docs/design/design_system.md for the
+ * measured WCAG contrast of every text/background pair.
+ */
 const config: Config = {
   darkMode: "class",
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
+    // 4 px grid is Tailwind's default spacing scale; nothing to override.
+    container: { center: true, padding: "1rem" },
     extend: {
       colors: {
         background: "var(--background)",
-        foreground: "var(--foreground)",
-        canvas: "var(--canvas)",
-        panel: "var(--panel)",
-        elevated: "var(--elevated)",
-        ink: "var(--ink)",
-        body: "var(--body)",
-        mute: "var(--mute)",
-        edge: "var(--edge)",
-        leaf: {
-          DEFAULT: "var(--leaf)",
-          deep: "var(--leaf-deep)",
-          bright: "var(--leaf-bright)",
+        surface: "var(--surface)",
+        "surface-2": "var(--surface-2)",
+        foreground: "var(--text)",
+        text: "var(--text)",
+        muted: "var(--muted)",
+        border: "var(--border)",
+        ring: "var(--ring)",
+        primary: {
+          DEFAULT: "var(--primary)",
+          hover: "var(--primary-hover)",
+          fg: "var(--primary-fg)",
+          soft: "var(--primary-soft)",
         },
-        soil: "var(--soil)",
-        accent: "var(--accent)",
-        success: "var(--success)",
-        warning: "var(--warning)",
-        error: "var(--error)",
-        brand: {
-          blue: "var(--brand-blue)",
-          violet: "var(--brand-violet)",
-          pink: "var(--brand-pink)",
-          teal: "var(--brand-teal)",
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          fg: "var(--secondary-fg)",
+          text: "var(--secondary-text)",
+          soft: "var(--secondary-soft)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          fg: "var(--accent-fg)",
+          text: "var(--accent-text)",
+          soft: "var(--accent-soft)",
+        },
+        success: {
+          DEFAULT: "var(--success)",
+          text: "var(--success-text)",
+          soft: "var(--success-soft)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          text: "var(--warning-text)",
+          soft: "var(--warning-soft)",
+        },
+        danger: {
+          DEFAULT: "var(--danger)",
+          text: "var(--danger-text)",
+          soft: "var(--danger-soft)",
         },
         chart: {
           1: "var(--chart-1)",
@@ -46,42 +66,32 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "Georgia", "serif"],
+        ethiopic: ["var(--font-ethiopic)", "var(--font-sans)", "sans-serif"],
+      },
+      // Type scale 12 / 14 / 16 / 18 / 22 / 28 / 36 px; body 1.5, headings 1.2.
+      fontSize: {
+        xs: ["0.75rem", { lineHeight: "1.5" }],
+        sm: ["0.875rem", { lineHeight: "1.5" }],
+        base: ["1rem", { lineHeight: "1.5" }],
+        lg: ["1.125rem", { lineHeight: "1.5" }],
+        xl: ["1.375rem", { lineHeight: "1.2" }],
+        "2xl": ["1.75rem", { lineHeight: "1.2" }],
+        "3xl": ["2.25rem", { lineHeight: "1.2" }],
       },
       borderRadius: {
-        "4xl": "2rem",
-        "5xl": "2.5rem",
+        control: "0.5rem", // 8 px controls
+        card: "0.75rem", // 12 px cards
       },
-      letterSpacing: {
-        tighter: "-0.04em",
-        widest: "0.18em",
+      boxShadow: {
+        1: "var(--shadow-1)",
+        2: "var(--shadow-2)",
+      },
+      transitionDuration: {
+        fast: "120ms",
+        base: "200ms",
       },
       maxWidth: {
-        "8xl": "88rem",
-      },
-      keyframes: {
-        marquee: {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
-        "marquee-reverse": {
-          "0%": { transform: "translateX(-50%)" },
-          "100%": { transform: "translateX(0)" },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        pulseGlow: {
-          "0%, 100%": { opacity: "0.55" },
-          "50%": { opacity: "0.95" },
-        },
-      },
-      animation: {
-        marquee: "marquee 32s linear infinite",
-        "marquee-reverse": "marquee-reverse 36s linear infinite",
-        float: "float 6s ease-in-out infinite",
-        "pulse-glow": "pulseGlow 4s ease-in-out infinite",
+        content: "72rem",
       },
     },
   },

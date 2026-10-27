@@ -8,13 +8,20 @@ import { PRACTICE_IMAGE_EXTENSIONS, practiceSlug } from "@/lib/practice-images";
 
 type PracticeImageProps = {
   practice: string;
+  /** Localised alt text, e.g. "Illustration of Mulching". */
+  alt: string;
+  /** Localised fallback caption when no image exists. */
+  fallbackLabel: string;
   className?: string;
   priority?: boolean;
   sizes?: string;
 };
 
+/** One of the 55 practice photos under /public/practices, via next/image. */
 export function PracticeImage({
   practice,
+  alt,
+  fallbackLabel,
   className,
   priority,
   sizes = "(max-width: 768px) 100vw, 480px",
@@ -37,41 +44,25 @@ export function PracticeImage({
     return (
       <div
         className={cn(
-          "relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-leaf/25 via-brand-teal/20 to-brand-violet/15",
+          "flex aspect-[16/9] w-full items-center justify-center bg-gradient-to-br from-primary-soft to-secondary-soft",
           className
         )}
-        aria-hidden
+        role="img"
+        aria-label={fallbackLabel}
       >
-        <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_30%_20%,white_0%,transparent_50%)]" />
-        <div className="relative flex flex-col items-center gap-2 px-6 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 text-leaf shadow-soft backdrop-blur">
-            <Leaf className="h-7 w-7" />
+        <div className="flex flex-col items-center gap-2 px-6 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-control bg-surface text-primary shadow-1">
+            <Leaf className="h-6 w-6" aria-hidden />
           </span>
-          <p className="text-[11px] font-medium uppercase tracking-widest text-ink/50">
-            Photo coming soon
-          </p>
+          <p className="text-xs font-medium uppercase tracking-widest text-muted">{fallbackLabel}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-panel",
-        className
-      )}
-    >
-      <Image
-        src={path}
-        alt={`Illustration: ${practice}`}
-        fill
-        className="object-cover"
-        sizes={sizes}
-        priority={priority}
-        onError={onError}
-      />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+    <div className={cn("relative aspect-[16/9] w-full overflow-hidden bg-surface-2", className)}>
+      <Image src={path} alt={alt} fill className="object-cover" sizes={sizes} priority={priority} onError={onError} />
     </div>
   );
 }

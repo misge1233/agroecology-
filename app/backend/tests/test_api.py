@@ -340,3 +340,29 @@ def test_engine_wrapper_direct():
     assert out["query"]["indicator"] == "soil loss"
     assert len(out["recommendations"]) == 3
     assert out["details"]["ranked"][0]["n_evidence"] >= 1
+
+
+# ----------------------------------------------------------- U1 additive fields
+def test_metadata_evidence_counts_and_languages(client):
+    body = client.get("/metadata").json()
+    assert body["languages"] == ["en", "am", "om"]
+    ev = body["evidence"]
+    assert ev["n_observations"] > 100
+    assert 0 < ev["n_studies"] < ev["n_observations"]
+    assert ev["n_practices"] >= 50
+    assert 1 <= ev["n_belts"] <= 12
+    assert ev["n_crop_types"] > 10
+    # Counts only — the trust strip must never carry an effect size.
+    assert not any(k.startswith(("pct", "effect", "ratio")) for k in ev)
+
+
+def test_geocode_gazetteer_hit_and_miss(client):
+    r = client.get("/geocode", params={"q": "Debre Birhan"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["found"] is True
+    assert body["source"] == "gazetteer"
+    assert 3.3 <= body["lat"] <= 14.9 and 32.9 <= body["lon"] <= 48.2
+    miss = client.get("/geocode", params={"q": "Zzyzx nowhere"}).json()
+    assert miss["found"] is False and miss["lat"] is None
+    assert client.get("/geocode", params={"q": "a"}).status_code == 422

@@ -11,6 +11,7 @@ from functools import lru_cache
 from typing import Any
 
 from app.config import get_settings
+from app import i18n
 from app.services import explain_service
 from app.services import recommender_service as svc
 
@@ -84,4 +85,8 @@ def build_metadata() -> dict[str, Any]:
         # True when the knowledge graph is built — gates the evidence-base
         # line in the UI's Evidence panel.
         "graph_ready": explain_service.graph_is_ready(),
+        # UI languages the API answers in (U1).
+        "languages": list(i18n.LANGUAGES),
+        # Size of the evidence base (counts only) for the home trust strip (U1).
+        "evidence": svc.evidence_counts(),
     }

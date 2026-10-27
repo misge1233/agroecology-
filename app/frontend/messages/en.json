@@ -1,0 +1,394 @@
+{
+  "common": {
+    "appName": "AgroAdvisor-ET",
+    "tagline": "Agroecology+ decision support",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "optional": "optional",
+    "dismiss": "Dismiss",
+    "skipToContent": "Skip to content",
+    "opensNewTab": "opens in a new tab",
+    "menu": "Menu"
+  },
+  "nav": {
+    "home": "Home",
+    "advisor": "Advisor",
+    "chat": "Chat",
+    "about": "About",
+    "main": "Main navigation",
+    "bottom": "Sections",
+    "theme": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
+    "language": {
+      "label": "Language",
+      "change": "Change language",
+      "current": "Current language: {name}",
+      "draft": "Automatically drafted translation — under review by native speakers"
+    }
+  },
+  "footer": {
+    "attribution": "Developed by the Alliance of Bioversity International and CIAT, Addis Ababa and Accra.",
+    "disclaimer": "Evidence-ranked, not a forecast. Practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence.",
+    "sources": "Data sources",
+    "method": "How it works",
+    "version": "Version {version}",
+    "versionUnknown": "Version unavailable",
+    "licence": "Licence and data",
+    "rights": "© {year} AgroAdvisor-ET"
+  },
+  "status": {
+    "apiUnreachable": "The advisory service is unreachable. Recommendations are unavailable until it returns.",
+    "apiStarting": "The advisory service is starting up.",
+    "checking": "Checking the service…",
+    "retry": "Retry now"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Field evidence · Geospatial context · Transparent ranking",
+      "title": "Practice advice for Ethiopian farms, ranked by field evidence.",
+      "subtitle": "Drop a pin, name the challenge and the goal. AgroAdvisor-ET ranks agroecological practices by their measured effect in contexts like yours and shows the studies behind each one.",
+      "ctaAdvisor": "Get a recommendation",
+      "ctaChat": "Ask the advisor"
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Three steps from pin to practice",
+      "steps": {
+        "location": {
+          "title": "Set the location",
+          "body": "Drop a pin or type coordinates. Rainfall, soil, terrain and the agro-ecological belt are read from the geospatial layers automatically."
+        },
+        "goal": {
+          "title": "Choose the challenge and objective",
+          "body": "Pick one of five challenge families and the outcome you want to change."
+        },
+        "results": {
+          "title": "Review the ranked practices",
+          "body": "Practices are ordered by expected effect from paired field trials, each with its confidence and the studies behind it."
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "The evidence base",
+      "observations": "field observations",
+      "studies": "studies",
+      "practices": "practices",
+      "belts": "agro-ecological belts",
+      "families": "challenge families",
+      "objectives": "objectives",
+      "loading": "Loading figures…",
+      "unavailable": "Figures unavailable while the service is offline"
+    },
+    "families": {
+      "eyebrow": "Challenge families",
+      "title": "Five challenge areas",
+      "subtitle": "Ranking happens within the family you choose, for the location you set.",
+      "open": "Start with {family}"
+    }
+  },
+  "advisor": {
+    "title": "Advisor",
+    "subtitle": "A guided request in four steps. Every number shown comes from the field-trial model.",
+    "steps": {
+      "location": "Location",
+      "challenge": "Challenge",
+      "objective": "Objective",
+      "crop": "Crop",
+      "results": "Results"
+    },
+    "stepOf": "Step {current} of {total}",
+    "progress": "Progress",
+    "summary": {
+      "title": "Your request",
+      "location": "Location",
+      "challenge": "Challenge",
+      "objective": "Objective",
+      "crop": "Crop",
+      "notSet": "Not set yet",
+      "anyCrop": "Any crop",
+      "edit": "Edit {step}",
+      "startOver": "Start over",
+      "belt": "Belt"
+    },
+    "location": {
+      "title": "Where is the farm?",
+      "help": "Click the map, use your location, search a place, or type coordinates.",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "coordinateHint": "Decimal degrees, e.g. 8.38",
+      "search": "Search a place in Ethiopia",
+      "searchPlaceholder": "e.g. Debre Birhan",
+      "searching": "Searching…",
+      "searchNone": "No place found — try another spelling or drop a pin",
+      "useMyLocation": "Use my location",
+      "locating": "Finding your location…",
+      "outside": "That point is outside Ethiopia (latitude {latMin}–{latMax}, longitude {lonMin}–{lonMax}). Move the pin inside the country.",
+      "gpsUnavailable": "Location is not available in this browser.",
+      "gpsOutside": "Your device location is outside Ethiopia. Pick a point on the map instead.",
+      "gpsFailed": "Could not read your location. Check permissions or use the map.",
+      "zone": "Agro-ecological belt",
+      "zoneLoading": "Resolving the belt…",
+      "zoneUnavailable": "Belt not available for this point",
+      "mapLoading": "Loading map…",
+      "mapLabel": "Map of Ethiopia. Click to place the pin, or use the coordinate fields below with a keyboard.",
+      "noPin": "No pin yet",
+      "pinAt": "Pin at {lat}, {lon}"
+    },
+    "challenge": {
+      "title": "What is the challenge?",
+      "help": "Practices are ranked within the family you choose."
+    },
+    "objective": {
+      "title": "What do you want to change?",
+      "help": "Only objectives with field evidence for this challenge are offered.",
+      "none": "No objectives have evidence for this challenge."
+    },
+    "crop": {
+      "title": "Which crop?",
+      "help": "Optional. Narrows the context when evidence exists for that crop; leave empty for any crop.",
+      "placeholder": "Search crops…",
+      "any": "Any crop",
+      "noMatch": "No crop matches",
+      "label": "Crop"
+    },
+    "getRecommendation": "Get recommendation",
+    "results": {
+      "title": "Recommended practices",
+      "rankedWithin": "Ranked within {family}",
+      "withEvidence": "{grounded} of {candidates} practices have field evidence for this objective",
+      "topN": "Practices shown",
+      "topNLabel": "Top {n}",
+      "loading": "Ranking practices for your context…",
+      "newRequest": "New request",
+      "share": "Copy link to this advisory",
+      "shared": "Link copied",
+      "disclaimer": "Estimates from field evidence in similar settings — a ranking, not a guarantee.",
+      "source": {
+        "label": "Source of this ranking"
+      },
+      "context": {
+        "title": "Your context",
+        "belt": "Agro-ecological belt",
+        "rainfall": "Annual rainfall",
+        "altitude": "Altitude",
+        "slope": "Slope",
+        "clay": "Topsoil clay",
+        "ph": "Soil pH",
+        "soc": "Soil organic carbon",
+        "lgp": "Growing period",
+        "temp": "Mean temperature",
+        "meaning": {
+          "belt": "Ethiopia's traditional altitude–moisture zones",
+          "rainfall": "mean yearly total at the pin",
+          "altitude": "height above sea level",
+          "slope": "steepness of the land",
+          "clay": "share of clay in the topsoil",
+          "ph": "soil acidity; 7 is neutral",
+          "soc": "carbon stored in the topsoil",
+          "lgp": "days per year with enough moisture to grow",
+          "temp": "yearly average"
+        },
+        "units": {
+          "mm": "mm",
+          "m": "m",
+          "percent": "%",
+          "days": "days",
+          "celsius": "°C"
+        }
+      },
+      "card": {
+        "rank": "#{rank}",
+        "topMatch": "Top match",
+        "observations": "{n, plural, =0 {no field observations} one {# field observation} other {# field observations}}",
+        "why": "Why this?",
+        "hideWhy": "Hide details",
+        "evidence": "Evidence",
+        "howTo": "How to implement",
+        "howToEmpty": "Implementation guidance appears here when the guidance corpus has documents for this practice. Open Evidence to see what is available.",
+        "confidence": "Confidence",
+        "estimated": "Estimated effect and evidence",
+        "change": "change",
+        "image": "Illustration of {practice}",
+        "imageMissing": "No illustration yet",
+        "apiEffect": "Model sentence: {effect}"
+      },
+      "empty": {
+        "title": "No practices to show yet",
+        "body": "Complete the four steps and the ranked practices will appear here."
+      },
+      "noEvidence": {
+        "title": "No field evidence for this combination",
+        "body": "The evidence base has no trials for this challenge and objective in the dataset. Try another objective, or a nearby location."
+      },
+      "apiDown": {
+        "title": "The advisory service is unreachable",
+        "body": "Your request is kept in the address bar. Try again when the connection returns."
+      },
+      "error": {
+        "title": "The request could not be scored"
+      },
+      "live": "{n, plural, one {# practice recommended} other {# practices recommended}}",
+      "explainInChat": "Explain in chat"
+    }
+  },
+  "evidence": {
+    "title": "Evidence",
+    "loading": "Retrieving evidence from the source studies…",
+    "unavailable": "Evidence unavailable",
+    "grounded": "Grounded in literature",
+    "notGrounded": "No evidence retrieved",
+    "aiSummary": "AI summary",
+    "deterministic": "Deterministic summary",
+    "sourceStudies": "Source studies ({n})",
+    "guidance": "Implementation guidance ({n})",
+    "untitledStudy": "Untitled study",
+    "untitledDocument": "Untitled document",
+    "passages": "×{n}",
+    "evidenceBase": {
+      "title": "Evidence base",
+      "sentence": "{practice}: backed by {studies} / {observations}{belts}; {inCorpus} of the studies {verb} in the retrievable corpus.",
+      "studies": "{n, plural, one {# study} other {# studies}}",
+      "observations": "{n, plural, one {# field observation} other {# field observations}}",
+      "inBelts": " in {belts}",
+      "verb": "{n, plural, one {is} other {are}}",
+      "fullText": "full text",
+      "abstractOnly": "abstract only",
+      "notInCorpus": "not in the corpus"
+    },
+    "tier": {
+      "evidence": "Field evidence",
+      "guidance": "Guidance",
+      "practice": "Practice record"
+    }
+  },
+  "chat": {
+    "eyebrow": "Agroecology+ practice advisor",
+    "title": "Describe the farm context.",
+    "titleLine2": "Receive the best-fit practice.",
+    "intro": "Describe the farm in plain language — a place name or map pin, the challenge and the goal. Practices are ranked from field evidence for the zone, never invented.",
+    "placeholderHero": "Ask about yield, soil loss, runoff…",
+    "placeholder": "Describe your farm and goal…",
+    "ask": "Ask",
+    "send": "Send",
+    "message": "Message",
+    "pickOnMap": "Pick on map",
+    "useMyLocation": "Use my location",
+    "tryExample": "Try an example",
+    "examples": {
+      "one": "I want to reduce soil loss on my sloping field near Debre Birhan",
+      "two": "My farm is at 8.38, 39.37 — how do I cut soil erosion?",
+      "three": "At 9.03, 38.74 I grow wheat. How can I raise yield?"
+    },
+    "loadingMeta": "Loading model metadata…",
+    "backendUnreachable": "Backend unreachable: {error}",
+    "thinking": "Thinking…",
+    "mapOffer": {
+      "title": "Open the map to drop a pin",
+      "body": "Ethiopia bounds are validated; latitude and longitude stay in sync"
+    },
+    "mapOfferReply": "Great — drop a pin on the map below (or type lat/long). Once set, I'll use that location for recommendations.",
+    "errorFallback": "Something went wrong reaching the assistant. Try the Advisor, or retry.",
+    "chatFailed": "Chat failed",
+    "loadMoreFailed": "Could not load more practices",
+    "pickLocation": "Pick your farm location",
+    "useThisLocation": "Use this location",
+    "practicesShown": "Practices shown",
+    "topN": "Top {n}",
+    "yourSetup": "Your setup",
+    "stage": {
+      "challenge": "Challenge",
+      "objective": "Objective",
+      "location": "Location",
+      "locationSet": "Location set",
+      "complete": "Ready"
+    },
+    "quick": {
+      "chooseChallenge": "Choose your challenge",
+      "pickObjective": "Pick your objective",
+      "setLocation": "Set your farm location",
+      "locationHelp": "Drop a pin inside Ethiopia, use GPS, or type coordinates in the box below.",
+      "changeChallenge": "Change challenge",
+      "openMap": "Open map",
+      "evidenceRanked": "Evidence-ranked practices in this area"
+    },
+    "protocol": {
+      "farmAt": "My farm is at {lat}, {lon}.",
+      "challenge": "My challenge is {family}.",
+      "objective": "My objective is to {objective}.",
+      "challengeNote": "Challenge: {family}.",
+      "objectiveNote": "Objective: {objective}.",
+      "explain": "I'm at {lat}, {lon}{crop}. For \"{family}\" with the goal to {direction} {indicator}, you recommended {practices}. Why these, and how sure are you?",
+      "growing": " growing {crop}"
+    },
+    "contextChips": {
+      "label": "Understood parameters",
+      "lat": "lat",
+      "lon": "lon",
+      "challenge": "challenge",
+      "objective": "objective",
+      "crop": "crop",
+      "clear": "Clear {key}"
+    },
+    "geoUnavailable": "Geolocation is not available in this browser.",
+    "geoFailed": "Could not read your location. Try the map instead."
+  },
+  "about": {
+    "title": "About AgroAdvisor-ET",
+    "lead": "An evidence-grounded advisor that ranks agroecological practices for a specific place in Ethiopia and shows the field studies behind every recommendation.",
+    "what": {
+      "title": "What it is",
+      "body": "AgroAdvisor-ET reads the agro-ecological context under a map pin — rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack — and ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials. The retrieval layer then explains each recommendation with passages from the very studies the model learned from."
+    },
+    "confidence": {
+      "title": "How to read confidence",
+      "body": "This is a ranking tool, not a yield forecaster. Honest cross-validated skill is modest, so trust the order of practices more than the exact percentages.",
+      "high": "well supported by field trials in settings like yours",
+      "medium": "reasonable evidence; treat the order as the signal",
+      "low": "thin evidence — a starting point, not a forecast. The advisor says so instead of bluffing."
+    },
+    "sources": {
+      "title": "Data sources",
+      "evidence": "Evidence for Resilient Agriculture (ERA) — Ethiopia subset of paired field observations, with the Adimassu et al. climate-smart agriculture studies.",
+      "geo": "WorldClim climate, SoilGrids soil, Copernicus elevation and slope, ESA WorldCover land cover, FAO growing-period data, and the Ethiopian agro-ecological belts.",
+      "guidance": "GARDIAN / CGSpace implementation guidance (CGIAR knowledge products) for the how-to layer.",
+      "practice": "WOCAT Global SLM Database practice records (CC BY-NC-SA 4.0), for cross-country context in a later release."
+    },
+    "authors": {
+      "title": "Authorship",
+      "body": "Misganu Tuse (Alliance of Bioversity International and CIAT, Addis Ababa) and Wuletawu Abera (Alliance of Bioversity International and CIAT, Accra)."
+    },
+    "licence": {
+      "title": "Licence",
+      "body": "Research software. Underlying datasets carry their own licences; WOCAT-derived data is CC BY-NC-SA 4.0. Translations into Amharic and Afaan Oromoo are machine drafts under native review."
+    },
+    "cta": "Open the Advisor"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "body": "The page hit an unexpected error. Your request is not lost — try again or go back to the start.",
+    "retry": "Try again",
+    "home": "Go to the start",
+    "details": "Technical details"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "That address does not exist. The advisor and chat are one tap away.",
+    "home": "Go to the start"
+  },
+  "a11y": {
+    "mapRegion": "Map of Ethiopia",
+    "pinSetByKeyboard": "Use the latitude and longitude fields to place the pin with a keyboard.",
+    "stepper": "Request steps",
+    "currentStep": "current step",
+    "completedStep": "completed",
+    "resultsRegion": "Recommended practices",
+    "themeToggle": "Theme",
+    "externalLink": "external link"
+  }
+}

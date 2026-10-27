@@ -1,36 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { BookOpen, ChevronDown, ExternalLink, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
+import { ExternalLink, Loader2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { postExplain } from "@/lib/api";
-import type {
-  EvidenceBaseEntry,
-  ExplainCitation,
-  ExplainResponse,
-  RecommendResponse,
-} from "@/lib/types";
-import {
-  evidenceBaseEntries,
-  evidenceBaseSentence,
-  studiesTooltip,
-} from "@/lib/evidence-base";
-import { useMetadata } from "./metadata-provider";
+import type { ExplainCitation, ExplainResponse, RecommendResponse } from "@/lib/types";
+import { evidenceBaseSentence, studiesTooltip, type StudyLabels } from "@/lib/evidence-base";
+import { aezName, practiceName, tierLabel } from "@/i18n/glossary";
+import type { Locale } from "@/i18n/routing";
+import { Badge, tierVariant } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-/** Evidence-on-demand for a recommendation card (Phase P2c; two-tier P5a).
+/** Evidence-on-demand for a recommendation (P2c; two-tier P5a; evidence base P6b-i).
  *
- * Hidden entirely until /metadata reports rag_ready. On first open it lazily
- * POSTs the recommendation to /explain and caches the result: a grounded
- * explanation plus one chip per cited source. Tier "evidence" chips are ERA
- * studies (era_code · title · year, linking to the DOI); tier "guidance"
- * chips are GARDIAN implementation documents — visually distinct (accent
- * ring + "Guidance" badge, own section) and linking to the source URL.
- *
- * P6b-i adds the EVIDENCE BASE line above the chips when /metadata reports
- * graph_ready: how many studies and field observations stand behind each
- * recommended practice and where they were measured, with the study list in
- * the tooltip. Counts and provenance only — effect magnitudes belong to the
- * model and are never shown here.
+ * U1 lifts the single POST /explain behind a context so every card of one
+ * recommendation shares it (the Evidence and How-to panels both read it) and
+ * localises every label; the explanation itself is written by the backend in
+ * the UI language (`language` on the request). Counts and provenance only —
+ * effect magnitudes belong to the model and are never shown here.
  */
 
 type FetchState =
@@ -38,38 +25,88 @@ type FetchState =
   | { status: "ready"; result: ExplainResponse }
   | { status: "error"; message: string };
 
+const ExplainContext = createContext<{
+  data: RecommendResponse;
+  state: FetchState;
+  load: () => void;
+  ragReady: boolean;
+  graphReady: boolean;
+} | null>(null);
+
+export function ExplainProvider({
+  data,
+  ragReady,
+  graphReady,
+  children,
+}: {
+  data: RecommendResponse;
+  ragReady: boolean;
+  graphReady: boolean;
+  children: ReactNode;
+}) {
+  const locale = useLocale() as Locale;
+  const [state, setState] = useState<FetchState>({ status: "idle" });
+  const inflight = useRef(false);
+  const load = useCallback(() => {
+    if (inflight.current) return;
+    inflight.current = true;
+    setState({ status: "loading" });
+    postExplain(data, { language: locale })
+      .then((result) => setState({ status: "ready", result }))
+      .catch((e: Error) => setState({ status: "error", message: e.message || "" }))
+      .finally(() => {
+        inflight.current = false;
+      });
+  }, [data, locale]);
+  return (
+    <ExplainContext.Provider value={{ data, state, load, ragReady, graphReady }}>
+      {children}
+    </ExplainContext.Provider>
+  );
+}
+
+export function useExplain() {
+  const ctx = useContext(ExplainContext);
+  if (!ctx) throw new Error("useExplain must be used within ExplainProvider");
+  return ctx;
+}
+
 function StudyChip({ citation }: { citation: ExplainCitation }) {
+  const t = useTranslations("evidence");
+  const ta = useTranslations("a11y");
+  const locale = useLocale() as Locale;
   const isGuidance = citation.tier === "guidance";
   const label = [
     citation.era_code,
-    citation.title || (isGuidance ? "Untitled document" : "Untitled study"),
+    citation.title || (isGuidance ? t("untitledDocument") : t("untitledStudy")),
     citation.year != null ? String(citation.year) : null,
   ]
     .filter(Boolean)
     .join(" · ");
   const href = isGuidance
-    ? citation.url ?? (citation.doi ? `https://doi.org/${citation.doi}` : null)
+    ? (citation.url ?? (citation.doi ? `https://doi.org/${citation.doi}` : null))
     : citation.doi
       ? `https://doi.org/${citation.doi}`
       : null;
   const body = (
     <>
-      {isGuidance && (
-        <span className="shrink-0 rounded-full bg-accent/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider text-accent">
-          Guidance
-        </span>
-      )}
+      <Badge variant={tierVariant(isGuidance ? "guidance" : "evidence")} className="px-1.5 py-0 text-[10px]">
+        {tierLabel(isGuidance ? "guidance" : "evidence", locale)}
+      </Badge>
       <span className="max-w-[16rem] truncate sm:max-w-[22rem]">{label}</span>
-      {citation.n_passages > 1 && (
-        <span className="shrink-0 text-mute">×{citation.n_passages}</span>
-      )}
-      {href && <ExternalLink className="h-3 w-3 shrink-0 text-mute" aria-hidden />}
+      {citation.n_passages > 1 ? (
+        <span className="shrink-0 tabular text-muted">{t("passages", { n: citation.n_passages })}</span>
+      ) : null}
+      {href ? (
+        <>
+          <ExternalLink className="h-3 w-3 shrink-0 text-muted" aria-hidden />
+          <span className="sr-only">({ta("externalLink")})</span>
+        </>
+      ) : null}
     </>
   );
-  const className = cn(
-    "inline-flex max-w-full items-center gap-1.5 rounded-full border bg-elevated px-2.5 py-1 text-[11px] text-ink",
-    isGuidance ? "border-accent/40" : "border-edge"
-  );
+  const className =
+    "inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-text";
   if (!href) {
     return (
       <li className={className} title={citation.snippet}>
@@ -84,13 +121,7 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
         target="_blank"
         rel="noopener noreferrer"
         title={citation.snippet}
-        className={cn(
-          className,
-          "transition",
-          isGuidance
-            ? "hover:border-accent hover:text-accent"
-            : "hover:border-leaf/40 hover:text-leaf-deep dark:hover:text-leaf-bright"
-        )}
+        className={`${className} transition-colors duration-base hover:border-primary/60`}
       >
         {body}
       </a>
@@ -98,172 +129,121 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
   );
 }
 
-/** Counts + provenance per practice. Never an effect size (doctrine 1).
- *
- * The strings come from ``@/lib/evidence-base`` so they are unit-tested and
- * stay word-for-word identical to the backend's own sentence.
- */
-function EvidenceBase({
-  base,
-}: {
-  base?: Record<string, EvidenceBaseEntry>;
-}) {
-  const entries = evidenceBaseEntries(base);
-  if (entries.length === 0) return null;
-  return (
-    <div>
-      <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
-        Evidence base
+function citationsFor(result: ExplainResponse, practice: string, tier: "evidence" | "guidance") {
+  const all = result.citations.filter((c) => (tier === "guidance") === (c.tier === "guidance"));
+  const mine = all.filter((c) => c.practice === practice);
+  return mine.length > 0 ? mine : all;
+}
+
+/** Shared loading/error chrome for the two panels. */
+function Pending({ state, load }: { state: FetchState; load: () => void }) {
+  const t = useTranslations("evidence");
+  const tc = useTranslations("common");
+  if (state.status === "loading" || state.status === "idle") {
+    return (
+      <p className="flex items-center gap-2 text-sm text-muted" role="status">
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        {t("loading")}
       </p>
-      <ul className="space-y-1">
-        {entries.map(([practice, entry]) => (
-          <li
-            key={practice}
-            title={studiesTooltip(entry)}
-            className="text-[12px] leading-relaxed text-mute"
-          >
-            {evidenceBaseSentence(practice, entry)}
-          </li>
-        ))}
-      </ul>
+    );
+  }
+  if (state.status === "error") {
+    return (
+      <div className="space-y-2" role="alert">
+        <p className="text-sm text-danger-text">{state.message || t("unavailable")}</p>
+        <Button variant="outline" size="sm" onClick={load}>
+          {tc("retry")}
+        </Button>
+      </div>
+    );
+  }
+  return null;
+}
+
+/** The Evidence panel body for one practice. */
+export function EvidenceBody({ practice }: { practice: string }) {
+  const t = useTranslations("evidence");
+  const tb = useTranslations("evidence.evidenceBase");
+  const locale = useLocale() as Locale;
+  const { state, load, graphReady } = useExplain();
+  if (state.status !== "ready") return <Pending state={state} load={load} />;
+  const { result } = state;
+  const entry = result.evidence_base?.[practice];
+  const studyLabels: StudyLabels = {
+    untitled: t("untitledStudy"),
+    fullText: tb("fullText"),
+    abstractOnly: tb("abstractOnly"),
+    notInCorpus: tb("notInCorpus"),
+  };
+  const evidence = citationsFor(result, practice, "evidence");
+  const guidance = citationsFor(result, practice, "guidance");
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Badge variant={result.grounded ? "primary" : "neutral"}>
+          {result.grounded ? t("grounded") : t("notGrounded")}
+        </Badge>
+        <Badge variant="outline-neutral">{result.llm_used ? t("aiSummary") : t("deterministic")}</Badge>
+      </div>
+      <p className="whitespace-pre-line text-sm leading-relaxed text-text">{result.explanation}</p>
+
+      {graphReady && entry ? (
+        <div>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted">{tb("title")}</p>
+          <p className="text-sm text-muted" title={studiesTooltip(entry, studyLabels)}>
+            {evidenceBaseSentence(practice, entry, tb, {
+              practice: (p) => practiceName(p, locale),
+              belt: (b) => aezName(b, locale),
+            })}
+          </p>
+        </div>
+      ) : null}
+
+      {evidence.length > 0 ? (
+        <div>
+          <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
+            {t("sourceStudies", { n: evidence.length })}
+          </p>
+          <ul className="flex flex-wrap gap-1.5">
+            {evidence.map((c, i) => (
+              <StudyChip key={c.era_code ?? c.doi ?? c.title ?? i} citation={c} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {guidance.length > 0 ? (
+        <div>
+          <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
+            {t("guidance", { n: guidance.length })}
+          </p>
+          <ul className="flex flex-wrap gap-1.5">
+            {guidance.map((c, i) => (
+              <StudyChip key={c.url ?? c.doi ?? c.title ?? i} citation={c} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-export function EvidencePanel({ data }: { data: RecommendResponse }) {
-  const { meta } = useMetadata();
-  const [open, setOpen] = useState(false);
-  const [state, setState] = useState<FetchState>({ status: "idle" });
-  const mounted = useRef(true);
-
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  // Evidence is only offered when the backend has a built RAG index.
-  if (!meta?.rag_ready) return null;
-  // The evidence-base line additionally needs the knowledge graph.
-  const graphReady = Boolean(meta?.graph_ready);
-
-  const load = () => {
-    setState({ status: "loading" });
-    postExplain(data)
-      .then((result) => {
-        if (mounted.current) setState({ status: "ready", result });
-      })
-      .catch((e: Error) => {
-        if (mounted.current)
-          setState({ status: "error", message: e.message || "Evidence unavailable" });
-      });
-  };
-
-  const toggle = () => {
-    setOpen((v) => !v);
-    if (state.status === "idle") load();
-  };
-
+/** "How to implement": the guidance documents (GARDIAN) behind one practice. */
+export function HowToBody({ practice }: { practice: string }) {
+  const t = useTranslations("advisor.results.card");
+  const { state, load } = useExplain();
+  if (state.status !== "ready") return <Pending state={state} load={load} />;
+  const guidance = citationsFor(state.result, practice, "guidance");
+  if (guidance.length === 0) return <p className="text-sm text-muted">{t("howToEmpty")}</p>;
   return (
-    <div>
-      <button
-        type="button"
-        onClick={toggle}
-        aria-expanded={open}
-        className="inline-flex items-center gap-1 text-[13px] font-medium text-leaf-deep transition hover:opacity-80 dark:text-leaf-bright"
-      >
-        <BookOpen className="h-3.5 w-3.5" aria-hidden />
-        Evidence
-        <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
-      </button>
-
-      {open && (
-        <div className="mt-2 space-y-3 rounded-2xl border border-edge bg-canvas/50 p-4">
-          {state.status === "loading" && (
-            <p className="flex items-center gap-2 text-sm text-mute">
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Retrieving evidence from the source studies…
-            </p>
-          )}
-
-          {state.status === "error" && (
-            <div className="space-y-2">
-              <p className="text-sm text-soil">{state.message}</p>
-              <button
-                type="button"
-                onClick={load}
-                className="text-[13px] font-medium text-leaf-deep hover:opacity-80 dark:text-leaf-bright"
-              >
-                Try again
-              </button>
-            </div>
-          )}
-
-          {state.status === "ready" && (
-            <>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
-                    state.result.grounded
-                      ? "bg-leaf/12 text-leaf-deep dark:text-leaf-bright"
-                      : "bg-soil/10 text-soil"
-                  )}
-                >
-                  {state.result.grounded ? "Grounded in literature" : "No evidence retrieved"}
-                </span>
-                <span className="rounded-full bg-canvas px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-mute ring-1 ring-edge">
-                  {state.result.llm_used ? "AI summary" : "Deterministic summary"}
-                </span>
-              </div>
-
-              <p className="whitespace-pre-line text-sm leading-relaxed text-ink">
-                {state.result.explanation}
-              </p>
-
-              {graphReady && <EvidenceBase base={state.result.evidence_base} />}
-
-              {(() => {
-                const evidence = state.result.citations.filter(
-                  (c) => c.tier !== "guidance"
-                );
-                const guidance = state.result.citations.filter(
-                  (c) => c.tier === "guidance"
-                );
-                return (
-                  <>
-                    {evidence.length > 0 && (
-                      <div>
-                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
-                          Source studies ({evidence.length})
-                        </p>
-                        <ul className="flex flex-wrap gap-1.5">
-                          {evidence.map((c, i) => (
-                            <StudyChip key={c.era_code ?? c.doi ?? c.title ?? i} citation={c} />
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {guidance.length > 0 && (
-                      <div>
-                        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-mute">
-                          Implementation guidance ({guidance.length})
-                        </p>
-                        <ul className="flex flex-wrap gap-1.5">
-                          {guidance.map((c, i) => (
-                            <StudyChip key={c.url ?? c.doi ?? c.title ?? i} citation={c} />
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </>
-                );
-              })()}
-            </>
-          )}
-        </div>
-      )}
-    </div>
+    <ul className="space-y-2">
+      {guidance.map((c, i) => (
+        <li key={c.url ?? c.doi ?? c.title ?? i} className="rounded-control border border-border bg-surface p-3">
+          <ul className="flex flex-wrap gap-1.5">
+            <StudyChip citation={c} />
+          </ul>
+          <p className="mt-2 text-sm text-muted">{c.snippet}</p>
+        </li>
+      ))}
+    </ul>
   );
 }

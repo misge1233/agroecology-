@@ -68,6 +68,7 @@ describe("postExplain", () => {
       recommendation,
       question: null,
       k: 8,
+      language: "en",
     });
     expect(result).toEqual(explainResponse);
     expect(result.citations[0].n_passages).toBe(2);

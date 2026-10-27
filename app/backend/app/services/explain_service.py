@@ -43,6 +43,7 @@ from typing import Any
 import httpx
 
 from app.config import get_settings
+from app.i18n import reply_instruction, t, term
 
 logger = logging.getLogger(__name__)
 
@@ -304,22 +305,31 @@ def n_studies_in_corpus(entry: dict[str, Any]) -> int:
     return int(counts.get("full_text", 0)) + int(counts.get("abstract", 0))
 
 
-def evidence_base_sentence(practice: str, entry: dict[str, Any]) -> str:
-    """One human sentence of counts and provenance — no effect magnitudes."""
-    parts = [
-        f"{practice}: backed by {entry['n_studies']} "
-        f"{'study' if entry['n_studies'] == 1 else 'studies'} / "
-        f"{entry['n_obs']} field "
-        f"{'observation' if entry['n_obs'] == 1 else 'observations'}"
-    ]
-    if entry.get("aez_belts"):
-        parts.append(f" in {', '.join(entry['aez_belts'])}")
-    in_corpus = n_studies_in_corpus(entry)
-    parts.append(
-        f"; {in_corpus} of the studies "
-        f"{'is' if in_corpus == 1 else 'are'} in the retrievable corpus"
+def evidence_base_sentence(practice: str, entry: dict[str, Any], language: str = "en") -> str:
+    """One human sentence of counts and provenance — no effect magnitudes.
+
+    Catalogued per language (U1); ``en`` is byte-identical to the pre-U1 text.
+    Only three numbers ever appear (studies, observations, studies in the
+    corpus) — exactly the three the guardrail whitelists.
+    """
+    n_studies = int(entry["n_studies"])
+    n_obs = int(entry["n_obs"])
+    belts = entry.get("aez_belts") or []
+    belts_bit = (
+        t(language, "eb.in_belts",
+          belts=t(language, "eb.belts_join").join(term(language, "aez", b) for b in belts))
+        if belts else ""
     )
-    return "".join(parts) + "."
+    in_corpus = n_studies_in_corpus(entry)
+    return t(
+        language, "eb.sentence",
+        practice=practice, n_studies=n_studies,
+        studies_word=t(language, "eb.study" if n_studies == 1 else "eb.studies"),
+        n_obs=n_obs,
+        obs_word=t(language, "eb.observation" if n_obs == 1 else "eb.observations"),
+        belts=belts_bit, in_corpus=in_corpus,
+        is_are=t(language, "eb.is" if in_corpus == 1 else "eb.are"),
+    )
 
 
 def is_ready() -> bool:
@@ -473,6 +483,7 @@ def build_fallback_text(
     recommendation: dict[str, Any],
     chunks: list[dict[str, Any]],
     evidence_base: dict[str, dict[str, Any]] | None = None,
+    language: str = "en",
 ) -> str:
     """Deterministic, citation-grounded explanation — no generated content.
 
@@ -485,10 +496,14 @@ def build_fallback_text(
     so both paths state the same facts.
     """
     query = recommendation.get("query") or {}
-    indicator = query.get("indicator") or "the selected objective"
+    raw_indicator = query.get("indicator")
+    indicator = (
+        term(language, "indicator", raw_indicator) if raw_indicator
+        else t(language, "explain.default_indicator")
+    )
     sentences: list[str] = []
     for rec in recommendation.get("recommendations") or []:
-        practice = rec.get("practice") or "This practice"
+        practice = rec.get("practice") or t(language, "explain.default_practice")
         effect = rec.get("effect") or ""
         # Prefer chunks retrieved for this practice; fall back to the pool.
         matched = [c for c in chunks if c.get("for_practice") == practice] or chunks
@@ -500,21 +515,22 @@ def build_fallback_text(
                 continue
             seen_studies.add(key)
             cited.append(c)
-        cites = ", ".join(
-            f"“{(c.get('title') or 'Untitled study')}” ({c.get('era_code')})"
+        cites = t(language, "explain.fallback.cite_join").join(
+            t(language, "explain.fallback.cite",
+              title=c.get("title") or t(language, "explain.untitled_study"),
+              era_code=c.get("era_code"))
             for c in cited[:2]
         )
-        sentence = f"{practice}: the model estimates {effect}".rstrip()
+        sentence = t(language, "explain.fallback.sentence",
+                     practice=practice, effect=effect).rstrip()
         if cites:
-            sentence += f", supported by evidence from {cites}"
+            sentence += t(language, "explain.fallback.supported_by", cites=cites)
         sentences.append(sentence + ".")
         entry = (evidence_base or {}).get(practice)
         if entry:
-            sentences.append(evidence_base_sentence(practice, entry))
+            sentences.append(evidence_base_sentence(practice, entry, language))
     if not sentences:
-        sentences.append(
-            f"No practices were recommended for {indicator} in this context."
-        )
+        sentences.append(t(language, "explain.fallback.none", indicator=indicator))
     return " ".join(sentences)
 
 
@@ -525,6 +541,7 @@ def _build_messages(
     chunks: list[dict[str, Any]],
     guidance_chunks: list[dict[str, Any]] | None = None,
     evidence_base: dict[str, dict[str, Any]] | None = None,
+    language: str = "en",
 ) -> list[dict[str, str]]:
     passages = []
     for i, c in enumerate(chunks, start=1):
@@ -539,7 +556,7 @@ def _build_messages(
     if evidence_base:
         # Counts and provenance only — deliberately no effect magnitudes.
         lines = "\n".join(
-            evidence_base_sentence(practice, entry)
+            evidence_base_sentence(practice, entry, language)
             for practice, entry in evidence_base.items()
         )
         user += (
@@ -577,7 +594,8 @@ def _build_messages(
             "location and how to apply them."
         )
     return [
-        {"role": "system", "content": EXPLAIN_SYSTEM_PROMPT},
+        # Every other rule is unchanged; the language line is appended (U1 §D).
+        {"role": "system", "content": EXPLAIN_SYSTEM_PROMPT + "\n" + reply_instruction(language)},
         {"role": "user", "content": user},
     ]
 
@@ -615,6 +633,7 @@ def explain(
     retriever: Any = None,
     guidance_retriever: Any = None,
     graph_query: Any = None,
+    language: str = "en",
 ) -> dict[str, Any]:
     """Produce a grounded explanation of an engine recommendation.
 
@@ -638,11 +657,7 @@ def explain(
     if not chunks:
         # Cite or stay silent — with nothing retrieved we make no claims.
         return {
-            "explanation": (
-                "No evidence passages were retrieved for this recommendation, "
-                "so no grounded explanation can be generated. The model's "
-                "ranked practices and effect estimates above still stand."
-            ),
+            "explanation": t(language, "explain.no_chunks"),
             "citations": [],
             "grounded": False,
             "llm_used": False,
@@ -665,7 +680,7 @@ def explain(
                 guidance_chunks = []
         text = _call_llm(
             _build_messages(
-                recommendation, question, chunks, guidance_chunks, evidence_base
+                recommendation, question, chunks, guidance_chunks, evidence_base, language
             )
         )
         if text and numbers_are_grounded(
@@ -687,7 +702,7 @@ def explain(
     # No key, LLM failure, or guardrail rejection → deterministic template
     # (evidence-only: the template cites studies, never guidance).
     return {
-        "explanation": build_fallback_text(recommendation, chunks, evidence_base),
+        "explanation": build_fallback_text(recommendation, chunks, evidence_base, language),
         "citations": citations,
         "grounded": True,
         "llm_used": False,

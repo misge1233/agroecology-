@@ -1,49 +1,64 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
 
 type Theme = "light" | "dark";
+const STORAGE_KEY = "agro-theme";
 
-const ThemeContext = createContext<{
-  theme: Theme;
-  toggle: () => void;
-  ready: boolean;
-} | null>(null);
+/**
+ * Inline script for <head>: applies the stored/preferred theme class BEFORE
+ * first paint so there is no flash. Kept here next to the store that reads it.
+ */
+export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem("${STORAGE_KEY}");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
+
+// External store (F-1): the DOM class is the source of truth; React reads it
+// with useSyncExternalStore instead of a setState-in-effect.
+const listeners = new Set<() => void>();
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  const onMedia = () => {
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      document.documentElement.classList.toggle("dark", media.matches);
+      listener();
+    }
+  };
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === STORAGE_KEY) {
+      document.documentElement.classList.toggle("dark", e.newValue === "dark");
+      listener();
+    }
+  };
+  media.addEventListener("change", onMedia);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    media.removeEventListener("change", onMedia);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+function getSnapshot(): Theme {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+function getServerSnapshot(): Theme {
+  return "light";
+}
+
+const ThemeContext = createContext<{ theme: Theme; toggle: () => void } | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("agro-theme") as Theme | null;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = stored || (prefersDark ? "dark" : "light");
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-    setReady(true);
-  }, []);
-
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const toggle = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === "light" ? "dark" : "light";
-      localStorage.setItem("agro-theme", next);
-      document.documentElement.classList.toggle("dark", next === "dark");
-      return next;
-    });
+    const next: Theme = document.documentElement.classList.contains("dark") ? "light" : "dark";
+    document.documentElement.classList.toggle("dark", next === "dark");
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      /* storage may be unavailable (private mode) — the class still applies */
+    }
+    listeners.forEach((l) => l());
   }, []);
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggle, ready }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

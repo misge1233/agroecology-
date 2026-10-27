@@ -165,6 +165,23 @@ def practices_by_family() -> dict[str, list[str]]:
     return out
 
 
+def evidence_counts() -> dict[str, int]:
+    """Headline size of the field-evidence base behind the model (U1 trust strip).
+
+    Counts only, read straight from the canonical training table so the UI
+    never hard-codes a figure. No effect sizes (doctrine 1).
+    """
+    _engine._load()
+    df = _engine._DF
+    return {
+        "n_observations": int(len(df)),
+        "n_studies": int(df["Study_No_"].nunique()),
+        "n_practices": int(df["CSA_practices"].nunique()),
+        "n_belts": int(df["aez_belt"].dropna().nunique()),
+        "n_crop_types": int(df["crop_type"].dropna().nunique()),
+    }
+
+
 def _assert_recommendations_in_family(result: dict[str, Any], practice_family: str) -> None:
     allowed = set(practices_by_family().get(practice_family, []))
     for rec in result.get("recommendations") or []:

@@ -34,6 +34,10 @@ export interface Metadata {
   rag_ready?: boolean;
   /** True when the knowledge graph is built — gates the evidence-base line. */
   graph_ready?: boolean;
+  /** Languages the API answers in (U1, additive). */
+  languages?: string[];
+  /** Evidence-base counts for the trust strip (U1, additive). */
+  evidence?: EvidenceCounts | null;
 }
 
 /** The clean, default-view item (practice + one-line effect). */
@@ -144,6 +148,7 @@ export interface ExplainRequestPayload {
   recommendation: RecommendResponse;
   question?: string | null;
   k?: number;
+  language?: ApiLanguage;
 }
 
 export interface ChatRequestPayload {
@@ -152,6 +157,7 @@ export interface ChatRequestPayload {
   last_recommendation?: RecommendResponse | null;
   stream?: boolean;
   top_n?: number;
+  language?: ApiLanguage;
 }
 
 export interface ContextResponse {
@@ -186,4 +192,26 @@ export interface ChatStreamEvent {
   text?: string;
   data?: RecommendResponse | ChatSlotsEvent;
   message?: string;
+}
+
+/** Headline size of the evidence base — counts only, never an effect (U1). */
+export interface EvidenceCounts {
+  n_observations: number;
+  n_studies: number;
+  n_practices: number;
+  n_belts: number;
+  n_crop_types: number;
+}
+
+/** UI languages the API can answer in (U1). */
+export type ApiLanguage = "en" | "am" | "om";
+
+/** GET /geocode — a place name resolved by the offline gazetteer (U1). */
+export interface GeocodeResponse {
+  query: string;
+  found: boolean;
+  name: string | null;
+  lat: number | null;
+  lon: number | null;
+  source: string | null;
 }

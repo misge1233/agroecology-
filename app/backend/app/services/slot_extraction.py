@@ -16,6 +16,7 @@ from app.services.recommender_service import (
     PRACTICE_FAMILIES,
     is_supported_family_indicator,
 )
+from app.i18n import t, term
 
 # Phrase → indicator (longer keys preferred).
 INDICATOR_PHRASES: list[tuple[str, str]] = [
@@ -462,97 +463,105 @@ def extract_slots(
     return slots
 
 
-def clarification_message(slots: ChatSlots) -> str:
-    """Short, smart ask for only what is still missing — never invent practices."""
+def clarification_message(slots: ChatSlots, language: str = "en") -> str:
+    """Short, smart ask for only what is still missing — never invent practices.
+
+    ``language`` selects the catalog in ``app.i18n``; ``en`` reproduces the
+    pre-U1 wording byte for byte (tests/test_i18n.py).
+    """
     missing = slots.missing
     bits: list[str] = []
 
     if slots.place_name and "location" not in missing:
-        bits.append(f"I placed your farm near **{slots.place_name}**")
+        bits.append(t(language, "clarify.place", place=slots.place_name))
     if slots.practice_family and "challenge" not in missing:
-        short = slots.practice_family.replace(" and management", "")
-        bits.append(f"challenge **{short}**")
+        if language == "en":
+            challenge = slots.practice_family.replace(" and management", "")
+        else:
+            challenge = term(language, "family", slots.practice_family)
+        bits.append(t(language, "clarify.challenge", challenge=challenge))
     if slots.indicator and "objective" not in missing:
-        bits.append(f"objective **{slots.indicator}**")
+        objective = slots.indicator if language == "en" else term(language, "indicator", slots.indicator)
+        bits.append(t(language, "clarify.objective", objective=objective))
 
     understood = ""
     if bits:
-        understood = "I understood " + ", ".join(bits) + ". "
+        understood = (
+            t(language, "clarify.understood_prefix")
+            + t(language, "clarify.understood_join").join(bits)
+            + t(language, "clarify.understood_suffix")
+        )
 
     if missing == ["challenge", "objective", "location"]:
-        return (
-            "I can recommend evidence-based CSA practices once I know three things: "
-            "your **challenge** (e.g. erosion control), your **objective** "
-            "(e.g. reduce soil loss), and your **location** (map pin, coordinates, "
-            "or a place name in Ethiopia)."
-        )
+        return t(language, "clarify.all_missing")
     asks: list[str] = []
     if "challenge" in missing:
-        asks.append(
-            "which **challenge** fits best — crop production, livestock, soil fertility, "
-            "erosion & water, or agro-forestry"
-        )
+        asks.append(t(language, "clarify.ask_challenge"))
     if "objective" in missing:
         if slots.practice_family == "Erosion control and water management":
-            asks.append(
-                "your **objective** — reduce soil loss / erosion, reduce runoff, "
-                "or improve water-use efficiency"
-            )
+            asks.append(t(language, "clarify.ask_objective_erosion"))
         else:
-            asks.append(
-                "your **objective** (e.g. increase yield, reduce soil loss, improve soil organic matter)"
-            )
+            asks.append(t(language, "clarify.ask_objective"))
     if "location" in missing:
-        asks.append(
-            "your **location** — drop a map pin, share lat/long, or name a place in Ethiopia"
-        )
+        asks.append(t(language, "clarify.ask_location"))
 
     if len(asks) == 1:
-        return understood + f"To rank practices from field evidence, please share {asks[0]}."
+        return understood + t(language, "clarify.one", ask=asks[0])
     if len(asks) == 2:
-        return understood + f"Please share {asks[0]}, and {asks[1]}."
-    return understood + "Please share " + "; ".join(asks) + "."
+        return understood + t(language, "clarify.two", a=asks[0], b=asks[1])
+    return understood + t(language, "clarify.many", asks=t(language, "clarify.many_join").join(asks))
 
 
-def evidence_summary(recommendation: dict[str, Any]) -> str:
-    """Deterministic, context-led summary grounded only in recommend() output."""
+def evidence_summary(recommendation: dict[str, Any], language: str = "en") -> str:
+    """Deterministic, context-led summary grounded only in recommend() output.
+
+    Localised through ``app.i18n`` (U1): the frame sentence, the direction
+    word, the indicator and the AEZ belt are translated for ``am``/``om``;
+    practice names and crop types stay as the engine returns them. ``en`` is
+    byte-identical to the pre-U1 text.
+    """
     recs = recommendation.get("recommendations") or []
     if not recs:
         note = (recommendation.get("details") or {}).get("note") or ""
-        return note or (
-            "I couldn't find enough field evidence for that combination. "
-            "Try a nearby location or a different objective."
-        )
+        return note or t(language, "summary.no_evidence")
     q = recommendation.get("query") or {}
     ctx = (recommendation.get("details") or {}).get("context") or {}
-    zone = ctx.get("aez_belt") or "your area"
+    raw_zone = ctx.get("aez_belt")
+    zone = term(language, "aez", raw_zone) if raw_zone else t(language, "summary.your_area")
     facts: list[str] = []
     rain = ctx.get("Rainfall")
     slope = ctx.get("slope")
     clay = ctx.get("soil_clay")
     if isinstance(rain, (int, float)):
-        facts.append(f"~{rain:.0f} mm rainfall")
+        facts.append(t(language, "summary.fact_rain", rain=f"{rain:.0f}"))
     if isinstance(slope, (int, float)):
-        facts.append(f"slope ~{slope:.0f}%")
+        facts.append(t(language, "summary.fact_slope", slope=f"{slope:.0f}"))
     if isinstance(clay, (int, float)):
-        facts.append(f"clay ~{clay:.0f}%")
-    fact_bit = f" ({', '.join(facts)})" if facts else ""
-    place = ""
+        facts.append(t(language, "summary.fact_clay", clay=f"{clay:.0f}"))
+    fact_bit = f" ({t(language, 'summary.fact_join').join(facts)})" if facts else ""
     # Prefer not inventing place names; zone is from rasters.
     lead = recs[0]
-    others = ", ".join(r["practice"] for r in recs[1:])
-    direction = q.get("goal_direction") or "improve"
-    indicator = q.get("indicator") or "your goal"
+    others = t(language, "summary.others_join").join(r["practice"] for r in recs[1:])
+    raw_direction = q.get("goal_direction")
+    direction = (
+        term(language, "direction", raw_direction) if raw_direction
+        else t(language, "summary.default_direction")
+    )
+    raw_indicator = q.get("indicator")
+    indicator = (
+        term(language, "indicator", raw_indicator) if raw_indicator
+        else t(language, "summary.default_indicator")
+    )
     crop = q.get("crop_type")
-    crop_bit = f" for your {crop}" if crop else ""
-    text = (
-        f"For your **{zone}** area{fact_bit}{crop_bit}, the evidence ranks "
-        f"**{lead['practice']}** to {direction} {indicator}."
+    crop_bit = t(language, "summary.crop", crop=crop) if crop else ""
+    text = t(
+        language, "summary.lead", zone=zone, facts=fact_bit, crop=crop_bit,
+        practice=lead["practice"], direction=direction, indicator=indicator,
     )
     if others:
-        text += f" Other strong options: {others}."
+        text += t(language, "summary.others", others=others)
     conf = (recommendation.get("details") or {}).get("confidence")
     if conf == "low":
-        text += " Evidence for this setting is limited — treat this as a starting point."
+        text += t(language, "summary.low_confidence")
     return text
 

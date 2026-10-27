@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import { fetchMetadata } from "@/lib/api";
+import { createContext, useContext, type ReactNode } from "react";
+import { refreshMetadata, useMetadataStore } from "@/lib/metadata-store";
 import type { Metadata } from "@/lib/types";
 
 const MetadataContext = createContext<{
@@ -17,42 +11,11 @@ const MetadataContext = createContext<{
   refresh: () => void;
 } | null>(null);
 
+/** Same context API as before U1; the data now comes from an external store. */
 export function MetadataProvider({ children }: { children: ReactNode }) {
-  const [meta, setMeta] = useState<Metadata | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    fetchMetadata()
-      .then((m) => {
-        if (!cancelled) {
-          setMeta(m);
-          setError(null);
-        }
-      })
-      .catch((e: Error) => {
-        if (!cancelled) setError(e.message || "Failed to load metadata");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [tick]);
-
+  const { meta, loading, error } = useMetadataStore();
   return (
-    <MetadataContext.Provider
-      value={{
-        meta,
-        loading,
-        error,
-        refresh: () => setTick((t) => t + 1),
-      }}
-    >
+    <MetadataContext.Provider value={{ meta, loading, error, refresh: () => void refreshMetadata() }}>
       {children}
     </MetadataContext.Provider>
   );

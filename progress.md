@@ -2859,3 +2859,345 @@ or not the WOCAT export arrives in time. Read CLAUDE.md first.
 
 **Launch (repo root):**
 `claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P8' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+### DECISION RECORD — product direction: production-grade trilingual UI, then evidence-tiered advisory (26 Oct 2026, owner + supervisor + reviewer)
+1. **UI redesign to production grade** (supervisor's request: attractive,
+   intuitive, standard) in two reviewed phases, U1 and U2, BEFORE P8. Three
+   languages: English (`en`), Amharic (`am`, Ethiopic script), Afaan Oromoo
+   (`om`, Latin/Qubee). Machine-drafted translations are explicitly marked
+   for native review by the owner before release.
+2. **Evidence-tiered advisory (Phase P9, brief after U2):** the system goes
+   beyond the ML ranking when field-trial evidence is thin. Three provenance
+   modes decided from the knowledge graph's evidence base per (family,
+   indicator, context): **model-led** (sufficient trials: ML ranks; RAG +
+   WOCAT explain and show how), **hybrid** (thin evidence: ML ranking with a
+   thin-evidence flag PLUS a documented-practice shortlist from WOCAT/GARDIAN,
+   clearly labelled), **knowledge-led** (no trial evidence: instead of today's
+   "No field evidence" error, documented practices from similar contexts with
+   provenance). Doctrine 1 is restated, not weakened: *effect numbers come
+   only from the model; knowledge sources may propose practices with
+   provenance but never quantify effects.* U1 designs the result card with a
+   source badge for these three modes so P9 is a backend change only.
+3. Order: U1 → review → U2 → review → P8 → P9 → P6b-ii when the WOCAT export
+   arrives → faithfulness run → expert study → manuscript.
+
+### Next steps → Phase U1 — UI foundation: design system, app shell, i18n (en/am/om), Advisor flow (assigned to Claude Code)
+Read CLAUDE.md first, then inspect the existing frontend end to end
+(`app/frontend/src/**`, 5.6k lines; `lib/api.ts`, `lib/chat-flow.ts`,
+`lib/types.ts`, `metadata-provider.tsx` are working logic to WRAP, not
+rewrite). Branding stays **AgroAdvisor-ET · Agroecology+**. The backend API
+contract is unchanged except the additive `language` field below. Honest
+display rules are binding: every number shown comes from the API; a low
+confidence flag is presented as *thin evidence*, never as danger; nothing in
+the UI invents a claim.
+
+**A. Design language (binding tokens; document them in `docs/design/
+design_system.md` and implement as CSS variables in `globals.css` +
+`tailwind.config.ts`):**
+- Palette "Ethiopian highland", light and dark, WCAG AA on every text/
+  background pair (state the measured contrast ratios in the doc):
+  background warm off-white `#F7F8F5` / dark `#0F1613`; surface `#FFFFFF` /
+  `#182019`; text `#1C2A22` / `#E8EEE9`; muted text `#5B6B61` / `#9FB0A5`;
+  border `#DDE4DE` / `#2A362E`; **primary (green)** `#1E6B46` hover
+  `#175537`, dark-mode primary `#4CAF7A`; **secondary (soil/ochre)**
+  `#8C5A2B` / `#C9915A`; **accent (sky/water)** `#2E7FB8` / `#6FB3E6`;
+  success `#2E8B57`, warning `#C98A1E`, danger `#B23A3A` (danger is for
+  system errors ONLY). Confidence semantics: high = primary green, medium =
+  warning amber, low = neutral grey with the label "thin evidence". Chart
+  palette: 6 steps derived from primary/secondary/accent, colour-blind
+  safe (state the check). Tier chips: evidence = green outline, guidance =
+  accent outline, practice record (P9) = secondary outline.
+- Typography: one UI family, IBM Plex Sans (already loaded) with tabular
+  numerals for figures; **Noto Sans Ethiopic** (next/font/google, subset
+  `ethiopic`) applied when `locale === "am"`; drop the serif display font
+  (headings = Plex Sans 600/700). Type scale 12/14/16/18/22/28/36 px;
+  line-height 1.5 body, 1.2 headings; Ethiopic needs +2 px line-height.
+- Spacing on a 4 px grid; radius 12 px cards / 8 px controls / full pills;
+  two elevation levels; focus ring 2 px primary with offset; motion ≤ 200 ms,
+  respects `prefers-reduced-motion`.
+- Icons: lucide-react (already). Images: the 55 practice images in
+  `public/practices` via `next/image` with explicit sizes.
+
+**B. Component library.** Adopt the shadcn/ui pattern — copy-in components
+on Radix primitives (`@radix-ui/react-dialog`, `-popover`, `-tooltip`,
+`-tabs`, `-select`, `-toast`, `-slot`), styled with the tokens via
+class-variance-authority + tailwind-merge (both already dependencies):
+`Button` (primary/secondary/outline/ghost, sizes, loading), `Card`,
+`Badge`/`Chip`, `Tabs`, `Dialog`, `Sheet` (mobile bottom sheet), `Tooltip`,
+`Select`/`Combobox`, `Toast`, `Skeleton`, `Alert`, `Stepper`. Replace the
+ad-hoc `ui/button.tsx`, `ui/section.tsx`, `chips.tsx` usages; keep
+`ui/motion.tsx` only if it respects reduced motion.
+
+**C. Information architecture and screens.**
+1. App shell: header (logo/wordmark, nav: Advisor · Chat · About, language
+   switcher, theme toggle), content, footer (Alliance Bioversity–CIAT
+   attribution, "evidence-ranked, not a forecast" disclaimer, version from
+   `/health`, link to the data sources). Mobile-first; header collapses to
+   a bottom tab bar on phones.
+2. `/` Home (short): hero with the one-sentence promise and two CTAs
+   ("Get a recommendation" → Advisor, "Ask the advisor" → Chat); a
+   three-step "how it works"; a live trust strip from `/metadata` (field
+   observations, studies, practices, AEZ belts — numbers from the API, no
+   hard-coding); the five challenge families; footer. Remove or fold the
+   current demo/powers/provenance sections into these.
+3. `/advisor` (new primary screen; `/dashboard` redirects to it): a
+   four-step stepper with a persistent summary rail — **1 Location** (map
+   with pin, place search, "use my location", coordinates shown; outside
+   Ethiopia = inline validation), **2 Challenge** (five family cards with
+   icon + one-line description), **3 Objective** (indicator chips valid for
+   that family, with plain-language labels), **4 Crop** (optional
+   combobox) → **Results**. Results: a context card (AEZ belt + rainfall,
+   altitude, slope, soil, LGP with units and one-line meaning), the ranked
+   practice cards (rank, translated practice name, effect sentence from the
+   API with the confidence badge and its plain-language meaning,
+   "n field observations", practice image), per card: "Why this?" (details
+   as today), "Evidence" (the existing EvidencePanel incl. the evidence-base
+   line and tier chips), "How to implement" (guidance chips). A **source
+   badge** per result set — `Field-trial model` now; `Hybrid` and
+   `Documented practice` reserved for P9 — with its explanatory tooltip
+   copy in all three languages. Empty, loading (skeletons), API-down and
+   no-evidence states designed, not improvised. Results persist in the URL
+   (`?lat&lon&family&indicator&crop`) so an advisory can be re-opened.
+4. `/chat`: keep working as is in U1 (restyled by the new shell/tokens
+   only); full redesign is U2.
+5. `/about`: what the system is, how to read confidence, data sources,
+   authorship, licence; replaces the popover.
+
+**D. Internationalisation (standard: `next-intl`).** App Router `[locale]`
+segment (`/en`, `/am`, `/om`), middleware with locale detection
+(cookie → Accept-Language → `en`), `<html lang>` set per locale, language
+switcher in the header that preserves the current route and query.
+Catalogs `messages/en.json`, `am.json`, `om.json` with namespaced keys;
+**no user-visible string may remain hard-coded** (add an ESLint rule or a
+test that greps `src/` for JSX text outside the catalogs). Data-contract
+strings stay English in the API; display translations live in
+`src/i18n/glossary.ts`: the 5 families, 7 indicators, 12 AEZ belts, crop
+groups, confidence labels, tier labels, the 44 practice components (the 100
+practice names are composed from components with a localised joiner, e.g.
+"Biochar + Inorganic Fertilizer"). Numbers/dates via `Intl`. Draft the
+Amharic and Afaan Oromoo catalogs yourself; write
+`docs/i18n/TRANSLATION_STATUS.md` listing every key with status
+`machine-draft` — the owner marks `reviewed`. A build-time check fails when
+`am`/`om` miss a key that `en` has.
+**Backend (additive only):** `language: Literal["en","am","om"] = "en"` on
+`ChatRequest` and `ExplainRequest`; the chat and explain system prompts gain
+"Reply in <English | Amharic (አማርኛ) | Afaan Oromoo>" and keep every other
+rule; the deterministic fallback texts, clarification messages and social
+replies get catalogs in `app/backend/app/i18n/{en,am,om}.py` (the numeric
+guardrail is script-independent: digits only, and Western digits are used
+in all three); `/metadata` lists `languages`. Tests: prompt carries the
+language instruction; fallback text in `am` contains Ethiopic; `en`
+behaviour byte-identical to today.
+
+**E. Quality bar (production grade).** TypeScript strict; `eslint .` **0
+errors, 0 warnings** — this includes fixing the ten React-Compiler-era hook
+sites flagged since 15 Oct (follow-up F-1: `useSyncExternalStore` for
+storage reads, derived state/`key` for prop→input sync, set refs in effects)
+and restoring those two rules to `error`; vitest + Testing Library for the
+stepper, result card, language switcher and glossary; `next build` green;
+Lighthouse on `/en/advisor` (document the run: Chrome, mobile preset) with
+Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95; axe checks on
+the three screens; keyboard-only completion of the advisor flow (the map
+pin must be settable by keyboard: coordinate inputs); `aria-live` for
+results; colour contrast verified; `prefers-reduced-motion` respected;
+error boundaries per route; 404 page; an "API unreachable" banner driven by
+`/health`.
+
+**F. Scope guard.** No changes to `recommend.py`, the model, the RAG
+pipeline, `explain_service.py` beyond the `language` plumbing, or the API
+response shapes (additive fields only). Do not remove the Evidence panel's
+tier chips or the evidence-base line. No new backend dependencies. Keep
+`npm test`/`npm run build` runnable on Windows (the owner's build
+environment).
+
+**G. Report.** Append the phase report per CLAUDE.md with: screenshots
+(light/dark, phone/desktop, en/am/om) saved under `docs/design/
+screenshots/`, the Lighthouse scores, the contrast table, the translation
+status summary, and anything you deliberately left for U2. Then stop.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase U1' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+**Queued — Phase U2 (brief written after the U1 review):** chat redesign
+(conversation layout, inline result cards, quick replies, streaming states,
+language-aware input and voice-to-text hook point), printable/shareable
+advisory (print stylesheet + "Save as PDF" + share link), Playwright E2E for
+advisor + chat against a mocked API, translation-review workflow, offline/
+low-bandwidth behaviour (image fallbacks, retry), final a11y/perf pass.
+
+## Phase U1 — UI foundation: design system, app shell, i18n (en/am/om), Advisor flow (2026-10-26)
+
+**Built**
+- **Design system** ("Ethiopian highland"): light/dark tokens as CSS variables + Tailwind theme (`globals.css`, `tailwind.config.ts`); WCAG AA measured for every text/background pair and documented with ratios in `docs/design/design_system.md` — four brief hues fail AA as *text* (light warning 2.76:1, accent 4.07, success 3.98, dark danger 3.11) so derived `*-text` tokens are used for text while the brief's hues stay for fills/borders; dark primary buttons take dark text (white on `#4CAF7A` is 2.72:1). Confidence semantics high = green, medium = amber fill with dark text, low = neutral grey "Thin evidence"; danger red only for system errors. 6-step chart palette found by random search for CVD safety (min CIE76 ΔE 15.6 light / 17.5 dark under protan/deutan/tritan). IBM Plex Sans 400/500/600 with tabular numerals; Noto Sans Ethiopic under `html[lang="am"]` with +2 px leading; 4 px grid, radii 12/8/full, two elevations, 2 px focus ring, motion ≤ 200 ms behind a global reduced-motion block; lucide icons; the 55 practice photos through `next/image`.
+- **Component library** (`src/components/ui/`, shadcn pattern on Radix + cva + tailwind-merge): Button (Slot/asChild, loading), Card, Badge (+`confidenceVariant`/`tierVariant`), Chip (aria-pressed), Tabs, Dialog, Sheet (bottom sheet on phones), Tooltip, Select, Combobox (WAI-ARIA combobox/listbox, keyboard complete), Toast (external store), Skeleton, Alert, Stepper, Input/Label. `ui/section.tsx`, `ui/motion.tsx`, `chips.tsx`, `setup-pickers.tsx`, `about-popover.tsx`, the old headers/footer, `dashboard-panel.tsx`, `location-picker.tsx`, `recommendation-card.tsx` and `home/{demo,powers,provenance,stats}` are deleted; framer-motion removed from `package.json`.
+- **App shell** (`src/app/[locale]/layout.tsx` + `components/shell/`): `<html lang>` per locale, fonts via next/font, `NextIntlClientProvider`, theme provider on `useSyncExternalStore` with a `next/script beforeInteractive` bootstrap (no flash), metadata and `/health` external stores, Tooltip/Toast providers, skip link, "API unreachable" banner driven by `/health` (polled 30 s + `online`), header (logo, Advisor·Chat·About, language switcher that preserves route **and** query, theme toggle), footer (Alliance Bioversity–CIAT attribution, "evidence-ranked, not a forecast", version from `/health`, data-sources/method/licence links), mobile bottom tab bar, route-level `error.tsx` (root, advisor, chat), localised `not-found.tsx` + `[...rest]` catch-all.
+- **Screens**: `/` home (hero + 2 CTAs, 3-step how, **live** trust strip from the new `/metadata.evidence` counts — 8 664 observations / 337 studies / 100 practices / 12 belts / 5 families / 7 objectives — five family cards); `/advisor` four-step stepper (Location: Leaflet map with token-coloured pin, offline place search via new `GET /geocode`, "Use my location", keyboard coordinate fields that commit on blur/Enter with outside-Ethiopia validation and the resolved belt; Challenge cards; Objective chips limited to evidence-backed indicators; Crop combobox) + summary rail with per-step edit → Results (context card with units **and** meaning for belt/rainfall/temperature/altitude/slope/clay/pH/SOC/LGP; ranked cards with translated practice name over the English data name, the API's effect sentence — in am/om the same `pct_change` in a translated frame with the original sentence in `title` —, confidence badge + meaning, n field observations, photo, "Why this?" (confidence, chart of `details.ranked`, API note/scope), "Evidence" (existing explain flow: grounded/AI badges, explanation, evidence-base line with tier chips, source studies, guidance) and "How to implement" (guidance documents); **source badge** "Field-trial model" with tooltip, Hybrid/Documented reserved for P9; Top-N select; copy-link; "Explain in chat"); designed empty / loading / API-down / no-evidence / error states; request persisted in the URL `?lat&lon&family&indicator&crop&top` (a complete URL scores immediately, `/recommend` in parallel with `/metadata`); `/dashboard` → `/advisor` redirect; `/chat` kept working and restyled (Sheet map, chips, quick replies on the shared ChallengeCards/ObjectiveChips, every string from the catalog, `language` sent, "Explain in chat" pre-fills the composer via `?q=` — nothing auto-sends); `/about` page replaces the popover.
+- **i18n**: next-intl App Router `[locale]` (`/en|/am|/om`), `src/proxy.ts` detection cookie `agro-locale` → Accept-Language → en (verified: `am-ET` → `/am`, `om` → `/om`, cookie beats header, default sets the cookie), switcher preserves route + query; `messages/{en,am,om}.json` (290 keys, ICU plurals); `src/i18n/glossary.ts` (5 families + short/blurb, 7 indicators + nouns, 12 belts, 14 crop groups, confidence + meaning, tiers, source modes, 44 components mirroring `rag/graph/practice_components.py` with the alias table, `practiceName` with a localised joiner, `effectSentence`); Intl number formatting; `docs/i18n/TRANSLATION_STATUS.md` generated by `app/frontend/scripts/translation_status.py` (458 keys, all `machine-draft`, 7 `chat.protocol.*` keys `protocol-en`). Hard-coded-string guard: `src/lib/i18n-audit.test.ts` parses every `src/**/*.tsx` with the TypeScript compiler (JSX text + user-facing attributes) and checks am/om key parity + ICU placeholder validity with `@formatjs/icu-messageformat-parser`.
+- **Backend (additive, no new dependencies)**: `app/i18n/{__init__,en,am,om}.py` catalogs (`t`, `term`, `reply_instruction`); `language: Literal["en","am","om"]="en"` on `ChatRequest`/`ExplainRequest`; prompts end with "Reply in English | Amharic (አማርኛ) | Afaan Oromoo"; fallback/clarification/social/evidence-base texts localised (Western digits everywhere; engine error strings pass through verbatim); `/metadata` gains `languages` and `evidence` counts (`recommender_service.evidence_counts()` reads the canonical table — counts only); new `GET /geocode?q=` wrapping the chat gazetteer (offline, network fallback off). English outputs are byte-identical to a pre-refactor snapshot (`tests/fixtures/en_texts_pre_u1.json`).
+
+**Files**
+- New: `app/backend/app/i18n/*`, `app/backend/app/routers/geocode.py`, `app/backend/tests/test_i18n.py`, `tests/fixtures/en_texts_pre_u1.json`; `app/frontend/messages/*.json`, `src/i18n/{routing,request,navigation,glossary}.ts`, `src/proxy.ts`, `src/app/[locale]/**` (layout, page, advisor, chat, about, dashboard, error, not-found, [...rest]), `src/app/fonts/NotoSansEthiopic-ethiopic.woff2` (+README), `src/components/ui/*`, `src/components/shell/*`, `src/components/advisor/*`, `src/components/home/trust-strip.tsx`, `src/lib/{health,metadata-store}.ts`, `scripts/translation_status.py`, tests (`glossary.test.ts`, `health.test.ts`, `i18n-audit.test.ts`, `stepper.test.tsx`, `result-card.test.tsx`, `language-switcher.test.tsx`), `rag/graph/test_glossary_sync.py`; `docs/design/design_system.md`, `docs/design/screenshots/*.png` (13), `docs/design/lighthouse/{README.md,*.json,axe-*.json}`, `docs/i18n/TRANSLATION_STATUS.md`.
+- Modified: backend `schemas.py`, `metadata_service.py`, `main.py`, `routers/{chat,explain}.py`, `services/{chat_service,explain_service,slot_extraction,recommender_service}.py`, `tests/test_api.py`; frontend `next.config.ts` (next-intl plugin), `tailwind.config.ts`, `globals.css`, `eslint.config.mjs` (hook rules back to **error**), `vitest.config.ts`/`vitest.setup.ts` (jsdom polyfills, RTL cleanup), `package.json`/lock (next-intl, Radix, testing deps, axe-core; framer-motion removed), `src/lib/{api,types,evidence-base,chat-flow}.ts` (+ tests), `components/{chat-panel,chat-quick-replies,evidence-panel,pct-chart,practice-image,location-map,metadata-provider,theme-provider,assistant-markdown}.tsx`, `components/home/{hero,how,families}.tsx`, `components/ui/button.tsx`.
+- Deleted: listed under *Built*.
+
+**Decisions**
+1. **Numbers stay the model's.** Cards show `recommendations[].effect` verbatim in English; am/om render the identical `details.ranked[].pct_change` inside a translated frame (`effectSentence`) and keep the English sentence reachable (`title`); the chart plots `details.ranked` as returned; evidence base shows counts only. No UI code rounds, re-estimates or invents a figure; the trust strip reads counts from `/metadata`.
+2. **Data-contract strings stay English on the wire** (family/indicator/crop/practice names, chat protocol messages); the UI translates through the glossary at render time and passes unknown values through unchanged. Chat protocol strings are therefore `protocol-en` in all catalogs — the backend slot extractor is English-only, so free-text chat in am/om gets an Amharic/Oromo *reply* but no slot filling (U2).
+3. **Ethiopic font self-hosted** (`next/font/local`) instead of the brief's `next/font/google`: Turbopack's Google-font loader rejects Noto Sans Ethiopic ("next/font/google queries have exactly one entry") and 500'd every page of the owner's `next dev` (verified against the owner's running dev server before/after; it now serves `/am` with both font variables). Same zero-layout-shift behaviour, no third-party font requests, OFL licence noted in `src/app/fonts/README.md`.
+4. **F-1 fixed structurally**: theme, `/health` and `/metadata` are external stores read with `useSyncExternalStore`; prop→input sync uses derived state (coordinate fields keyed by the external point, commit on blur/Enter); every "loading" flag is derived from whether the stored answer matches the current request key, so no effect sets state synchronously; `react-hooks/set-state-in-effect` and `react-hooks/refs` are errors again and the tree lints clean.
+5. **Advisor route is dynamic** (`dynamic = "force-dynamic"`): the request lives in the query string, so step 1 / the results shell is server-rendered with real params instead of a static shell that bails out to client rendering; chat is dynamic through `searchParams` (`?q=`).
+6. `/geocode` is a new additive endpoint (gazetteer only, Nominatim stays off) so the location step's place search never leaks queries to a third party; `/metadata.evidence` is additive and counts-only.
+7. Context-aware indicator labels (`indicatorLabelForFamily`) are replaced by one glossary label per indicator in all three languages; `deriveDashboardSetup`/`shortFamilyName` remain in `chat-flow.ts` for their tests but are unused by the UI (U2 cleanup).
+8. Tier chips and the evidence-base line are kept; Evidence/How-to share one `POST /explain` per recommendation (`ExplainProvider`), citations filtered to the card's practice with a fall-back to all.
+
+**Verified**
+- Backend: `python -m py_compile` on every touched file; `pytest tests/test_api.py tests/test_i18n.py tests/test_explain.py` → **104 passed** (includes the new `/metadata` evidence+languages and `/geocode` tests, with the raster stack); `pytest rag/graph/test_glossary_sync.py` → 2 passed (TS alias table == `ALIASES`, 44 components == `CANONICAL_COMPONENTS`).
+- Frontend (Windows node 24 from WSL): `tsc --noEmit` 0 errors; `eslint .` **0 errors, 0 warnings** (hook rules at error); `vitest run` **110 tests / 10 files passed** (api, chat-flow, utils, evidence-base incl. Amharic sentence, health store, glossary, i18n audit over 44 component files + catalog parity/ICU validity, Stepper, ResultCard en/am incl. lazy chart, LanguageSwitcher route+query preservation); `next build --webpack` green (18 static pages for 3 locales; advisor/chat dynamic).
+- Running build (standalone server + U1 backend): locale detection and `<html lang>` per locale, `/en/dashboard` → `/en/advisor`, 404 page, images, gzip on HTML/CSS/JS all confirmed with HTTP probes.
+- **Lighthouse 13.5** (Chrome headless, mobile emulation, production build, two consecutive runs; full table + notes in `docs/design/lighthouse/README.md`):
+
+  | screen | Perf (run A / B) | A11y | Best practices | LCP (B) |
+  |---|---|---|---|---|
+  | `/en/advisor` (step 1) | 69 / **74** | **100** | 77 | 9.6 s (OSM tile) |
+  | `/en/advisor?lat…&indicator` (results) | 74 / **80** | **100** | 81 | 5.3 s |
+  | `/en/chat` | 79 / **89** | **100** | 81 | 3.8 s |
+  | `/en` | 77 / **78** | **100** | 81 | 5.9 s |
+
+  Best practices loses only `is-on-https` (the measurement topology calls the API over plain http on a non-localhost address; with the shipped localhost default the same build measured 96) and the OSM tile-resolution audit. **Performance ≥ 90 is not met** — analysis and the U1 mitigations already applied are in the README.
+- **axe-core 4.14** inside the page on `/en`, `/en/advisor` results, `/en/chat`, `/am/advisor` results: **0 violations** (one `color-contrast` node marked "needs review"). Contrast table with measured ratios: `docs/design/design_system.md`.
+- Screenshots (13): home/advisor/results/chat/about × light/dark × phone (390 px)/desktop (1440 px) × en/am/om under `docs/design/screenshots/` (reviewed: Ethiopic font, dark palette, bottom tab bar, live trust strip, translated cards all render as designed).
+- Translation status: 458 keys (290 UI + 114 glossary + 54 backend) → 902 `machine-draft` cells, 14 `protocol-en`, 0 reviewed.
+- Owner's own Turbopack `next dev` (read-only GETs) now returns 200 for `/en/advisor`, `/am`, `/om/chat`.
+
+**Needs local verification**
+- `npm run build` with **Turbopack** on Windows (the agent can only build with `--webpack` from WSL); `npm test`/`npm run build` on Windows after `npm install` (lockfile changed).
+- A manual **keyboard-only** walkthrough of the advisor in a real browser (the agent's browser pane cannot reach localhost): Tab order header → stepper → map region hint → search → latitude/longitude (commit on blur/Enter) → Next → challenge cards (Space/Enter, aria-pressed) → objective chips → crop combobox (type/↑↓/Enter/Esc) → Get recommendation → results `aria-live` announcement.
+- Screen-reader pass (VoiceOver/NVDA) on the results `aria-live` region and the stepper's current/completed announcements.
+- Real-device performance on a low-end Android phone over 3G/4G (Lighthouse simulated figures above).
+- Native-speaker review of every am/om string (`docs/i18n/TRANSLATION_STATUS.md`; flip rows to `reviewed` via `REVIEWED` in `scripts/translation_status.py`).
+
+**Left for U2**
+- Performance: defer the Leaflet map on phones until the user interacts (step-1 LCP is a map tile), split next-intl messages per route, trim Radix/next-intl payload, measure on device; consider a static map placeholder image.
+- Language-aware chat intent parsing so am/om users can type naturally (today the chat reply is localised but slot extraction expects English; the quick-reply chips keep the flow usable).
+- Native review of translations; glossary review of the 44 component names with an agronomist.
+- Hybrid / Documented-practice source badges and WOCAT records (P9), per-practice "How to implement" content beyond the guidance corpus.
+- Minor: language-switcher trigger truncates on narrow phones in Amharic; API prose fields (`details.note`, `ranking_scope`) still English (`lang="en"`); remove the now-unused helpers in `chat-flow.ts`; the home trust strip counts belts in the training table (12) — rename the label if "agro-ecological belts covered" is preferred.
+
+### Review (Senior Engineer) — U1 APPROVED ✅ with four must-fix items carried into U2 (26 Oct 2026)
+Independently re-verified in a clean sandbox (snapshot of `app/frontend`,
+`app/backend/app`, `app/backend/tests`, catalogs, docs):
+- Backend: `test_explain` + `test_i18n` + `test_slot_extraction` **89/89**
+  (slot tests need the model artefact; `test_api` needs the rasters — owner's
+  104 stands). Glossary-sync test 2/2. English outputs byte-identical to the
+  pre-U1 fixture by test.
+- Frontend from the new lockfile: `tsc --noEmit` clean, `eslint .` **0/0**
+  with the two React-Compiler rules at `error` (follow-up F-1 closed),
+  `vitest run` **110/110**. Catalogs: 290 keys in each of en/am/om, no gaps;
+  the 12 Amharic values without Ethiopic script are units, the app name and
+  the chat protocol strings — correct.
+- `next build` (Turbopack) **could not run here**: the sandbox cannot reach
+  `fonts.googleapis.com` for IBM Plex Sans — the same limitation as the 15 Oct
+  sandbox. The owner's Windows build is the verification of record, and this
+  is also a product finding (item 0c below).
+- Screenshots reviewed: the design language is as specified — calm highland
+  palette, one typeface, Ethiopic rendering clean, live trust strip, stepper
+  with summary rail, "thin evidence" badge instead of red, source badge
+  present. The chat, home and about screens read as one system.
+
+**Must-fix items (carried into U2 as item 0, not applied in review because
+each is cross-cutting frontend work):**
+- **0a. Phone-width overflow.** `advisor-en-light-phone.png` (390 px) shows
+  the right edge clipped on the header language switcher, the summary rail
+  card, the results toolbar and the context card captions. Either the page
+  overflows horizontally at 390 px or the capture viewport was wider than
+  the saved image; U2 must determine which on a real device/DevTools,
+  fix any overflow, and add an automated check (`document.scrollWidth <=
+  window.innerWidth`) at 360/390/412/768/1440 px for every screen.
+- **0b. Effect-sentence grammar.** "~76% reduce in soil loss" comes from the
+  engine's own string (`recommend.py`: `f"~{eff:.0f}% {goal_txt} in
+  {indicator}"`) and is mirrored by the English frame in `glossary.ts`.
+  Change the wording to "~76% reduction in soil loss" / "~12% increase in
+  yield" in BOTH places (`goal_direction` keeps the values `reduce`/
+  `increase` — only the sentence changes); update the three test fixtures.
+- **0c. Self-host IBM Plex Sans** via `next/font/local` next to Noto Sans
+  Ethiopic (SIL OFL; keep the licence file): a production build must not
+  depend on reaching Google Fonts (CI, air-gapped and low-connectivity
+  deployments in Ethiopia), and it removes the Turbopack font-loader
+  fragility met in U1.
+- **0d. Mobile performance.** Lighthouse mobile Performance 74/80 on the
+  advisor is below the 90 target; the LCP is the first map tile. Apply the
+  mitigations U1 already identified (defer the map on phones until the
+  Location step is interacted with or visible, split next-intl messages per
+  route, size-constrained tiles) and re-measure; document whatever the
+  honest ceiling is on the production build.
+
+Accepted as reported: Noto Sans Ethiopic self-hosted (right call); chat
+protocol strings English in all languages until the intent parser is
+language-aware (U2 item 1); the two additive endpoints (`/metadata.evidence`,
+offline `/geocode`).
+
+**Owner actions to close U1 (Windows, venv + node):**
+```
+cd app\frontend ; npm ci ; npm test ; npm run lint ; npm run build ; cd ..\..
+cd app\backend ; python -m pytest -q ; cd ..\..
+git add -A ; git commit -m "U1: production UI foundation — design system, Radix component library, app shell, next-intl (en/am/om), Advisor flow, backend language plumbing (reviewed)" ; git push origin main
+```
+Then `npm run dev` + uvicorn: walk the Advisor flow keyboard-only once in
+each language, check a phone-width window (DevTools → 390 px) for any
+horizontal scroll (item 0a), and begin the native review in
+`docs/i18n/TRANSLATION_STATUS.md` — start with the glossary terms (families,
+indicators, belts, components), which appear on every screen.
+
+### Next steps → Phase U2 — Chat redesign, print/share, E2E, hardening (assigned to Claude Code)
+Read CLAUDE.md first; the U1 report and review above are the context. The
+same design tokens, components and quality bar apply; no API shape changes
+except additive fields.
+0. **Must-fix from the U1 review** — items 0a–0d above, in that order, each
+   with its own test or measurement. 0b touches `recommend.py` only in the
+   effect sentence (one f-string); `goal_direction` values are unchanged.
+1. **Chat redesign.** Conversation layout on the new shell (message list
+   with role styling, timestamps, markdown rendering kept), **inline result
+   cards that reuse the Advisor's `ResultCard`/`ContextCard`/source badge**
+   (one component path, as with the Evidence panel), quick replies as chips,
+   explicit streaming/thinking/error states, "Open in Advisor" on any
+   result (deep link with the query), and a map sheet for "Pick on map".
+   **Language-aware intent parsing:** when `OPENAI_API_KEY` is set, the
+   backend's slot extraction runs an LLM pass for `am`/`om` free text
+   (structured JSON output; the English rule-based parser stays as is);
+   without a key, a localised message steers the user to the Advisor flow.
+   The chat protocol strings become translatable once the parser is
+   language-aware; update `TRANSLATION_STATUS.md` statuses accordingly.
+   Tests for the extractor (fixtures in all three languages) and the UI.
+2. **Printable / shareable advisory.** A print stylesheet for the results
+   view (context, ranked practices with effect + confidence + evidence
+   base line, source badge, citations, the disclaimer, generation date,
+   the share link as text), a "Save as PDF" action (`window.print`), and
+   the existing "Copy link" kept. The printed page must carry the same
+   honesty copy as the screen.
+3. **Playwright E2E** (`app/frontend/e2e/`, mocked API via Playwright
+   route interception with fixtures from the real response shapes): the
+   Advisor flow end to end in en/am/om, chat happy path with streaming,
+   keyboard-only completion, the 0a overflow check at five widths, axe on
+   every screen, dark mode. `npm run e2e` script; runs headless on Windows
+   and Linux.
+4. **Translation review workflow.** `scripts/translation_status.py
+   --export review.csv` (key, en, am, om, status) and `--import review.csv`
+   (owner edits am/om cells and marks `reviewed`); the glossary terms
+   listed first; a vitest guard that a `reviewed` cell cannot silently
+   change without returning to `machine-draft`.
+5. **Low-bandwidth behaviour.** Practice images lazy with a lightweight
+   placeholder and a text fallback; API calls with bounded retry/backoff
+   and a visible retry; map tile failure shows a message and keeps the
+   coordinate inputs usable; the API-down banner already exists.
+6. **Docs.** `app/frontend/README.md` (stack, scripts, i18n workflow,
+   design tokens pointer, E2E), root `README.md` quick start updated for
+   the trilingual UI; `docs/design/design_system.md` kept in sync.
+7. Scope guard: engine/model/RAG untouched beyond 0b; Evidence panel
+   semantics kept; no new backend dependencies beyond what the LLM
+   extractor needs (none — it uses the existing OpenAI client).
+8. Append the phase report with screenshots (chat en/am/om, print preview,
+   phone 390 px proof of no overflow), the E2E summary, the Lighthouse
+   re-measure, and stop.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase U2' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`

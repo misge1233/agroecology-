@@ -26,6 +26,7 @@ def post_explain(body: ExplainRequest, request: Request):
             recommendation=body.recommendation,
             question=body.question,
             k=body.k,
+            language=body.language,
         )
     except Exception as exc:  # corrupt index / retriever failure → clean envelope
         logger.exception("Explain failed: %s", exc)

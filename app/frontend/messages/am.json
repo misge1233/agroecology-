@@ -1,0 +1,394 @@
+{
+  "common": {
+    "appName": "AgroAdvisor-ET",
+    "tagline": "የአግሮኢኮሎጂ+ የውሳኔ ድጋፍ",
+    "loading": "በመጫን ላይ…",
+    "retry": "እንደገና ይሞክሩ",
+    "close": "ዝጋ",
+    "back": "ተመለስ",
+    "next": "ቀጣይ",
+    "continue": "ቀጥል",
+    "optional": "አማራጭ",
+    "dismiss": "አሰናብት",
+    "skipToContent": "ወደ ይዘቱ ዝለል",
+    "opensNewTab": "በአዲስ ትር ይከፈታል",
+    "menu": "ምናሌ"
+  },
+  "nav": {
+    "home": "መነሻ",
+    "advisor": "አማካሪ",
+    "chat": "ውይይት",
+    "about": "ስለ",
+    "main": "ዋና ማሰሻ",
+    "bottom": "ክፍሎች",
+    "theme": {
+      "toLight": "ወደ ብርሃን ገጽታ ቀይር",
+      "toDark": "ወደ ጨለማ ገጽታ ቀይር"
+    },
+    "language": {
+      "label": "ቋንቋ",
+      "change": "ቋንቋ ቀይር",
+      "current": "የአሁኑ ቋንቋ፦ {name}",
+      "draft": "በራስ-ሰር የተረቀቀ ትርጉም — በቋንቋው ተናጋሪዎች በግምገማ ላይ"
+    }
+  },
+  "footer": {
+    "attribution": "በአሊያንስ ኦፍ ባዮቨርሲቲ ኢንተርናሽናል እና CIAT፣ አዲስ አበባ እና አክራ የተገነባ።",
+    "disclaimer": "በማስረጃ የተደረደረ እንጂ ትንበያ አይደለም። ልማዶች በተጣመሩ የመስክ ሙከራዎች በሚጠበቀው ውጤት የተደረደሩ ናቸው፤ መቶኛዎች በተገለጸ እምነት የሞዴል ግምቶች ናቸው።",
+    "sources": "የመረጃ ምንጮች",
+    "method": "እንዴት እንደሚሠራ",
+    "version": "ስሪት {version}",
+    "versionUnknown": "ስሪት አይገኝም",
+    "licence": "ፈቃድና መረጃ",
+    "rights": "© {year} AgroAdvisor-ET"
+  },
+  "status": {
+    "apiUnreachable": "የምክር አገልግሎቱ አይደረስም። እስኪመለስ ድረስ ምክሮች አይገኙም።",
+    "apiStarting": "የምክር አገልግሎቱ በመጀመር ላይ ነው።",
+    "checking": "አገልግሎቱን በመፈተሽ ላይ…",
+    "retry": "አሁን እንደገና ሞክር"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "የመስክ ማስረጃ · ጂኦስፓሻል አውድ · ግልጽ ደረጃ አሰጣጥ",
+      "title": "ለኢትዮጲያ እርሻዎች በመስክ ማስረጃ የተደረደረ የልማድ ምክር።",
+      "subtitle": "ምልክት ያስቀምጡ፣ ፈተናውንና ግቡን ይጥቀሱ። AgroAdvisor-ET የአግሮኢኮሎጂ ልማዶችን እንደ እርስዎ ባሉ አውዶች በተለካው ውጤታቸው ይደረድራል፣ ከእያንዳንዱ በስተጀርባ ያሉትን ጥናቶችም ያሳያል።",
+      "ctaAdvisor": "ምክር ያግኙ",
+      "ctaChat": "አማካሪውን ይጠይቁ"
+    },
+    "how": {
+      "eyebrow": "እንዴት እንደሚሠራ",
+      "title": "ከምልክት እስከ ልማድ በሦስት ደረጃዎች",
+      "steps": {
+        "location": {
+          "title": "ቦታውን ያስቀምጡ",
+          "body": "ምልክት ያስቀምጡ ወይም መጋጠሚያዎችን ይተይቡ። ዝናብ፣ አፈር፣ መልክዓ ምድርና የአግሮ-ኢኮሎጂ ቀጠናው ከጂኦስፓሻል ንብርብሮች በራስ-ሰር ይነበባሉ።"
+        },
+        "goal": {
+          "title": "ፈተናውንና ዓላማውን ይምረጡ",
+          "body": "ከአምስቱ የፈተና ቤተሰቦች አንዱንና መቀየር የሚፈልጉትን ውጤት ይምረጡ።"
+        },
+        "results": {
+          "title": "የተደረደሩትን ልማዶች ይገምግሙ",
+          "body": "ልማዶች ከተጣመሩ የመስክ ሙከራዎች በሚጠበቀው ውጤት የተደረደሩ ናቸው፣ እያንዳንዱ ከእምነቱና ከጀርባው ካሉ ጥናቶች ጋር።"
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "የማስረጃ መሠረቱ",
+      "observations": "የመስክ ምልከታዎች",
+      "studies": "ጥናቶች",
+      "practices": "ልማዶች",
+      "belts": "የአግሮ-ኢኮሎጂ ቀጠናዎች",
+      "families": "የፈተና ቤተሰቦች",
+      "objectives": "ዓላማዎች",
+      "loading": "አሃዞችን በመጫን ላይ…",
+      "unavailable": "አገልግሎቱ ከመስመር ውጭ ሲሆን አሃዞች አይገኙም"
+    },
+    "families": {
+      "eyebrow": "የፈተና ቤተሰቦች",
+      "title": "አምስት የፈተና መስኮች",
+      "subtitle": "ደረጃ አሰጣጡ በመረጡት ቤተሰብ ውስጥ፣ ላስቀመጡት ቦታ ይከናወናል።",
+      "open": "በ{family} ጀምር"
+    }
+  },
+  "advisor": {
+    "title": "አማካሪ",
+    "subtitle": "በአራት ደረጃዎች የሚመራ ጥያቄ። የሚታየው እያንዳንዱ ቁጥር ከመስክ ሙከራ ሞዴሉ ነው።",
+    "steps": {
+      "location": "ቦታ",
+      "challenge": "ፈተና",
+      "objective": "ዓላማ",
+      "crop": "ሰብል",
+      "results": "ውጤቶች"
+    },
+    "stepOf": "ደረጃ {current} ከ{total}",
+    "progress": "ሂደት",
+    "summary": {
+      "title": "ጥያቄዎ",
+      "location": "ቦታ",
+      "challenge": "ፈተና",
+      "objective": "ዓላማ",
+      "crop": "ሰብል",
+      "notSet": "ገና አልተቀመጠም",
+      "anyCrop": "ማንኛውም ሰብል",
+      "edit": "{step}ን አርትዕ",
+      "startOver": "እንደገና ጀምር",
+      "belt": "ቀጠና"
+    },
+    "location": {
+      "title": "እርሻው የት ነው?",
+      "help": "ካርታውን ይጫኑ፣ ቦታዎን ይጠቀሙ፣ ቦታ ይፈልጉ ወይም መጋጠሚያዎችን ይተይቡ።",
+      "latitude": "ኬክሮስ",
+      "longitude": "ኬንትሮስ",
+      "coordinateHint": "አስርዮሽ ዲግሪዎች፣ ለምሳሌ 8.38",
+      "search": "በኢትዮጲያ ውስጥ ቦታ ይፈልጉ",
+      "searchPlaceholder": "ለምሳሌ ደብረ ብርሃን",
+      "searching": "በመፈለግ ላይ…",
+      "searchNone": "ቦታ አልተገኘም — ሌላ አጻጻፍ ይሞክሩ ወይም ምልክት ያስቀምጡ",
+      "useMyLocation": "ቦታዬን ተጠቀም",
+      "locating": "ቦታዎን በመፈለግ ላይ…",
+      "outside": "ያ ነጥብ ከኢትዮጲያ ውጭ ነው (ኬክሮስ {latMin}–{latMax}፣ ኬንትሮስ {lonMin}–{lonMax})። ምልክቱን ወደ አገሪቱ ውስጥ ያንቀሳቅሱ።",
+      "gpsUnavailable": "በዚህ አሳሽ ላይ ቦታ አይገኝም።",
+      "gpsOutside": "የመሣሪያዎ ቦታ ከኢትዮጲያ ውጭ ነው። በምትኩ በካርታው ላይ ነጥብ ይምረጡ።",
+      "gpsFailed": "ቦታዎን ማንበብ አልተቻለም። ፈቃዶችን ያረጋግጡ ወይም ካርታውን ይጠቀሙ።",
+      "zone": "የአግሮ-ኢኮሎጂ ቀጠና",
+      "zoneLoading": "ቀጠናውን በመለየት ላይ…",
+      "zoneUnavailable": "ለዚህ ነጥብ ቀጠና አይገኝም",
+      "mapLoading": "ካርታ በመጫን ላይ…",
+      "mapLabel": "የኢትዮጲያ ካርታ። ምልክቱን ለማስቀመጥ ይጫኑ፣ ወይም ከዚህ በታች ያሉትን የመጋጠሚያ መስኮች በቁልፍ ሰሌዳ ይጠቀሙ።",
+      "noPin": "ገና ምልክት የለም",
+      "pinAt": "ምልክት በ{lat}፣ {lon}"
+    },
+    "challenge": {
+      "title": "ፈተናው ምንድን ነው?",
+      "help": "ልማዶች በመረጡት ቤተሰብ ውስጥ ይደረደራሉ።"
+    },
+    "objective": {
+      "title": "ምን መቀየር ይፈልጋሉ?",
+      "help": "ለዚህ ፈተና የመስክ ማስረጃ ያላቸው ዓላማዎች ብቻ ይቀርባሉ።",
+      "none": "ለዚህ ፈተና ማስረጃ ያለው ዓላማ የለም።"
+    },
+    "crop": {
+      "title": "የትኛው ሰብል?",
+      "help": "አማራጭ። ለዚያ ሰብል ማስረጃ ሲኖር አውዱን ያጠባል፤ ለማንኛውም ሰብል ባዶ ይተዉት።",
+      "placeholder": "ሰብሎችን ይፈልጉ…",
+      "any": "ማንኛውም ሰብል",
+      "noMatch": "የሚዛመድ ሰብል የለም",
+      "label": "ሰብል"
+    },
+    "getRecommendation": "ምክር አግኝ",
+    "results": {
+      "title": "የተመከሩ ልማዶች",
+      "rankedWithin": "በ{family} ውስጥ የተደረደረ",
+      "withEvidence": "ከ{candidates} ልማዶች {grounded}ቱ ለዚህ ዓላማ የመስክ ማስረጃ አላቸው",
+      "topN": "የሚታዩ ልማዶች",
+      "topNLabel": "ምርጥ {n}",
+      "loading": "ለአውድዎ ልማዶችን በመደርደር ላይ…",
+      "newRequest": "አዲስ ጥያቄ",
+      "share": "የዚህን ምክር አገናኝ ቅዳ",
+      "shared": "አገናኝ ተቀድቷል",
+      "disclaimer": "በተመሳሳይ ሁኔታዎች ከመስክ ማስረጃ የተገኙ ግምቶች — ደረጃ አሰጣጥ እንጂ ዋስትና አይደለም።",
+      "source": {
+        "label": "የዚህ ደረጃ አሰጣጥ ምንጭ"
+      },
+      "context": {
+        "title": "አውድዎ",
+        "belt": "የአግሮ-ኢኮሎጂ ቀጠና",
+        "rainfall": "ዓመታዊ ዝናብ",
+        "altitude": "ከፍታ",
+        "slope": "ተዳፋት",
+        "clay": "የላይኛው አፈር ሸክላ",
+        "ph": "የአፈር ፒኤች",
+        "soc": "የአፈር ኦርጋኒክ ካርቦን",
+        "lgp": "የእድገት ወቅት",
+        "temp": "አማካይ ሙቀት",
+        "meaning": {
+          "belt": "የኢትዮጲያ ባህላዊ የከፍታ–እርጥበት ቀጠናዎች",
+          "rainfall": "በምልክቱ ላይ አማካይ ዓመታዊ ድምር",
+          "altitude": "ከባሕር ጠለል በላይ ያለ ከፍታ",
+          "slope": "የመሬቱ ተዳፋትነት",
+          "clay": "በላይኛው አፈር ውስጥ ያለው የሸክላ ድርሻ",
+          "ph": "የአፈር አሲዳማነት፤ 7 ገለልተኛ ነው",
+          "soc": "በላይኛው አፈር ውስጥ የተከማቸ ካርቦን",
+          "lgp": "በዓመት ለማብቀል በቂ እርጥበት ያላቸው ቀናት",
+          "temp": "ዓመታዊ አማካይ"
+        },
+        "units": {
+          "mm": "ሚሜ",
+          "m": "ሜ",
+          "percent": "%",
+          "days": "ቀናት",
+          "celsius": "°ሴ"
+        }
+      },
+      "card": {
+        "rank": "#{rank}",
+        "topMatch": "ምርጥ ተዛማጅ",
+        "observations": "{n, plural, =0 {የመስክ ምልከታ የለም} one {# የመስክ ምልከታ} other {# የመስክ ምልከታዎች}}",
+        "why": "ለምን ይህ?",
+        "hideWhy": "ዝርዝሮችን ደብቅ",
+        "evidence": "ማስረጃ",
+        "howTo": "እንዴት እንደሚተገበር",
+        "howToEmpty": "የመመሪያ ስብስቡ ለዚህ ልማድ ሰነዶች ሲኖሩት የአተገባበር መመሪያ እዚህ ይታያል። ያለውን ለማየት ማስረጃን ይክፈቱ።",
+        "confidence": "እምነት",
+        "estimated": "የተገመተ ውጤትና ማስረጃ",
+        "change": "ለውጥ",
+        "image": "የ{practice} ምሳሌ ምስል",
+        "imageMissing": "ገና ምስል የለም",
+        "apiEffect": "የሞዴል ዓረፍተ ነገር፦ {effect}"
+      },
+      "empty": {
+        "title": "ገና የሚታይ ልማድ የለም",
+        "body": "አራቱን ደረጃዎች ያጠናቅቁ፣ የተደረደሩት ልማዶች እዚህ ይታያሉ።"
+      },
+      "noEvidence": {
+        "title": "ለዚህ ጥምረት የመስክ ማስረጃ የለም",
+        "body": "የማስረጃ መሠረቱ በመረጃ ስብስቡ ውስጥ ለዚህ ፈተናና ዓላማ ሙከራዎች የሉትም። ሌላ ዓላማ ወይም በአቅራቢያ ያለ ቦታ ይሞክሩ።"
+      },
+      "apiDown": {
+        "title": "የምክር አገልግሎቱ አይደረስም",
+        "body": "ጥያቄዎ በአድራሻ አሞሌው ውስጥ ተይዟል። ግንኙነቱ ሲመለስ እንደገና ይሞክሩ።"
+      },
+      "error": {
+        "title": "ጥያቄው ሊመዘን አልቻለም"
+      },
+      "live": "{n, plural, one {# ልማድ ተመክሯል} other {# ልማዶች ተመክረዋል}}",
+      "explainInChat": "በውይይት አብራራ"
+    }
+  },
+  "evidence": {
+    "title": "ማስረጃ",
+    "loading": "ከምንጭ ጥናቶች ማስረጃ በማውጣት ላይ…",
+    "unavailable": "ማስረጃ አይገኝም",
+    "grounded": "በጽሑፍ ሥራዎች የተመሠረተ",
+    "notGrounded": "ማስረጃ አልተገኘም",
+    "aiSummary": "የኤአይ ማጠቃለያ",
+    "deterministic": "ቆራጭ ማጠቃለያ",
+    "sourceStudies": "ምንጭ ጥናቶች ({n})",
+    "guidance": "የአተገባበር መመሪያ ({n})",
+    "untitledStudy": "ርዕስ የሌለው ጥናት",
+    "untitledDocument": "ርዕስ የሌለው ሰነድ",
+    "passages": "×{n}",
+    "evidenceBase": {
+      "title": "የማስረጃ መሠረት",
+      "sentence": "{practice}፦ በ{studies} / {observations}{belts} የተደገፈ፤ ከጥናቶቹ {inCorpus} ሊገኝ በሚችለው ስብስብ ውስጥ {verb}።",
+      "studies": "{n, plural, one {# ጥናት} other {# ጥናቶች}}",
+      "observations": "{n, plural, one {# የመስክ ምልከታ} other {# የመስክ ምልከታዎች}}",
+      "inBelts": " በ{belts} ውስጥ",
+      "verb": "{n, plural, one {ነው} other {ናቸው}}",
+      "fullText": "ሙሉ ጽሑፍ",
+      "abstractOnly": "ረቂቅ ብቻ",
+      "notInCorpus": "በስብስቡ ውስጥ የለም"
+    },
+    "tier": {
+      "evidence": "የመስክ ማስረጃ",
+      "guidance": "መመሪያ",
+      "practice": "የልማድ መዝገብ"
+    }
+  },
+  "chat": {
+    "eyebrow": "የአግሮኢኮሎጂ+ የልማድ አማካሪ",
+    "title": "የእርሻውን አውድ ይግለጹ።",
+    "titleLine2": "በጣም ተስማሚውን ልማድ ይቀበሉ።",
+    "intro": "እርሻውን በቀላል ቋንቋ ይግለጹ — የቦታ ስም ወይም የካርታ ምልክት፣ ፈተናውና ግቡ። ልማዶች ለቀጠናው ከመስክ ማስረጃ ይደረደራሉ እንጂ አይፈጠሩም።",
+    "placeholderHero": "ስለ ምርት፣ የአፈር መሸርሸር፣ የውሃ ፍሳሽ ይጠይቁ…",
+    "placeholder": "እርሻዎንና ግብዎን ይግለጹ…",
+    "ask": "ጠይቅ",
+    "send": "ላክ",
+    "message": "መልዕክት",
+    "pickOnMap": "በካርታ ምረጥ",
+    "useMyLocation": "ቦታዬን ተጠቀም",
+    "tryExample": "ምሳሌ ይሞክሩ",
+    "examples": {
+      "one": "በደብረ ብርሃን አቅራቢያ ባለው ተዳፋት ማሳዬ ላይ የአፈር መሸርሸርን መቀነስ እፈልጋለሁ",
+      "two": "እርሻዬ በ8.38፣ 39.37 ነው — የአፈር መሸርሸርን እንዴት እቀንሳለሁ?",
+      "three": "በ9.03፣ 38.74 ስንዴ አመርታለሁ። ምርትን እንዴት መጨመር እችላለሁ?"
+    },
+    "loadingMeta": "የሞዴል መረጃ በመጫን ላይ…",
+    "backendUnreachable": "የኋላ አገልግሎት አይደረስም፦ {error}",
+    "thinking": "በማሰብ ላይ…",
+    "mapOffer": {
+      "title": "ምልክት ለማስቀመጥ ካርታውን ይክፈቱ",
+      "body": "የኢትዮጲያ ድንበሮች ይረጋገጣሉ፤ ኬክሮስና ኬንትሮስ ተመሳስለው ይቆያሉ"
+    },
+    "mapOfferReply": "በጣም ጥሩ — ከዚህ በታች ባለው ካርታ ላይ ምልክት ያስቀምጡ (ወይም ኬክሮስ/ኬንትሮስ ይተይቡ)። ከተቀመጠ በኋላ ያንን ቦታ ለምክሮች እጠቀማለሁ።",
+    "errorFallback": "አማካሪውን ለመድረስ ችግር ተፈጥሯል። አማካሪውን ይሞክሩ ወይም እንደገና ይሞክሩ።",
+    "chatFailed": "ውይይቱ አልተሳካም",
+    "loadMoreFailed": "ተጨማሪ ልማዶችን መጫን አልተቻለም",
+    "pickLocation": "የእርሻዎን ቦታ ይምረጡ",
+    "useThisLocation": "ይህን ቦታ ተጠቀም",
+    "practicesShown": "የሚታዩ ልማዶች",
+    "topN": "ምርጥ {n}",
+    "yourSetup": "ዝግጅትዎ",
+    "stage": {
+      "challenge": "ፈተና",
+      "objective": "ዓላማ",
+      "location": "ቦታ",
+      "locationSet": "ቦታ ተቀምጧል",
+      "complete": "ዝግጁ"
+    },
+    "quick": {
+      "chooseChallenge": "ፈተናዎን ይምረጡ",
+      "pickObjective": "ዓላማዎን ይምረጡ",
+      "setLocation": "የእርሻዎን ቦታ ያስቀምጡ",
+      "locationHelp": "በኢትዮጲያ ውስጥ ምልክት ያስቀምጡ፣ GPS ይጠቀሙ፣ ወይም ከዚህ በታች ባለው ሳጥን መጋጠሚያዎችን ይተይቡ።",
+      "changeChallenge": "ፈተና ቀይር",
+      "openMap": "ካርታ ክፈት",
+      "evidenceRanked": "በዚህ መስክ በማስረጃ የተደረደሩ ልማዶች"
+    },
+    "protocol": {
+      "farmAt": "My farm is at {lat}, {lon}.",
+      "challenge": "My challenge is {family}.",
+      "objective": "My objective is to {objective}.",
+      "challengeNote": "Challenge: {family}.",
+      "objectiveNote": "Objective: {objective}.",
+      "explain": "I'm at {lat}, {lon}{crop}. For \"{family}\" with the goal to {direction} {indicator}, you recommended {practices}. Why these, and how sure are you?",
+      "growing": " growing {crop}"
+    },
+    "contextChips": {
+      "label": "የተረዱ መለኪያዎች",
+      "lat": "ኬክሮስ",
+      "lon": "ኬንትሮስ",
+      "challenge": "ፈተና",
+      "objective": "ዓላማ",
+      "crop": "ሰብል",
+      "clear": "{key}ን አጽዳ"
+    },
+    "geoUnavailable": "በዚህ አሳሽ ላይ ጂኦሎኬሽን አይገኝም።",
+    "geoFailed": "ቦታዎን ማንበብ አልተቻለም። በምትኩ ካርታውን ይሞክሩ።"
+  },
+  "about": {
+    "title": "ስለ AgroAdvisor-ET",
+    "lead": "በኢትዮጲያ ውስጥ ላለ የተወሰነ ቦታ የአግሮኢኮሎጂ ልማዶችን የሚደረድርና ከእያንዳንዱ ምክር ጀርባ ያሉትን የመስክ ጥናቶች የሚያሳይ በማስረጃ የተመሠረተ አማካሪ።",
+    "what": {
+      "title": "ምንድን ነው",
+      "body": "AgroAdvisor-ET ከካርታ ምልክት ሥር ያለውን የአግሮ-ኢኮሎጂ አውድ — ዝናብ፣ ሙቀት፣ ከፍታ፣ ተዳፋት፣ አፈርና የእድገት ወቅት ከ250 ሜ ጂኦስፓሻል ስብስብ — ያነባል፣ እና ከኢትዮጲያ ሙከራዎች በሺዎች በሚቆጠሩ ተጣማሪ ከ/ያለ የመስክ ምልከታዎች በሰለጠነ ሞዴል ልማዶችን ይደረድራል። ከዚያም የማውጫ ንብርብሩ እያንዳንዱን ምክር ሞዴሉ ከተማረባቸው ጥናቶች በተወሰዱ ክፍሎች ያብራራል።"
+    },
+    "confidence": {
+      "title": "እምነትን እንዴት ማንበብ እንደሚቻል",
+      "body": "ይህ የደረጃ አሰጣጥ መሣሪያ እንጂ የምርት ትንበያ አይደለም። ሐቀኛ የተሻገረ-ማረጋገጫ ችሎታ መጠነኛ ነው፣ ስለዚህ ከትክክለኛ መቶኛዎች ይልቅ የልማዶቹን ቅደም ተከተል ያምኑ።",
+      "high": "እንደ እርስዎ ባሉ ሁኔታዎች በመስክ ሙከራዎች በደንብ የተደገፈ",
+      "medium": "በቂ ማስረጃ፤ ቅደም ተከተሉን እንደ ምልክት ይውሰዱ",
+      "low": "ቀጭን ማስረጃ — መነሻ ነጥብ እንጂ ትንበያ አይደለም። አማካሪው ከመገመት ይልቅ ይህን ይናገራል።"
+    },
+    "sources": {
+      "title": "የመረጃ ምንጮች",
+      "evidence": "Evidence for Resilient Agriculture (ERA) — የኢትዮጲያ የተጣመሩ የመስክ ምልከታዎች ንዑስ ስብስብ፣ ከአዲማሱ እና ሌሎች የአየር ንብረት-ብልህ ግብርና ጥናቶች ጋር።",
+      "geo": "WorldClim የአየር ንብረት፣ SoilGrids አፈር፣ Copernicus ከፍታና ተዳፋት፣ ESA WorldCover የመሬት ሽፋን፣ FAO የእድገት ወቅት መረጃ፣ እና የኢትዮጲያ የአግሮ-ኢኮሎጂ ቀጠናዎች።",
+      "guidance": "GARDIAN / CGSpace የአተገባበር መመሪያ (የCGIAR የእውቀት ምርቶች) ለእንዴት-ማድረግ ንብርብሩ።",
+      "practice": "WOCAT Global SLM Database የልማድ መዝገቦች (CC BY-NC-SA 4.0)፣ በኋላ ላይ ለሚመጣ ስሪት ለአገር-አቋራጭ አውድ።"
+    },
+    "authors": {
+      "title": "ደራሲነት",
+      "body": "ምስጋኑ ቱሴ (አሊያንስ ኦፍ ባዮቨርሲቲ ኢንተርናሽናል እና CIAT፣ አዲስ አበባ) እና ውለታው አበራ (አሊያንስ ኦፍ ባዮቨርሲቲ ኢንተርናሽናል እና CIAT፣ አክራ)።"
+    },
+    "licence": {
+      "title": "ፈቃድ",
+      "body": "የምርምር ሶፍትዌር። መሠረታዊ የመረጃ ስብስቦች የራሳቸው ፈቃዶች አሏቸው፤ ከWOCAT የተገኘ መረጃ CC BY-NC-SA 4.0 ነው። ወደ አማርኛና አፋን ኦሮሞ የተደረጉ ትርጉሞች በቋንቋው ተናጋሪዎች በግምገማ ላይ ያሉ የማሽን ረቂቆች ናቸው።"
+    },
+    "cta": "አማካሪውን ክፈት"
+  },
+  "errors": {
+    "title": "የሆነ ችግር ተፈጥሯል",
+    "body": "ገጹ ያልተጠበቀ ስህተት አጋጥሞታል። ጥያቄዎ አልጠፋም — እንደገና ይሞክሩ ወይም ወደ መጀመሪያው ይመለሱ።",
+    "retry": "እንደገና ይሞክሩ",
+    "home": "ወደ መጀመሪያው ሂድ",
+    "details": "ቴክኒካዊ ዝርዝሮች"
+  },
+  "notFound": {
+    "title": "ገጹ አልተገኘም",
+    "body": "ያ አድራሻ የለም። አማካሪውና ውይይቱ አንድ ንክኪ ርቀት ላይ ናቸው።",
+    "home": "ወደ መጀመሪያው ሂድ"
+  },
+  "a11y": {
+    "mapRegion": "የኢትዮጲያ ካርታ",
+    "pinSetByKeyboard": "ምልክቱን በቁልፍ ሰሌዳ ለማስቀመጥ የኬክሮስና የኬንትሮስ መስኮችን ይጠቀሙ።",
+    "stepper": "የጥያቄ ደረጃዎች",
+    "currentStep": "የአሁኑ ደረጃ",
+    "completedStep": "ተጠናቋል",
+    "resultsRegion": "የተመከሩ ልማዶች",
+    "themeToggle": "ገጽታ",
+    "externalLink": "ውጫዊ አገናኝ"
+  }
+}

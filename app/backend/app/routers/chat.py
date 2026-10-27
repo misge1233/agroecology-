@@ -24,7 +24,7 @@ async def chat(body: ChatRequest, request: Request):
     if body.stream:
         async def event_gen():
             async for chunk in stream_chat(
-                body.message, history, last_rec, body.top_n
+                body.message, history, last_rec, body.top_n, body.language
             ):
                 yield chunk
 
@@ -38,5 +38,5 @@ async def chat(body: ChatRequest, request: Request):
             },
         )
 
-    result = await run_chat(body.message, history, last_rec, body.top_n)
+    result = await run_chat(body.message, history, last_rec, body.top_n, body.language)
     return JSONResponse(result)
