@@ -17,8 +17,9 @@ const FIELDS: { key: string; k: string; unit: "mm" | "m" | "percent" | "days" | 
   { key: "lgp_days", k: "lgp", unit: "days", digits: 0 },
 ];
 
-/** The context the model scored against — each value with its unit and meaning. */
-export function ContextCard({ data }: { data: RecommendResponse }) {
+/** The context the model scored against — each value with its unit and meaning.
+ *  `compact` is the chat's inline variant (U2): same fields, tighter grid. */
+export function ContextCard({ data, compact = false, title }: { data: RecommendResponse; compact?: boolean; title?: string }) {
   const t = useTranslations("advisor.results.context");
   const locale = useLocale() as Locale;
   const format = useFormatter();
@@ -27,16 +28,16 @@ export function ContextCard({ data }: { data: RecommendResponse }) {
   const rows = FIELDS.filter((f) => ctx[f.key] != null && Number.isFinite(Number(ctx[f.key])));
 
   return (
-    <Card className="p-4 sm:p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{t("title")}</p>
+    <Card className={compact ? "p-3 sm:p-4" : "p-4 sm:p-5"}>
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{title ?? t("title")}</p>
       {belt ? (
-        <div className="mt-3">
+        <div className={compact ? "mt-2" : "mt-3"}>
           <p className="text-sm text-muted">{t("belt")}</p>
-          <p className="text-lg font-semibold text-text">{aezName(belt, locale)}</p>
-          <p className="text-xs text-muted">{t("meaning.belt")}</p>
+          <p className={compact ? "text-base font-semibold text-text" : "text-lg font-semibold text-text"}>{aezName(belt, locale)}</p>
+          {compact ? null : <p className="text-xs text-muted">{t("meaning.belt")}</p>}
         </div>
       ) : null}
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+      <dl className={compact ? "mt-3 grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-4" : "mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4"}>
         {rows.map((f) => (
           <div key={f.key}>
             <dt className="text-xs text-muted">{t(f.k)}</dt>
@@ -44,7 +45,7 @@ export function ContextCard({ data }: { data: RecommendResponse }) {
               {format.number(Number(ctx[f.key]), { maximumFractionDigits: f.digits })}
               {f.unit ? <span className="ml-1 text-sm font-normal text-muted">{t(`units.${f.unit}`)}</span> : null}
             </dd>
-            <dd className="text-xs text-muted">{t(`meaning.${f.k}`)}</dd>
+            {compact ? null : <dd className="text-xs text-muted">{t(`meaning.${f.k}`)}</dd>}
           </div>
         ))}
       </dl>

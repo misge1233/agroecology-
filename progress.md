@@ -3201,3 +3201,284 @@ except additive fields.
 
 **Launch (repo root):**
 `claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase U2' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+## Phase U2 — Chat redesign, print/share, E2E, hardening (2026-10-28)
+
+**Built**
+- **0a Phone-width overflow — root cause found and guarded.** Measured with Playwright (`document.scrollWidth <= window.innerWidth`): the header's language-switcher trigger (icon + label, `min-w-[8.5rem]`) plus the brand block pushed the header past 390 px, which gave the whole document a horizontal scroll and clipped every screen's right edge. Fix: icon-only switcher below `sm` (label stays in the accessible name), `min-w-0`/`truncate` on the brand, `shrink-0` on the controls. Guard: `e2e/overflow.spec.ts` checks nine screens (home, advisor step 1, results en/am/om, chat en/am, about, 404) at 360/390/412/768/1440 px; `e2e/advisor.phone.spec.ts` repeats it under Pixel-7 emulation. Proof: `docs/design/screenshots/u2-advisor-results-en-light-phone-390.png`.
+- **0b Effect-sentence grammar.** `recommend.py` builds `~76% reduction in soil loss` / `~12% increase in yield` (one f-string; `goal_direction` keeps `reduce`/`increase`); `glossary.ts` `effectSentence` mirrors it for `en`; the three frontend fixtures (`glossary.test.ts`, `result-card.test.tsx`, `api.test.ts`) updated; the E2E flow asserts the API's own wording on the card and on the print sheet.
+- **0c IBM Plex Sans self-hosted** (`src/app/fonts/IBMPlexSans-latin{,-italic}.woff2`, variable `wght`, latin) via `next/font/local` next to Noto Sans Ethiopic, both OFL licence texts committed (`LICENSE-IBMPlexSans.txt`, `LICENSE-NotoSansEthiopic.txt`), README updated. A production build makes no request to Google Fonts (verified: zero `fonts.gstatic`/`googleapis` references in the built CSS/HTML).
+- **0d Mobile performance.** (1) The map is not mounted on phones until "Show the map" is tapped or a pin exists (`useIsPhone` on `matchMedia` through `useSyncExternalStore`; server snapshot "unknown" so hydration mounts nothing); (2) the Advisor's title, subtitle and stepper render before `/metadata` (they had been behind the metadata gate and were the LCP text); (3) per-route message splitting (`src/i18n/messages.ts`: the layout ships the shell namespaces, each page re-provides shell + its own — the home bundle carries < 50 % of the catalog); (4) phone map 14 rem, `keepBuffer=0`, `updateWhenIdle`; recharts stays lazy. Re-measured below.
+- **1 Chat redesign** (`chat-panel.tsx`, `chat-quick-replies.tsx`, `lib/chat-protocol.ts`): message log (`role="log"`, polite live region) with role label + `<time>` per turn; explicit assistant states thinking → scoring → writing → done, or an error alert with "Send again" (re-sends the same message and hint); inline **`ContextCard` (compact) + `RecommendationPanel`/`ResultCard` + source badge** — the same component path as the Advisor; "Open in Advisor" deep link (`?lat&lon&family&indicator&crop&top`); quick replies as chips (challenge families, evidence-backed objectives, map / device location); map sheet kept (eager map inside the sheet); "New conversation". **Language-aware intent parsing (backend):** quick-reply chips send a sentence in the UI language **plus a structured `hint`** (additive `ChatSlotsHint` on `ChatRequest`), so the backend never guesses from translated text; typed protocol sentences in any language are parsed deterministically from the catalog templates (`parse_protocol`, reverse lookup through `family.*`, `indicator.*` and the new `indicator_label.*` terms); Amharic/Afaan Oromoo **free text** goes through one JSON-mode LLM reading (`app/services/intent_llm.py`, existing OpenAI client, `temperature 0`, `response_format json_object`) only when `OPENAI_API_KEY` is set, every value validated against the enumerations/bounds and place names resolved by the offline gazetteer; without a key a localised message (`clarify.use_advisor`) steers to the chips/Advisor. English stays on the rule parser and never calls the model. The chat protocol strings are now translated in am/om (`chat.protocol.*` ↔ backend `protocol.*`, equality asserted by `tests/test_i18n_sync.py`).
+- **2 Printable advisory** (`advisor/print-sheet.tsx`, print CSS in `globals.css`): request, context table with units and meanings, every ranked practice with the model's effect sentence (API wording, am/om frame + original), confidence + meaning, field-observation count, the evidence-base line and the sources (ERA code · title · year · DOI/URL, guidance tagged), the source badge text, the model note, the disclaimer, the generation date and the share link as text. "Save as PDF" loads `/explain` first (promise-returning `load()` on the shared `ExplainProvider`, now lifted into `Results`), then `window.print()`; "Copy link" kept; app chrome and the interactive view are `no-print`.
+- **3 Playwright E2E** (`app/frontend/e2e/`, `npm run e2e`; `playwright.config.ts`; system Chrome via `channel: "chrome"`, no browser download; `PLAYWRIGHT_CHANNEL=chromium` after `npx playwright install chromium` on CI without Chrome). API mocked in the browser from **fixtures captured from the real FastAPI responses** (`e2e/fixtures/*.json`: health, metadata, context, geocode, recommend, explain, chat-slots); OSM tiles answered with a 1×1 PNG. Specs: Advisor end to end in en/am/om; shared-URL scoring + reload; no-evidence and API-down states; axe-core on home, advisor step 1, results (en + am), chat, about (including colour-contrast); dark mode (OS preference + toggle + token check); print sheet; chat happy path with streamed answer, Open-in-Advisor link and timestamps; am chip → translated sentence + hint; failed stream → error + retry; map sheet; keyboard-only completion (skip link → fields → Next → cards → chips → score → `aria-live` announcement → visible 2 px focus ring); overflow at five widths; phone project (deferred map, tile failure keeps inputs usable, 390 px fit); documentation screenshots. `scripts/serve-standalone.mjs` (also `npm start`) serves the standalone build.
+- **4 Translation review workflow.** `scripts/translation_status.py --export review.csv` (glossary terms first; columns `source,key,en,am,om,status_am,status_om`) and `--import review.csv` (writes am/om back into `messages/*.json`, `glossary.ts` and the backend catalogs — the `.py` catalogs are regenerated from their dict — and fingerprints every `reviewed` cell in `messages/review-status.json`). Guards: `src/i18n/review-status.test.ts` (UI + glossary) and `tests/test_translation_review.py` (backend) fail when a reviewed string changes without the workflow; `TRANSLATION_STATUS.md` shows `changed-since-review` for such rows. `protocol-en` no longer exists — the protocol strings are drafts like everything else.
+- **5 Low-bandwidth.** Practice photos: blurred 16×9 SVG placeholder in the palette, lazy except the first card, text fallback with the practice name; `fetchWithRetry` (600 ms, 1.8 s backoff on network errors and 502–504, never on 4xx, never on the chat stream) for `/metadata`, `/context`, `/geocode`, `/recommend`, `/explain` with a warning-toned "retrying…" strip under the header (`retry-store.ts`); tile failure (`tileerror` without any `tileload`) shows a warning alert and the inputs keep working; the `/health` banner unchanged.
+- **6 Docs.** `app/frontend/README.md` rewritten (screens, stack, scripts, tokens pointer, i18n workflow, E2E, low-bandwidth); root `README.md` quick start for the trilingual UI and the optional LLM key; `docs/design/design_system.md` (U2 additions + verification table); `docs/design/lighthouse/README.md` (U2 runs + U1 history); `app/backend/.env.example` documents what the key enables.
+- Also fixed on the way: the Advisor auto-advanced to step 2 the moment a pin was committed (the E2E keyboard test caught it) — params updates now keep the current step unless the caller moves on; `CardTitle` takes `as` so the About page keeps a valid heading order (axe); the quick-reply protocol regex uses numeric groups for coordinates with a digit guard (the real chat fixture showed `lon=39` for "…39.37 and I want…"); backend `indicator.yield` was missing in am/om and the am `SOM content` noun differed from the glossary — aligned and now asserted.
+
+**Files**
+- New: `app/backend/app/services/intent_llm.py`, `tests/test_intent.py` (20 tests), `tests/test_i18n_sync.py`, `tests/test_translation_review.py`; `app/frontend/e2e/**` (6 specs, `support/api.ts`, `support/axe.ts`, 7 fixtures), `playwright.config.ts`, `scripts/serve-standalone.mjs`, `src/app/fonts/IBMPlexSans-latin{,-italic}.woff2` + two licence files, `src/components/advisor/print-sheet.tsx`, `src/i18n/messages.ts` (+ test), `src/i18n/review-status.test.ts`, `src/lib/chat-protocol.ts` (+ test), `src/lib/retry-store.ts`, `src/lib/client-value.ts`, `messages/review-status.json`, `docs/design/screenshots/u2-*.png` (6).
+- Modified: `recommend.py` (effect sentence only); `app/schemas.py` (`ChatSlotsHint`, `ChatRequest.hint`); `app/routers/chat.py`; `app/services/{chat_service,slot_extraction}.py`; `app/i18n/{en,am,om}.py` (`protocol.*`, `clarify.use_advisor`, `indicator.yield`, `indicator_label.*`); `.env.example`; frontend `package.json`/lock (`@playwright/test`, `@axe-core/playwright`; scripts `start`, `typecheck`, `e2e*`, `i18n:status`), `.gitignore`, `messages/{en,am,om}.json` (+37 keys, protocol strings translated), `src/app/[locale]/{layout,page,advisor/page,chat/page,about/page}.tsx`, `globals.css` (print), `src/components/{chat-panel,chat-quick-replies,evidence-panel,location-map,practice-image}.tsx`, `advisor/{advisor-flow,location-step,results,context-card,recommendation-panel,result-card}.tsx`, `shell/{site-header,language-switcher,api-status-banner,site-footer,bottom-tab-bar,skip-link}.tsx`, `ui/card.tsx`, `src/lib/{api,types}.ts` (+ tests), `src/i18n/glossary.ts` (+ test), `src/lib/i18n-audit.test.ts`, `scripts/translation_status.py`, `src/app/fonts/README.md`, `rag/graph/test_glossary_sync.py` (indent regex), `docs/design/{design_system.md,lighthouse/*}`, `docs/i18n/TRANSLATION_STATUS.md`, both READMEs.
+
+**Decisions**
+1. **Structured hints over parsing translated chips.** A chip is structured input; sending the canonical values alongside the localised sentence (additive `hint`) is more robust than reverse-parsing Amharic. The deterministic protocol parser still exists for typed/pasted sentences in any language, and the backend/frontend vocabularies are forced identical by a test.
+2. **LLM only for am/om free text, only with a key, never for numbers.** The extractor reads intent (enumerated values, a place name, coordinates, a crop); every output is validated and place names go through the gazetteer; English never touches it; without a key the user is steered rather than guessed at. Doctrines 1–3 untouched: engine, model, RAG, `explain_service.py` unchanged.
+3. **One `/explain` per result** shared by the cards and the print sheet (`ExplainProvider` lifted into `Results`, `RecommendationPanel` `withProvider={false}` there; the chat keeps its own).
+4. **E2E against the production build with mocked API** rather than the live backend: hermetic on Windows and Linux, no rasters, fixtures are real responses. Lighthouse, by contrast, is measured against the live backend on the shipped default API base.
+5. **Review workflow fingerprints, not statuses in code.** `review-status.json` holds a hash per reviewed cell; the guards compare hashes, so a well-meaning edit cannot silently overwrite a native speaker's sign-off.
+6. `next start` replaced by `scripts/serve-standalone.mjs` in `npm start` (`output: "standalone"` was never servable by `next start`); the Dockerfile is unchanged.
+
+**Verified**
+- Backend (owner's Windows venv, rasters present): `python -m pytest -q` → **140 passed, 1 skipped** (the skip is the review guard with no reviewed strings yet); `rag/graph/test_glossary_sync.py` 2 passed; `py_compile` on every touched file.
+- Frontend (Windows node 24 from WSL): `tsc --noEmit` 0 errors (e2e included); `eslint .` **0 errors, 0 warnings**; `vitest run` **121 tests / 13 files** (adds retry/backoff, protocol+hint, message split, review guard); `next build --webpack` green.
+- **Playwright E2E: 25 / 25 passed** (desktop 22, phone 3; the chat spec repeated ×3 after fixing a timing assumption) — flows in en/am/om, keyboard-only, overflow at five widths on nine screens, axe on six screens, dark mode, print, chat streaming/error/retry/hint, phone deferred map and tile failure.
+- **Lighthouse 13.5, mobile, production build, live backend, two runs** (`docs/design/lighthouse/README.md`):
+
+  | screen | Perf A / B | A11y | Best practices | LCP A / B |
+  |---|---|---|---|---|
+  | `/en/advisor` | **98 / 99** | 100 | 100 | 2.2 s / 1.8 s |
+  | results URL | **97 / 83** | 100 | 100 | 2.3 s / 4.4 s |
+  | `/en/chat` | **95 / 94** | 100 | 100 | 2.9 s / 3.0 s |
+  | `/en` | **93 / 94** | 100 | 100 | 3.2 s / 3.0 s |
+
+  U1 was 74 / 80 / 89 / 78 with Best practices 77–81. The results page's 83 in run B is the live `/recommend` call landing inside the simulated window (97 in run A); the honest ceiling and the remaining ~300 KiB of shared framework JavaScript are documented.
+- Screenshots (`docs/design/screenshots/u2-*`): chat en light desktop, chat am dark phone, chat om light phone (each after a scored answer, inline cards), advisor results en light 390 px (0a proof), print preview en, advisor results en dark desktop.
+- Translation status regenerated: 494 keys (320 UI, 60 backend, 114 glossary) → 988 am+om cells `machine-draft`, 0 reviewed; export/import round-trip exercised on a scratch CSV.
+- Real-fixture capture doubled as an integration check: `/chat` with the hint-enabled schema, `/explain` grounded with 6 citations of both tiers, `/geocode`, `/context`.
+
+**Needs local verification**
+- Turbopack `npm run build` on Windows (the agent builds with `--webpack` from WSL) and `npm run e2e` from a Windows terminal with the owner's Chrome.
+- The LLM extractor against the real API with a key (tests use a canned JSON reply): one Amharic and one Afaan Oromoo free-text message in the chat, checking the slots event shows `source: "llm"` and sensible values; rate/cost acceptable (one extra call per am/om free-text turn).
+- A printed PDF from a real browser's print dialog (the E2E checks print-media rendering and content, not the dialog) — page breaks on a long Top-5 advisory.
+- Native-speaker review of the 37 new keys and the translated chat protocol sentences via the CSV workflow.
+- Lighthouse on a real low-end Android phone over 3G/4G (simulated figures above).
+
+**Left for U3**
+- The ~300 KiB shared framework JavaScript (Next/React/next-intl/Radix) if a hard ≥ 95 on the results page is wanted; server-rendering the chat shell.
+- Amharic/Afaan Oromoo social-ack detection ("thank you") in the chat without a key; am/om examples on the chat landing.
+- P9 source badges (Hybrid / Documented practice) and WOCAT records in the print sheet.
+
+### Review (Senior Engineer) — U2 APPROVED ✅ (28 Oct 2026)
+Independently re-verified in a clean sandbox from a snapshot of the working
+tree:
+- Frontend: `tsc` clean, `eslint .` 0/0, `vitest run` **121/121**. **`next
+  build` (Turbopack) now succeeds offline** — the self-hosted fonts (0c)
+  removed the Google Fonts dependency that blocked the sandbox build in U1.
+- **Playwright E2E run here against the production build with the mocked
+  API: 24 passed, 1 flaky** (the axe test timed out once and passed on
+  retry and in isolation — add a `networkidle` wait before the scan). The
+  sandbox needed a local config override to use its preinstalled Chromium;
+  nothing in the repo changed.
+- The four U1 must-fixes verified: 0a — overflow guard at 360/390/412/768/
+  1440 px passes and the new 390 px screenshot fits; 0b — `recommend.py`
+  emits "~76% reduction in soil loss" (one f-string, `goal_direction`
+  untouched); 0c — IBM Plex Sans + Noto Sans Ethiopic self-hosted with both
+  OFL licences; 0d — map deferred on phones, messages split per route,
+  Lighthouse mobile 93–99 (owner's runs; the results page varies with live
+  backend timing).
+- Backend: explain/i18n/i18n-sync/intent/translation-review/slot suites
+  **118 passed, 1 skipped, 1 failed here only because it runs a real
+  recommendation and this sandbox has no rasters**
+  (`test_chip_hint_completes_the_request_without_a_key`); the owner's 140
+  with rasters stands. Minor: give that test the same "needs the raster
+  stack" skip guard as `test_api.py`.
+- Chat redesign, print sheet, language-aware parsing (LLM pass only with a
+  key; localised steer without one), retry/backoff, translation-review
+  export/import with fingerprint guards: present, tested, as briefed.
+
+**One defect found in review (must-fix in the next UI-touching phase):**
+the E2E fixture `e2e/fixtures/explain.json` contains mojibake
+("Semiâ‐Arid", "â€¦") — the fixtures were captured from the real API on
+Windows through a cp1252 console. The corpus itself is clean (the manifest
+title reads "Semi‐Arid"), so this is a capture artefact, but it surfaced in
+the print-preview screenshot. Fix: re-capture fixtures with explicit UTF-8,
+and add an E2E guard that no rendered text contains `â€`/`Ã` sequences.
+Owner: please confirm on the live app that Evidence-panel titles render
+"Semi‐Arid" correctly (if not, the Windows backend has an encoding default
+problem and we fix it there).
+
+**Owner actions to close U2 (Windows):**
+```
+cd app\frontend ; npm ci ; npm test ; npm run lint ; npm run build ; npm run e2e ; cd ..\..
+cd app\backend ; python -m pytest -q ; cd ..\..
+git add -A ; git commit -m "U2: chat redesign, print/share advisory, Playwright E2E, self-hosted fonts, overflow/perf fixes, translation review workflow (reviewed)" ; git push origin main
+```
+Then a real print dialog on a long advisory and the LLM extractor with a key
+(Amharic free text → slots), as the report requests.
+
+### DECISION RECORD — WOCAT API Access Agreement v1.0 (14 Jun 2026) reviewed; data route and compliance (28 Oct 2026)
+Document: `docs/WOCAT_API_Access_Agreement_SC_SU.docx` (University of
+Bern/CDE for the WOCAT Secretariat). Reviewer's reading:
+- **Data licence unchanged: CC BY-NC-SA 4.0** (Art. 2.1). The agreement
+  only adds a cost-recovery model for the API infrastructure (Art. 4) and
+  usage rules (Art. 5).
+- **Tiers:** Public–Free (individual researchers/students: personal key,
+  reduced rate limit, no SLA, USD 0); Public–Small/Standard/Large
+  (USD 1,500 / 3,000 / 6,000 per year by institutional budget) + a one-time
+  setup fee of CHF 4,000 for paid tiers; Commercial tiers need a separate
+  commercial data licence (not our case — AgroAdvisor-ET is a free public
+  good). **Exemptions:** free access under a Project Agreement whose budget
+  includes WOCAT cost recovery (Art. 4.5); developing-country fee waiver for
+  institutions on the OECD DAC list with public-interest SLM objectives,
+  explicitly including "extension services reaching smallholder farmers"
+  and "research with results shared freely" — but institutions developing
+  products within donor-funded programmes are excepted (Art. 4.6).
+- **Permitted Public Use** explicitly covers scientific research and
+  publication, decision support, and "development of open-access tools and
+  platforms that do not generate revenue" (Art. 3.1) — our use.
+- **Binding restrictions (Art. 5):** no commercial use; **no redistribution
+  of WOCAT data in raw form** (free or paid); keep attribution metadata;
+  no credential sharing; no scraping/bulk techniques that circumvent rate
+  limits; no derivative datasets that misrepresent origin/accuracy/
+  currency. On termination, cached copies must be deleted (Art. 8.4).
+- **Attribution (Annex A):** cite "WOCAT Secretariat (2025). WOCAT Global
+  Sustainable Land Management Database … https://doi.org/10.48620/97493,
+  CC BY-NC-SA 4.0" with source name, URL, licence statement and the
+  month/year of retrieval.
+- **API (v3, `wocat.net/api/database/redoc/`, token auth):** full QT
+  records for Technologies (name, country, state/province,
+  `location_geometry`, land use, water supply, SLM group/measures,
+  degradation, establishment/maintenance activities + cost breakdowns +
+  totals + currency, rainfall band + mm, agro-climatic zone, slopes,
+  landforms, altitude zone, soil depth/texture/organic matter, water,
+  biodiversity, land-user characteristics, tenure, access to services, all
+  on-site/off-site impacts, climate-change coping, cost–benefit, adoption,
+  adaptation, references, images, technical drawings, labels, funding);
+  Approaches (stakeholders, decision-making, training, advisory,
+  institutions, budget, subsidies/credit, impacts, sustainability); and the
+  modules **CCA** (climate-change adaptation: exposure, thresholds,
+  adaptation measures, costs, assets), **CBP** (carbon benefits
+  assessment), **Gender** (gender-responsive SLM), plus UNCCD PRAIS
+  archives, countries, institutions, labels, projects. Translation versions
+  per language (not am/om).
+
+Decisions:
+1. **Route to access:** the owner applies now for a **Public–Free personal
+   token** (email wocat.cde@unibe.ch with the WOCAT login e-mail and the
+   purpose: non-commercial research + an open-access advisory tool; accept
+   the agreement) — sufficient for ingestion (~2,700 requests once, then
+   incremental refresh). **Before any public production launch**, the
+   Alliance holds the licence: ask the WOCAT focal point (Job Kihara) for a
+   partner/Project-Agreement arrangement (Art. 4.5) rather than paying the
+   Public–Large tier; the developing-country waiver is unlikely to apply to
+   an international organisation in a donor-funded programme.
+2. **Architecture for compliance:** the app never calls WOCAT live. An
+   **offline sync** (`fetch_wocat.py`, polite rate, incremental by
+   `updated_at`) fills a **git-ignored** raw cache; the repo ships code, the
+   list of record ids + access dates, and derived artefacts only; every
+   record shown carries attribution + URL + access month/year; the Annex A
+   citation appears in About, the print sheet and the manuscript's data
+   availability statement; derived data released with the paper are
+   CC BY-NC-SA 4.0; the token lives only in `backend/.env`.
+3. **What we integrate, in order of value:** (a) Tier-3 practice records +
+   graph enrichment (P6b-ii) — context-matched documented practices with
+   activities, costs, adoption, strengths/weaknesses; the `location_geometry`
+   of the ~102 Ethiopian records lets us compute OUR raster context for them
+   (direct comparability, cross-country transfer by context class);
+   (b) **implementation cost estimates** per practice (establishment +
+   maintenance breakdowns, currency, year) — a capability the system lacks
+   entirely today; (c) **CCA module** → a climate-resilience lens (which
+   practices cope with drought/floods/heat); (d) **CBP module** → a carbon/
+   mitigation lens (ratings with provenance, never model numbers);
+   (e) **Gender module** → labour/benefit distribution notes (agroecology's
+   social principles); (f) **Approaches** → implementation pathways for
+   extension agents (training, incentives, institutions); (g) degradation-
+   type → practice lookup beyond our 7 indicators; (h) an **Agroecology+
+   profile** per practice derived from WOCAT impact variables mapped to the
+   13 HLPE agroecology principles (qualitative, counts of records, with
+   provenance) — a distinctive feature for the paper and the UI.
+   Sequence: P8 (expert-study readiness) → **P6b-ii** (ingestion + Tier 3)
+   → P9 (evidence-tiered advisory, uses Tier 3) → P6c (direction-agreement
+   + graph ablation) → faithfulness run → expert study → manuscript.
+
+### Next steps → Phase P6b-ii — WOCAT ingestion via the API, Tier-3 practice records, graph enrichment (assigned to Claude Code; runs once the owner has the token)
+Read CLAUDE.md first, then the P6a/P6b-i reports and the decision record
+above (the agreement's restrictions are binding). `WOCAT_API_TOKEN` is read
+from the environment or `app/backend/.env`; never print or log it.
+1. **Fetch — `rag/ingest/wocat/fetch_wocat.py`.** Auth header
+   `Authorization: Token …`. `--inspect` first: fetch 3 technologies, 1
+   approach, 1 cca, 1 cbp, 1 gender record and print the real key shapes.
+   Then: list endpoints for technologies, approaches, cca, cbp, gender (+
+   labels, countries, institutions, projects once), retrieve every record
+   with `?language=en` (fallback: the primary language), store raw JSON in
+   the git-ignored `rag/corpus/wocat/raw/<type>/<id>.json` with an
+   `access_date`, and write `rag/corpus/wocat/manifest.jsonl` (id, type,
+   name, country, state/province, lat/lon centroid from
+   `location_geometry`, updated_at, access_date, url, licence) — the
+   manifest is small metadata and may be committed. Polite client: ≤ 2
+   requests/s, exponential backoff on 429/5xx, resumable, `--since` for
+   incremental refresh by `updated_at`, `--limit` for tests. **No scraping
+   of wocat.net HTML; the API only.** Report the funnel: records per type,
+   per country (top 10 + Ethiopia), with coordinates, with each module.
+2. **Adapter — `normalize_wocat.py` gains `WocatApiAdapter`** mapping the
+   real fields onto `WocatTechnology`/`WocatApproach` (extend the schema
+   additively for: lat/lon, land-user characteristics, cost breakdowns with
+   currency/year, climate coping, modules `cca`/`cbp`/`gender` as optional
+   sub-objects, images/technical drawings as URL lists). Map enumerations
+   to the QT vocabularies (`VERYNEGATIVE…` → rating keys; adoption and
+   cost–benefit enums; SLM measure/degradation codes); unknown codes are
+   dropped with a warning, never invented. Output
+   `rag/corpus/wocat/technologies.jsonl` + `approaches.jsonl`.
+3. **Spatial enrichment (Ethiopia records):** for every record with
+   coordinates inside Ethiopia, a script the owner runs calls the canonical
+   engine's `extract_context(lat, lon)` (wrap, never fork) and stores the
+   resolved context (AEZ belt + stack features) and the
+   `context_to_classes()` output on the record (`context_source:
+   "raster_stack"`); other records keep their QT classes
+   (`context_source: "questionnaire"`).
+4. **Graph:** `build_graph.py --wocat rag/corpus/wocat/technologies.jsonl`
+   (+ approaches). New edge `LOCATED_IN` (Technology → AEZBelt, Ethiopia
+   only). Synthetic fixture deleted; two real Ethiopian records become the
+   test fixtures. Report node/edge counts and the crosswalk status
+   (`MAPS_TO` only for validated rows — the owner's validation is now on
+   the critical path).
+5. **Text tier — `wocat_corpus`:** `chunk_wocat.py` (reuse `chunk_text`)
+   over description/definition, activities, strengths/weaknesses, climate
+   coping and comments; chunk ids `W_<id>_<nnn>`, metadata `tier:
+   "practice"`, wocat_id, type, country, title, url
+   (`https://wocat.net/en/database/technologies/<id>/`), compiler, licence
+   `CC BY-NC-SA 4.0`, access_date, `era_code: null`. `build_index.py
+   --collection wocat_corpus`; `index_tools.py list` must show era_corpus
+   1,191 / guidance_corpus unchanged / wocat_corpus N.
+6. **Retrieval + explain:** `default_practice_retriever()`; in
+   `explain_service.explain()`, a Tier-3 step: `context_to_classes(resolved
+   context)` → `similar_context_technologies(…, practice, k=3)` with
+   **Ethiopia-first** ranking (then same agro-climatic zone), no synthetic
+   records → a "PRACTICE RECORDS (cite as [W1], [W2]…)" prompt block with a
+   structured facts line per record (activities with timing; costs with
+   currency and year; adoption band; one strength, one weakness) plus the
+   retrieved passages; system-prompt rule: practice records inform HOW and
+   WHERE ELSE, never effect sizes. Guardrail: `allowed_numbers` extended
+   with exactly the numbers in the facts lines (same rule as the evidence
+   base); `[Wn]` markers stripped like `[Gn]`. Citations gain tier
+   "practice" + url + attribution fields; the deterministic fallback never
+   cites records. `/metadata` reports `practice_records_ready`.
+7. **UI:** "Practice record" chips (secondary outline) in the Evidence
+   panel; the "How to implement" panel shows the record's activities and
+   costs (currency + year stated) with the attribution line and the
+   access month/year; the print sheet and About carry the Annex A
+   citation. Catalog keys for all three languages.
+8. **Compliance docs:** `docs/decisions/wocat_data_use.md` (licence,
+   agreement articles relied on, what is cached and where, refresh and
+   deletion policy, attribution text, the manuscript's data-availability
+   sentence). `.gitignore` for `rag/corpus/wocat/raw/`, `texts/`,
+   `chunks.jsonl`.
+9. **Tests:** adapter on the real fixtures, enum mappings, chunking,
+   graph counts, explain block (whitelist exactly what is prompted;
+   fallback excludes records; graceful no-op without the collection), UI;
+   existing suites green. Also: re-capture the E2E fixtures in UTF-8 and
+   add the mojibake guard from the U2 review.
+10. Scope guard: Tier 1/2 corpora and collections untouched; the model
+    and dataset untouched; the crosswalk gate unchanged; the token never
+    appears in logs, reports or tests.
+11. Append the phase report with the funnel counts and stop. The owner
+    runs the fetch, the spatial enrichment, the index build and the graph
+    build.
+
+**Launch (repo root, after `WOCAT_API_TOKEN` is in `app/backend/.env`):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P6b-ii' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+**Order of launches from here:** P8 first (its brief stands above, "Next
+steps → Phase P8"; launch line unchanged), then P6b-ii when the token has
+arrived, then P9.

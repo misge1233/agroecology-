@@ -153,7 +153,7 @@ def recommend(lat,lon,practice_family,indicator,crop_type=None,top_n=3):
     for it in top:
         eff=abs(it["pct_change"])
         clean.append({"practice":it["practice"],
-                      "effect":f"~{eff:.0f}% {goal_txt} in {indicator}"})
+                      "effect":f"~{eff:.0f}% {'reduction' if direction<0 else 'increase'} in {indicator}"})
     return {
       "query":{"lat":lat,"lon":lon,"practice_family":practice_family,
                "indicator":indicator,"crop_type":crop_type or None,"goal_direction":goal_txt},

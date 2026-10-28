@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Link2, MessageSquare, RotateCcw } from "lucide-react";
+import { FileDown, Link2, MessageSquare, RotateCcw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { postRecommend } from "@/lib/api";
 import type { RecommendResponse } from "@/lib/types";
 import { useApiHealth } from "@/lib/health";
+import { useMetadata } from "@/components/metadata-provider";
+import { ExplainProvider, useExplain } from "@/components/evidence-panel";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,7 +18,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { TOP_N_OPTIONS, requestKey, type AdvisorParams } from "./advisor-state";
 import { ContextCard } from "./context-card";
+import { PrintSheet } from "./print-sheet";
 import { RecommendationPanel } from "./recommendation-panel";
+
+/** "Save as PDF": make sure the evidence is loaded, then hand over to the browser. */
+function SavePdfButton() {
+  const tp = useTranslations("advisor.results.print");
+  const { load, ragReady } = useExplain();
+  const [preparing, setPreparing] = useState(false);
+  async function onPrint() {
+    setPreparing(true);
+    try {
+      if (ragReady) await load();
+      // Let React commit the evidence into the print sheet before the dialog opens.
+      await new Promise((r) => setTimeout(r, 120));
+      window.print();
+    } finally {
+      setPreparing(false);
+    }
+  }
+  return (
+    <Button variant="outline" size="sm" onClick={() => void onPrint()} loading={preparing}>
+      {!preparing ? <FileDown className="h-4 w-4" aria-hidden /> : null}
+      {preparing ? tp("preparing") : tp("savePdf")}
+    </Button>
+  );
+}
 
 type Outcome =
   | { key: string; status: "ready"; result: RecommendResponse }
@@ -78,6 +105,7 @@ export function Results({
   const tp = useTranslations("chat.protocol");
   const locale = useLocale() as Locale;
   const health = useApiHealth();
+  const { meta } = useMetadata();
   const { key, loading, outcome, retry } = useRecommendation(params);
 
   async function share() {
@@ -102,9 +130,9 @@ export function Results({
       })
     : null;
 
-  return (
+  const body = (
     <section aria-labelledby="advisor-step-title" aria-busy={loading} className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="no-print flex flex-wrap items-end justify-between gap-3">
         <h2 id="advisor-step-title" className="text-xl sm:text-2xl">
           {t("title")}
         </h2>
@@ -128,6 +156,7 @@ export function Results({
             <Link2 className="h-4 w-4" aria-hidden />
             {t("share")}
           </Button>
+          {result ? <SavePdfButton /> : null}
           <Button variant="ghost" size="sm" onClick={onReset}>
             <RotateCcw className="h-4 w-4" aria-hidden />
             {t("newRequest")}
@@ -136,17 +165,17 @@ export function Results({
       </div>
 
       {/* Announce results to assistive tech without re-reading the whole page. */}
-      <p className="sr-only" aria-live="polite" role="status">
+      <p className="no-print sr-only" aria-live="polite" role="status">
         {loading ? t("loading") : result ? t("live", { n: result.recommendations.length }) : ""}
       </p>
 
       {!key ? (
-        <Card className="flex flex-col items-center justify-center p-10 text-center">
+        <Card className="no-print flex flex-col items-center justify-center p-10 text-center">
           <p className="font-semibold text-text">{t("empty.title")}</p>
           <p className="mt-1 max-w-md text-sm text-muted">{t("empty.body")}</p>
         </Card>
       ) : loading ? (
-        <div className="space-y-4">
+        <div className="no-print space-y-4">
           <p className="text-sm text-muted">{t("loading")}</p>
           <Skeleton className="h-28 w-full" />
           <Skeleton className="h-72 w-full" />
@@ -173,19 +202,29 @@ export function Results({
           </Alert>
         )
       ) : result ? (
-        <div className="space-y-5">
-          <ContextCard data={result} />
-          <RecommendationPanel data={result} />
-          {explainQuery ? (
-            <Button variant="secondary" asChild>
-              <Link href={{ pathname: "/chat", query: { q: explainQuery } }} locale={locale}>
-                <MessageSquare className="h-4 w-4" aria-hidden />
-                {t("explainInChat")}
-              </Link>
-            </Button>
-          ) : null}
-        </div>
+        <>
+          <div className="no-print space-y-5">
+            <ContextCard data={result} />
+            <RecommendationPanel data={result} withProvider={false} />
+            {explainQuery ? (
+              <Button variant="secondary" asChild>
+                <Link href={{ pathname: "/chat", query: { q: explainQuery } }} locale={locale}>
+                  <MessageSquare className="h-4 w-4" aria-hidden />
+                  {t("explainInChat")}
+                </Link>
+              </Button>
+            ) : null}
+          </div>
+          <PrintSheet data={result} />
+        </>
       ) : null}
     </section>
+  );
+  // One /explain per result, shared by the cards' Evidence/How-to panels and the print sheet.
+  if (!result) return body;
+  return (
+    <ExplainProvider data={result} ragReady={!!meta?.rag_ready} graphReady={!!meta?.graph_ready}>
+      {body}
+    </ExplainProvider>
   );
 }

@@ -12,16 +12,27 @@ type PracticeImageProps = {
   alt: string;
   /** Localised fallback caption when no image exists. */
   fallbackLabel: string;
+  /** Localised display name shown in the text fallback (U2 item 5). */
+  title?: string;
   className?: string;
   priority?: boolean;
   sizes?: string;
 };
+
+// A 16×9 blurred placeholder in the palette (≈300 bytes): paints at once on
+// slow links, so the card never shows a blank rectangle before the photo.
+const BLUR_DATA_URL =
+  "data:image/svg+xml;charset=utf-8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="9"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3efe8"/><stop offset="1" stop-color="#f3eadf"/></linearGradient></defs><rect width="16" height="9" fill="url(#g)"/></svg>'
+  );
 
 /** One of the 55 practice photos under /public/practices, via next/image. */
 export function PracticeImage({
   practice,
   alt,
   fallbackLabel,
+  title,
   className,
   priority,
   sizes = "(max-width: 768px) 100vw, 480px",
@@ -54,6 +65,7 @@ export function PracticeImage({
           <span className="flex h-12 w-12 items-center justify-center rounded-control bg-surface text-primary shadow-1">
             <Leaf className="h-6 w-6" aria-hidden />
           </span>
+          {title ? <p className="text-base font-semibold text-text">{title}</p> : null}
           <p className="text-xs font-medium uppercase tracking-widest text-muted">{fallbackLabel}</p>
         </div>
       </div>
@@ -62,7 +74,18 @@ export function PracticeImage({
 
   return (
     <div className={cn("relative aspect-[16/9] w-full overflow-hidden bg-surface-2", className)}>
-      <Image src={path} alt={alt} fill className="object-cover" sizes={sizes} priority={priority} onError={onError} />
+      <Image
+        src={path}
+        alt={alt}
+        fill
+        className="object-cover"
+        sizes={sizes}
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
+        placeholder="blur"
+        blurDataURL={BLUR_DATA_URL}
+        onError={onError}
+      />
     </div>
   );
 }

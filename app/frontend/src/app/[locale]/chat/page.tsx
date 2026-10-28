@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { CHAT_NAMESPACES, pickMessages } from "@/i18n/messages";
 import { ChatPanel } from "@/components/chat-panel";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -20,5 +22,10 @@ export default async function ChatPage({
   // `?q=` pre-fills the composer (Advisor → "Explain in chat"); nothing auto-sends.
   const { q } = await searchParams;
   const seed = typeof q === "string" ? q.slice(0, 4000) : null;
-  return <ChatPanel seedMessage={seed} />;
+  const messages = pickMessages(await getMessages(), CHAT_NAMESPACES);
+  return (
+    <NextIntlClientProvider messages={messages}>
+      <ChatPanel seedMessage={seed} />
+    </NextIntlClientProvider>
+  );
 }

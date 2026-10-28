@@ -106,4 +106,17 @@ STRINGS: dict[str, str] = {
     "direction.increase": "increase",
     "direction.reduce": "reduce",
     "direction.improve": "improve",
+    # ------------------------------------------------------------ chat: quick-reply protocol (U2)
+    # Mirrors the UI's chat.protocol.* strings (asserted in tests/test_i18n_sync.py).
+    "protocol.farm_at": "My farm is at {lat}, {lon}.",
+    "protocol.challenge": "My challenge is {family}.",
+    "protocol.objective": "My objective is to {objective}.",
+    "protocol.challenge_note": "Challenge: {family}.",
+    "protocol.objective_note": "Objective: {objective}.",
+    # Shown for am/om free text when no LLM is configured (U2).
+    "clarify.use_advisor": (
+        "I can only read free text in English on this server (the AI text service "
+        "is not configured). Use the choices below, or open the Advisor — every "
+        "step there is in your language."
+    ),
 }

@@ -26,7 +26,7 @@ const data: RecommendResponse = {
     crop_type: null,
     goal_direction: "reduce",
   },
-  recommendations: [{ practice: "Biochar-Inorganic Fertilizer", effect: "~42% reduce in soil loss" }],
+  recommendations: [{ practice: "Biochar-Inorganic Fertilizer", effect: "~42% reduction in soil loss" }],
   details: {
     context: { aez_belt: "Dry Dega" },
     crop_group: null,
@@ -52,7 +52,7 @@ describe("ResultCard", () => {
   it("shows the API's own effect sentence in English with confidence and evidence count", () => {
     renderCard("en");
     expect(screen.getByRole("heading", { name: "Biochar + Inorganic fertilizer" })).toBeInTheDocument();
-    expect(screen.getByText("~42% reduce in soil loss")).toBeInTheDocument();
+    expect(screen.getByText("~42% reduction in soil loss")).toBeInTheDocument();
     expect(screen.getByText(confidenceLabel("medium", "en"))).toBeInTheDocument();
     expect(screen.getByText("17 field observations")).toBeInTheDocument();
     expect(screen.getByText("Top match")).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe("ResultCard", () => {
     const effect = screen.getByText(/~42%/);
     expect(effect.textContent).toMatch(/[ሀ-፿]/);
     // The original API sentence stays reachable for auditing.
-    expect(effect).toHaveAttribute("title", expect.stringContaining("~42% reduce in soil loss"));
+    expect(effect).toHaveAttribute("title", expect.stringContaining("~42% reduction in soil loss"));
     expect(screen.getByText("Biochar-Inorganic Fertilizer")).toHaveAttribute("lang", "en");
   });
 });

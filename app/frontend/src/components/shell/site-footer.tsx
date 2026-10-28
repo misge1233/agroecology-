@@ -10,7 +10,7 @@ export function SiteFooter() {
   const tc = useTranslations("common");
   const health = useApiHealth();
   return (
-    <footer className="mt-12 border-t border-border bg-surface pb-[calc(var(--bottombar-h)+1rem)] md:pb-0">
+    <footer className="no-print mt-12 border-t border-border bg-surface pb-[calc(var(--bottombar-h)+1rem)] md:pb-0">
       <div className="mx-auto grid max-w-content gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <p className="inline-flex items-center gap-2 text-base font-semibold text-text">

@@ -421,9 +421,10 @@ export const sourceModeTooltip = (key: SourceMode, locale: Locale) => SOURCE_MOD
 /**
  * Locale-aware effect sentence built ONLY from API numbers (pct_change,
  * goal_direction, indicator). For `en` it reproduces recommend.py's own
- * sentence ("~42% reduce in soil loss"); for `am`/`om` it is the translation
- * of that same sentence — the magnitude is never recomputed, only rounded
- * the way the engine rounds it.
+ * sentence ("~42% reduction in soil loss", "~12% increase in yield"); for
+ * `am`/`om` it is the translation of that same sentence — the magnitude is
+ * never recomputed, only rounded the way the engine rounds it. `goal_direction`
+ * keeps the API values `reduce` / `increase`; only the wording differs.
  */
 export function effectSentence(
   pctChange: number,
@@ -441,5 +442,5 @@ export function effectSentence(
     const noun = indicatorNoun(indicatorKey, "om");
     return reduce ? `${noun} ~${magnitude}% hir'isuu` : `${noun} ~${magnitude}% dabaluu`;
   }
-  return `~${magnitude}% ${reduce ? "reduce" : "increase"} in ${indicatorKey}`;
+  return `~${magnitude}% ${reduce ? "reduction" : "increase"} in ${indicatorKey}`;
 }

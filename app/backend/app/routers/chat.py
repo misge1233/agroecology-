@@ -20,11 +20,12 @@ async def chat(body: ChatRequest, request: Request):
 
     history = [m.model_dump() for m in body.history]
     last_rec = body.last_recommendation
+    hint = body.hint.model_dump() if body.hint else None
 
     if body.stream:
         async def event_gen():
             async for chunk in stream_chat(
-                body.message, history, last_rec, body.top_n, body.language
+                body.message, history, last_rec, body.top_n, body.language, hint
             ):
                 yield chunk
 
@@ -38,5 +39,5 @@ async def chat(body: ChatRequest, request: Request):
             },
         )
 
-    result = await run_chat(body.message, history, last_rec, body.top_n, body.language)
+    result = await run_chat(body.message, history, last_rec, body.top_n, body.language, hint)
     return JSONResponse(result)

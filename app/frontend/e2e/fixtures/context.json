@@ -1,0 +1,18 @@
+{
+  "lat": 8.38,
+  "lon": 39.37,
+  "aez_belt": "Dry Kolla",
+  "context": {
+    "Rainfall": 755.658,
+    "temp_mean_annual": 20.711,
+    "precip_seasonality": 84.36,
+    "Altitude_r": 1415.835,
+    "slope": 2.34,
+    "soil_clay": 31.7,
+    "land_cover": 30,
+    "lgp_days": 214.0,
+    "soil_ph": 7.7,
+    "soil_soc": 27.9,
+    "aez_belt": "Dry Kolla"
+  }
+}

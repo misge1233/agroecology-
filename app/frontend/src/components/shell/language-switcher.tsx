@@ -30,9 +30,12 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   return (
     <div className={className}>
       <Select value={locale} onValueChange={change}>
-        <SelectTrigger aria-label={t("change")} className="h-9 w-auto min-w-[8.5rem] gap-2">
-          <Languages className="h-4 w-4 text-muted" aria-hidden />
-          <SelectValue />
+        {/* Icon-only on phones (0a: the full trigger pushed the header past 390 px). */}
+        <SelectTrigger aria-label={t("change")} className="h-9 w-10 justify-center gap-2 px-0 sm:w-auto sm:min-w-[8.5rem] sm:justify-between sm:px-3 [&>svg:last-child]:hidden sm:[&>svg:last-child]:block">
+          <Languages className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+          <span className="hidden truncate sm:inline">
+            <SelectValue />
+          </span>
         </SelectTrigger>
         <SelectContent>
           {LOCALES.map((l) => (

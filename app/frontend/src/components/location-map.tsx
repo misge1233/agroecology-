@@ -1,7 +1,7 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 
@@ -42,15 +42,19 @@ export default function LocationMap({
   lon,
   onPick,
   pinLabel,
+  onTiles,
 }: {
   lat: number | null;
   lon: number | null;
   onPick: (lat: number, lon: number) => void;
   /** Accessible name for the marker, e.g. "Pin at 8.38, 39.37". */
   pinLabel: string;
+  /** Tile health (U2 item 5): "failed" once tiles error without any success. */
+  onTiles?: (status: "ok" | "failed") => void;
 }) {
   const hasPoint = lat != null && lon != null;
   const center: [number, number] = hasPoint ? [lat as number, lon as number] : ETHIOPIA_CENTER;
+  const tileStats = useRef({ ok: 0, failed: 0 });
 
   return (
     <MapContainer
@@ -66,6 +70,16 @@ export default function LocationMap({
         // Only the visible tiles on slow links: no off-screen buffer, load after pan/zoom settles.
         keepBuffer={0}
         updateWhenIdle
+        eventHandlers={{
+          tileload: () => {
+            tileStats.current.ok += 1;
+            if (tileStats.current.ok === 1) onTiles?.("ok");
+          },
+          tileerror: () => {
+            tileStats.current.failed += 1;
+            if (tileStats.current.ok === 0 && tileStats.current.failed >= 2) onTiles?.("failed");
+          },
+        }}
       />
       <ClickHandler onPick={onPick} />
       {hasPoint && (

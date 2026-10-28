@@ -131,4 +131,24 @@ STRINGS: dict[str, str] = {
     "aez.Wet Kolla": "Gammoojjii roobaa",
     "aez.Wet Weyna Dega": "Badda-daree roobaa",
     "aez.Wet Wurch": "Baddaa qorraa roobaa",
+    # ------------------------------------------------------------ chat: quick-reply protocol (U2)
+    "protocol.farm_at": "Qonni koo {lat}, {lon} irra jira.",
+    "protocol.challenge": "Rakkoon koo {family} dha.",
+    "protocol.objective": "Kaayyoon koo {objective} dha.",
+    "protocol.challenge_note": "Rakkoo: {family}.",
+    "protocol.objective_note": "Kaayyoo: {objective}.",
+    "clarify.use_advisor": (
+        "Sarvarii kana irratti barreeffama bilisaa Afaan Ingilizii qofaan dubbisuu nan danda'a "
+        "(tajaajilli barreeffama AI hin qindoofne). Filannoo armaan gadii fayyadamaa, yookiin "
+        "Gorsaa banaa — achitti tarkaanfiin hundi afaan keessaniin."
+    ),
+    "indicator.yield": "oomisha",
+    # UI objective labels (mirror src/i18n/glossary.ts INDICATORS; read back from typed chips)
+    "indicator_label.yield": "Oomisha midhaanii dabaluu",
+    "indicator_label.biomass yield": "Baayoomaasii / marga dabaluu",
+    "indicator_label.income": "Galii dabaluu",
+    "indicator_label.water use efficiency": "Bu'a qabeessummaa itti fayyadama bishaanii fooyyessuu",
+    "indicator_label.SOM content": "Qabiyyee orgaanikii biyyee fooyyessuu",
+    "indicator_label.soil loss": "Dhiqama biyyee hir'isuu",
+    "indicator_label.runoff": "Yaa'insa bishaanii hir'isuu",
 }

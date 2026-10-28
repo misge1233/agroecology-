@@ -1,0 +1,21 @@
+{
+  "practice_family": "Erosion control and water management",
+  "indicator": "soil loss",
+  "lat": 8.38,
+  "lon": 39.37,
+  "place_name": null,
+  "crop_type": null,
+  "missing": [],
+  "inferred": [],
+  "confidence": {
+    "practice_family": "low",
+    "indicator": "medium",
+    "location": "high"
+  },
+  "is_followup": false,
+  "wants_advice": true,
+  "geocode_source": "coordinates",
+  "source": "rules",
+  "llm_used": false,
+  "is_complete": true
+}

@@ -1,17 +1,34 @@
 "use client";
 
-import { useEffect, useId, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { preconnect } from "react-dom";
 import dynamic from "next/dynamic";
-import { Loader2, LocateFixed, MapPin, Search } from "lucide-react";
+import { Loader2, LocateFixed, Map as MapIcon, MapPin, Search } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { fetchGeocode } from "@/lib/api";
 import type { Bounds, GeocodeResponse } from "@/lib/types";
 import { aezName } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { inBounds } from "./use-zone";
+
+// Phone detection as an external store (F-1). The server snapshot is `null`
+// ("unknown") so the first client render — hydration — mounts no map at all;
+// desktops mount it right after, phones wait for a tap (U2 0d: the first map
+// tile was the LCP element of step 1).
+const PHONE_QUERY = "(max-width: 767px)";
+function subscribePhone(onChange: () => void) {
+  const mq = window.matchMedia(PHONE_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+const getPhone = () => window.matchMedia(PHONE_QUERY).matches;
+const getPhoneServer = (): boolean | null => null;
+function useIsPhone(): boolean | null {
+  return useSyncExternalStore(subscribePhone, getPhone, getPhoneServer);
+}
 
 function MapLoading() {
   const t = useTranslations("advisor.location");
@@ -206,18 +223,25 @@ export interface LocationPickerProps {
   onChange: (lat: number | null, lon: number | null) => void;
   zone: { belt: string | null; loading: boolean };
   mapClassName?: string;
+  /** Mount the map immediately regardless of viewport (the chat sheet is opened on purpose). */
+  eagerMap?: boolean;
 }
 
 /** Map + coordinates + place search + device location. Shared by Advisor and Chat. */
-export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName }: LocationPickerProps) {
-  // The map's tiles are the LCP element of step 1: open the connections early.
-  for (const host of ["a", "b", "c"]) preconnect(`https://${host}.tile.openstreetmap.org`);
+export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName, eagerMap = false }: LocationPickerProps) {
   const t = useTranslations("advisor.location");
   const ta = useTranslations("a11y");
   const locale = useLocale() as Locale;
   const format = useFormatter();
+  const isPhone = useIsPhone();
+  const [mapRequested, setMapRequested] = useState(false);
+  const [tiles, setTiles] = useState<"unknown" | "ok" | "failed">("unknown");
   const [gps, setGps] = useState<{ status: "idle" | "locating" | "error"; message?: string }>({ status: "idle" });
   const hasPoint = lat != null && lon != null;
+  // Desktop: as soon as the viewport is known. Phone: on request, or when a pin exists.
+  const showMap = eagerMap || mapRequested || isPhone === false || (isPhone === true && hasPoint);
+  // The map's tiles are the LCP element of step 1: open the connections only when it will mount.
+  if (showMap) for (const host of ["a", "b", "c"]) preconnect(`https://${host}.tile.openstreetmap.org`);
   const fmt = (n: number) => format.number(n, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
   const pinLabel = hasPoint ? t("pinAt", { lat: fmt(lat as number), lon: fmt(lon as number) }) : t("noPin");
 
@@ -248,10 +272,30 @@ export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName 
       <div
         role="region"
         aria-label={t("mapLabel")}
-        className={mapClassName ?? "h-64 overflow-hidden rounded-card border border-border sm:h-80"}
+        className={mapClassName ?? "h-56 overflow-hidden rounded-card border border-border sm:h-80"}
       >
-        <LocationMap lat={lat} lon={lon} onPick={(la, lo) => onChange(la, lo)} pinLabel={pinLabel} />
+        {showMap ? (
+          <LocationMap lat={lat} lon={lon} onPick={(la, lo) => onChange(la, lo)} pinLabel={pinLabel} onTiles={setTiles} />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-surface-2 px-6 text-center">
+            <MapIcon className="h-8 w-8 text-muted" aria-hidden />
+            {isPhone ? (
+              <>
+                <p className="max-w-xs text-sm text-muted">{t("mapDeferred")}</p>
+                <Button type="button" variant="outline" size="sm" onClick={() => setMapRequested(true)}>
+                  <MapPin className="h-4 w-4" aria-hidden />
+                  {t("showMap")}
+                </Button>
+              </>
+            ) : (
+              <p className="text-sm text-muted">{t("mapLoading")}</p>
+            )}
+          </div>
+        )}
       </div>
+      {tiles === "failed" ? (
+        <Alert variant="warning" title={t("tilesFailed")} />
+      ) : null}
       <p className="sr-only">{ta("pinSetByKeyboard")}</p>
 
       <div className="grid gap-4 md:grid-cols-2">

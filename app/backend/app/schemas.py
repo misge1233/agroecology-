@@ -85,6 +85,20 @@ class ChatMessage(BaseModel):
     content: str
 
 
+class ChatSlotsHint(BaseModel):
+    """Structured values behind a quick-reply chip (U2, additive).
+
+    The chat shows the chip's sentence in the UI language; the backend reads the
+    canonical data-contract values from here instead of parsing translated text.
+    """
+
+    practice_family: PracticeFamily | None = None
+    indicator: Indicator | None = None
+    lat: float | None = None
+    lon: float | None = None
+    crop_type: str | None = Field(default=None, max_length=200)
+
+
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=4000)
     history: list[ChatMessage] = Field(default_factory=list)
@@ -95,6 +109,8 @@ class ChatRequest(BaseModel):
     last_recommendation: dict[str, Any] | None = None
     #: UI language (U1) — see ExplainRequest.language.
     language: Literal["en", "am", "om"] = "en"
+    # U2: structured slots behind a quick-reply chip (optional, additive).
+    hint: ChatSlotsHint | None = None
 
     @field_validator("history")
     @classmethod

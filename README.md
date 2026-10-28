@@ -58,11 +58,18 @@ python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 
-# Frontend
+# Frontend (trilingual UI: /en, /am, /om — the proxy picks the language from
+# the agro-locale cookie, then Accept-Language, then English)
 cd app/frontend
 cp .env.example .env.local
-npm install && npm run dev
+npm ci && npm run dev            # http://localhost:3000/en
+npm test && npm run lint         # vitest (i18n guards included) + eslint
+npm run build && npm run e2e     # production build + Playwright end-to-end (mocked API)
 ```
+
+Optional: set `OPENAI_API_KEY` in `app/backend/.env` to let the chat read free text
+in Amharic / Afaan Oromoo (one validated LLM call); without it the chat guides those
+users through the quick-reply chips and the Advisor, which need no model.
 
 Docker: `docker compose up --build` from the repo root (rasters mounted read-only).
 

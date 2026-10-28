@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { API_BASE, postExplain } from "./api";
+import { API_BASE, RETRY_DELAYS_MS, postExplain, postRecommend, streamChat } from "./api";
+import { _resetRetryForTests } from "./retry-store";
 import type { ExplainResponse, RecommendResponse } from "./types";
 
 const recommendation = {
@@ -10,7 +11,7 @@ const recommendation = {
     indicator: "soil loss",
     goal_direction: "decrease",
   },
-  recommendations: [{ practice: "Mulching", effect: "~42% decrease in soil loss" }],
+  recommendations: [{ practice: "Mulching", effect: "~42% reduction in soil loss" }],
   details: { context: {}, confidence: "medium", ranked: [], n_candidates: 12, note: "" },
 } as unknown as RecommendResponse;
 
@@ -48,6 +49,74 @@ const explainResponse: ExplainResponse = {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
+  _resetRetryForTests();
+});
+
+const request = {
+  lat: 8.38,
+  lon: 39.37,
+  practice_family: "Erosion control and water management",
+  indicator: "soil loss",
+  crop_type: null,
+  top_n: 3,
+};
+
+describe("fetchWithRetry (U2 low-bandwidth)", () => {
+  it("retries a network failure with backoff and then succeeds", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError("Failed to fetch"))
+      .mockResolvedValueOnce(new Response(JSON.stringify(recommendation), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const pending = postRecommend(request);
+    await vi.advanceTimersByTimeAsync(RETRY_DELAYS_MS[0]);
+    expect(await pending).toEqual(recommendation);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("retries a 503 but gives up after the bounded attempts", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockImplementation(async () => new Response("down", { status: 503 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const pending = postRecommend(request).catch((e: Error) => e);
+    await vi.advanceTimersByTimeAsync(RETRY_DELAYS_MS[0] + RETRY_DELAYS_MS[1] + 10);
+    const result = await pending;
+    expect(result).toBeInstanceOf(Error);
+    expect(fetchMock).toHaveBeenCalledTimes(RETRY_DELAYS_MS.length + 1);
+  });
+
+  it("never retries a 4xx (the request is wrong, not the link)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ error: { code: "recommend_error", message: "No field evidence" } }), { status: 422 })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(postRecommend(request)).rejects.toThrow("No field evidence");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("streamChat", () => {
+  it("sends the language and the quick-reply hint (U2)", async () => {
+    const body = "data: " + JSON.stringify({ type: "done" }) + "\n\n";
+    const fetchMock = vi.fn().mockResolvedValue(new Response(body, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const events = [];
+    for await (const ev of streamChat({
+      message: "ፈተናዬ የአፈር መሸርሸር መከላከልና የውሃ አያያዝ ነው።",
+      history: [],
+      language: "am",
+      hint: { practice_family: "Erosion control and water management" },
+    })) {
+      events.push(ev);
+    }
+    expect(events).toEqual([{ type: "done" }]);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(sent.language).toBe("am");
+    expect(sent.hint).toEqual({ practice_family: "Erosion control and water management" });
+    expect(sent.stream).toBe(true);
+  });
 });
 
 describe("postExplain", () => {

@@ -1,20 +1,21 @@
 {
   "url": "http://localhost:3005/en/advisor",
   "lighthouseVersion": "13.5.0",
-  "fetchTime": "2026-10-25T22:57:08.468Z",
+  "fetchTime": "2026-10-27T21:39:36.939Z",
   "formFactor": "mobile",
   "scores": {
-    "performance": 74,
+    "performance": 99,
     "accessibility": 100,
-    "best-practices": 77
+    "best-practices": 100
   },
   "metrics": {
     "first-contentful-paint": "1.1\u00a0s",
-    "largest-contentful-paint": "9.6\u00a0s",
-    "total-blocking-time": "130\u00a0ms",
+    "largest-contentful-paint": "1.8\u00a0s",
+    "total-blocking-time": "40\u00a0ms",
     "cumulative-layout-shift": "0",
-    "speed-index": "2.3\u00a0s"
+    "speed-index": "1.1\u00a0s"
   },
+  "lcpElement": "<p class=\"mt-1 max-w-2xl text-muted\">",
   "failingAudits": [
     {
       "category": "performance",
@@ -27,55 +28,14 @@
       "category": "performance",
       "id": "largest-contentful-paint",
       "title": "Largest Contentful Paint",
-      "score": 0,
-      "displayValue": "9.6\u00a0s"
-    },
-    {
-      "category": "performance",
-      "id": "total-blocking-time",
-      "title": "Total Blocking Time",
-      "score": 0.96,
-      "displayValue": "130\u00a0ms"
-    },
-    {
-      "category": "performance",
-      "id": "speed-index",
-      "title": "Speed Index",
-      "score": 0.99,
-      "displayValue": "2.3\u00a0s"
-    },
-    {
-      "category": "performance",
-      "id": "cache-insight",
-      "title": "Use efficient cache lifetimes",
-      "score": 0,
-      "displayValue": "Est savings of 30\u00a0KiB"
-    },
-    {
-      "category": "performance",
-      "id": "image-delivery-insight",
-      "title": "Improve image delivery",
-      "score": 0,
-      "displayValue": "Est savings of 33\u00a0KiB",
-      "nodes": [
-        "<img alt=\"\" src=\"https://c.tile.openstreetmap.org/6/38/30.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(-118px, 33px, 0px);\">",
-        "<img alt=\"\" src=\"https://c.tile.openstreetmap.org/6/39/29.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(138px, -223px, 0px);\">",
-        "<img alt=\"\" src=\"https://b.tile.openstreetmap.org/6/38/29.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(-118px, -223px, 0px);\">",
-        "<img alt=\"\" src=\"https://a.tile.openstreetmap.org/6/39/30.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(138px, 33px, 0px);\">"
-      ]
-    },
-    {
-      "category": "performance",
-      "id": "lcp-discovery-insight",
-      "title": "LCP request discovery",
-      "score": 0,
-      "displayValue": null
+      "score": 0.98,
+      "displayValue": "1.8\u00a0s"
     },
     {
       "category": "performance",
       "id": "legacy-javascript-insight",
       "title": "Legacy JavaScript",
-      "score": 0,
+      "score": 0.5,
       "displayValue": "Est savings of 43\u00a0KiB"
     },
     {
@@ -90,35 +50,35 @@
       "id": "render-blocking-insight",
       "title": "Render-blocking requests",
       "score": 0,
-      "displayValue": "Est savings of 250\u00a0ms"
+      "displayValue": "Est savings of 310\u00a0ms"
     },
     {
       "category": "performance",
       "id": "interactive",
       "title": "Time to Interactive",
-      "score": 0.29,
-      "displayValue": "9.6\u00a0s"
+      "score": 0.57,
+      "displayValue": "6.6\u00a0s"
     },
     {
       "category": "performance",
       "id": "max-potential-fid",
       "title": "Max Potential First Input Delay",
-      "score": 0.91,
-      "displayValue": "120\u00a0ms"
+      "score": 0.98,
+      "displayValue": "80\u00a0ms"
     },
     {
       "category": "performance",
       "id": "unused-css-rules",
       "title": "Reduce unused CSS",
       "score": 0,
-      "displayValue": "Est savings of 21\u00a0KiB"
+      "displayValue": "Est savings of 18\u00a0KiB"
     },
     {
       "category": "performance",
       "id": "unused-javascript",
       "title": "Reduce unused JavaScript",
       "score": 0,
-      "displayValue": "Est savings of 308\u00a0KiB"
+      "displayValue": "Est savings of 294\u00a0KiB"
     },
     {
       "category": "performance",
@@ -126,26 +86,6 @@
       "title": "Page prevented back/forward cache restoration",
       "score": 0,
       "displayValue": "2 failure reasons"
-    },
-    {
-      "category": "best-practices",
-      "id": "is-on-https",
-      "title": "Does not use HTTPS",
-      "score": 0,
-      "displayValue": "2 insecure requests found"
-    },
-    {
-      "category": "best-practices",
-      "id": "image-size-responsive",
-      "title": "Serves images with low resolution",
-      "score": 0,
-      "displayValue": null,
-      "nodes": [
-        "<img alt=\"\" src=\"https://a.tile.openstreetmap.org/6/39/30.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(138px, 33px, 0px);\">",
-        "<img alt=\"\" src=\"https://b.tile.openstreetmap.org/6/38/29.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(-118px, -223px, 0px);\">",
-        "<img alt=\"\" src=\"https://c.tile.openstreetmap.org/6/38/30.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(-118px, 33px, 0px);\">",
-        "<img alt=\"\" src=\"https://c.tile.openstreetmap.org/6/39/29.png\" class=\"leaflet-tile leaflet-tile-loaded\" style=\"width: 256px; height: 256px; transform: translate3d(138px, -223px, 0px);\">"
-      ]
     }
   ]
 }

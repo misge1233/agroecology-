@@ -22,12 +22,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
 
       <section className="mt-8 space-y-6">
         <Card>
-          <CardHeader><CardTitle>{t("what.title")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">{t("what.title")}</CardTitle></CardHeader>
           <CardContent><p className="text-sm leading-relaxed text-muted">{t("what.body")}</p></CardContent>
         </Card>
 
         <Card id="confidence">
-          <CardHeader><CardTitle>{t("confidence.title")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">{t("confidence.title")}</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
             <p className="text-muted">{t("confidence.body")}</p>
             <ul className="space-y-2">
@@ -39,7 +39,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         </Card>
 
         <Card id="sources">
-          <CardHeader><CardTitle>{t("sources.title")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">{t("sources.title")}</CardTitle></CardHeader>
           <CardContent>
             <ul className="list-disc space-y-2 pl-5 text-sm text-muted">
               <li>{t("sources.evidence")}</li>
@@ -51,12 +51,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>{t("authors.title")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">{t("authors.title")}</CardTitle></CardHeader>
           <CardContent><p className="text-sm text-muted">{t("authors.body")}</p></CardContent>
         </Card>
 
         <Card id="licence">
-          <CardHeader><CardTitle>{t("licence.title")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">{t("licence.title")}</CardTitle></CardHeader>
           <CardContent><p className="text-sm text-muted">{t("licence.body")}</p></CardContent>
         </Card>
       </section>

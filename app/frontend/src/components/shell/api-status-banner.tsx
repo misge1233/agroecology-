@@ -1,19 +1,32 @@
 "use client";
 
-import { WifiOff } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { checkHealth, useApiHealth } from "@/lib/health";
+import { useRetrying } from "@/lib/retry-store";
 import { Button } from "@/components/ui/button";
 
-/** Danger banner driven by /health — the one legitimate use of danger red. */
+/** Danger banner driven by /health — the one legitimate use of danger red.
+ *  Below it, a quiet strip while an API call is being retried (U2 item 5). */
 export function ApiStatusBanner() {
   const t = useTranslations("status");
   const health = useApiHealth();
-  if (health.status !== "down") return null;
+  const retrying = useRetrying();
+  if (health.status !== "down") {
+    if (!retrying) return null;
+    return (
+      <div role="status" className="no-print border-b border-warning/50 bg-warning-soft px-4 py-1.5 text-sm text-text">
+        <div className="mx-auto flex max-w-content items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin text-warning-text" aria-hidden />
+          {t("retrying")}
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       role="alert"
-      className="border-b border-danger/40 bg-danger-soft px-4 py-2 text-sm text-text"
+      className="no-print border-b border-danger/40 bg-danger-soft px-4 py-2 text-sm text-text"
     >
       <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-2">
         <span className="inline-flex items-center gap-2">

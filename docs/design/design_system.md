@@ -156,8 +156,36 @@ outline / ghost / danger; sm / md / lg; loading), `Card`, `Badge`, `Chip`,
 |---|---|---|
 | WCAG AA contrast, every text/background pair | all ≥ 4.5:1 after the derived `*-text` tokens (table above) | this file |
 | CVD safety of the 6-step chart palette | min CIE76 ΔE 15.6 (light) / 17.5 (dark) under protan/deutan/tritan simulation | this file |
-| axe-core 4.14 on home, advisor results (en + am), chat | 0 violations | `lighthouse/axe-*.json` |
-| Lighthouse 13.5 (mobile) on `/en`, `/en/advisor`, results, `/en/chat` | A11y 100 everywhere; Perf 74–89; BP 77–81 (see notes) | `lighthouse/README.md` |
+| axe-core 4.14 on home, advisor step 1, results (en + am), chat, about | 0 violations (now a Playwright test on every run) | `app/frontend/e2e/advisor-flow.spec.ts` |
+| Lighthouse 13.5 (mobile) on `/en`, `/en/advisor`, results, `/en/chat` | U2: A11y 100, Best practices 100 everywhere; Perf 93–99 (results 83–97 across runs) — U1 was 74–89 | `lighthouse/README.md` |
 | Screenshots light/dark × phone/desktop × en/am/om | 13 PNGs | `screenshots/` |
 | Reduced motion | global `prefers-reduced-motion` block; only CSS transitions ≤ 200 ms and one 180 ms keyframe | `globals.css` |
 | Focus ring | 2 px `--ring` outline with 2 px offset on every `:focus-visible` | `globals.css` |
+
+## U2 additions (27–28 Oct 2026)
+
+- **Typography is fully self-hosted.** IBM Plex Sans (variable, latin + italic) joins
+  Noto Sans Ethiopic under `app/frontend/src/app/fonts/` with both OFL licences; no
+  Google Fonts request is made by a production build. Weights used: 400 / 500 / 600.
+- **Effect sentence grammar.** The engine's sentence is now "~42% reduction in soil
+  loss" / "~12% increase in yield" (`recommend.py`, one f-string); `goal_direction`
+  still carries `reduce` / `increase`. The glossary frame for en mirrors it; am/om
+  frames unchanged.
+- **Chat.** Turns carry a role label and a timestamp; the assistant turn shows an
+  explicit state (thinking → scoring → writing → done, or an error with "Send again");
+  result cards are the Advisor's `ResultCard` + compact `ContextCard` + source badge;
+  quick replies are chips (challenge, objective, map / device location) that send a
+  sentence in the UI language plus a structured hint; "Open in Advisor" deep-links the
+  scored query.
+- **Print sheet** (`advisor/print-sheet.tsx`): black on white, 11 pt, one column; the
+  request, the context table, each ranked practice with the model's effect sentence,
+  confidence + meaning, field-observation count, evidence-base line and sources, the
+  source badge text, the disclaimer, the generation date and the share link. The app
+  chrome and the interactive results are `no-print`.
+- **Low bandwidth.** Blurred 16×9 placeholder in the palette for practice photos and a
+  text fallback; bounded retry (600 ms, 1.8 s) with a warning-toned "retrying…" strip;
+  map deferred on phones behind "Show the map"; tile failure → warning alert, inputs
+  stay usable.
+- **Phone width.** The header's language switcher is icon-only below `sm` (the full
+  trigger pushed the header past 390 px — the U1 review's item 0a); every screen is
+  guarded at 360/390/412/768/1440 px by the Playwright overflow test.

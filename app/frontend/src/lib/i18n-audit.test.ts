@@ -32,7 +32,8 @@ const USER_FACING_ATTRS = new Set([
 /** Text that is punctuation, symbols, numbers or layout only — never a "string". */
 const NON_WORD = /^[\s\d.,:;!?%°×#()[\]{}+\-–—/|·•●…©&→←↑↓'"“”‘’]*$/;
 /** Deliberately literal: brand names and protocol tokens. */
-const ALLOWLIST = new Set(["AgroAdvisor-ET", "WOCAT", "CIAT", "ERA", "GARDIAN", "404", "Agroecology+"]);
+// "blur" is next/image's placeholder MODE, not a string a reader sees.
+const ALLOWLIST = new Set(["AgroAdvisor-ET", "WOCAT", "CIAT", "ERA", "GARDIAN", "404", "Agroecology+", "blur"]);
 
 function hardCodedStrings(file: string): string[] {
   const source = ts.createSourceFile(file, fs.readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);

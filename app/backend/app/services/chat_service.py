@@ -18,6 +18,7 @@ import re
 from typing import Any, AsyncIterator
 
 from app.config import get_settings
+from app.services import intent_llm
 from app.services import recommender_service as svc
 from app.services.openai_chat import (
     OPENAI_CHAT_COMPLETIONS_URL,
@@ -162,11 +163,15 @@ async def stream_chat(
     last_recommendation: dict[str, Any] | None = None,
     top_n: int = 1,
     language: str = "en",
+    hint: dict[str, Any] | None = None,
 ) -> AsyncIterator[str]:
     """SSE async generator. Emits slots / token / recommendation / done / error.
 
     ``language`` (U1) selects the catalog for every deterministic text and adds
-    a "Reply in …" line to the LLM prompts; nothing else changes.
+    a "Reply in …" line to the LLM prompts. ``hint`` (U2) carries the
+    structured values behind a quick-reply chip; Amharic / Afaan Oromoo free
+    text goes through one validated LLM reading when a key is configured and
+    otherwise steers the user to the chips / Advisor.
     """
     if _is_social_ack(message):
         async for chunk in _stream_text(_social_reply(bool(last_recommendation), language)):
@@ -179,7 +184,14 @@ async def stream_chat(
         history,
         last_recommendation,
         allow_network_geocode=False,
+        hint=hint,
     )
+    steer_to_advisor = False
+    if intent_llm.needs_llm(message, language, slots):
+        if settings.openai_api_key:
+            slots = await intent_llm.enrich_with_llm(slots, message, language, settings)
+        else:
+            steer_to_advisor = True
     yield _evt({"type": "slots", "data": slots.to_event()})
 
     # Prior result still valid (no slot changes): follow-ups / chitchat / repeat asks.
@@ -200,7 +212,10 @@ async def stream_chat(
 
     if not slots.is_complete:
         # Never invent agronomic advice when evidence can't be scored yet.
-        async for chunk in _stream_text(clarification_message(slots, language)):
+        text = clarification_message(slots, language)
+        if steer_to_advisor:
+            text = t(language, "clarify.use_advisor") + "\n\n" + text
+        async for chunk in _stream_text(text):
             yield chunk
         return
 
@@ -374,13 +389,14 @@ async def run_chat(
     last_recommendation: dict[str, Any] | None = None,
     top_n: int = 1,
     language: str = "en",
+    hint: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Non-streaming turn — aggregates the SSE stream into a single JSON payload."""
     reply = ""
     recommendation: dict[str, Any] | None = None
     slots: dict[str, Any] | None = None
     error: str | None = None
-    async for chunk in stream_chat(message, history, last_recommendation, top_n, language):
+    async for chunk in stream_chat(message, history, last_recommendation, top_n, language, hint):
         raw = chunk[len("data: ") :].strip()
         if not raw:
             continue

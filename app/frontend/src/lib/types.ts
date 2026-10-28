@@ -151,6 +151,15 @@ export interface ExplainRequestPayload {
   language?: ApiLanguage;
 }
 
+/** Structured values behind a quick-reply chip (U2, additive on ChatRequest). */
+export interface ChatSlotsHint {
+  practice_family?: string | null;
+  indicator?: string | null;
+  lat?: number | null;
+  lon?: number | null;
+  crop_type?: string | null;
+}
+
 export interface ChatRequestPayload {
   message: string;
   history: ChatMessage[];
@@ -158,6 +167,7 @@ export interface ChatRequestPayload {
   stream?: boolean;
   top_n?: number;
   language?: ApiLanguage;
+  hint?: ChatSlotsHint | null;
 }
 
 export interface ContextResponse {
@@ -185,6 +195,9 @@ export interface ChatSlotsEvent {
   is_followup?: boolean;
   wants_advice?: boolean;
   geocode_source?: string | null;
+  /** "rules" | "protocol" | "hint" | "llm" — where the decisive values came from (U2). */
+  source?: string | null;
+  llm_used?: boolean;
 }
 
 export interface ChatStreamEvent {

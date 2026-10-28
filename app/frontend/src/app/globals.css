@@ -230,3 +230,138 @@ h4 {
 .rise-in {
   animation: rise 180ms ease-out both;
 }
+
+/* ------------------------------------------------------------------ print (U2)
+   "Save as PDF" / Ctrl+P prints the advisory sheet only: the app chrome and
+   the interactive results view are hidden, the sheet (hidden on screen) is
+   shown. The sheet carries the same honesty copy as the screen. */
+.print-only {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  main {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+.print-sheet {
+  max-width: 180mm;
+  margin: 0 auto;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: #000;
+}
+
+.print-sheet h1 {
+  font-size: 18pt;
+  margin: 2mm 0 1mm;
+}
+
+.print-sheet h2 {
+  font-size: 13pt;
+  margin: 6mm 0 2mm;
+  border-bottom: 1px solid #999;
+  padding-bottom: 1mm;
+}
+
+.print-sheet h3 {
+  font-size: 12pt;
+  margin: 4mm 0 1mm;
+}
+
+.print-sheet p {
+  margin: 1mm 0;
+}
+
+.print-sheet__brand {
+  font-size: 9pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #444;
+}
+
+.print-sheet__meta,
+.print-sheet__muted {
+  color: #444;
+  font-size: 10pt;
+}
+
+.print-sheet__dl {
+  display: grid;
+  grid-template-columns: 32mm 1fr;
+  gap: 1mm 4mm;
+  margin: 0;
+}
+
+.print-sheet__dl dt {
+  color: #444;
+}
+
+.print-sheet__dl dd {
+  margin: 0;
+}
+
+.print-sheet__table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 10pt;
+}
+
+.print-sheet__table th,
+.print-sheet__table td {
+  text-align: left;
+  padding: 1mm 3mm 1mm 0;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.print-sheet__practices {
+  padding-left: 0;
+  list-style: none;
+}
+
+.print-sheet__practices > li {
+  break-inside: avoid;
+  padding: 2mm 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.print-sheet__sources {
+  margin: 1mm 0 0;
+  padding-left: 5mm;
+  font-size: 9.5pt;
+}
+
+.print-sheet__footer {
+  margin-top: 8mm;
+  padding-top: 2mm;
+  border-top: 1px solid #999;
+  font-size: 9pt;
+  color: #333;
+}
+
+.print-sheet__link {
+  word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 8.5pt;
+}

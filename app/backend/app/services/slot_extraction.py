@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import asdict, dataclass, field
+from functools import lru_cache
 from typing import Any
 
 from app.services.geocode import GeocodeHit, geocode_text
@@ -16,7 +17,7 @@ from app.services.recommender_service import (
     PRACTICE_FAMILIES,
     is_supported_family_indicator,
 )
-from app.i18n import t, term
+from app.i18n import LANGUAGES, catalog, t, term
 
 # Phrase → indicator (longer keys preferred).
 INDICATOR_PHRASES: list[tuple[str, str]] = [
@@ -183,6 +184,10 @@ class ChatSlots:
     is_followup: bool = False
     wants_advice: bool = False
     geocode_source: str | None = None
+    #: Where the decisive values came from (U2): "rules" | "protocol" | "hint" | "llm".
+    source: str | None = None
+    #: True when the Amharic/Afaan Oromoo LLM pass contributed (U2).
+    llm_used: bool = False
 
     @property
     def is_complete(self) -> bool:
@@ -305,6 +310,163 @@ def _crop_from_text(text: str) -> str | None:
     return None
 
 
+# ----------------------------------------------------------------- U2: protocol
+# Quick-reply chips send a short sentence in the UI language ("My challenge is
+# X.", "ፈተናዬ X ነው።", "Rakkoon koo X dha."). The templates live in the backend
+# catalogs (``protocol.*``) and mirror the UI's ``chat.protocol.*`` strings; the
+# stated value is mapped back to the canonical English data-contract term.
+_PROTOCOL_KEYS: tuple[str, ...] = (
+    "challenge",
+    "objective",
+    "farm_at",
+    "challenge_note",
+    "objective_note",
+)
+_SENTENCE_STOP = r"[.።!?]"
+
+
+@lru_cache(maxsize=1)
+def _protocol_regexes() -> tuple[tuple[str, str, re.Pattern[str]], ...]:
+    out: list[tuple[str, str, re.Pattern[str]]] = []
+    for lang in LANGUAGES:
+        for key in _PROTOCOL_KEYS:
+            template = catalog(lang).get(f"protocol.{key}")
+            if not template:
+                continue
+            body = re.escape(template.rstrip(".።").strip())
+            # Coordinates get a numeric group (a lazy ".+?" would stop at the
+            # decimal point); every other placeholder is free text.
+            body = re.sub(
+                r"\\\{(\w+)\\\}",
+                lambda m: (
+                    f"(?P<{m.group(1)}>-?\\d{{1,2}}(?:\\.\\d+)?)(?!\\d|\\.\\d)"
+                    if m.group(1) in ("lat", "lon")
+                    else f"(?P<{m.group(1)}>.+?)"
+                ),
+                body,
+            )
+            # Anchored at the start of the message or of a sentence, so the
+            # combined "farm at … . Challenge: … . Objective: … ." form parses.
+            pattern = rf"(?:^|(?<={_SENTENCE_STOP}))\s*{body}\s*(?={_SENTENCE_STOP}|$)"
+            out.append((lang, key, re.compile(pattern, re.I | re.S)))
+    return tuple(out)
+
+
+def _norm_ws(text: str) -> str:
+    return re.sub(r"\s+", " ", (text or "")).strip()
+
+
+def _family_from_stated(stated: str) -> str | None:
+    """Canonical family for a stated name in any of the three languages."""
+    s = _norm_ws(stated).lower()
+    if not s:
+        return None
+    for fam in PRACTICE_FAMILIES:
+        if s == fam.lower():
+            return fam
+    translated: list[tuple[str, str]] = []
+    for lang in LANGUAGES:
+        if lang == "en":
+            continue
+        for fam in PRACTICE_FAMILIES:
+            name = catalog(lang).get(f"family.{fam}")
+            if name:
+                translated.append((name.lower(), fam))
+    translated.sort(key=lambda kv: -len(kv[0]))
+    for name, fam in translated:
+        if name == s or name in s:
+            return fam
+    fam, conf = _family_from_text(stated)
+    return fam if fam and conf == "high" else None
+
+
+def _indicator_from_stated(stated: str) -> str | None:
+    """Canonical indicator for a stated objective in any of the three languages."""
+    s = _norm_ws(stated).lower()
+    if not s:
+        return None
+    key, conf = _indicator_from_text(stated)
+    if key and conf in ("high", "medium"):
+        return key
+    # UI labels first (exact), then the nouns, longest first ("biomass yield" before "yield").
+    translated: list[tuple[str, str]] = []
+    for lang in LANGUAGES:
+        if lang == "en":
+            continue
+        for ind in INDICATORS:
+            for kind in ("indicator_label", "indicator"):
+                word = catalog(lang).get(f"{kind}.{ind}")
+                if word:
+                    translated.append((word.lower(), ind))
+    translated.sort(key=lambda kv: -len(kv[0]))
+    for word, ind in translated:
+        if word == s or word in s:
+            return ind
+    return None
+
+
+def parse_protocol(message: str) -> dict[str, Any]:
+    """Values stated through the quick-reply protocol, in any UI language."""
+    found: dict[str, Any] = {}
+    text = message or ""
+    if not text.strip():
+        return found
+    for _lang, key, rx in _protocol_regexes():
+        m = rx.search(text)
+        if not m:
+            continue
+        g = m.groupdict()
+        if "family" in g and "practice_family" not in found:
+            fam = _family_from_stated(g["family"])
+            if fam:
+                found["practice_family"] = fam
+        if "objective" in g and "indicator" not in found:
+            ind = _indicator_from_stated(g["objective"])
+            if ind:
+                found["indicator"] = ind
+        if "lat" in g and "lon" in g and "lat" not in found:
+            try:
+                lat, lon = float(g["lat"].strip()), float(g["lon"].strip())
+            except ValueError:
+                continue
+            if 3.3 <= lat <= 14.9 and 32.9 <= lon <= 48.2:
+                found["lat"], found["lon"] = lat, lon
+    return found
+
+
+def apply_hint(slots: ChatSlots, hint: dict[str, Any] | None) -> ChatSlots:
+    """Structured values behind a chip (``ChatSlotsHint``) are the ground truth."""
+    if not hint:
+        return slots
+    touched = False
+    fam = hint.get("practice_family")
+    if fam in PRACTICE_FAMILIES:
+        slots.practice_family = fam
+        slots.confidence["practice_family"] = "high"
+        touched = True
+    ind = hint.get("indicator")
+    if ind in INDICATORS:
+        slots.indicator = ind
+        slots.confidence["indicator"] = "high"
+        touched = True
+    lat, lon = hint.get("lat"), hint.get("lon")
+    if isinstance(lat, (int, float)) and isinstance(lon, (int, float)):
+        lat, lon = float(lat), float(lon)
+        if 3.3 <= lat <= 14.9 and 32.9 <= lon <= 48.2:
+            slots.lat, slots.lon = lat, lon
+            slots.place_name = None
+            slots.confidence["location"] = "high"
+            slots.geocode_source = "hint"
+            touched = True
+    crop = hint.get("crop_type")
+    if isinstance(crop, str) and crop.strip():
+        slots.crop_type = crop.strip()
+        touched = True
+    if touched:
+        slots.source = "hint"
+    return slots
+
+
 def _resolve_family_indicator(
     family: str | None,
     indicator: str | None,
@@ -330,8 +492,14 @@ def extract_slots(
     last_recommendation: dict[str, Any] | None = None,
     *,
     allow_network_geocode: bool = False,
+    hint: dict[str, Any] | None = None,
 ) -> ChatSlots:
-    """Merge NL extraction with prior query state."""
+    """Merge NL extraction with prior query state.
+
+    U2: ``hint`` carries the structured values behind a quick-reply chip and
+    the message may be a translated protocol sentence (see ``parse_protocol``);
+    both are read deterministically before the English keyword rules.
+    """
     history = history or []
     user_texts = [
         h.get("content") or ""
@@ -365,19 +533,41 @@ def extract_slots(
     if latest_fam:
         slots.practice_family = latest_fam
         slots.confidence["practice_family"] = latest_fconf
+        slots.source = "rules"
     latest_ind, latest_iconf = _indicator_from_text(message or "")
     if latest_ind:
         slots.indicator = latest_ind
         slots.confidence["indicator"] = latest_iconf
+        slots.source = "rules"
     latest_coords = _coords_from_text(message or "")
     if latest_coords:
         slots.lat, slots.lon = latest_coords
         slots.place_name = None
         slots.confidence["location"] = "high"
         slots.geocode_source = "coordinates"
+        slots.source = slots.source or "rules"
     latest_crop = _crop_from_text(message or "")
     if latest_crop:
         slots.crop_type = latest_crop
+
+    # Quick-reply protocol sentences in any UI language (U2).
+    proto = parse_protocol(message or "")
+    if proto.get("practice_family"):
+        slots.practice_family = proto["practice_family"]
+        slots.confidence["practice_family"] = "high"
+        slots.source = "protocol"
+    if proto.get("indicator"):
+        slots.indicator = proto["indicator"]
+        slots.confidence["indicator"] = "high"
+        slots.source = "protocol"
+    if proto.get("lat") is not None:
+        slots.lat, slots.lon = proto["lat"], proto["lon"]
+        slots.place_name = None
+        slots.confidence["location"] = "high"
+        slots.geocode_source = "coordinates"
+        slots.source = "protocol"
+    # Structured values behind a chip beat anything parsed from text.
+    apply_hint(slots, hint)
 
     if slots.practice_family is None:
         fam, fconf = _family_from_text(corpus)
@@ -412,6 +602,16 @@ def extract_slots(
             slots.geocode_source = hit.source
             slots.inferred.append("location")
 
+    return finalize_slots(slots, message or "")
+
+
+def finalize_slots(slots: ChatSlots, message: str) -> ChatSlots:
+    """Inference, family↔objective resolution and the ``missing`` list.
+
+    Shared by the rule-based path and the LLM pass (``intent_llm``), so both
+    end with the same guarantees: never an unsupported family/objective pair,
+    never an invented objective.
+    """
     # Infer challenge from a clear objective (+ soft terrain cues).
     if slots.indicator and not slots.practice_family:
         default_fam = INDICATOR_DEFAULT_FAMILY.get(slots.indicator)

@@ -46,7 +46,8 @@
     "apiUnreachable": "The advisory service is unreachable. Recommendations are unavailable until it returns.",
     "apiStarting": "The advisory service is starting up.",
     "checking": "Checking the service…",
-    "retry": "Retry now"
+    "retry": "Retry now",
+    "retrying": "Connection problem — retrying…"
   },
   "home": {
     "hero": {
@@ -138,7 +139,10 @@
       "mapLoading": "Loading map…",
       "mapLabel": "Map of Ethiopia. Click to place the pin, or use the coordinate fields below with a keyboard.",
       "noPin": "No pin yet",
-      "pinAt": "Pin at {lat}, {lon}"
+      "pinAt": "Pin at {lat}, {lon}",
+      "showMap": "Show the map",
+      "mapDeferred": "The map loads when you open it, to save data. The fields below work without it.",
+      "tilesFailed": "The map tiles could not be loaded. Search a place or type coordinates below — the pin still works."
     },
     "challenge": {
       "title": "What is the challenge?",
@@ -216,7 +220,8 @@
         "change": "change",
         "image": "Illustration of {practice}",
         "imageMissing": "No illustration yet",
-        "apiEffect": "Model sentence: {effect}"
+        "apiEffect": "Model sentence: {effect}",
+        "imageLoading": "Loading illustration…"
       },
       "empty": {
         "title": "No practices to show yet",
@@ -234,7 +239,21 @@
         "title": "The request could not be scored"
       },
       "live": "{n, plural, one {# practice recommended} other {# practices recommended}}",
-      "explainInChat": "Explain in chat"
+      "explainInChat": "Explain in chat",
+      "print": {
+        "savePdf": "Save as PDF",
+        "title": "Advisory",
+        "generatedOn": "Generated on {date}",
+        "shareLink": "Link to this advisory",
+        "request": "Request",
+        "practices": "Ranked practices",
+        "effect": "Estimated effect",
+        "evidenceBase": "Evidence base",
+        "sources": "Sources",
+        "evidencePending": "Evidence details were not loaded before printing; open \"Evidence\" on a practice and print again to include them.",
+        "preparing": "Preparing the evidence for printing…",
+        "footer": "Printed from AgroAdvisor-ET (Alliance of Bioversity International and CIAT). Evidence-ranked, not a forecast: practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence."
+      }
     }
   },
   "evidence": {
@@ -315,7 +334,8 @@
       "locationHelp": "Drop a pin inside Ethiopia, use GPS, or type coordinates in the box below.",
       "changeChallenge": "Change challenge",
       "openMap": "Open map",
-      "evidenceRanked": "Evidence-ranked practices in this area"
+      "evidenceRanked": "Evidence-ranked practices in this area",
+      "orType": "…or describe it in your own words."
     },
     "protocol": {
       "farmAt": "My farm is at {lat}, {lon}.",
@@ -336,7 +356,20 @@
       "clear": "Clear {key}"
     },
     "geoUnavailable": "Geolocation is not available in this browser.",
-    "geoFailed": "Could not read your location. Try the map instead."
+    "geoFailed": "Could not read your location. Try the map instead.",
+    "roles": {
+      "user": "You",
+      "assistant": "Advisor"
+    },
+    "timestamp": "{role}, {time}",
+    "conversation": "Conversation",
+    "streaming": "Writing the answer…",
+    "scoring": "Scoring practices with the field-trial model…",
+    "errorTitle": "The answer did not arrive",
+    "retrySend": "Send again",
+    "openInAdvisor": "Open in Advisor",
+    "newChat": "New conversation",
+    "contextTitle": "Context used for this ranking"
   },
   "about": {
     "title": "About AgroAdvisor-ET",
@@ -389,6 +422,7 @@
     "completedStep": "completed",
     "resultsRegion": "Recommended practices",
     "themeToggle": "Theme",
-    "externalLink": "external link"
+    "externalLink": "external link",
+    "chatLog": "Conversation with the advisor"
   }
 }

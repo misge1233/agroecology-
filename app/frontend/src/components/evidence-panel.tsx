@@ -28,7 +28,8 @@ type FetchState =
 const ExplainContext = createContext<{
   data: RecommendResponse;
   state: FetchState;
-  load: () => void;
+  /** Starts (or joins) the single POST /explain; resolves when it settles. */
+  load: () => Promise<ExplainResponse | null>;
   ragReady: boolean;
   graphReady: boolean;
 } | null>(null);
@@ -46,17 +47,26 @@ export function ExplainProvider({
 }) {
   const locale = useLocale() as Locale;
   const [state, setState] = useState<FetchState>({ status: "idle" });
-  const inflight = useRef(false);
+  const inflight = useRef<Promise<ExplainResponse | null> | null>(null);
+  const settled = useRef<ExplainResponse | null>(null);
   const load = useCallback(() => {
-    if (inflight.current) return;
-    inflight.current = true;
+    if (settled.current) return Promise.resolve(settled.current);
+    if (inflight.current) return inflight.current;
     setState({ status: "loading" });
-    postExplain(data, { language: locale })
-      .then((result) => setState({ status: "ready", result }))
-      .catch((e: Error) => setState({ status: "error", message: e.message || "" }))
+    inflight.current = postExplain(data, { language: locale })
+      .then((result) => {
+        settled.current = result;
+        setState({ status: "ready", result });
+        return result;
+      })
+      .catch((e: Error) => {
+        setState({ status: "error", message: e.message || "" });
+        return null;
+      })
       .finally(() => {
-        inflight.current = false;
+        inflight.current = null;
       });
+    return inflight.current;
   }, [data, locale]);
   return (
     <ExplainContext.Provider value={{ data, state, load, ragReady, graphReady }}>
@@ -151,7 +161,7 @@ function Pending({ state, load }: { state: FetchState; load: () => void }) {
     return (
       <div className="space-y-2" role="alert">
         <p className="text-sm text-danger-text">{state.message || t("unavailable")}</p>
-        <Button variant="outline" size="sm" onClick={load}>
+        <Button variant="outline" size="sm" onClick={() => void load()}>
           {tc("retry")}
         </Button>
       </div>

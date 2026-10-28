@@ -103,7 +103,7 @@ STRINGS: dict[str, str] = {
     "indicator.biomass yield": "የባዮማስ ምርት",
     "indicator.income": "ገቢ",
     "indicator.water use efficiency": "የውሃ አጠቃቀም ቅልጥፍና",
-    "indicator.SOM content": "የአፈር ኦርጋኒክ ቁስ ይዘት",
+    "indicator.SOM content": "የአፈር ኦርጋኒክ ቁስ",
     "indicator.soil loss": "የአፈር መሸርሸር",
     "indicator.runoff": "የውሃ ፍሳሽ",
     "family.Crop production and management": "የሰብል ምርትና አያያዝ",
@@ -123,4 +123,23 @@ STRINGS: dict[str, str] = {
     "aez.Wet Kolla": "ዝናባማ ቆላ",
     "aez.Wet Weyna Dega": "ዝናባማ ወይና ደጋ",
     "aez.Wet Wurch": "ዝናባማ ውርጭ",
+    # ------------------------------------------------------------ chat: quick-reply protocol (U2)
+    "protocol.farm_at": "እርሻዬ በ{lat}፣ {lon} ላይ ነው።",
+    "protocol.challenge": "ፈተናዬ {family} ነው።",
+    "protocol.objective": "ዓላማዬ {objective} ነው።",
+    "protocol.challenge_note": "ፈተና፦ {family}።",
+    "protocol.objective_note": "ዓላማ፦ {objective}።",
+    "clarify.use_advisor": (
+        "በዚህ አገልጋይ ላይ ነፃ ጽሑፍን በእንግሊዝኛ ብቻ ማንበብ እችላለሁ (የኤአይ የጽሑፍ አገልግሎት አልተዋቀረም)። "
+        "ከታች ያሉትን ምርጫዎች ይጠቀሙ፣ ወይም አማካሪውን ይክፈቱ — እዚያ እያንዳንዱ ደረጃ በቋንቋዎ ነው።"
+    ),
+    "indicator.yield": "ምርት",
+    # UI objective labels (mirror src/i18n/glossary.ts INDICATORS; read back from typed chips)
+    "indicator_label.yield": "የሰብል ምርትን መጨመር",
+    "indicator_label.biomass yield": "ባዮማስ / መኖን መጨመር",
+    "indicator_label.income": "ገቢን መጨመር",
+    "indicator_label.water use efficiency": "የውሃ አጠቃቀም ቅልጥፍናን ማሻሻል",
+    "indicator_label.SOM content": "የአፈር ኦርጋኒክ ቁስን ማሻሻል",
+    "indicator_label.soil loss": "የአፈር መሸርሸርን መቀነስ",
+    "indicator_label.runoff": "የውሃ ፍሳሽን መቀነስ",
 }

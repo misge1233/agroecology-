@@ -50,7 +50,7 @@ describe("display names", () => {
 
 describe("effectSentence uses only API numbers", () => {
   it("reproduces the engine's English sentence", () => {
-    expect(effectSentence(-42.3, "reduce", "soil loss", "en")).toBe("~42% reduce in soil loss");
+    expect(effectSentence(-42.3, "reduce", "soil loss", "en")).toBe("~42% reduction in soil loss");
     expect(effectSentence(31.6, "increase", "yield", "en")).toBe("~32% increase in yield");
   });
   it("translates the frame, not the number", () => {

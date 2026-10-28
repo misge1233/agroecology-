@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { ADVISOR_NAMESPACES, pickMessages } from "@/i18n/messages";
 import { AdvisorFlow, AdvisorSkeleton } from "@/components/advisor/advisor-flow";
 
 // Rendered per request: the request lives in the query string, so the first
@@ -17,10 +19,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function AdvisorPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const messages = pickMessages(await getMessages(), ADVISOR_NAMESPACES);
   return (
-    // useSearchParams needs a Suspense boundary for static rendering.
-    <Suspense fallback={<AdvisorSkeleton />}>
-      <AdvisorFlow />
-    </Suspense>
+    <NextIntlClientProvider messages={messages}>
+      {/* useSearchParams needs a Suspense boundary. */}
+      <Suspense fallback={<AdvisorSkeleton />}>
+        <AdvisorFlow />
+      </Suspense>
+    </NextIntlClientProvider>
   );
 }

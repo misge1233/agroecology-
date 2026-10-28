@@ -46,7 +46,8 @@
     "apiUnreachable": "Tajaajilli gorsaa hin argamu. Hanga deebi'utti gorsi hin jiru.",
     "apiStarting": "Tajaajilli gorsaa jalqabaa jira.",
     "checking": "Tajaajila mirkaneessaa jira…",
-    "retry": "Amma irra deebi'ii yaali"
+    "retry": "Amma irra deebi'ii yaali",
+    "retrying": "Rakkoo walitti dhufeenyaa — irra deebi'ee yaalaa jira…"
   },
   "home": {
     "hero": {
@@ -138,7 +139,10 @@
       "mapLoading": "Kaartaa fe'aa jira…",
       "mapLabel": "Kaartaa Itoophiyaa. Mallattoo kaa'uuf tuqaa, ykn dirreewwan koordineetii armaan gadii gabatee cuqoodhaan fayyadamaa.",
       "noPin": "Ammatti mallattoon hin jiru",
-      "pinAt": "Mallattoo {lat}, {lon} irratti"
+      "pinAt": "Mallattoo {lat}, {lon} irratti",
+      "showMap": "Kaartaa agarsiisi",
+      "mapDeferred": "Daataa qusachuuf kaartaan yeroo bantu fe'ama. Dirreen armaan gadii isa malee ni hojjetu.",
+      "tilesFailed": "Fakkiiwwan kaartaa fe'amuu hin dandeenye. Armaan gadii bakka barbaadi yookiin qindoomina barreessi — pinni ammas ni hojjeta."
     },
     "challenge": {
       "title": "Rakkoon maali?",
@@ -216,7 +220,8 @@
         "change": "jijjiirama",
         "image": "Fakkii {practice}",
         "imageMissing": "Ammatti fakkiin hin jiru",
-        "apiEffect": "Hima moodeelaa: {effect}"
+        "apiEffect": "Hima moodeelaa: {effect}",
+        "imageLoading": "Fakkii fe'aa jira…"
       },
       "empty": {
         "title": "Ammatti gochaan agarsiifamu hin jiru",
@@ -234,7 +239,21 @@
         "title": "Gaaffichi madaalamuu hin dandeenye"
       },
       "live": "{n, plural, one {gochaan # gorfame} other {gochaaleen # gorfaman}}",
-      "explainInChat": "Marii keessatti ibsi"
+      "explainInChat": "Marii keessatti ibsi",
+      "print": {
+        "savePdf": "Akka PDF olkaa'i",
+        "title": "Gorsa",
+        "generatedOn": "Kan qophaa'e {date}",
+        "shareLink": "Hidhaa gorsa kanaa",
+        "request": "Gaaffii",
+        "practices": "Gochaalee sadarkeeffaman",
+        "effect": "Bu'aa tilmaamame",
+        "evidenceBase": "Bu'uura ragaa",
+        "sources": "Maddoota",
+        "evidencePending": "Osoo hin maxxanfamin dura bal'inni ragaa hin fe'amne; isaan dabaluuf gocha irratti \"Ragaa\" bani ergasii irra deebi'ii maxxansi.",
+        "preparing": "Ragaa maxxansaaf qopheessaa jira…",
+        "footer": "AgroAdvisor-ET (Alliance of Bioversity International fi CIAT) irraa maxxanfame. Ragaadhaan sadarkeeffame malee raaga miti: gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbantaawwan tilmaama moodeelaa amantaa ibsameen."
+      }
     }
   },
   "evidence": {
@@ -315,16 +334,17 @@
       "locationHelp": "Itoophiyaa keessatti mallattoo kaa'aa, GPS fayyadamaa, ykn saanduqa armaan gadii keessatti koordineetii barreessaa.",
       "changeChallenge": "Rakkoo jijjiiri",
       "openMap": "Kaartaa bani",
-      "evidenceRanked": "Gochaalee dirree kana keessatti ragaadhaan sadarkeeffaman"
+      "evidenceRanked": "Gochaalee dirree kana keessatti ragaadhaan sadarkeeffaman",
+      "orType": "…yookiin jechoota keetiin ibsi."
     },
     "protocol": {
-      "farmAt": "My farm is at {lat}, {lon}.",
-      "challenge": "My challenge is {family}.",
-      "objective": "My objective is to {objective}.",
-      "challengeNote": "Challenge: {family}.",
-      "objectiveNote": "Objective: {objective}.",
-      "explain": "I'm at {lat}, {lon}{crop}. For \"{family}\" with the goal to {direction} {indicator}, you recommended {practices}. Why these, and how sure are you?",
-      "growing": " growing {crop}"
+      "farmAt": "Qonni koo {lat}, {lon} irra jira.",
+      "challenge": "Rakkoon koo {family} dha.",
+      "objective": "Kaayyoon koo {objective} dha.",
+      "challengeNote": "Rakkoo: {family}.",
+      "objectiveNote": "Kaayyoo: {objective}.",
+      "explain": "Ani {lat}, {lon} irra jira{crop}. \"{family}\" tiif kaayyoo {indicator} {direction} jedhuun {practices} gorsitan. Maaliif isaan kana, akkamii mirkanaa'oo dha?",
+      "growing": ", {crop} oomishaa"
     },
     "contextChips": {
       "label": "Hamileewwan hubataman",
@@ -336,7 +356,20 @@
       "clear": "{key} haqi"
     },
     "geoUnavailable": "Jiyoolookeeshiniin biraawzarii kana irratti hin argamu.",
-    "geoFailed": "Bakka keessan dubbisuun hin danda'amne. Bakka isaa kaartaa yaalaa."
+    "geoFailed": "Bakka keessan dubbisuun hin danda'amne. Bakka isaa kaartaa yaalaa.",
+    "roles": {
+      "user": "Ati",
+      "assistant": "Gorsaa"
+    },
+    "timestamp": "{role}, {time}",
+    "conversation": "Marii",
+    "streaming": "Deebii barreessaa jira…",
+    "scoring": "Gochaalee moodeela yaalii dirreetiin madaalaa jira…",
+    "errorTitle": "Deebiin hin dhufne",
+    "retrySend": "Irra deebi'ii ergi",
+    "openInAdvisor": "Gorsaa keessatti bani",
+    "newChat": "Marii haaraa",
+    "contextTitle": "Haala sadarkeessuu kanaaf fayyadame"
   },
   "about": {
     "title": "Waa'ee AgroAdvisor-ET",
@@ -389,6 +422,7 @@
     "completedStep": "xumurame",
     "resultsRegion": "Gochaalee gorfaman",
     "themeToggle": "Haala",
-    "externalLink": "liinkii alaa"
+    "externalLink": "liinkii alaa",
+    "chatLog": "Marii gorsaa wajjin"
   }
 }

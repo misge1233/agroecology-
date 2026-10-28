@@ -13,14 +13,14 @@ export function SiteHeader() {
   const t = useTranslations();
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
+    <header className="no-print sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
       <div className="mx-auto flex h-[var(--header-h)] max-w-content items-center justify-between gap-3 px-4 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-control">
-          <span className="flex h-9 w-9 items-center justify-center rounded-control bg-primary text-primary-fg">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5 rounded-control">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-primary-fg">
             <Leaf className="h-4 w-4" aria-hidden />
           </span>
-          <span className="flex flex-col leading-none">
-            <span className="text-base font-semibold tracking-tight text-text">{t("common.appName")}</span>
+          <span className="flex min-w-0 flex-col leading-none">
+            <span className="truncate text-base font-semibold tracking-tight text-text">{t("common.appName")}</span>
             <span className="mt-0.5 hidden text-xs text-muted sm:block">{t("common.tagline")}</span>
           </span>
         </Link>
@@ -44,7 +44,7 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5">
           {/* useSearchParams (query preserved on switch) needs a Suspense boundary for static pages. */}
           <Suspense fallback={<div className="h-9 w-[8.5rem]" aria-hidden />}>
             <LanguageSwitcher />

@@ -1,0 +1,65 @@
+{
+  "query": {
+    "lat": 8.38,
+    "lon": 39.37,
+    "practice_family": "Erosion control and water management",
+    "indicator": "soil loss",
+    "crop_type": null,
+    "goal_direction": "reduce"
+  },
+  "recommendations": [
+    {
+      "practice": "Mulch-Water Harvesting",
+      "effect": "~76% reduction in soil loss"
+    },
+    {
+      "practice": "Reduced Tillage-Water Harvesting",
+      "effect": "~70% reduction in soil loss"
+    },
+    {
+      "practice": "Biological SWC practices",
+      "effect": "~68% reduction in soil loss"
+    }
+  ],
+  "details": {
+    "context": {
+      "Rainfall": 755.658,
+      "temp_mean_annual": 20.711,
+      "precip_seasonality": 84.36,
+      "Altitude_r": 1415.835,
+      "slope": 2.34,
+      "soil_clay": 31.7,
+      "land_cover": 30,
+      "lgp_days": 214.0,
+      "soil_ph": 7.7,
+      "soil_soc": 27.9,
+      "aez_belt": "Dry Kolla"
+    },
+    "crop_group": null,
+    "confidence": "low",
+    "ranked": [
+      {
+        "practice": "Mulch-Water Harvesting",
+        "pct_change": -76.2,
+        "log_ratio": -1.4341,
+        "n_evidence": 3
+      },
+      {
+        "practice": "Reduced Tillage-Water Harvesting",
+        "pct_change": -70.0,
+        "log_ratio": -1.2055,
+        "n_evidence": 1
+      },
+      {
+        "practice": "Biological SWC practices",
+        "pct_change": -68.3,
+        "log_ratio": -1.1474,
+        "n_evidence": 3
+      }
+    ],
+    "n_candidates": 23,
+    "n_grounded": 11,
+    "ranking_scope": "Practices ranked only within 'Erosion control and water management' (23 in dataset, 11 with evidence for 'soil loss').",
+    "note": "Effects are model estimates of the with/without response ratio from meta-analysis evidence; confidence reflects out-of-fold reliability for this indicator."
+  }
+}

@@ -41,6 +41,18 @@ export function AdvisorSkeleton() {
   );
 }
 
+/** Only the step area while /metadata loads — the page header is already on screen. */
+function StepSkeleton() {
+  return (
+    <div aria-busy className="space-y-4">
+      <Skeleton className="h-7 w-64 max-w-full" />
+      <Skeleton className="h-4 w-80 max-w-full" />
+      <Skeleton className="h-64 w-full sm:h-80" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+  );
+}
+
 /**
  * The four-step Advisor. The URL is the single source of truth for the
  * request (`?lat&lon&family&indicator&crop&top`), so a result can be shared
@@ -68,25 +80,17 @@ export function AdvisorFlow() {
     if (!next.family) next.indicator = null;
     const qs = toSearch(next);
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-    if (nextStep) setStepOverride(nextStep);
+    // Stay on the current step unless the caller moves on explicitly: a pin
+    // dropped on step 1 must not jump to step 2 before the belt is shown and
+    // "Next" is pressed (U2 E2E found the auto-advance).
+    setStepOverride(nextStep ?? step);
   }
 
   // A complete request in the URL scores straight away (POST /recommend runs in
   // parallel with /metadata); the input steps need the metadata lists first.
-  if (!meta && step !== "results") {
-    if (loading) return <AdvisorSkeleton />;
-    return (
-      <div className="mx-auto max-w-content px-4 py-8 sm:px-6">
-        <Alert variant="danger" title={ts("apiUnreachable")}>
-          <p lang="en">{error}</p>
-          <Button variant="outline" size="sm" className="mt-3" onClick={refresh}>
-            {ts("retry")}
-          </Button>
-        </Alert>
-      </div>
-    );
-  }
-
+  // The title, subtitle and stepper never wait for metadata (they are the
+  // page's LCP text and are server-rendered).
+  const metaGate = !meta && step !== "results";
   const families = meta?.practice_families ?? [];
   const hasLocation = params.lat != null && params.lon != null;
   const steps: StepperStep[] = STEP_ORDER.map((key) => ({
@@ -107,8 +111,8 @@ export function AdvisorFlow() {
   const stepIndex = STEP_ORDER.indexOf(step);
 
   return (
-    <div className="mx-auto max-w-content px-4 py-6 sm:px-6 lg:py-8">
-      <div className="mb-5">
+    <div className="mx-auto max-w-content px-4 py-6 sm:px-6 lg:py-8 print:p-0">
+      <div className="no-print mb-5">
         <h1 className="text-2xl sm:text-3xl">{t("title")}</h1>
         <p className="mt-1 max-w-2xl text-muted">{t("subtitle")}</p>
       </div>
@@ -120,14 +124,24 @@ export function AdvisorFlow() {
         label={ta("stepper")}
         currentLabel={ta("currentStep")}
         completedLabel={ta("completedStep")}
+        className="no-print"
       />
-      <p className="sr-only" aria-live="polite">
+      <p className="no-print sr-only" aria-live="polite">
         {t("stepOf", { current: stepIndex + 1, total: STEP_ORDER.length })}
       </p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] print:mt-0 print:block">
         <div className="min-w-0">
-          {step === "location" && meta ? (
+          {metaGate && !loading ? (
+            <Alert variant="danger" title={ts("apiUnreachable")}>
+              <p lang="en">{error}</p>
+              <Button variant="outline" size="sm" className="mt-3" onClick={refresh}>
+                {ts("retry")}
+              </Button>
+            </Alert>
+          ) : metaGate ? (
+            <StepSkeleton />
+          ) : step === "location" && meta ? (
             <LocationStep
               lat={params.lat}
               lon={params.lon}
@@ -169,7 +183,7 @@ export function AdvisorFlow() {
             <AdvisorSkeleton />
           )}
           {step !== "location" && step !== "results" ? (
-            <div className="mt-6">
+            <div className="no-print mt-6">
               <Button variant="ghost" onClick={() => setStepOverride(STEP_ORDER[Math.max(0, stepIndex - 1)])}>
                 {tc("back")}
               </Button>
@@ -189,7 +203,7 @@ export function AdvisorFlow() {
             router.replace(pathname, { scroll: false });
             setStepOverride("location");
           }}
-          className="order-first lg:order-none"
+          className="no-print order-first lg:order-none"
         />
       </div>
     </div>

@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Bot, Loader2, MapPinned, Navigation, Send, Sparkles, User, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { Bot, Compass, Loader2, MapPinned, Navigation, Send, Sparkles, User, X } from "lucide-react";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { postRecommend, streamChat } from "@/lib/api";
-import type { ChatMessage, ChatSlotsEvent, RecommendResponse } from "@/lib/types";
+import type { ChatMessage, ChatSlotsEvent, ChatSlotsHint, RecommendResponse } from "@/lib/types";
 import { deriveChatSetup, type ChatSlotsPayload } from "@/lib/chat-flow";
+import { advisorQuery, challengeMessage, locationMessage, objectiveMessage } from "@/lib/chat-protocol";
 import { familyShort, indicatorLabel } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { useMetadata } from "./metadata-provider";
 import { AssistantMarkdown } from "./assistant-markdown";
 import { ChatQuickReplies } from "./chat-quick-replies";
+import { ContextCard } from "./advisor/context-card";
 import { RecommendationPanel } from "./advisor/recommendation-panel";
 import { LocationPicker } from "./advisor/location-step";
 import { useZone } from "./advisor/use-zone";
+import { Alert } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Chip } from "./ui/chip";
@@ -36,25 +40,39 @@ const MAP_OFFER_RE =
 const AFFIRM_RE =
   /^(yes|yeah|yep|sure|ok|okay|please|go ahead|open (the )?map|show (the )?map|i('d| would) like( to)?)\b/i;
 
+type TurnStatus = "thinking" | "scoring" | "streaming" | "done" | "error";
+
 interface Turn {
   id: string;
   role: "user" | "assistant";
   content: string;
+  at: number;
+  hint?: ChatSlotsHint | null;
   recommendation?: RecommendResponse | null;
   showMap?: boolean;
+  status?: TurnStatus;
+  error?: string | null;
 }
 
+let seq = 0;
+const nextId = (prefix: string) => `${prefix}-${Date.now()}-${++seq}`;
+/** Wall-clock stamp for a turn (kept outside the component: event-time, not render-time). */
+const stamp = () => Date.now();
+
 /**
- * The conversational advisor. Logic is unchanged from P5 (slots, protocol
- * messages, map offer); U1 restyles it on the design system, moves every
- * string to the catalog and sends the UI language to the backend. A seed
- * message (from the Advisor's "Explain in chat") pre-fills the composer —
- * the user sends it, nothing fires on mount.
+ * The conversational advisor (redesigned in U2). The protocol and slot logic
+ * are the P5 ones; every chip now sends a sentence in the UI language plus a
+ * structured hint, result cards are the Advisor's own components, and every
+ * turn carries a timestamp and an explicit thinking / scoring / streaming /
+ * error state. A seed message (from the Advisor's "Explain in chat") only
+ * pre-fills the composer — nothing is sent on mount.
  */
 export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   const t = useTranslations("chat");
   const tc = useTranslations("common");
+  const ta = useTranslations("a11y");
   const locale = useLocale() as Locale;
+  const format = useFormatter();
   const { meta, loading: metaLoading, error: metaError } = useMetadata();
   const [input, setInput] = useState(seedMessage ?? "");
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -107,6 +125,12 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     return derivedSetup;
   }, [derivedSetup, lastQuery, reopenChallengePicker]);
 
+  const indicatorMeta = (key: string | null) => (key ? (meta?.indicators.find((i) => i.key === key) ?? null) : null);
+
+  function patch(id: string, fn: (turn: Turn) => Turn) {
+    setTurns((prev) => prev.map((x) => (x.id === id ? fn(x) : x)));
+  }
+
   async function applyTopN(n: number) {
     setTopN(n);
     if (!lastQuery) return;
@@ -145,7 +169,7 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     }
   }
 
-  async function send(text: string) {
+  async function send(text: string, hint: ChatSlotsHint | null = null) {
     const msg = text.trim();
     if (!msg || busy) return;
     setError(null);
@@ -156,34 +180,28 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     if (AFFIRM_RE.test(msg) && lastAssistant && (lastAssistant.showMap || MAP_OFFER_RE.test(lastAssistant.content))) {
       setTurns((prev) => [
         ...prev,
-        { id: `u-${Date.now()}`, role: "user", content: msg },
-        { id: `a-${Date.now()}`, role: "assistant", content: t("mapOfferReply"), showMap: true },
+        { id: nextId("u"), role: "user", content: msg, at: stamp() },
+        { id: nextId("a"), role: "assistant", content: t("mapOfferReply"), at: stamp(), showMap: true, status: "done" },
       ]);
       setMapOpen(true);
       return;
     }
 
-    const userTurn: Turn = { id: `u-${Date.now()}`, role: "user", content: msg };
-    const assistantId = `a-${Date.now()}`;
-    if (meta) {
-      const fam = msg.match(/^My challenge is (.+)\.$/i)?.[1]?.trim();
-      if (fam && meta.practice_families.includes(fam)) {
-        setPendingFamily(fam);
-        setReopenChallengePicker(false);
-      }
-      const obj = msg.match(/^My objective is to (.+)\.$/i)?.[1]?.trim();
-      if (obj) {
-        const ind = meta.indicators.find((i) => i.label.toLowerCase() === obj.toLowerCase());
-        if (ind) setPendingIndicator(ind.key);
-      }
+    if (hint?.practice_family) {
+      setPendingFamily(hint.practice_family);
+      setReopenChallengePicker(false);
     }
-    setTurns((prev) => [...prev, userTurn, { id: assistantId, role: "assistant", content: "" }]);
+    if (hint?.indicator) setPendingIndicator(hint.indicator);
+
+    const userTurn: Turn = { id: nextId("u"), role: "user", content: msg, at: stamp(), hint };
+    const assistantId = nextId("a");
+    setTurns((prev) => [...prev, userTurn, { id: assistantId, role: "assistant", content: "", at: stamp(), status: "thinking" }]);
     setBusy(true);
 
     try {
       let recommendation: RecommendResponse | null = null;
       let reply = "";
-      for await (const ev of streamChat({ message: msg, history, lastRecommendation, topN, language: locale })) {
+      for await (const ev of streamChat({ message: msg, history, lastRecommendation, topN, language: locale, hint })) {
         if (ev.type === "slots" && ev.data) {
           const slots = ev.data as ChatSlotsEvent;
           setServerSlots(slots);
@@ -196,48 +214,51 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
             setMapLat(Number(slots.lat.toFixed(4)));
             setMapLon(Number(slots.lon.toFixed(4)));
           }
+          const complete = !!(slots.practice_family && slots.indicator && slots.lat != null && slots.lon != null);
+          patch(assistantId, (x) => ({ ...x, status: complete ? "scoring" : "thinking" }));
         }
         if (ev.type === "recommendation" && ev.data) {
           recommendation = trimRecommendation(ev.data as RecommendResponse, topN);
           const rec = recommendation;
-          setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, recommendation: rec } : x)));
+          patch(assistantId, (x) => ({ ...x, recommendation: rec, status: "streaming" }));
         }
         if (ev.type === "token" && ev.text) {
           reply += ev.text;
           const snapshot = reply;
-          setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, content: snapshot } : x)));
+          patch(assistantId, (x) => ({ ...x, content: snapshot, status: "streaming" }));
         }
-        if (ev.type === "error") setError(ev.message || t("chatFailed"));
+        if (ev.type === "error") {
+          const message = ev.message || t("chatFailed");
+          patch(assistantId, (x) => ({ ...x, status: "error", error: message }));
+        }
       }
-      if (recommendation) {
-        const rec = recommendation;
-        setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, recommendation: rec } : x)));
-      } else if (reply && MAP_OFFER_RE.test(reply) && needsLocation) {
-        setTurns((prev) => prev.map((x) => (x.id === assistantId ? { ...x, showMap: true } : x)));
+      patch(assistantId, (x) => (x.status === "error" ? x : { ...x, status: "done", at: stamp() }));
+      if (!recommendation && reply && MAP_OFFER_RE.test(reply) && needsLocation) {
+        patch(assistantId, (x) => ({ ...x, showMap: true }));
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("chatFailed"));
-      setTurns((prev) =>
-        prev.map((x) => (x.id === assistantId && !x.content ? { ...x, content: t("errorFallback") } : x))
-      );
+      const message = e instanceof Error && e.message ? e.message : t("errorFallback");
+      patch(assistantId, (x) => ({ ...x, status: "error", error: message }));
     } finally {
       setBusy(false);
     }
   }
 
+  /** Re-send the user message that produced a failed answer. */
+  function resend(assistantId: string) {
+    const idx = turns.findIndex((x) => x.id === assistantId);
+    const userTurn = idx > 0 ? turns[idx - 1] : null;
+    if (!userTurn || userTurn.role !== "user") return;
+    setTurns((prev) => prev.filter((x) => x.id !== assistantId && x.id !== userTurn.id));
+    // Defer until the removal is committed so `busy`/history reflect it.
+    setTimeout(() => void send(userTurn.content, userTurn.hint ?? null), 0);
+  }
+
   function applyMapAndContinue() {
     if (mapLat == null || mapLon == null) return;
-    const bits = [
-      t("protocol.farmAt", { lat: mapLat.toFixed(4), lon: mapLon.toFixed(4) }),
-      pendingFamily ? t("protocol.challengeNote", { family: pendingFamily }) : null,
-      pendingIndicator
-        ? t("protocol.objectiveNote", {
-            objective: meta?.indicators.find((i) => i.key === pendingIndicator)?.label || pendingIndicator,
-          })
-        : null,
-    ].filter(Boolean);
+    const m = locationMessage(t, locale, mapLat, mapLon, { family: pendingFamily, indicator: indicatorMeta(pendingIndicator) });
     setMapOpen(false);
-    void send(bits.join(" "));
+    void send(m.text, m.hint);
   }
 
   function useMyLocation() {
@@ -251,22 +272,30 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
         const lo = Number(pos.coords.longitude.toFixed(4));
         setMapLat(la);
         setMapLon(lo);
-        void send(t("protocol.farmAt", { lat: la.toFixed(4), lon: lo.toFixed(4) }));
+        const m = locationMessage(t, locale, la, lo, { family: pendingFamily, indicator: indicatorMeta(pendingIndicator) });
+        void send(m.text, m.hint);
       },
       () => setError(t("geoFailed")),
       { enableHighAccuracy: true, timeout: 10_000 }
     );
   }
 
+  function reset() {
+    setTurns([]);
+    setServerSlots(null);
+    setPendingFamily(null);
+    setPendingIndicator(null);
+    setReopenChallengePicker(false);
+    setError(null);
+    setInput("");
+  }
+
+  const last = turns[turns.length - 1];
   const showQuickReplies =
-    !busy &&
-    turns.length > 0 &&
-    !lastQuery &&
-    turns[turns.length - 1]?.role === "assistant" &&
-    !!turns[turns.length - 1]?.content &&
-    !turns[turns.length - 1]?.recommendation;
+    !busy && turns.length > 0 && !lastQuery && last?.role === "assistant" && !!last.content && !last.recommendation && last.status !== "error";
 
   const examples = [t("examples.one"), t("examples.two"), t("examples.three")];
+  const timeOf = (at: number) => format.dateTime(new Date(at), { hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="flex h-[calc(100dvh-var(--header-h)-var(--bottombar-h))] flex-col md:h-[calc(100dvh-var(--header-h))]">
@@ -329,71 +358,115 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
             </div>
           ) : null}
 
-          {turns.map((turn) => (
-            <div key={turn.id} className={cn("rise-in flex gap-2", turn.role === "user" ? "justify-end" : "justify-start")}>
-              {turn.role === "assistant" ? (
-                <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-primary-fg">
-                  <Bot className="h-4 w-4" aria-hidden />
-                </span>
-              ) : null}
-              <div className={turn.role === "user" ? "max-w-[88%] rounded-card rounded-br-sm bg-text px-4 py-3 text-base text-background" : "max-w-[94%] min-w-0 flex-1 space-y-3"}>
-                {turn.role === "assistant" ? (
-                  <>
-                    {turn.content ? (
-                      <div className="rounded-card rounded-bl-sm border border-border bg-surface px-4 py-3.5 shadow-1 sm:px-5">
-                        <AssistantMarkdown content={turn.content} />
-                        {busy && turns[turns.length - 1]?.id === turn.id && !turn.recommendation ? (
-                          <Loader2 className="ml-1 inline h-3.5 w-3.5 animate-spin text-muted" aria-hidden />
-                        ) : null}
-                      </div>
-                    ) : busy && turns[turns.length - 1]?.id === turn.id ? (
-                      <div className="inline-flex items-center gap-2 rounded-card border border-border bg-surface px-4 py-3 text-sm text-muted" role="status">
-                        <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
-                        {t("thinking")}
-                      </div>
+          {turns.length > 0 ? (
+            <ol role="log" aria-live="polite" aria-relevant="additions" aria-label={ta("chatLog")} className="space-y-5">
+              {turns.map((turn) => {
+                const isLast = last?.id === turn.id;
+                const role = turn.role === "user" ? t("roles.user") : t("roles.assistant");
+                const stamp = (
+                  <p className={cn("mt-1 text-xs text-muted", turn.role === "user" ? "text-right" : "pl-1")}>
+                    <span className="sr-only">{t("timestamp", { role, time: timeOf(turn.at) })}</span>
+                    <span aria-hidden>{role} · </span>
+                    <time aria-hidden dateTime={new Date(turn.at).toISOString()} className="tabular">
+                      {timeOf(turn.at)}
+                    </time>
+                  </p>
+                );
+                return (
+                  <li key={turn.id} className={cn("rise-in flex gap-2", turn.role === "user" ? "justify-end" : "justify-start")}>
+                    {turn.role === "assistant" ? (
+                      <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary text-primary-fg">
+                        <Bot className="h-4 w-4" aria-hidden />
+                      </span>
                     ) : null}
-                    {turn.showMap && meta && !mapOpen ? (
-                      <button
-                        type="button"
-                        onClick={() => setMapOpen(true)}
-                        className="flex w-full items-center gap-3 rounded-card border border-dashed border-primary/50 bg-primary-soft/60 px-4 py-3 text-left transition-colors duration-base hover:bg-primary-soft"
-                      >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-control bg-primary text-primary-fg">
-                          <MapPinned className="h-5 w-5" aria-hidden />
-                        </span>
-                        <span>
-                          <span className="block text-sm font-semibold text-text">{t("mapOffer.title")}</span>
-                          <span className="block text-xs text-muted">{t("mapOffer.body")}</span>
-                        </span>
-                      </button>
+                    <div className={turn.role === "user" ? "max-w-[88%]" : "min-w-0 max-w-[94%] flex-1 space-y-3"}>
+                      {turn.role === "user" ? (
+                        <>
+                          <div className="rounded-card rounded-br-sm bg-text px-4 py-3 text-base text-background">{turn.content}</div>
+                          {stamp}
+                        </>
+                      ) : (
+                        <>
+                          {turn.content ? (
+                            <div className="rounded-card rounded-bl-sm border border-border bg-surface px-4 py-3.5 shadow-1 sm:px-5">
+                              <AssistantMarkdown content={turn.content} />
+                              {busy && isLast && turn.status === "streaming" ? (
+                                <Loader2 className="ml-1 inline h-3.5 w-3.5 animate-spin text-muted" aria-hidden />
+                              ) : null}
+                            </div>
+                          ) : null}
+                          {busy && isLast && turn.status !== "done" && turn.status !== "error" ? (
+                            <div
+                              className="inline-flex items-center gap-2 rounded-card border border-border bg-surface px-4 py-2.5 text-sm text-muted"
+                              role="status"
+                              data-testid="chat-status"
+                            >
+                              <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
+                              {turn.status === "scoring" ? t("scoring") : turn.status === "streaming" ? t("streaming") : t("thinking")}
+                            </div>
+                          ) : null}
+                          {turn.status === "error" ? (
+                            <Alert variant="danger" title={t("errorTitle")}>
+                              <p lang={/[ሀ-፿]/.test(turn.error ?? "") ? undefined : "en"}>{turn.error ?? t("errorFallback")}</p>
+                              <Button variant="outline" size="sm" className="mt-3" onClick={() => resend(turn.id)}>
+                                {t("retrySend")}
+                              </Button>
+                            </Alert>
+                          ) : null}
+                          {turn.showMap && meta && !mapOpen ? (
+                            <button
+                              type="button"
+                              onClick={() => setMapOpen(true)}
+                              className="flex w-full items-center gap-3 rounded-card border border-dashed border-primary/50 bg-primary-soft/60 px-4 py-3 text-left transition-colors duration-base hover:bg-primary-soft"
+                            >
+                              <span className="flex h-10 w-10 items-center justify-center rounded-control bg-primary text-primary-fg">
+                                <MapPinned className="h-5 w-5" aria-hidden />
+                              </span>
+                              <span>
+                                <span className="block text-sm font-semibold text-text">{t("mapOffer.title")}</span>
+                                <span className="block text-xs text-muted">{t("mapOffer.body")}</span>
+                              </span>
+                            </button>
+                          ) : null}
+                          {turn.recommendation ? (
+                            <div className="space-y-3" data-testid="chat-recommendation">
+                              <ContextCard data={turn.recommendation} compact title={t("contextTitle")} />
+                              <RecommendationPanel data={turn.recommendation} />
+                              <Button variant="outline" size="sm" asChild>
+                                <Link href={{ pathname: "/advisor", query: advisorQuery(turn.recommendation.query, topN) }}>
+                                  <Compass className="h-4 w-4" aria-hidden />
+                                  {t("openInAdvisor")}
+                                </Link>
+                              </Button>
+                            </div>
+                          ) : null}
+                          {turn.content || turn.recommendation || turn.status === "error" ? stamp : null}
+                        </>
+                      )}
+                    </div>
+                    {turn.role === "user" ? (
+                      <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-text">
+                        <User className="h-4 w-4" aria-hidden />
+                      </span>
                     ) : null}
-                    {turn.recommendation ? <RecommendationPanel data={turn.recommendation} /> : null}
-                  </>
-                ) : (
-                  turn.content
-                )}
-              </div>
-              {turn.role === "user" ? (
-                <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-text">
-                  <User className="h-4 w-4" aria-hidden />
-                </span>
-              ) : null}
-            </div>
-          ))}
+                  </li>
+                );
+              })}
+            </ol>
+          ) : null}
 
           {showQuickReplies && meta ? (
             <ChatQuickReplies
               meta={meta}
               setup={chatSetup}
               onPickChallenge={(f) => {
-                setPendingFamily(f);
-                setReopenChallengePicker(false);
-                void send(t("protocol.challenge", { family: f }));
+                const m = challengeMessage(t, locale, f);
+                void send(m.text, m.hint);
               }}
               onPickObjective={(key) => {
-                const ind = meta.indicators.find((i) => i.key === key);
-                setPendingIndicator(key);
-                void send(t("protocol.objective", { objective: (ind?.label ?? key).toLowerCase() }));
+                const ind = indicatorMeta(key) ?? { key, label: key };
+                const m = objectiveMessage(t, locale, ind);
+                void send(m.text, m.hint);
               }}
               onChangeChallenge={() => {
                 setReopenChallengePicker(true);
@@ -471,15 +544,22 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
         ) : null}
 
         {turns.length > 0 ? (
-          <Composer
-            id="chat-input"
-            value={input}
-            onChange={setInput}
-            onSend={() => void send(input)}
-            busy={busy}
-            placeholder={t("placeholder")}
-            onMap={() => setMapOpen(true)}
-          />
+          <div className="flex items-end gap-2">
+            <div className="min-w-0 flex-1">
+              <Composer
+                id="chat-input"
+                value={input}
+                onChange={setInput}
+                onSend={() => void send(input)}
+                busy={busy}
+                placeholder={t("placeholder")}
+                onMap={() => setMapOpen(true)}
+              />
+            </div>
+            <Button variant="ghost" size="sm" className="mb-1 shrink-0" onClick={reset} disabled={busy}>
+              {t("newChat")}
+            </Button>
+          </div>
         ) : null}
       </div>
 
@@ -495,6 +575,7 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
               lon={mapLon}
               bounds={meta.bounds}
               zone={zone}
+              eagerMap
               onChange={(la, lo) => {
                 setMapLat(la);
                 setMapLon(lo);
@@ -566,7 +647,7 @@ function Composer({
         }}
         placeholder={placeholder}
         className={cn(
-          "flex-1 resize-none bg-transparent px-3 text-text outline-none placeholder:text-muted",
+          "min-w-0 flex-1 resize-none bg-transparent px-3 text-text outline-none placeholder:text-muted",
           large ? "max-h-28 min-h-[56px] py-3 text-base" : "max-h-32 min-h-[44px] py-2.5 text-sm"
         )}
         disabled={busy}

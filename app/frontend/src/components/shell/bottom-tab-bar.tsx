@@ -12,7 +12,7 @@ export function BottomTabBar() {
   return (
     <nav
       aria-label={t("bottom")}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
       <ul className="grid h-[var(--bottombar-h)] grid-cols-3">
         {NAV_ITEMS.map(({ href, key, icon: Icon }) => {

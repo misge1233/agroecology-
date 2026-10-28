@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { IBM_Plex_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, LOCALE_META, type Locale } from "@/i18n/routing";
+import { SHELL_NAMESPACES, pickMessages } from "@/i18n/messages";
 import { MetadataProvider } from "@/components/metadata-provider";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,17 +17,24 @@ import { ApiStatusBanner } from "@/components/shell/api-status-banner";
 import { SkipLink } from "@/components/shell/skip-link";
 import "../globals.css";
 
-const sans = IBM_Plex_Sans({
+// Both faces are self-hosted (U2 0c): a production build must never depend on
+// reaching Google Fonts (CI, air-gapped and low-connectivity deployments), and
+// next/font/local sidesteps the Turbopack Google-font loader met in U1.
+// IBM Plex Sans is the variable latin cut (wght 100–700; we use 400–600) plus
+// its italic; SIL OFL — see src/app/fonts/README.md and LICENSE-IBMPlexSans.txt.
+const sans = localFont({
+  src: [
+    { path: "../fonts/IBMPlexSans-latin.woff2", weight: "400 600", style: "normal" },
+    { path: "../fonts/IBMPlexSans-latin-italic.woff2", weight: "400 600", style: "italic" },
+  ],
   variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
   display: "swap",
+  fallback: ["system-ui", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
 });
 
-// Noto Sans Ethiopic (variable 400–600, ethiopic subset) is self-hosted: Turbopack's
-// next/font/google loader rejects this family ("queries have exactly one entry"),
-// which broke `next dev`. See src/app/fonts/README.md. Only referenced under
-// html[lang="am"]; the unicode-range keeps Latin glyphs on IBM Plex Sans.
+// Noto Sans Ethiopic (variable 400–600, ethiopic subset), SIL OFL. Only
+// referenced under html[lang="am"]; the unicode-range keeps Latin glyphs and
+// digits on IBM Plex Sans (tabular numerals).
 const ethiopic = localFont({
   src: "../fonts/NotoSansEthiopic-ethiopic.woff2",
   variable: "--font-ethiopic",
@@ -73,6 +80,8 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const meta = LOCALE_META[locale as Locale];
   const tc = await getTranslations({ locale, namespace: "common" });
+  // Only the shell's namespaces travel to the client here; pages add their own.
+  const shellMessages = pickMessages(await getMessages(), SHELL_NAMESPACES);
 
   return (
     <html
@@ -87,7 +96,7 @@ export default async function LocaleLayout({
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={shellMessages}>
           <ThemeProvider>
             <TooltipProvider delayDuration={200}>
               <ToastProvider closeLabel={tc("close")}>
@@ -95,7 +104,7 @@ export default async function LocaleLayout({
                   <SkipLink />
                   <ApiStatusBanner />
                   <SiteHeader />
-                  <main id="main" className="min-h-[60dvh] pb-[var(--bottombar-h)] md:pb-0">
+                  <main id="main" className="min-h-[60dvh] pb-[var(--bottombar-h)] md:pb-0 print:min-h-0 print:pb-0">
                     {children}
                   </main>
                   <SiteFooter />

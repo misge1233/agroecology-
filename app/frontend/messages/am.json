@@ -46,7 +46,8 @@
     "apiUnreachable": "የምክር አገልግሎቱ አይደረስም። እስኪመለስ ድረስ ምክሮች አይገኙም።",
     "apiStarting": "የምክር አገልግሎቱ በመጀመር ላይ ነው።",
     "checking": "አገልግሎቱን በመፈተሽ ላይ…",
-    "retry": "አሁን እንደገና ሞክር"
+    "retry": "አሁን እንደገና ሞክር",
+    "retrying": "የግንኙነት ችግር — እንደገና እየሞከረ ነው…"
   },
   "home": {
     "hero": {
@@ -138,7 +139,10 @@
       "mapLoading": "ካርታ በመጫን ላይ…",
       "mapLabel": "የኢትዮጲያ ካርታ። ምልክቱን ለማስቀመጥ ይጫኑ፣ ወይም ከዚህ በታች ያሉትን የመጋጠሚያ መስኮች በቁልፍ ሰሌዳ ይጠቀሙ።",
       "noPin": "ገና ምልክት የለም",
-      "pinAt": "ምልክት በ{lat}፣ {lon}"
+      "pinAt": "ምልክት በ{lat}፣ {lon}",
+      "showMap": "ካርታውን አሳይ",
+      "mapDeferred": "ውሂብ ለመቆጠብ ካርታው ሲከፍቱት ይጫናል። ከታች ያሉት መስኮች ያለሱም ይሠራሉ።",
+      "tilesFailed": "የካርታ ምስሎች መጫን አልቻሉም። ከታች ቦታ ይፈልጉ ወይም መጋጠሚያዎችን ይተይቡ — ፒኑ አሁንም ይሠራል።"
     },
     "challenge": {
       "title": "ፈተናው ምንድን ነው?",
@@ -216,7 +220,8 @@
         "change": "ለውጥ",
         "image": "የ{practice} ምሳሌ ምስል",
         "imageMissing": "ገና ምስል የለም",
-        "apiEffect": "የሞዴል ዓረፍተ ነገር፦ {effect}"
+        "apiEffect": "የሞዴል ዓረፍተ ነገር፦ {effect}",
+        "imageLoading": "ምስል እየተጫነ ነው…"
       },
       "empty": {
         "title": "ገና የሚታይ ልማድ የለም",
@@ -234,7 +239,21 @@
         "title": "ጥያቄው ሊመዘን አልቻለም"
       },
       "live": "{n, plural, one {# ልማድ ተመክሯል} other {# ልማዶች ተመክረዋል}}",
-      "explainInChat": "በውይይት አብራራ"
+      "explainInChat": "በውይይት አብራራ",
+      "print": {
+        "savePdf": "እንደ PDF አስቀምጥ",
+        "title": "የምክር ሰነድ",
+        "generatedOn": "የተዘጋጀው በ{date}",
+        "shareLink": "የዚህ ምክር አገናኝ",
+        "request": "ጥያቄ",
+        "practices": "ደረጃ የተሰጣቸው ልማዶች",
+        "effect": "የተገመተ ውጤት",
+        "evidenceBase": "የማስረጃ መሠረት",
+        "sources": "ምንጮች",
+        "evidencePending": "ከመታተሙ በፊት የማስረጃ ዝርዝሮች አልተጫኑም፤ እነሱን ለማካተት በልማድ ላይ \"ማስረጃ\"ን ይክፈቱና እንደገና ያትሙ።",
+        "preparing": "ማስረጃውን ለህትመት እያዘጋጀ ነው…",
+        "footer": "ከAgroAdvisor-ET (የባዮቨርሲቲ ኢንተርናሽናል እና CIAT ህብረት) የታተመ። በማስረጃ ደረጃ የተሰጠ እንጂ ትንበያ አይደለም፦ ልማዶች በተጣመሩ የመስክ ሙከራዎች ውስጥ በሚጠበቀው ውጤታቸው ቅደም ተከተል ተሰጥተዋል፤ መቶኛዎች በተገለጸ እምነት የሞዴል ግምቶች ናቸው።"
+      }
     }
   },
   "evidence": {
@@ -315,16 +334,17 @@
       "locationHelp": "በኢትዮጲያ ውስጥ ምልክት ያስቀምጡ፣ GPS ይጠቀሙ፣ ወይም ከዚህ በታች ባለው ሳጥን መጋጠሚያዎችን ይተይቡ።",
       "changeChallenge": "ፈተና ቀይር",
       "openMap": "ካርታ ክፈት",
-      "evidenceRanked": "በዚህ መስክ በማስረጃ የተደረደሩ ልማዶች"
+      "evidenceRanked": "በዚህ መስክ በማስረጃ የተደረደሩ ልማዶች",
+      "orType": "…ወይም በራስዎ ቃላት ይግለጹ።"
     },
     "protocol": {
-      "farmAt": "My farm is at {lat}, {lon}.",
-      "challenge": "My challenge is {family}.",
-      "objective": "My objective is to {objective}.",
-      "challengeNote": "Challenge: {family}.",
-      "objectiveNote": "Objective: {objective}.",
-      "explain": "I'm at {lat}, {lon}{crop}. For \"{family}\" with the goal to {direction} {indicator}, you recommended {practices}. Why these, and how sure are you?",
-      "growing": " growing {crop}"
+      "farmAt": "እርሻዬ በ{lat}፣ {lon} ላይ ነው።",
+      "challenge": "ፈተናዬ {family} ነው።",
+      "objective": "ዓላማዬ {objective} ነው።",
+      "challengeNote": "ፈተና፦ {family}።",
+      "objectiveNote": "ዓላማ፦ {objective}።",
+      "explain": "እኔ በ{lat}፣ {lon} ላይ ነኝ{crop}። ለ\"{family}\" {indicator}ን {direction} በሚለው ግብ {practices}ን መከሩ። ለምን እነዚህ፣ እና ምን ያህል እርግጠኛ ነዎት?",
+      "growing": "፣ {crop} እያመረትኩ"
     },
     "contextChips": {
       "label": "የተረዱ መለኪያዎች",
@@ -336,7 +356,20 @@
       "clear": "{key}ን አጽዳ"
     },
     "geoUnavailable": "በዚህ አሳሽ ላይ ጂኦሎኬሽን አይገኝም።",
-    "geoFailed": "ቦታዎን ማንበብ አልተቻለም። በምትኩ ካርታውን ይሞክሩ።"
+    "geoFailed": "ቦታዎን ማንበብ አልተቻለም። በምትኩ ካርታውን ይሞክሩ።",
+    "roles": {
+      "user": "እርስዎ",
+      "assistant": "አማካሪ"
+    },
+    "timestamp": "{role}፣ {time}",
+    "conversation": "ውይይት",
+    "streaming": "መልሱ እየተጻፈ ነው…",
+    "scoring": "ልማዶች በመስክ ሙከራ ሞዴል እየተመዘኑ ነው…",
+    "errorTitle": "መልሱ አልደረሰም",
+    "retrySend": "እንደገና ላክ",
+    "openInAdvisor": "በአማካሪ ውስጥ ክፈት",
+    "newChat": "አዲስ ውይይት",
+    "contextTitle": "ለዚህ ደረጃ የተጠቀመው አውድ"
   },
   "about": {
     "title": "ስለ AgroAdvisor-ET",
@@ -389,6 +422,7 @@
     "completedStep": "ተጠናቋል",
     "resultsRegion": "የተመከሩ ልማዶች",
     "themeToggle": "ገጽታ",
-    "externalLink": "ውጫዊ አገናኝ"
+    "externalLink": "ውጫዊ አገናኝ",
+    "chatLog": "ከአማካሪው ጋር ውይይት"
   }
 }

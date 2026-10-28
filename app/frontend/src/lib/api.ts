@@ -1,6 +1,8 @@
+import { retryFinished, retryStarted } from "./retry-store";
 import type {
   ApiLanguage,
   ChatMessage,
+  ChatSlotsHint,
   ChatStreamEvent,
   ContextResponse,
   ExplainResponse,
@@ -13,6 +15,34 @@ import type {
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
   "http://127.0.0.1:8000";
+
+/**
+ * Bounded retry with backoff for idempotent calls (U2 item 5): a network
+ * failure or a 502/503/504 is retried after 600 ms and 1800 ms, then surfaces.
+ * Aborted requests are never retried; the chat stream is not routed through
+ * here (a half-streamed answer must not be replayed).
+ */
+export const RETRY_DELAYS_MS = [600, 1800];
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+export async function fetchWithRetry(input: string, init: RequestInit = {}): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const res = await fetch(input, init);
+      const transient = res.status === 502 || res.status === 503 || res.status === 504;
+      if (!transient || attempt >= RETRY_DELAYS_MS.length) return res;
+    } catch (e) {
+      if (init.signal?.aborted || attempt >= RETRY_DELAYS_MS.length) throw e;
+    }
+    retryStarted();
+    try {
+      await sleep(RETRY_DELAYS_MS[attempt]);
+    } finally {
+      retryFinished();
+    }
+    if (init.signal?.aborted) throw new DOMException("Aborted", "AbortError");
+  }
+}
 
 async function parseError(res: Response): Promise<string> {
   try {
@@ -29,7 +59,7 @@ async function parseError(res: Response): Promise<string> {
 }
 
 export async function fetchMetadata(): Promise<Metadata> {
-  const res = await fetch(`${API_BASE}/metadata`, { cache: "no-store" });
+  const res = await fetchWithRetry(`${API_BASE}/metadata`, { cache: "no-store" });
   if (!res.ok) throw new Error(await parseError(res));
   return res.json();
 }
@@ -39,7 +69,7 @@ export async function fetchContext(
   lon: number,
   signal?: AbortSignal
 ): Promise<ContextResponse> {
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${API_BASE}/context?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`,
     { cache: "no-store", signal }
   );
@@ -51,7 +81,7 @@ export async function postRecommend(
   body: RecommendRequest,
   signal?: AbortSignal
 ): Promise<RecommendResponse> {
-  const res = await fetch(`${API_BASE}/recommend`, {
+  const res = await fetchWithRetry(`${API_BASE}/recommend`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -65,7 +95,7 @@ export async function postExplain(
   recommendation: RecommendResponse,
   opts?: { question?: string; k?: number; signal?: AbortSignal; language?: ApiLanguage }
 ): Promise<ExplainResponse> {
-  const res = await fetch(`${API_BASE}/explain`, {
+  const res = await fetchWithRetry(`${API_BASE}/explain`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -88,6 +118,8 @@ export async function* streamChat(opts: {
   topN?: number;
   signal?: AbortSignal;
   language?: ApiLanguage;
+  /** Structured values behind a quick-reply chip (U2). */
+  hint?: ChatSlotsHint | null;
 }): AsyncGenerator<ChatStreamEvent> {
   const res = await fetch(`${API_BASE}/chat`, {
     method: "POST",
@@ -99,6 +131,7 @@ export async function* streamChat(opts: {
       stream: true,
       top_n: opts.topN ?? 1,
       language: opts.language ?? "en",
+      hint: opts.hint ?? null,
     }),
     signal: opts.signal,
   });
@@ -132,7 +165,7 @@ export async function* streamChat(opts: {
 
 /** Offline gazetteer lookup for the Advisor's place search (U1). */
 export async function fetchGeocode(q: string, signal?: AbortSignal): Promise<GeocodeResponse> {
-  const res = await fetch(`${API_BASE}/geocode?q=${encodeURIComponent(q)}`, {
+  const res = await fetchWithRetry(`${API_BASE}/geocode?q=${encodeURIComponent(q)}`, {
     cache: "no-store",
     signal,
   });

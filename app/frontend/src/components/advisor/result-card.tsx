@@ -55,7 +55,7 @@ export function ResultCard({
 
   function toggle(panel: Panel) {
     setOpen((o) => (o === panel ? null : panel));
-    if (panel !== "why") load();
+    if (panel !== "why") void load();
   }
 
   const panels: { key: Panel; label: string; icon: typeof HelpCircle; show: boolean }[] = [
@@ -71,6 +71,7 @@ export function ResultCard({
           practice={item.practice}
           alt={t("image", { practice: name })}
           fallbackLabel={t("imageMissing")}
+          title={name}
           priority={priority}
         />
         <div className="space-y-3 p-4 sm:p-5">
