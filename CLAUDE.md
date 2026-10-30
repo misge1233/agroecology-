@@ -14,13 +14,20 @@ at a time and report; you do not decide the roadmap.
    if broader context is needed.
 
 ## Core doctrine — never violate
-1. **The ML model owns every number.** The LLM/RAG layer explains and
-   instructs; it never invents or alters effect sizes, percentages, rankings,
-   or study counts. See the numeric guardrail in
-   `app/backend/app/services/explain_service.py` — extend it, don't bypass it.
+1. **The ML model owns every effect number.** Knowledge sources (retrieved
+   guidance documents, WOCAT practice records, graph relations) may PROPOSE
+   practices with provenance, but never quantify an effect, a percentage, a
+   ranking score or a study count that the model or the dataset did not
+   produce. The LLM/RAG layer explains and instructs; it never invents or
+   alters effect sizes, percentages, rankings, or study counts. See the
+   numeric guardrail in `app/backend/app/services/explain_service.py` —
+   extend it, don't bypass it. *(Amended 28 Oct 2026, Phase P9 — the
+   evidence-tiered advisory: model-led / hybrid / knowledge-led.)*
 2. **Cite or stay silent.** Generated explanations must be grounded in
    retrieved chunks with provenance (`era_code`, DOI); if grounding fails,
-   fall back to deterministic templates.
+   fall back to deterministic templates. This applies to every proposed
+   practice: a knowledge candidate without at least one citation is not
+   shown. *(Amended 28 Oct 2026, Phase P9.)*
 3. **Wrap, never fork.** `app/backend/recommend.py` and
    `app/backend/advisor_agent.py` are the canonical engine/agent — wire around
    them, do not duplicate their logic.

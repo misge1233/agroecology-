@@ -90,6 +90,14 @@ class GraphQuery:
         """True once WOCAT Technology nodes have been ingested."""
         return bool(self._nodes_of(NodeType.TECHNOLOGY))
 
+    def has_practice_records(self) -> bool:
+        """True when at least one *non-synthetic* Technology record exists (P9).
+
+        Synthetic nodes are test scaffolding and never surface as candidates,
+        so they must not make ``/metadata`` advertise practice records.
+        """
+        return any(not self._attrs(tid).get("synthetic") for tid in self._nodes_of(NodeType.TECHNOLOGY))
+
     # ------------------------------------------------------------- queries
     def evidence_summary(self, practice: str, indicator: str) -> dict[str, Any]:
         """Per-study evidence behind one (practice, indicator) pair.
@@ -108,12 +116,15 @@ class GraphQuery:
                 "practice": practice, "indicator": indicator, "found": False,
                 "studies": [], "n_studies": 0, "n_obs": 0,
                 "aez_belts": [], "crop_groups": [], "corpus_status": {},
+                "obs_by_belt": {}, "belt_counts_exact": True,
             }
         practice_attrs = self._attrs(pid)
         studies: list[dict[str, Any]] = []
         belts: set[str] = set()
         crops: set[str] = set()
         corpus_status: dict[str, int] = defaultdict(int)
+        obs_by_belt: dict[str, int] = defaultdict(int)
+        belt_counts_exact = True
         for sid, attrs in self._in(pid, EdgeType.REPORTS_EFFECT):
             if attrs.get("indicator") != indicator:
                 continue
@@ -121,6 +132,12 @@ class GraphQuery:
             belts.update(attrs.get("aez_belts") or [])
             crops.update(attrs.get("crop_groups") or [])
             corpus_status[study.get("corpus_status", "none")] += 1
+            per_belt = attrs.get("obs_by_belt")
+            if isinstance(per_belt, dict):
+                for belt, n in per_belt.items():
+                    obs_by_belt[belt] += int(n)
+            else:  # store built before P9: presence known, counts not
+                belt_counts_exact = False
             studies.append({
                 "study_no": sid.split(":", 1)[1],
                 "era_code": study.get("era_code"),
@@ -136,6 +153,7 @@ class GraphQuery:
                 "share_positive": attrs.get("share_positive"),
                 "aez_belts": attrs.get("aez_belts") or [],
                 "crop_groups": attrs.get("crop_groups") or [],
+                "obs_by_belt": dict(per_belt) if isinstance(per_belt, dict) else {},
             })
         studies.sort(key=lambda s: (-(s["n_obs"] or 0), s["study_no"]))
         return {
@@ -148,6 +166,10 @@ class GraphQuery:
             "aez_belts": sorted(belts),
             "crop_groups": sorted(crops),
             "corpus_status": dict(sorted(corpus_status.items())),
+            # P9: observations per AEZ belt for this (practice, indicator) —
+            # a plain count of dataset rows, never a weight or an effect.
+            "obs_by_belt": dict(sorted(obs_by_belt.items())),
+            "belt_counts_exact": belt_counts_exact,
             "studies": studies,
         }
 

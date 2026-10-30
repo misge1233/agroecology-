@@ -42,7 +42,7 @@ import csv
 import json
 import logging
 import statistics
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -331,6 +331,10 @@ def add_dataset(graph, rows: list[dict[str, str]]) -> dict[str, Any]:
             share_positive=round(sum(1 for v in values if v > 0) / len(values), ROUND),
             aez_belts=sorted({r["aez_belt"] for r in group}),
             crop_groups=sorted({r["Crop_group"] for r in group}),
+            # P9: plain per-belt observation counts of the same rows, so the
+            # advisory can say how much of a practice's evidence for THIS
+            # indicator was measured in the user's belt / moisture zone.
+            obs_by_belt=dict(sorted(Counter(r["aez_belt"] for r in group).items())),
         )
 
     # ---- STUDIED_IN: one edge per (study, belt)

@@ -12,7 +12,7 @@ from typing import Any
 
 from app.config import get_settings
 from app import i18n
-from app.services import explain_service
+from app.services import evidence_service, explain_service
 from app.services import recommender_service as svc
 
 logger = logging.getLogger(__name__)
@@ -28,6 +28,12 @@ _INDICATOR_LABELS: list[tuple[str, str]] = [
     ("soil loss", "Reduce soil loss / erosion"),
     ("runoff", "Reduce runoff"),
 ]
+
+
+def _practice_records_available() -> bool:
+    """Whether the knowledge graph can propose documented practice records (P9)."""
+    gq = explain_service.get_graph_query()
+    return bool(gq is not None and gq.has_practice_records())
 
 
 @lru_cache
@@ -89,4 +95,16 @@ def build_metadata() -> dict[str, Any]:
         "languages": list(i18n.LANGUAGES),
         # Size of the evidence base (counts only) for the home trust strip (U1).
         "evidence": svc.evidence_counts(),
+        # P9: how the advisory decides its mode and which knowledge sources exist.
+        "advisory": {
+            "thresholds": evidence_service.thresholds(get_settings()),
+            "modes": list(evidence_service.MODES),
+            "sources": {
+                "graph": explain_service.graph_is_ready(),
+                "guidance": get_settings().resolved_rag_guidance_chunks_path.is_file(),
+                # True once the graph holds non-synthetic WOCAT records (P6b-ii
+                # ingests the real ones; P6b-i fixtures count when loaded).
+                "practice_records": _practice_records_available(),
+            },
+        },
     }

@@ -81,6 +81,11 @@ export function useExplain() {
   return ctx;
 }
 
+/** Same as useExplain but null outside a provider (knowledge-led results have no model). */
+export function useExplainOptional() {
+  return useContext(ExplainContext);
+}
+
 function StudyChip({ citation }: { citation: ExplainCitation }) {
   const t = useTranslations("evidence");
   const ta = useTranslations("a11y");
@@ -98,10 +103,12 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
     : citation.doi
       ? `https://doi.org/${citation.doi}`
       : null;
+  const tier = citation.tier === "practice" ? "practice" : isGuidance ? "guidance" : "evidence";
   const body = (
     <>
-      <Badge variant={tierVariant(isGuidance ? "guidance" : "evidence")} className="px-1.5 py-0 text-[10px]">
-        {tierLabel(isGuidance ? "guidance" : "evidence", locale)}
+      {citation.ref ? <span className="tabular font-semibold">[{citation.ref}]</span> : null}
+      <Badge variant={tierVariant(tier)} className="px-1.5 py-0 text-[10px]">
+        {tierLabel(tier, locale)}
       </Badge>
       <span className="max-w-[16rem] truncate sm:max-w-[22rem]">{label}</span>
       {citation.n_passages > 1 ? (

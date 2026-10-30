@@ -161,6 +161,100 @@ class RecommendResponse(BaseModel):
     details: RecommendDetails
 
 
+# ---------------------------------------------------------------- advisory (P9)
+class AdviseRequest(RecommendRequest):
+    """The /recommend request plus the UI language (for localised rationales)."""
+
+    top_n: int = Field(default=3, ge=1, le=10)
+    language: Literal["en", "am", "om"] = "en"
+
+
+class ModeReason(BaseModel):
+    """Why the advisory is in its mode — a catalog key plus parameters, never prose."""
+
+    key: str
+    params: dict[str, Any] = Field(default_factory=dict)
+
+
+class CandidateEvidence(BaseModel):
+    """Counts behind one ranked practice relative to the user's belt (counts only)."""
+
+    practice: str
+    n_studies: int
+    n_obs: int
+    n_obs_in_belt: int
+    n_obs_in_zone: int
+    aez_belts: list[str] = Field(default_factory=list)
+    corpus_status: dict[str, int] = Field(default_factory=dict)
+    belt_counts_exact: bool = True
+    in_top3: bool = False
+
+
+class EvidenceSufficiency(BaseModel):
+    user_belt: str | None = None
+    user_zone: str | None = None
+    thresholds: dict[str, int] = Field(default_factory=dict)
+    candidates: list[CandidateEvidence] = Field(default_factory=list)
+    graph_available: bool = True
+
+
+class KnowledgeCitation(BaseModel):
+    """Provenance of one source behind a knowledge candidate (no effect numbers)."""
+
+    tier: str = "guidance"
+    ref: str | None = None
+    era_code: str | None = None
+    # Dataset study id for evidence rows that are not in the ERA corpus (P9).
+    study_no: str | int | None = None
+    title: str | None = None
+    year: int | None = None
+    doi: str | None = None
+    url: str | None = None
+    snippet: str | None = None
+    indicator: str | None = None
+    practice: str | None = None
+    wocat_id: str | int | None = None
+    country: str | None = None
+    licence: str | None = None
+    chunk_id: str | None = None
+
+
+class CandidateSupport(BaseModel):
+    n_sources: int
+    n_documents: int
+    n_guidance_documents: int = 0
+    n_studies: int = 0
+    n_passages: int = 0
+    other_objectives: dict[str, int] = Field(default_factory=dict)
+
+
+class KnowledgeCandidate(BaseModel):
+    """A documented practice proposed with provenance — never with an effect."""
+
+    key: str
+    component: str | None = None
+    label: str
+    practices: list[str] = Field(default_factory=list)
+    sources: list[str] = Field(default_factory=list)
+    support: CandidateSupport
+    record: dict[str, Any] | None = None
+    citations: list[KnowledgeCitation] = Field(default_factory=list)
+    rationale: dict[str, Any] = Field(default_factory=dict)
+    rationale_text: str
+
+
+class AdviseResponse(BaseModel):
+    mode: Literal["model-led", "hybrid", "knowledge-led"]
+    reasons: list[ModeReason] = Field(default_factory=list)
+    #: The unchanged /recommend payload, or null when the engine cannot rank.
+    model: RecommendResponse | None = None
+    knowledge_candidates: list[KnowledgeCandidate] = Field(default_factory=list)
+    evidence_sufficiency: EvidenceSufficiency
+    #: Resolved context (also when there is no model payload).
+    context: dict[str, Any] = Field(default_factory=dict)
+    language: Literal["en", "am", "om"] = "en"
+
+
 class ContextResponse(BaseModel):
     lat: float
     lon: float
@@ -222,6 +316,8 @@ class MetadataResponse(BaseModel):
     languages: list[str] = Field(default_factory=lambda: ["en", "am", "om"])
     # Additive (U1): headline evidence counts for the UI trust strip.
     evidence: EvidenceCounts | None = None
+    # Additive (P9): the evidence-tiered advisory's thresholds and sources.
+    advisory: dict[str, Any] | None = None
 
 
 class ExplainCitation(BaseModel):
@@ -244,6 +340,8 @@ class ExplainCitation(BaseModel):
     practice: str | None = None
     snippet: str
     n_passages: int = Field(default=1, ge=1)
+    #: P9: the marker this source carries in the explanation — "3", "G1", "W2".
+    ref: str | None = None
 
 
 class EvidenceBaseStudy(BaseModel):

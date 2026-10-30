@@ -19,6 +19,7 @@
     "advisor": "Gorsaa",
     "chat": "Haasaa",
     "about": "Waa'ee",
+    "cta": "Gorsa argadhu",
     "main": "Naanna'iinsa ijoo",
     "bottom": "Kutaalee",
     "theme": {
@@ -40,6 +41,8 @@
     "version": "Gosa {version}",
     "versionUnknown": "Gosni hin argamu",
     "licence": "Hayyama fi daataa",
+    "explore": "Daawwadhu",
+    "resources": "Qabeenyota",
     "rights": "© {year} AgroAdvisor-ET"
   },
   "status": {
@@ -91,6 +94,10 @@
       "title": "Dirreewwan rakkoo shan",
       "subtitle": "Sadarkeessuun maatii filattan keessatti, bakka kaa'attaniif raawwatama.",
       "open": "{family}n jalqabi"
+    },
+    "cta": {
+      "title": "Qonna keessaniif gocha sirrii argadhaa",
+      "body": "Daqiiqaa tokko qofa fudhata: bakka kaa'aa, rakkoo fi kaayyoo filadhaa, gochaalee sadarkeeffaman ragaa isaan duuba jiru waliin ilaalaa."
     }
   },
   "advisor": {
@@ -253,7 +260,56 @@
         "evidencePending": "Osoo hin maxxanfamin dura bal'inni ragaa hin fe'amne; isaan dabaluuf gocha irratti \"Ragaa\" bani ergasii irra deebi'ii maxxansi.",
         "preparing": "Ragaa maxxansaaf qopheessaa jira…",
         "footer": "AgroAdvisor-ET (Alliance of Bioversity International fi CIAT) irraa maxxanfame. Ragaadhaan sadarkeeffame malee raaga miti: gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbantaawwan tilmaama moodeelaa amantaa ibsameen."
-      }
+      },
+      "mode": {
+        "explain": {
+          "model": "Gorsi kun maaliif moodeelaan hogganama",
+          "hybrid": "Gorsi kun maaliif makaa dha",
+          "documented": "Maaliif gochaalee galmaa'an qofti agarsiifaman"
+        },
+        "reason": {
+          "strong_evidence": "{practice} kaayyoo kanaaf qorannoo {n_studies} fi daawwannaa dirree {n_obs} qaba.",
+          "thin_evidence": "Gochi ragaa guddaa qabu, {practice}, kaayyoo kanaaf qorannoo {n_studies} fi daawwannaa dirree {n_obs} qofa qaba (moodeelaan hogganamuun qorannoo {min_studies} fi daawwannaa {min_obs} barbaada).",
+          "in_zone": "{practice} daawwannaa {n_obs_in_zone} godina jiidhina keessan ({zone}) keessatti safarame qaba.",
+          "other_zones_only": "Gochaalee sadarkaa olaanaa keessaa tokkollee godina jiidhina keessan ({zone}) keessatti hin safaramne.",
+          "zone_unknown": "Godinni agro-ekoloojii keessan hiikamuu hin dandeenye; kanaaf uwwisni godinaa hin beekamu.",
+          "engine_no_evidence": "Kuusaan daataa yaalii dirree rakkoo fi kaayyoo kanaaf daawwannaa hin qabu.",
+          "engine_unsupported": "Cimdiin rakkoo fi kaayyoo kun moodeela yaalii dirreetiin hin madaalamu.",
+          "no_studies": "Gochaalee sadarkeeffaman keessaa tokkollee kaayyoo kanaaf qorannoo hin qabu.",
+          "graph_unavailable": "Giraafiin beekumsaa hin ijaaramne; kanaaf gadi fageenyi ragaa madaalamuu hin dandeenye.",
+          "no_candidates": "Gaaffii kanaaf gochi galmaa'e wabii qabu hin argamne."
+        }
+      },
+      "documented": {
+        "title": "Gochaalee galmaa'an",
+        "introHybrid": "Ragaan yaalii dirree gaaffii kanaaf qal'aa dha; kanaaf gochaaleen sanadoota qajeelfamaa fi galmeewwan gochaa irraa dhufan kun sadarkaa cinaatti tarreeffamu — maddoota isaanii waliin, lakkoofsa bu'aa malee.",
+        "introKnowledge": "Gaaffii kanaaf ragaan yaalii dirree hin jiru; kanaaf homtuu hin sadarkeeffamne yookiin hin tilmaamamne. Gochaaleen kun sanadoota qajeelfamaa fi galmeewwan gochaa haalawwan walfakkaataniif irraa dhufan, maddoota isaanii waliin.",
+        "empty": "Gaaffii kanaaf gochi galmaa'e wabii qabu hin argamne. Rakkoo kanaaf kaayyoo biraa yookiin bakka dhihoo yaalaa.",
+        "rank": "Kan yaadame #{rank}",
+        "why": "Maaliif kun yaadame",
+        "mapsTo": "Gochaalee kuusaa daataa keessaa",
+        "support": {
+          "documents": "Maddoota",
+          "passages": "Kutaalee",
+          "otherObjectives": "Kaayyoowwan biroof ragaa dirree (qorannoowwan)"
+        },
+        "sources": {
+          "label": "Maddoota gocha kana duuba jiran",
+          "showAll": "Maddoota hunda agarsiisi ({n})",
+          "showFewer": "Muraasa agarsiisi"
+        },
+        "source": {
+          "evidence_other_objectives": "Kaayyoowwan biroof ragaa dirree",
+          "documented_in_guidance": "Sanadoota qajeelfamaa keessatti ibsame",
+          "documented_practice_record": "Galmee gochaa"
+        },
+        "disclaimer": "Gochaaleen galmaa'an yaadawwan madda qaban malee sadarkeeffaman yookiin safaraman miti; isaaniif hangi bu'aa hin tilmaamamne."
+      },
+      "knowledgeLed": {
+        "title": "Gaaffii kanaaf ragaan yaalii dirree hin jiru",
+        "body": "Moodeelli asitti gochaalee sadarkeessuu yookiin bu'aa tilmaamuu hin danda'u. Bakka isaa gochaaleen galmaa'an haalawwan walfakkaatan irraa, tokkoon tokkoon isaanii maddoota isaanii waliin agarsiifamu."
+      },
+      "liveDocumented": "{n, plural, one {gocha galmaa'e # yaadameera} other {gochaalee galmaa'an # yaadamaniiru}}"
     }
   },
   "evidence": {
@@ -284,7 +340,8 @@
       "evidence": "Ragaa dirree",
       "guidance": "Qajeelfama",
       "practice": "Galmee gochaa"
-    }
+    },
+    "datasetStudy": "Qorannoo kuusaa daataa #{n}"
   },
   "chat": {
     "eyebrow": "Gorsaa gochaa Agro-ekoloojii+",
@@ -369,7 +426,11 @@
     "retrySend": "Irra deebi'ii ergi",
     "openInAdvisor": "Gorsaa keessatti bani",
     "newChat": "Marii haaraa",
-    "contextTitle": "Haala sadarkeessuu kanaaf fayyadame"
+    "contextTitle": "Haala sadarkeessuu kanaaf fayyadame",
+    "advisory": {
+      "hybrid": "Ragaa yaalii dirree qal'aa: gochaaleen galmaa'an sadarkaa jalatti tarreeffamaniiru.",
+      "knowledgeLed": "Gaaffii kanaaf ragaan yaalii dirree hin jiru — gochaalee galmaa'an qofa."
+    }
   },
   "about": {
     "title": "Waa'ee AgroAdvisor-ET",

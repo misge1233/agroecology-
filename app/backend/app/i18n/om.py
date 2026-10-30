@@ -151,4 +151,46 @@ STRINGS: dict[str, str] = {
     "indicator_label.SOM content": "Qabiyyee orgaanikii biyyee fooyyessuu",
     "indicator_label.soil loss": "Dhiqama biyyee hir'isuu",
     "indicator_label.runoff": "Yaa'insa bishaanii hir'isuu",
+    # ------------------------------------------------------------ advisory modes (P9)
+    "mode.model_led": "Moodeela yaalii dirree",
+    "mode.hybrid": "Makaa",
+    "mode.knowledge_led": "Gocha galmaa'e",
+    "mode.reason.strong_evidence": "{practice} kaayyoo kanaaf qorannoo {n_studies} fi daawwannaa dirree {n_obs} qaba.",
+    "mode.reason.thin_evidence": (
+        "Gochi ragaa guddaa qabu, {practice}, kaayyoo kanaaf qorannoo {n_studies} fi daawwannaa dirree {n_obs} qofa "
+        "qaba (daangaan moodeelaan hogganamuu qorannoo {min_studies} fi daawwannaa {min_obs} dha)."
+    ),
+    "mode.reason.in_zone": "{practice} daawwannaa {n_obs_in_zone} godina jiidhina keessan ({zone}) keessatti safarame qaba.",
+    "mode.reason.other_zones_only": "Gochaalee sadarkaa olaanaa keessaa tokkollee godina jiidhina keessan ({zone}) keessatti hin safaramne.",
+    "mode.reason.zone_unknown": "Godinni agro-ekoloojii keessan hiikamuu hin dandeenye; kanaaf uwwisni godinaa hin beekamu.",
+    "mode.reason.engine_no_evidence": "Kuusaan daataa yaalii dirree rakkoo fi kaayyoo kanaaf daawwannaa hin qabu.",
+    "mode.reason.engine_unsupported": "Cimdiin rakkoo fi kaayyoo kun moodeela yaalii dirreetiin hin madaalamu.",
+    "mode.reason.no_studies": "Gochaalee sadarkeeffaman keessaa tokkollee kaayyoo kanaaf qorannoo hin qabu.",
+    "mode.reason.graph_unavailable": "Giraafiin beekumsaa hin ijaaramne; kanaaf gadi fageenyi ragaa madaalamuu hin dandeenye.",
+    "mode.reason.no_candidates": "Gaaffii kanaaf gochi galmaa'e wabii qabu hin argamne.",
+    "mode.hybrid_note": (
+        " Ragaan yaalii dirree gaaffii kanaaf qal'aa dha; kanaaf {practices_word} galmaa'an {n} sanadoota qajeelfamaa "
+        "fi galmeewwan gochaa irraa maddoota waliin cinaatti {is_are} — lakkoofsa bu'aa hin qaban."
+    ),
+    "mode.knowledge_led.lead": (
+        "Naannoo keessanitti **{challenge}** kaayyoo **{objective}** waliin ragaan yaalii dirree hin jiru; kanaaf "
+        "gochaalee sadarkeessuu yookiin bu'aa tilmaamuu hin danda'u. Gochaaleen galmaa'an kunneen sanadoota qajeelfamaa "
+        "fi galmeewwan gochaa haalawwan walfakkaataniif qophaa'an irraa dhufan, maddoota isaanii waliin, lakkoofsa bu'aa malee:"
+    ),
+    "mode.knowledge_led.item": "- **{label}** — {rationale}",
+    "mode.knowledge_led.none": (
+        "Naannoo keessanitti **{challenge}** kaayyoo **{objective}** waliin ragaan yaalii dirree hin jiru, akkasumas "
+        "gochi galmaa'e wabii qabu hin argamne. Rakkoo kanaaf kaayyoo biraa yookiin bakka dhihoo yaalaa."
+    ),
+    "mode.practice": "gocha",
+    "mode.practices": "gochaalee",
+    "kc.rationale.guidance": "{label} {family} fi {objective}f haala kana keessatti sanadoota qajeelfamaa {n_docs} ({docs_word}) argaman keessatti ibsameera.",
+    "kc.rationale.other_objectives": "{label} kaayyoowwan biroof ragaa yaalii dirree qaba: {objectives}.",
+    "kc.rationale.record": "{label} galmee gochaa haala walfakkaataa ({country}) irraa galmaa'e dha.",
+    "kc.objective_item": "{objective} ({studies_word} {n})",
+    "kc.join": ", ",
+    "kc.document": "sanada",
+    "kc.documents": "sanadoota",
+    "kc.study": "qorannoo",
+    "kc.studies": "qorannoowwan",
 }

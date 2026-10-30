@@ -58,10 +58,11 @@ GUIDANCE_K = 4       # Tier-2 guidance passages retrieved per explanation
 
 # Numeric tokens: integers and decimals ("12", "8.38", the "3" in "3-small").
 _NUM_RE = re.compile(r"\d+(?:\.\d+)?")
-# Inline citation markers like [1], [12], and guidance markers [G1], [G3] —
+# Inline citation markers like [1], [12], the per-study passage labels [1a],
+# [1b] (P9), guidance markers [G1] and practice-record markers [W1] —
 # stripped before the numeric check so reference indices are never mistaken
 # for invented quantities.
-_CITE_MARKER_RE = re.compile(r"\[G?\d+\]")
+_CITE_MARKER_RE = re.compile(r"\[[GW]?\d+[a-z]?\]")
 
 EXPLAIN_SYSTEM_PROMPT = (
     "You are the evidence-explanation layer of AgroAdvisor-ET, an advisor for "
@@ -73,7 +74,9 @@ EXPLAIN_SYSTEM_PROMPT = (
     "(agro-ecology, rainfall, slope, crop) and HOW to apply them in practice.\n"
     "Strict rules:\n"
     "- Ground every claim in the numbered passages and cite them inline as "
-    "[n] (e.g. [1], [3]). If the passages do not support a claim, omit the "
+    "[n] (e.g. [1], [3]). Passages are numbered PER STUDY: several passages "
+    "of one study share its number and are labelled [1a], [1b], ... — cite "
+    "the study as [1]. If the passages do not support a claim, omit the "
     "claim entirely — do not fill gaps from general knowledge.\n"
     "- Use ONLY numbers that appear in the recommendation JSON or are quoted "
     "verbatim from a cited passage. Never invent, alter, or recompute effect "
@@ -90,6 +93,9 @@ EXPLAIN_SYSTEM_PROMPT = (
     "modes) ONLY — cite them inline as [Gn]. They are never evidence for "
     "effect sizes or rankings, and any number quoted from a guidance passage "
     "must appear verbatim in it and be cited [Gn].\n"
+    "- If PRACTICE RECORDS (numbered [W1], [W2], ...) are provided, they "
+    "describe HOW and WHERE ELSE a practice is implemented — cite them "
+    "inline as [Wn]; they are never evidence for effect sizes or rankings.\n"
     "- Be concise and practical (short paragraphs or bullets, plain language "
     "for extension workers)."
 )
@@ -355,6 +361,34 @@ def _safe_int(value: Any) -> int | None:
         return None
 
 
+def study_key(chunk: dict[str, Any], index: int) -> str:
+    """The provenance key one chunk is grouped under: era_code for Tier 1,
+    url/doi/title for Tier 2/3; two unidentifiable chunks never collapse."""
+    return str(chunk.get("era_code") or chunk.get("url") or chunk.get("doi")
+               or chunk.get("title") or f"chunk-{index}")
+
+
+def group_chunks_by_study(chunks: list[dict[str, Any]]) -> list[tuple[str, list[dict[str, Any]]]]:
+    """Chunks grouped per study/document in first-appearance order (P9).
+
+    The n-th group is the study cited as ``[n]`` in the prompt, the n-th
+    citation in :func:`shape_citations` and the n-th chip in the UI — one
+    numbering for all three.
+    """
+    order: list[str] = []
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for i, c in enumerate(chunks):
+        key = study_key(c, i)
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(c)
+    return [(key, groups[key]) for key in order]
+
+
+_TIER_PREFIX = {"evidence": "", "guidance": "G", "practice": "W"}
+
+
 def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """One citation per study (era_code), deduped across retrieved chunks.
 
@@ -362,21 +396,20 @@ def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     the citation list is per-study provenance for the UI. The first chunk of
     a study (highest fused rank) supplies the snippet and practice;
     ``n_passages`` counts how many retrieved passages that study contributed.
+    ``ref`` (P9) is the marker the explanation uses for this source — the
+    1-based group index with the tier prefix ("3", "G1", "W2") — numbered per
+    tier, in the same order as the prompt labels.
     """
     citations: list[dict[str, Any]] = []
-    by_study: dict[Any, dict[str, Any]] = {}
-    for i, c in enumerate(chunks):
-        # era_code is the join key; guidance chunks (era_code=None) dedupe per
-        # document via url/doi/title instead; never collapse two unknowns.
-        key = (c.get("era_code") or c.get("url") or c.get("doi")
-               or c.get("title") or f"chunk-{i}")
-        if key in by_study:
-            by_study[key]["n_passages"] += 1
-            continue
+    counters: dict[str, int] = {"evidence": 0, "guidance": 0, "practice": 0}
+    for _, group in group_chunks_by_study(chunks):
+        c = group[0]
+        tier = c.get("tier") or "evidence"
+        counters[tier] = counters.get(tier, 0) + 1
         text = (c.get("text") or "").strip()
-        citation = {
+        citations.append({
             "era_code": c.get("era_code"),
-            "tier": c.get("tier") or "evidence",
+            "tier": tier,
             "doi": c.get("doi"),
             "url": c.get("url"),
             "title": c.get("title"),
@@ -384,10 +417,9 @@ def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "journal": c.get("journal"),
             "practice": c.get("for_practice"),
             "snippet": text[:SNIPPET_CHARS],
-            "n_passages": 1,
-        }
-        by_study[key] = citation
-        citations.append(citation)
+            "n_passages": len(group),
+            "ref": f"{_TIER_PREFIX.get(tier, '')}{counters[tier]}",
+        })
     return citations
 
 
@@ -544,9 +576,12 @@ def _build_messages(
     language: str = "en",
 ) -> list[dict[str, str]]:
     passages = []
-    for i, c in enumerate(chunks, start=1):
-        header = f"[{i}] ({c.get('era_code')}) {c.get('title')} ({c.get('year')})"
-        passages.append(f"{header}\n{(c.get('text') or '').strip()}")
+    for i, (_, group) in enumerate(group_chunks_by_study(chunks), start=1):
+        for j, c in enumerate(group):
+            # One number per STUDY; its passages are [1a], [1b], ... (P9).
+            label = f"[{i}]" if len(group) == 1 else f"[{i}{chr(ord('a') + j)}]"
+            header = f"{label} ({c.get('era_code')}) {c.get('title')} ({c.get('year')})"
+            passages.append(f"{header}\n{(c.get('text') or '').strip()}")
     user = (
         "RECOMMENDATION JSON (authoritative — the only source of effect "
         "numbers):\n```json\n"
@@ -567,14 +602,16 @@ def _build_messages(
             + "\n"
         )
     user += (
-        "\nEVIDENCE PASSAGES (cite as [n]):\n\n"
+        "\nEVIDENCE PASSAGES (numbered per study; cite the study as [n]):\n\n"
         + "\n\n".join(passages)
     )
     if guidance_chunks:
         guidance_passages = []
-        for i, c in enumerate(guidance_chunks, start=1):
-            header = f"[G{i}] {c.get('title')} ({c.get('year')})"
-            guidance_passages.append(f"{header}\n{(c.get('text') or '').strip()}")
+        for i, (_, group) in enumerate(group_chunks_by_study(guidance_chunks), start=1):
+            for j, c in enumerate(group):
+                label = f"[G{i}]" if len(group) == 1 else f"[G{i}{chr(ord('a') + j)}]"
+                header = f"{label} {c.get('title')} ({c.get('year')})"
+                guidance_passages.append(f"{header}\n{(c.get('text') or '').strip()}")
         user += (
             "\n\nGUIDANCE PASSAGES (cite as [G1], [G2], ...) — practical "
             "implementation guidance only. Use them for HOW-to advice "

@@ -1,0 +1,1263 @@
+{
+  "mode": "hybrid",
+  "reasons": [
+    {
+      "key": "mode.reason.thin_evidence",
+      "params": {
+        "practice": "Mulch-Water Harvesting",
+        "n_studies": 1,
+        "n_obs": 3,
+        "min_studies": 3,
+        "min_obs": 10
+      }
+    },
+    {
+      "key": "mode.reason.other_zones_only",
+      "params": {
+        "zone": "Dry-lowland"
+      }
+    }
+  ],
+  "model": {
+    "query": {
+      "lat": 8.38,
+      "lon": 39.37,
+      "practice_family": "Erosion control and water management",
+      "indicator": "soil loss",
+      "crop_type": null,
+      "goal_direction": "reduce"
+    },
+    "recommendations": [
+      {
+        "practice": "Mulch-Water Harvesting",
+        "effect": "~76% reduction in soil loss"
+      },
+      {
+        "practice": "Reduced Tillage-Water Harvesting",
+        "effect": "~70% reduction in soil loss"
+      },
+      {
+        "practice": "Biological SWC practices",
+        "effect": "~68% reduction in soil loss"
+      }
+    ],
+    "details": {
+      "context": {
+        "Rainfall": 755.658,
+        "temp_mean_annual": 20.711,
+        "precip_seasonality": 84.36,
+        "Altitude_r": 1415.835,
+        "slope": 2.34,
+        "soil_clay": 31.7,
+        "land_cover": 30,
+        "lgp_days": 214.0,
+        "soil_ph": 7.7,
+        "soil_soc": 27.9,
+        "aez_belt": "Dry Kolla"
+      },
+      "crop_group": null,
+      "confidence": "low",
+      "ranked": [
+        {
+          "practice": "Mulch-Water Harvesting",
+          "pct_change": -76.2,
+          "log_ratio": -1.4341,
+          "n_evidence": 3
+        },
+        {
+          "practice": "Reduced Tillage-Water Harvesting",
+          "pct_change": -70.0,
+          "log_ratio": -1.2055,
+          "n_evidence": 1
+        },
+        {
+          "practice": "Biological SWC practices",
+          "pct_change": -68.3,
+          "log_ratio": -1.1474,
+          "n_evidence": 3
+        }
+      ],
+      "n_candidates": 23,
+      "n_grounded": 11,
+      "ranking_scope": "Practices ranked only within 'Erosion control and water management' (23 in dataset, 11 with evidence for 'soil loss').",
+      "note": "Effects are model estimates of the with/without response ratio from meta-analysis evidence; confidence reflects out-of-fold reliability for this indicator."
+    }
+  },
+  "knowledge_candidates": [
+    {
+      "key": "Mulch",
+      "component": "Mulch",
+      "label": "Mulch",
+      "practices": [
+        "Improved Varieties-Mulch",
+        "Intercropping-Mulch",
+        "Mulch",
+        "Mulch-Reduced Tillage",
+        "Mulch-Water Harvesting"
+      ],
+      "sources": [
+        "evidence_other_objectives",
+        "documented_in_guidance"
+      ],
+      "support": {
+        "n_sources": 2,
+        "n_documents": 17,
+        "n_guidance_documents": 1,
+        "n_studies": 16,
+        "n_passages": 1,
+        "other_objectives": {
+          "SOM content": 2,
+          "biomass yield": 3,
+          "runoff": 4,
+          "water use efficiency": 2,
+          "yield": 11
+        }
+      },
+      "record": null,
+      "citations": [
+        {
+          "tier": "evidence",
+          "ref": "1",
+          "era_code": "NM0094",
+          "study_no": "ERA_NM0094",
+          "title": "Yield loss of ginger (Zingiber officinale) due to bacterial wilt (Ralstonia solanacearum) in different wilt management systems in Ethiopia",
+          "year": 2019,
+          "doi": "10.1186/s40066-018-0245-6",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Improved Varieties-Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "2",
+          "era_code": "NN0422",
+          "study_no": "ERA_NN0422",
+          "title": "Effect of crop diversification and mulching on termite damage to maize in western Ethiopia",
+          "year": 2019,
+          "doi": "10.1016/j.cropro.2019.01.029",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Intercropping-Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "3",
+          "era_code": "JS0260",
+          "study_no": "ERA_JS0260",
+          "title": "Effect of tied ridges on grain yield response of Maize ( Zea mays L. ) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia",
+          "year": 1998,
+          "doi": "10.1080/02571862.1998.10635130",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "4",
+          "era_code": "AN0085",
+          "study_no": "ERA_AN0085",
+          "title": "SEQUENTIAL EFFECTS OF MINIMUM TILLAGE, SEED PRIMING, FERTILIZER MICRODOSING AND MULCHING IN MAIZE, SEMIARID CENTRAL RIFT VALLEY OF ETHIOPIA",
+          "year": 2016,
+          "doi": "10.1017/S0014479715000125",
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "5",
+          "era_code": "EO0016",
+          "study_no": "ERA_EO0016",
+          "title": "Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi‐Arid Northern Ethiopia",
+          "year": 2017,
+          "doi": "10.1002/ldr.2603",
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "6",
+          "era_code": "JS0246",
+          "study_no": "ERA_JS0246",
+          "title": "Effects of tied ridges and mulch on barley (Hordeum vulgare) rainwater use efficiency and production in Northern Ethiopia",
+          "year": 2010,
+          "doi": "10.1016/j.agwat.2010.01.012",
+          "url": null,
+          "snippet": null,
+          "indicator": "water use efficiency",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "7",
+          "era_code": "AC0173",
+          "study_no": "ERA_AC0173",
+          "title": "Conservation Agriculture Saves Irrigation Water in the Dry Monsoon Phase in the Ethiopian Highlands",
+          "year": 2019,
+          "doi": "10.3390/w11102103",
+          "url": null,
+          "snippet": null,
+          "indicator": "water use efficiency",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "8",
+          "era_code": "CJ0190",
+          "study_no": "ERA_CJ0190",
+          "title": "Experimental Evaluation for the Impacts of Conservation Agriculture with Drip Irrigation on Crop Coefficient and Soil Properties in the Sub-Humid Ethiopian Highlands",
+          "year": 2020,
+          "doi": "10.3390/W12040947",
+          "url": null,
+          "snippet": null,
+          "indicator": "SOM content",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "9",
+          "era_code": "DK0045",
+          "study_no": "ERA_DK0045",
+          "title": "Improving on-site water availability by combining in-situ water harvesting techniques in semi-arid Northern Ethiopia",
+          "year": 2017,
+          "doi": "10.1016/j.agwat.2017.08.009",
+          "url": null,
+          "snippet": null,
+          "indicator": "SOM content",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "10",
+          "era_code": "DK0044",
+          "study_no": "ERA_DK0044",
+          "title": "Impacts of conservation agriculture-based farming systems on optimizing seasonal rainfall partitioning and productivity on vertisols in the Ethiopian drylands",
+          "year": 2015,
+          "doi": "10.1016/j.still.2014.11.009",
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "Mulch",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "11",
+          "era_code": "NN0195",
+          "study_no": "ERA_NN0195",
+          "title": "Performance of in situ rainwater conservation tillage techniques on dry spell mitigation and erosion control in the drought-prone North Wello zone of the Ethiopian highlands",
+          "year": 2007,
+          "doi": "10.1016/j.still.2007.08.002",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "12",
+          "era_code": "DK0031",
+          "study_no": "ERA_DK0031",
+          "title": "Conservation agriculture with trees amplifies negative effects of reduced tillage on maize performance in East Africa",
+          "year": 2018,
+          "doi": "10.1016/j.fcr.2018.03.003",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "13",
+          "era_code": "JO0152",
+          "study_no": "ERA_JO0152",
+          "title": "Influence of 9 years of permanent raised beds and contour furrowing on soil health in conservation agriculture based systems in Tigray region, Ethiopia",
+          "year": 2021,
+          "doi": "10.1002/ldr.3816",
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "14",
+          "era_code": "JS0248",
+          "study_no": "ERA_JS0248",
+          "title": "Medium-term effects of conservation agriculture based cropping systems for sustainable soil and water management and crop productivity in the Ethiopian highlands",
+          "year": 2012,
+          "doi": "10.1016/j.fcr.2011.12.009",
+          "url": null,
+          "snippet": null,
+          "indicator": "water use efficiency",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "15",
+          "era_code": "NJ0117",
+          "study_no": "ERA_NJ0117",
+          "title": "RESTORING CROPLAND PRODUCTIVITY AND PROFITABILITY IN NORTHERN ETHIOPIAN DRYLANDS AFTER NINE YEARS OF RESOURCE-CONSERVING AGRICULTURE",
+          "year": 2016,
+          "doi": "10.1017/s001447971400060x",
+          "url": null,
+          "snippet": null,
+          "indicator": "SOM content",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "16",
+          "era_code": "JS0247",
+          "study_no": "ERA_JS0247",
+          "title": "Effects of conservation agriculture on runoff, soil loss and crop yield under rainfed conditions in Tigray, Northern Ethiopia",
+          "year": 2011,
+          "doi": "10.1111/j.1475-2743.2011.00347.x",
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "Mulch-Water Harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "guidance",
+          "ref": "G1",
+          "era_code": null,
+          "study_no": null,
+          "title": "Farming System 2 (2024) 100110Contents lists available at ScienceDirect Farming System journal …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/81daac28-5223-48fd-9143-e2a2e1cf929b/retrieve",
+          "snippet": "Z. Adimassu et al. Farming System 2 (2024) 100110GHG emissions as well as sequester carbon. Graded soil bunds, graded fanya juu, bench terrace, broad bed furrow grass strips and farmyard manure increased productivity and enhanced adaptation",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_8be523ce-8db3-4c2d-88d6-8f1c31e043c5_030"
+        }
+      ],
+      "rationale": {
+        "key": "kc.rationale.combined",
+        "params": {
+          "label": "Mulch",
+          "n_docs": 1,
+          "n_passages": 1,
+          "other_objectives": "yield (11 studies), runoff (4 studies), biomass yield (3 studies), SOM content (2 studies), water use efficiency (2 studies)"
+        }
+      },
+      "rationale_text": "Mulch is described in 1 guidance document retrieved for Erosion control and water management and soil loss in this context. Mulch has field-trial evidence for other objectives: yield (11 studies), runoff (4 studies), biomass yield (3 studies), SOM content (2 studies), water use efficiency (2 studies)."
+    },
+    {
+      "key": "Physical SWC Measures",
+      "component": "Physical SWC Measures",
+      "label": "Physical SWC Measures",
+      "practices": [
+        "Physical SWC measures"
+      ],
+      "sources": [
+        "evidence_other_objectives",
+        "documented_in_guidance"
+      ],
+      "support": {
+        "n_sources": 2,
+        "n_documents": 12,
+        "n_guidance_documents": 6,
+        "n_studies": 6,
+        "n_passages": 7,
+        "other_objectives": {
+          "SOM content": 1,
+          "biomass yield": 2,
+          "runoff": 13,
+          "yield": 23
+        }
+      },
+      "record": null,
+      "citations": [
+        {
+          "tier": "evidence",
+          "ref": "17",
+          "era_code": null,
+          "study_no": "CSA_18",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Physical SWC measures",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "18",
+          "era_code": null,
+          "study_no": "CSA_20",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Physical SWC measures",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "19",
+          "era_code": null,
+          "study_no": "CSA_26",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "Physical SWC measures",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "20",
+          "era_code": null,
+          "study_no": "CSA_108",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "Physical SWC measures",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "21",
+          "era_code": null,
+          "study_no": "CSA_15",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "SOM content",
+          "practice": "Physical SWC measures",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "22",
+          "era_code": null,
+          "study_no": "CSA_91",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "Physical SWC measures",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "guidance",
+          "ref": "G2",
+          "era_code": null,
+          "study_no": null,
+          "title": "Improved Water and Land Management in the Ethiopian Highlands: Its Impact on …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/b9b84085-f3d9-492b-850c-dcc04c3b1b84/retrieve",
+          "snippet": "near Lake Tana Assefa D. Zegeye1, Tigist Y. Tebebu1, Anteneh Z. Abiy1, Helen E. Dahlke2, Eric D. White2, Amy S. Collick1,2, Selemyihun Kidnau3, Farzad Dadgari3, Matthew McCartney4 and Tammo S. Steenhuis2 1 Integrated Watershed Management an",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_b44e27bc-afa0-438e-90e9-89b25678ef70_229"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G3",
+          "era_code": null,
+          "study_no": null,
+          "title": "CIAT Research Online - Accepted Manuscript Mapping soil erosion hotspots and assessing …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/04176ac3-9dfb-4e3d-90ef-ed9833c3b9aa/retrieve",
+          "snippet": "to a combination of different factors. The upper part of the watershed is covered with dense grass which significantly reduces soil loss. In addition, parts of the relatively steep areas are covered with dense eucalyptus woodlots that can r",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_7aea6457-bebb-4244-a6c6-4ac9f7955e01_026"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G4",
+          "era_code": null,
+          "study_no": null,
+          "title": "ADDIS ABABA UNIVERSITY COLLEGE OF NATURAL AND COMPUTATIONAL SCIENCE CENTER FOR ENVIRONMENTAL …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/eaeea756-5c84-4db0-b451-683b080ec08b/retrieve",
+          "snippet": "Ethiopia reached 23% of the country‟s GDP (Kirui and Mirzabaev, 2015). In addition, soil degradation brings about indirect costs such as loss of environmental services, silting of dams and river beds and reduced groundwater. In the highland",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_6bdeba16-0aef-4efb-9243-c9583764f702_015"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G5",
+          "era_code": null,
+          "study_no": null,
+          "title": "Department of Water, Atmosphere and Environment Institute of Hydraulics and Rural Water …",
+          "year": null,
+          "doi": null,
+          "url": "https://mel.cgiar.org/reporting/downloadmelspace/hash/8qoK5eVP/v/6bf3898fe15a3c0e7fa7e5943d179f46",
+          "snippet": "the main outlet was predicted to be 352 mm, while approximately one third of annual rainfall amount (373 mm) becomes evapotranspiration. The model predicts 21.08 Mg ha-1 as an average annual sediment yield, which is still alarming and far b",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_06e8c830-7c73-4a61-82c8-9ff8e8ff01c9_089"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G1",
+          "era_code": null,
+          "study_no": null,
+          "title": "Farming System 2 (2024) 100110Contents lists available at ScienceDirect Farming System journal …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/81daac28-5223-48fd-9143-e2a2e1cf929b/retrieve",
+          "snippet": "Z. Adimassu et al. Farming System 2 (2024) 100110GHG emissions as well as sequester carbon. Graded soil bunds, graded fanya juu, bench terrace, broad bed furrow grass strips and farmyard manure increased productivity and enhanced adaptation",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_8be523ce-8db3-4c2d-88d6-8f1c31e043c5_030"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G6",
+          "era_code": null,
+          "study_no": null,
+          "title": "Highlights of Soil and Water Conservation Investments in Four Regions of Ethiopia …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/ed667f8e-c217-4d3e-a307-ac2a09e27ed6/retrieve",
+          "snippet": "20 references Adimassu, Z.; Mekonnen, K.; Yirga, C.; Kessler, A. 2014. Effect of soil bunds on runoff, soil and nutrient losses, and crop yield in the central highlands of Ethiopia. Land Degradation & Development 25(6): 554-564. Adimassu, Z",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_cf6efc66-c792-421f-8248-2df5a0cf972a_031"
+        }
+      ],
+      "rationale": {
+        "key": "kc.rationale.combined",
+        "params": {
+          "label": "Physical SWC Measures",
+          "n_docs": 6,
+          "n_passages": 7,
+          "other_objectives": "yield (23 studies), runoff (13 studies), biomass yield (2 studies), SOM content (1 study)"
+        }
+      },
+      "rationale_text": "Physical SWC Measures is described in 6 guidance documents retrieved for Erosion control and water management and soil loss in this context. Physical SWC Measures has field-trial evidence for other objectives: yield (23 studies), runoff (13 studies), biomass yield (2 studies), SOM content (1 study)."
+    },
+    {
+      "key": "Reduced Tillage",
+      "component": "Reduced Tillage",
+      "label": "Reduced Tillage",
+      "practices": [
+        "Mulch-Reduced Tillage",
+        "Reduced Tillage-Water Harvesting"
+      ],
+      "sources": [
+        "evidence_other_objectives",
+        "documented_in_guidance"
+      ],
+      "support": {
+        "n_sources": 2,
+        "n_documents": 9,
+        "n_guidance_documents": 1,
+        "n_studies": 8,
+        "n_passages": 1,
+        "other_objectives": {
+          "SOM content": 1,
+          "biomass yield": 3,
+          "runoff": 2,
+          "water use efficiency": 1,
+          "yield": 5
+        }
+      },
+      "record": null,
+      "citations": [
+        {
+          "tier": "evidence",
+          "ref": "11",
+          "era_code": "NN0195",
+          "study_no": "ERA_NN0195",
+          "title": "Performance of in situ rainwater conservation tillage techniques on dry spell mitigation and erosion control in the drought-prone North Wello zone of the Ethiopian highlands",
+          "year": 2007,
+          "doi": "10.1016/j.still.2007.08.002",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "12",
+          "era_code": "DK0031",
+          "study_no": "ERA_DK0031",
+          "title": "Conservation agriculture with trees amplifies negative effects of reduced tillage on maize performance in East Africa",
+          "year": 2018,
+          "doi": "10.1016/j.fcr.2018.03.003",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "13",
+          "era_code": "JO0152",
+          "study_no": "ERA_JO0152",
+          "title": "Influence of 9 years of permanent raised beds and contour furrowing on soil health in conservation agriculture based systems in Tigray region, Ethiopia",
+          "year": 2021,
+          "doi": "10.1002/ldr.3816",
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "14",
+          "era_code": "JS0248",
+          "study_no": "ERA_JS0248",
+          "title": "Medium-term effects of conservation agriculture based cropping systems for sustainable soil and water management and crop productivity in the Ethiopian highlands",
+          "year": 2012,
+          "doi": "10.1016/j.fcr.2011.12.009",
+          "url": null,
+          "snippet": null,
+          "indicator": "water use efficiency",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "15",
+          "era_code": "NJ0117",
+          "study_no": "ERA_NJ0117",
+          "title": "RESTORING CROPLAND PRODUCTIVITY AND PROFITABILITY IN NORTHERN ETHIOPIAN DRYLANDS AFTER NINE YEARS OF RESOURCE-CONSERVING AGRICULTURE",
+          "year": 2016,
+          "doi": "10.1017/s001447971400060x",
+          "url": null,
+          "snippet": null,
+          "indicator": "SOM content",
+          "practice": "Mulch-Reduced Tillage",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "23",
+          "era_code": "JS0225",
+          "study_no": "ERA_JS0225",
+          "title": "Conservation farming strategies in East and Southern Africa: Yields and rain water productivity from on-farm action research",
+          "year": 2009,
+          "doi": "10.1016/j.still.2008.09.013",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Reduced Tillage-Water Harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "24",
+          "era_code": "NN0206",
+          "study_no": "ERA_NN0206",
+          "title": "Short-term effects of conservation agriculture on Vertisols under tef (Eragrostis tef (Zucc.) Trotter) in the northern Ethiopian highlands",
+          "year": 2010,
+          "doi": "10.1016/j.still.2009.12.004",
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Reduced Tillage-Water Harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "10",
+          "era_code": "DK0044",
+          "study_no": "ERA_DK0044",
+          "title": "Impacts of conservation agriculture-based farming systems on optimizing seasonal rainfall partitioning and productivity on vertisols in the Ethiopian drylands",
+          "year": 2015,
+          "doi": "10.1016/j.still.2014.11.009",
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "Reduced Tillage-Water Harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "guidance",
+          "ref": "G1",
+          "era_code": null,
+          "study_no": null,
+          "title": "Farming System 2 (2024) 100110Contents lists available at ScienceDirect Farming System journal …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/81daac28-5223-48fd-9143-e2a2e1cf929b/retrieve",
+          "snippet": "Z. Adimassu et al. Farming System 2 (2024) 100110GHG emissions as well as sequester carbon. Graded soil bunds, graded fanya juu, bench terrace, broad bed furrow grass strips and farmyard manure increased productivity and enhanced adaptation",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_8be523ce-8db3-4c2d-88d6-8f1c31e043c5_030"
+        }
+      ],
+      "rationale": {
+        "key": "kc.rationale.combined",
+        "params": {
+          "label": "Reduced Tillage",
+          "n_docs": 1,
+          "n_passages": 1,
+          "other_objectives": "yield (5 studies), biomass yield (3 studies), runoff (2 studies), SOM content (1 study), water use efficiency (1 study)"
+        }
+      },
+      "rationale_text": "Reduced Tillage is described in 1 guidance document retrieved for Erosion control and water management and soil loss in this context. Reduced Tillage has field-trial evidence for other objectives: yield (5 studies), biomass yield (3 studies), runoff (2 studies), SOM content (1 study), water use efficiency (1 study)."
+    },
+    {
+      "key": "In-situ Water Harvesting",
+      "component": "In-situ Water Harvesting",
+      "label": "In-situ Water Harvesting",
+      "practices": [
+        "In-situ water harvesting"
+      ],
+      "sources": [
+        "evidence_other_objectives",
+        "documented_in_guidance"
+      ],
+      "support": {
+        "n_sources": 2,
+        "n_documents": 8,
+        "n_guidance_documents": 1,
+        "n_studies": 7,
+        "n_passages": 1,
+        "other_objectives": {
+          "SOM content": 1,
+          "biomass yield": 2,
+          "runoff": 7,
+          "water use efficiency": 2,
+          "yield": 19
+        }
+      },
+      "record": null,
+      "citations": [
+        {
+          "tier": "evidence",
+          "ref": "25",
+          "era_code": null,
+          "study_no": "CSA_123",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "26",
+          "era_code": null,
+          "study_no": "CSA_25",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "27",
+          "era_code": null,
+          "study_no": "CSA_11",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "biomass yield",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "28",
+          "era_code": null,
+          "study_no": "CSA_66",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "water use efficiency",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "29",
+          "era_code": null,
+          "study_no": "CSA_39",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "SOM content",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "30",
+          "era_code": null,
+          "study_no": "CSA_119",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "31",
+          "era_code": null,
+          "study_no": "CSA_12",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "In-situ water harvesting",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "guidance",
+          "ref": "G1",
+          "era_code": null,
+          "study_no": null,
+          "title": "Farming System 2 (2024) 100110Contents lists available at ScienceDirect Farming System journal …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/81daac28-5223-48fd-9143-e2a2e1cf929b/retrieve",
+          "snippet": "Z. Adimassu et al. Farming System 2 (2024) 100110GHG emissions as well as sequester carbon. Graded soil bunds, graded fanya juu, bench terrace, broad bed furrow grass strips and farmyard manure increased productivity and enhanced adaptation",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_8be523ce-8db3-4c2d-88d6-8f1c31e043c5_030"
+        }
+      ],
+      "rationale": {
+        "key": "kc.rationale.combined",
+        "params": {
+          "label": "In-situ Water Harvesting",
+          "n_docs": 1,
+          "n_passages": 1,
+          "other_objectives": "yield (19 studies), runoff (7 studies), biomass yield (2 studies), water use efficiency (2 studies), SOM content (1 study)"
+        }
+      },
+      "rationale_text": "In-situ Water Harvesting is described in 1 guidance document retrieved for Erosion control and water management and soil loss in this context. In-situ Water Harvesting has field-trial evidence for other objectives: yield (19 studies), runoff (7 studies), biomass yield (2 studies), water use efficiency (2 studies), SOM content (1 study)."
+    },
+    {
+      "key": "Physical + Biological SWC Practices",
+      "component": "Physical + Biological SWC Practices",
+      "label": "Physical + Biological SWC Practices",
+      "practices": [
+        "Physical + biological SWC practices"
+      ],
+      "sources": [
+        "evidence_other_objectives",
+        "documented_in_guidance"
+      ],
+      "support": {
+        "n_sources": 2,
+        "n_documents": 7,
+        "n_guidance_documents": 4,
+        "n_studies": 3,
+        "n_passages": 4,
+        "other_objectives": {
+          "runoff": 2,
+          "yield": 2
+        }
+      },
+      "record": null,
+      "citations": [
+        {
+          "tier": "evidence",
+          "ref": "32",
+          "era_code": null,
+          "study_no": "CSA_103",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Physical + biological SWC practices",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "33",
+          "era_code": null,
+          "study_no": "CSA_127",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "yield",
+          "practice": "Physical + biological SWC practices",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "evidence",
+          "ref": "34",
+          "era_code": null,
+          "study_no": "CSA_106",
+          "title": null,
+          "year": null,
+          "doi": null,
+          "url": null,
+          "snippet": null,
+          "indicator": "runoff",
+          "practice": "Physical + biological SWC practices",
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": null
+        },
+        {
+          "tier": "guidance",
+          "ref": "G7",
+          "era_code": null,
+          "study_no": null,
+          "title": "Prospect of Payments for Environmental Services in the Blue Nile Basin: Examples …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/e645ebf2-d5ef-4981-9d78-3a419339e3d2/retrieve",
+          "snippet": "soil (e.g. 1,643 Mg km -2 yr -1 in Gumera and 1.66 Mg km -2 yr -1 for Koga watershed (show photos). On average this will result in a yield loss of equivalent to 200US$ ha -1 yr -1 .  Off-site damage of erosion consists of deterioration in ",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_c8411bf9-4cc4-4438-86a5-2bbf1163895a_016"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G2",
+          "era_code": null,
+          "study_no": null,
+          "title": "Improved Water and Land Management in the Ethiopian Highlands: Its Impact on …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/b9b84085-f3d9-492b-850c-dcc04c3b1b84/retrieve",
+          "snippet": "near Lake Tana Assefa D. Zegeye1, Tigist Y. Tebebu1, Anteneh Z. Abiy1, Helen E. Dahlke2, Eric D. White2, Amy S. Collick1,2, Selemyihun Kidnau3, Farzad Dadgari3, Matthew McCartney4 and Tammo S. Steenhuis2 1 Integrated Watershed Management an",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_b44e27bc-afa0-438e-90e9-89b25678ef70_229"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G4",
+          "era_code": null,
+          "study_no": null,
+          "title": "ADDIS ABABA UNIVERSITY COLLEGE OF NATURAL AND COMPUTATIONAL SCIENCE CENTER FOR ENVIRONMENTAL …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/eaeea756-5c84-4db0-b451-683b080ec08b/retrieve",
+          "snippet": "Ethiopia reached 23% of the country‟s GDP (Kirui and Mirzabaev, 2015). In addition, soil degradation brings about indirect costs such as loss of environmental services, silting of dams and river beds and reduced groundwater. In the highland",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_6bdeba16-0aef-4efb-9243-c9583764f702_015"
+        },
+        {
+          "tier": "guidance",
+          "ref": "G6",
+          "era_code": null,
+          "study_no": null,
+          "title": "Highlights of Soil and Water Conservation Investments in Four Regions of Ethiopia …",
+          "year": null,
+          "doi": null,
+          "url": "https://cgspace.cgiar.org/rest/bitstreams/ed667f8e-c217-4d3e-a307-ac2a09e27ed6/retrieve",
+          "snippet": "20 references Adimassu, Z.; Mekonnen, K.; Yirga, C.; Kessler, A. 2014. Effect of soil bunds on runoff, soil and nutrient losses, and crop yield in the central highlands of Ethiopia. Land Degradation & Development 25(6): 554-564. Adimassu, Z",
+          "indicator": null,
+          "practice": null,
+          "wocat_id": null,
+          "country": null,
+          "licence": null,
+          "chunk_id": "G_cf6efc66-c792-421f-8248-2df5a0cf972a_031"
+        }
+      ],
+      "rationale": {
+        "key": "kc.rationale.combined",
+        "params": {
+          "label": "Physical + Biological SWC Practices",
+          "n_docs": 4,
+          "n_passages": 4,
+          "other_objectives": "runoff (2 studies), yield (2 studies)"
+        }
+      },
+      "rationale_text": "Physical + Biological SWC Practices is described in 4 guidance documents retrieved for Erosion control and water management and soil loss in this context. Physical + Biological SWC Practices has field-trial evidence for other objectives: runoff (2 studies), yield (2 studies)."
+    }
+  ],
+  "evidence_sufficiency": {
+    "user_belt": "Dry Kolla",
+    "user_zone": "Dry-lowland",
+    "thresholds": {
+      "min_studies": 3,
+      "min_obs": 10,
+      "min_obs_in_zone": 1
+    },
+    "candidates": [
+      {
+        "practice": "Mulch-Water Harvesting",
+        "n_studies": 1,
+        "n_obs": 3,
+        "n_obs_in_belt": 0,
+        "n_obs_in_zone": 0,
+        "aez_belts": [
+          "Dry Weyna Dega"
+        ],
+        "corpus_status": {
+          "full_text": 0,
+          "abstract": 1,
+          "none": 0
+        },
+        "belt_counts_exact": true,
+        "in_top3": true
+      },
+      {
+        "practice": "Reduced Tillage-Water Harvesting",
+        "n_studies": 1,
+        "n_obs": 1,
+        "n_obs_in_belt": 0,
+        "n_obs_in_zone": 0,
+        "aez_belts": [
+          "Dry Weyna Dega"
+        ],
+        "corpus_status": {
+          "full_text": 1,
+          "abstract": 0,
+          "none": 0
+        },
+        "belt_counts_exact": true,
+        "in_top3": true
+      },
+      {
+        "practice": "Biological SWC practices",
+        "n_studies": 1,
+        "n_obs": 3,
+        "n_obs_in_belt": 0,
+        "n_obs_in_zone": 0,
+        "aez_belts": [
+          "Moist Dega",
+          "Moist Weyna Dega"
+        ],
+        "corpus_status": {
+          "full_text": 0,
+          "abstract": 0,
+          "none": 1
+        },
+        "belt_counts_exact": true,
+        "in_top3": true
+      }
+    ],
+    "graph_available": true
+  },
+  "context": {
+    "Rainfall": 755.658,
+    "temp_mean_annual": 20.711,
+    "precip_seasonality": 84.36,
+    "Altitude_r": 1415.835,
+    "slope": 2.34,
+    "soil_clay": 31.7,
+    "land_cover": 30,
+    "lgp_days": 214.0,
+    "soil_ph": 7.7,
+    "soil_soc": 27.9,
+    "aez_belt": "Dry Kolla"
+  },
+  "language": "en"
+}

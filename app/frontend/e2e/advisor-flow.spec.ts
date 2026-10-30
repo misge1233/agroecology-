@@ -65,8 +65,10 @@ for (const locale of ["en", "am", "om"] as Locale[]) {
     // The effect sentence is the API's own (0b wording) — never recomputed.
     if (locale === "en") await expect(cards.first()).toContainText(/~\d+% reduction in soil loss/);
     else await expect(cards.first()).toContainText(/~\d+%/);
-    const recommendCall = calls.find((c) => c.url === "/recommend");
-    expect(recommendCall?.body).toMatchObject({ lat: 8.38, lon: 39.37, indicator: "soil loss" });
+    // P9: the page asks /advise (which wraps /recommend) in the UI language.
+    const adviseCall = calls.find((c) => c.url === "/advise");
+    expect(adviseCall?.body).toMatchObject({ lat: 8.38, lon: 39.37, indicator: "soil loss", language: locale });
+    expect(calls.some((c) => c.url === "/recommend")).toBe(false);
 
     // "Why this?" opens the model's chart + note.
     await cards.first().getByRole("button", { name: m.advisor.results.card.why }).click();
@@ -82,15 +84,19 @@ test("a shared results URL scores immediately and survives reload", async ({ pag
   await expect(page.locator("article[aria-labelledby^='practice-']")).toHaveCount(3);
 });
 
-test("no-evidence and API-down states are designed, not blank", async ({ page }) => {
-  await mockApi(page, {
-    recommend: {
-      status: 422,
-      body: { error: { code: "recommend_error", message: "No field evidence in the dataset for challenge 'X' with objective 'Y'." } },
-    },
-  });
+test("no-evidence (now knowledge-led), API-error and API-down states are designed, not blank", async ({ page }) => {
+  // P9: a request without field evidence is a 200 knowledge-led advisory, not an error.
+  await mockApi(page, { advise: "knowledge" });
   await page.goto(`/en/advisor?${RESULTS_QUERY}`);
-  await expect(page.getByText(en.advisor.results.noEvidence.title)).toBeVisible();
+  await expect(page.getByTestId("knowledge-led")).toBeVisible();
+  await expect(page.getByText(en.advisor.results.knowledgeLed.title, { exact: true }).first()).toBeVisible();
+  await expect(page.locator("article[aria-labelledby^='practice-']")).toHaveCount(0);
+
+  // A genuine API error still gets a designed error state.
+  await page.unrouteAll({ behavior: "ignoreErrors" });
+  await mockApi(page, { advise: { status: 422, body: { error: { code: "advise_error", message: "Latitude out of bounds." } } } });
+  await page.goto(`/en/advisor?${RESULTS_QUERY}`);
+  await expect(page.getByRole("alert").filter({ hasText: /Latitude out of bounds/ }).first()).toBeVisible();
 
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await mockApi(page, { down: true });
@@ -99,6 +105,8 @@ test("no-evidence and API-down states are designed, not blank", async ({ page })
 });
 
 test("axe: home, advisor step 1, results, chat, about have no violations", async ({ page }) => {
+  // Six pages × two axe passes; the hybrid results page (P9) is the heaviest.
+  test.setTimeout(150_000);
   await mockApi(page);
   for (const path of ["/en", "/en/advisor", `/en/advisor?${RESULTS_QUERY}`, "/en/chat", "/en/about", "/am/advisor"]) {
     await page.goto(path);

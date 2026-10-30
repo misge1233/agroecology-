@@ -73,7 +73,7 @@ raster stack can supply, so it cannot participate in context matching.
 |---|---|---|---|
 | `IN_FAMILY` | Practice → PracticeFamily | — | `era_rows`, `csa_rows` |
 | `COMPOSED_OF` | Practice → PracticeComponent | `position` | `era_rows`, `csa_rows` |
-| `REPORTS_EFFECT` | Study → Practice | `indicator`, `n_obs`, `mean_log_rr`, `median_log_rr`, `share_positive`, `aez_belts`, `crop_groups` | `era_rows`, `csa_rows` |
+| `REPORTS_EFFECT` | Study → Practice | `indicator`, `n_obs`, `mean_log_rr`, `median_log_rr`, `share_positive`, `aez_belts`, `crop_groups`, `obs_by_belt` (P9: rows per belt) | `era_rows`, `csa_rows` |
 | `STUDIED_IN` | Study → AEZBelt | `n_obs` | `era_rows`, `csa_rows` |
 | `MEASURES` | Indicator → ImpactVariable | `direction_good`, `proxy`, `role`, `rationale` | `wocat_taxonomy` |
 | `MAPS_TO` | PracticeComponent → SLMMeasure \| SLMGroup | `confidence`, `status`, `rationale`, `owner_note` | `crosswalk_validated`, `crosswalk_auto` |

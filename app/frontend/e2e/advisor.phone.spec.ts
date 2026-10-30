@@ -29,11 +29,21 @@ test("tile failure shows a message and keeps the coordinate inputs usable", asyn
   await expect(page).toHaveURL(/lat=9\.03/);
 });
 
-test("results fit a 390 px phone with the bottom tab bar", async ({ page }) => {
+test("results fit a 390 px phone; the header menu opens the page navigation", async ({ page }) => {
   await mockApi(page);
   await page.goto(`/en/advisor?${RESULTS_QUERY}`);
   await expect(page.locator("article[aria-labelledby^='practice-']").first()).toBeVisible();
   const probe = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }));
   expect(probe.sw).toBeLessThanOrEqual(probe.iw);
-  await expect(page.getByRole("navigation", { name: en.nav.bottom })).toBeVisible();
+  // U3: the bottom tab bar gave way to a standard header menu on phones.
+  const menu = page.getByRole("button", { name: en.common.menu });
+  await expect(menu).toHaveAttribute("aria-expanded", "false");
+  await menu.click();
+  const nav = page.locator("#mobile-nav");
+  await expect(nav).toBeVisible();
+  for (const key of ["home", "advisor", "chat", "about"] as const) {
+    await expect(nav.getByRole("link", { name: en.nav[key] })).toBeVisible();
+  }
+  await page.keyboard.press("Escape");
+  await expect(nav).toBeHidden();
 });

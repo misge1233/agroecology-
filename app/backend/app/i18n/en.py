@@ -119,4 +119,56 @@ STRINGS: dict[str, str] = {
         "is not configured). Use the choices below, or open the Advisor — every "
         "step there is in your language."
     ),
+    # ------------------------------------------------------------ advisory modes (P9)
+    "mode.model_led": "Field-trial model",
+    "mode.hybrid": "Hybrid",
+    "mode.knowledge_led": "Documented practice",
+    "mode.reason.strong_evidence": (
+        "{practice} has {n_studies} studies and {n_obs} field observations for this objective."
+    ),
+    "mode.reason.thin_evidence": (
+        "The best-evidenced practice, {practice}, has only {n_studies} studies and {n_obs} field "
+        "observations for this objective (the model-led threshold is {min_studies} studies and "
+        "{min_obs} observations)."
+    ),
+    "mode.reason.in_zone": "{practice} has {n_obs_in_zone} observations measured in your moisture zone ({zone}).",
+    "mode.reason.other_zones_only": "None of the top-ranked practices was measured in your moisture zone ({zone}).",
+    "mode.reason.zone_unknown": "Your agro-ecological belt could not be resolved, so zone coverage is unknown.",
+    "mode.reason.engine_no_evidence": "The field-trial dataset has no observations for this challenge and objective.",
+    "mode.reason.engine_unsupported": "This challenge and objective pair is not scored by the field-trial model.",
+    "mode.reason.no_studies": "None of the ranked practices has a study for this objective.",
+    "mode.reason.graph_unavailable": "The knowledge graph is not built, so evidence depth could not be assessed.",
+    "mode.reason.no_candidates": "No documented practice with a citation was found for this request.",
+    "mode.hybrid_note": (
+        " Field-trial evidence for this request is thin, so {n} documented {practices_word} from "
+        "guidance documents and practice records {is_are} listed alongside, with sources — they "
+        "carry no effect numbers."
+    ),
+    "mode.knowledge_led.lead": (
+        "There is no field-trial evidence for **{challenge}** with the objective **{objective}** "
+        "in your area, so I cannot rank practices or estimate effects. These documented practices "
+        "come from guidance documents and practice records for comparable settings, with their "
+        "sources and no effect numbers:"
+    ),
+    "mode.knowledge_led.item": "- **{label}** — {rationale}",
+    "mode.knowledge_led.none": (
+        "There is no field-trial evidence for **{challenge}** with the objective **{objective}** "
+        "in your area, and no documented practice with a citation was found either. Try another "
+        "objective for this challenge, or a nearby location."
+    ),
+    "mode.practice": "practice",
+    "mode.practices": "practices",
+    # ------------------------------------------------------------ knowledge candidates (P9)
+    "kc.rationale.guidance": (
+        "{label} is described in {n_docs} guidance {docs_word} retrieved for {family} and "
+        "{objective} in this context."
+    ),
+    "kc.rationale.other_objectives": "{label} has field-trial evidence for other objectives: {objectives}.",
+    "kc.rationale.record": "{label} is a documented practice record from a comparable context ({country}).",
+    "kc.objective_item": "{objective} ({n} {studies_word})",
+    "kc.join": ", ",
+    "kc.document": "document",
+    "kc.documents": "documents",
+    "kc.study": "study",
+    "kc.studies": "studies",
 }

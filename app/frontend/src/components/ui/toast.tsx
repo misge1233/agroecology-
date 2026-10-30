@@ -70,7 +70,7 @@ export function ToastProvider({ children, closeLabel }: { children: ReactNode; c
           </ToastPrimitive.Close>
         </ToastPrimitive.Root>
       ))}
-      <ToastPrimitive.Viewport className="fixed bottom-[calc(var(--bottombar-h)+1rem)] right-4 z-[60] flex w-[min(100%-2rem,22rem)] flex-col gap-2 md:bottom-4" />
+      <ToastPrimitive.Viewport className="fixed bottom-4 right-4 z-[60] flex w-[min(100%-2rem,22rem)] flex-col gap-2" />
     </ToastPrimitive.Provider>
   );
 }

@@ -19,6 +19,7 @@
     "advisor": "Advisor",
     "chat": "Chat",
     "about": "About",
+    "cta": "Get advice",
     "main": "Main navigation",
     "bottom": "Sections",
     "theme": {
@@ -40,6 +41,8 @@
     "version": "Version {version}",
     "versionUnknown": "Version unavailable",
     "licence": "Licence and data",
+    "explore": "Explore",
+    "resources": "Resources",
     "rights": "© {year} AgroAdvisor-ET"
   },
   "status": {
@@ -91,6 +94,10 @@
       "title": "Five challenge areas",
       "subtitle": "Ranking happens within the family you choose, for the location you set.",
       "open": "Start with {family}"
+    },
+    "cta": {
+      "title": "Find the right practice for your farm",
+      "body": "It takes about a minute: set the location, choose the challenge and goal, and see the ranked practices with the evidence behind them."
     }
   },
   "advisor": {
@@ -253,7 +260,56 @@
         "evidencePending": "Evidence details were not loaded before printing; open \"Evidence\" on a practice and print again to include them.",
         "preparing": "Preparing the evidence for printing…",
         "footer": "Printed from AgroAdvisor-ET (Alliance of Bioversity International and CIAT). Evidence-ranked, not a forecast: practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence."
-      }
+      },
+      "mode": {
+        "explain": {
+          "model": "Why this advisory is model-led",
+          "hybrid": "Why this advisory is hybrid",
+          "documented": "Why only documented practices are shown"
+        },
+        "reason": {
+          "strong_evidence": "{practice} has {n_studies} studies and {n_obs} field observations for this objective.",
+          "thin_evidence": "The best-evidenced practice, {practice}, has only {n_studies} studies and {n_obs} field observations for this objective (model-led needs {min_studies} studies and {min_obs} observations).",
+          "in_zone": "{practice} has {n_obs_in_zone} observations measured in your moisture zone ({zone}).",
+          "other_zones_only": "None of the top-ranked practices was measured in your moisture zone ({zone}).",
+          "zone_unknown": "Your agro-ecological belt could not be resolved, so zone coverage is unknown.",
+          "engine_no_evidence": "The field-trial dataset has no observations for this challenge and objective.",
+          "engine_unsupported": "This challenge and objective pair is not scored by the field-trial model.",
+          "no_studies": "None of the ranked practices has a study for this objective.",
+          "graph_unavailable": "The knowledge graph is not built, so evidence depth could not be assessed.",
+          "no_candidates": "No documented practice with a citation was found for this request."
+        }
+      },
+      "documented": {
+        "title": "Documented practices",
+        "introHybrid": "Field-trial evidence for this request is thin, so these practices from guidance documents and practice records are listed alongside the ranking — with their sources and without effect numbers.",
+        "introKnowledge": "There is no field-trial evidence for this request, so nothing is ranked or estimated. These practices come from guidance documents and practice records for comparable settings, with their sources.",
+        "empty": "No documented practice with a citation was found for this request. Try another objective for this challenge, or a nearby location.",
+        "rank": "Suggested #{rank}",
+        "why": "Why this is suggested",
+        "mapsTo": "Practices in the dataset",
+        "support": {
+          "documents": "Sources",
+          "passages": "Passages",
+          "otherObjectives": "Field evidence for other objectives (studies)"
+        },
+        "sources": {
+          "label": "Sources behind this practice",
+          "showAll": "Show all sources ({n})",
+          "showFewer": "Show fewer"
+        },
+        "source": {
+          "evidence_other_objectives": "Field evidence for other objectives",
+          "documented_in_guidance": "Described in guidance documents",
+          "documented_practice_record": "Practice record"
+        },
+        "disclaimer": "Documented practices are proposals with provenance, not ranked or quantified: no effect size is estimated for them."
+      },
+      "knowledgeLed": {
+        "title": "No field-trial evidence for this request",
+        "body": "The model cannot rank practices or estimate effects here. Documented practices from comparable settings are shown instead, each with its sources."
+      },
+      "liveDocumented": "{n, plural, one {# documented practice suggested} other {# documented practices suggested}}"
     }
   },
   "evidence": {
@@ -284,7 +340,8 @@
       "evidence": "Field evidence",
       "guidance": "Guidance",
       "practice": "Practice record"
-    }
+    },
+    "datasetStudy": "Dataset study #{n}"
   },
   "chat": {
     "eyebrow": "Agroecology+ practice advisor",
@@ -369,7 +426,11 @@
     "retrySend": "Send again",
     "openInAdvisor": "Open in Advisor",
     "newChat": "New conversation",
-    "contextTitle": "Context used for this ranking"
+    "contextTitle": "Context used for this ranking",
+    "advisory": {
+      "hybrid": "Thin field-trial evidence: documented practices are listed below the ranking.",
+      "knowledgeLed": "No field-trial evidence for this request — documented practices only."
+    }
   },
   "about": {
     "title": "About AgroAdvisor-ET",

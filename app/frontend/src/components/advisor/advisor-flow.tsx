@@ -10,6 +10,7 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Stepper, type StepperStep } from "@/components/ui/stepper";
+import { PageHeader } from "@/components/shell/page-header";
 import {
   STEP_ORDER,
   autoStep,
@@ -29,7 +30,7 @@ import { useZone } from "./use-zone";
 
 export function AdvisorSkeleton() {
   return (
-    <div className="mx-auto max-w-content px-4 py-8 sm:px-6" aria-busy>
+    <div className="container-page py-8" aria-busy>
       <Skeleton className="h-8 w-48" />
       <Skeleton className="mt-3 h-4 w-96 max-w-full" />
       <Skeleton className="mt-6 h-10 w-full" />
@@ -111,12 +112,9 @@ export function AdvisorFlow() {
   const stepIndex = STEP_ORDER.indexOf(step);
 
   return (
-    <div className="mx-auto max-w-content px-4 py-6 sm:px-6 lg:py-8 print:p-0">
-      <div className="no-print mb-5">
-        <h1 className="text-2xl sm:text-3xl">{t("title")}</h1>
-        <p className="mt-1 max-w-2xl text-muted">{t("subtitle")}</p>
-      </div>
-
+    <>
+    <PageHeader title={t("title")} description={t("subtitle")} compact />
+    <div className="container-page py-8 lg:py-10 print:p-0">
       <Stepper
         steps={steps}
         current={step}
@@ -130,7 +128,7 @@ export function AdvisorFlow() {
         {t("stepOf", { current: stepIndex + 1, total: STEP_ORDER.length })}
       </p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] print:mt-0 print:block">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] print:mt-0 print:block">
         <div className="min-w-0">
           {metaGate && !loading ? (
             <Alert variant="danger" title={ts("apiUnreachable")}>
@@ -203,9 +201,11 @@ export function AdvisorFlow() {
             router.replace(pathname, { scroll: false });
             setStepOverride("location");
           }}
-          className="no-print order-first lg:order-none"
+          // Phones: an all-empty summary is noise above step 1, so it appears once something is set.
+          className={`no-print order-first lg:order-none ${hasLocation || params.family ? "" : "hidden lg:block"}`}
         />
       </div>
     </div>
+    </>
   );
 }

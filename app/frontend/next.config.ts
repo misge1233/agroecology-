@@ -7,6 +7,8 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // The floating dev-tools badge sits over page content; keep the dev view clean.
+  devIndicators: false,
   images: {
     // The 55 practice images ship as WebP already; keep Next from re-encoding
     // to AVIF on the fly (slow on the small server this deploys to).

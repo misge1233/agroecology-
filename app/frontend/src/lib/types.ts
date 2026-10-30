@@ -96,7 +96,9 @@ export interface RecommendRequest {
 export interface ExplainCitation {
   era_code: string | null;
   /** Defaults to "evidence" on the backend; optional for old payloads. */
-  tier?: "evidence" | "guidance";
+  tier?: "evidence" | "guidance" | "practice";
+  /** P9: the marker this source carries in the explanation — "3", "G1", "W2". */
+  ref?: string | null;
   /** Source link for guidance documents (null for most ERA studies). */
   url?: string | null;
   doi: string | null;
@@ -201,10 +203,98 @@ export interface ChatSlotsEvent {
 }
 
 export interface ChatStreamEvent {
-  type: "recommendation" | "token" | "done" | "error" | "slots";
+  type: "recommendation" | "token" | "done" | "error" | "slots" | "advisory";
   text?: string;
-  data?: RecommendResponse | ChatSlotsEvent;
+  data?: RecommendResponse | ChatSlotsEvent | AdvisoryEvent;
   message?: string;
+}
+
+// ------------------------------------------------------------ advisory (P9)
+export type AdvisoryMode = "model-led" | "hybrid" | "knowledge-led";
+
+/** Why the advisory is in its mode: a catalog key + params, rendered by the UI. */
+export interface ModeReason {
+  key: string;
+  params: Record<string, string | number>;
+}
+
+export interface CandidateEvidence {
+  practice: string;
+  n_studies: number;
+  n_obs: number;
+  n_obs_in_belt: number;
+  n_obs_in_zone: number;
+  aez_belts: string[];
+  corpus_status: Record<string, number>;
+  belt_counts_exact: boolean;
+  in_top3: boolean;
+}
+
+export interface EvidenceSufficiency {
+  user_belt: string | null;
+  user_zone: string | null;
+  thresholds: Record<string, number>;
+  candidates: CandidateEvidence[];
+  graph_available: boolean;
+}
+
+export interface KnowledgeCitation {
+  tier: "evidence" | "guidance" | "practice";
+  ref?: string | null;
+  era_code?: string | null;
+  /** Dataset study id when the study is not in the ERA corpus (no code, no title). */
+  study_no?: string | number | null;
+  title?: string | null;
+  year?: number | null;
+  doi?: string | null;
+  url?: string | null;
+  snippet?: string | null;
+  indicator?: string | null;
+  practice?: string | null;
+  wocat_id?: string | number | null;
+  country?: string | null;
+  licence?: string | null;
+}
+
+export type KnowledgeSource = "evidence_other_objectives" | "documented_in_guidance" | "documented_practice_record";
+
+/** A documented practice proposed with provenance — never with an effect number. */
+export interface KnowledgeCandidate {
+  key: string;
+  component: string | null;
+  label: string;
+  practices: string[];
+  sources: KnowledgeSource[];
+  support: {
+    n_sources: number;
+    n_documents: number;
+    n_guidance_documents: number;
+    n_studies: number;
+    n_passages: number;
+    other_objectives: Record<string, number>;
+  };
+  record?: { wocat_id?: string | number; country?: string | null; shared_context?: string[] } | null;
+  citations: KnowledgeCitation[];
+  rationale: { key: string; params: Record<string, string | number> };
+  rationale_text: string;
+}
+
+/** The parts of an advisory that are not the model payload (chat SSE `advisory` event). */
+export interface AdvisoryEvent {
+  mode: AdvisoryMode;
+  reasons: ModeReason[];
+  knowledge_candidates: KnowledgeCandidate[];
+  evidence_sufficiency: EvidenceSufficiency;
+  context: Record<string, number | string | null>;
+  /** Chat only: the resolved slots, so a knowledge-led turn can deep-link to the Advisor. */
+  query?: Omit<RecommendQuery, "goal_direction"> | null;
+}
+
+/** POST /advise */
+export interface AdviseResponse extends AdvisoryEvent {
+  /** The unchanged /recommend payload, or null in knowledge-led mode. */
+  model: RecommendResponse | null;
+  language: ApiLanguage;
 }
 
 /** Headline size of the evidence base — counts only, never an effect (U1). */

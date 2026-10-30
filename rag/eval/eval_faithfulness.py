@@ -74,8 +74,9 @@ WORD_NUM_RE = re.compile(
     r"\b(" + "|".join(sorted(_WORD_VALUES, key=len, reverse=True)) + r")\b",
     re.IGNORECASE,
 )
-CITE_MARKER_RE = re.compile(r"\[(\d+)\]")
-GUIDANCE_MARKER_RE = re.compile(r"\[G(\d+)\]")
+# P9: markers are per STUDY — [3] or a passage label [3a]/[3b] all map to study 3.
+CITE_MARKER_RE = re.compile(r"\[(\d+)[a-z]?\]")
+GUIDANCE_MARKER_RE = re.compile(r"\[G(\d+)[a-z]?\]")
 SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+|\n+")
 
 
@@ -106,21 +107,21 @@ def word_tokens(sentence: str) -> list[str]:
     return [m.lower() for m in WORD_NUM_RE.findall(sentence)]
 
 
-def cited_chunk_indices(sentence: str, n_chunks: int) -> list[int]:
-    """0-based chunk indices for the sentence's [n] markers (1-based, valid)."""
+def cited_chunk_indices(sentence: str, n_groups: int) -> list[int]:
+    """0-based STUDY-group indices for the sentence's [n] / [na] markers."""
     return [
         int(m) - 1
         for m in CITE_MARKER_RE.findall(sentence)
-        if 1 <= int(m) <= n_chunks
+        if 1 <= int(m) <= n_groups
     ]
 
 
-def cited_guidance_indices(sentence: str, n_chunks: int) -> list[int]:
-    """0-based guidance-chunk indices for the sentence's [Gn] markers."""
+def cited_guidance_indices(sentence: str, n_groups: int) -> list[int]:
+    """0-based guidance-document indices for the sentence's [Gn] markers."""
     return [
         int(m) - 1
         for m in GUIDANCE_MARKER_RE.findall(sentence)
-        if 1 <= int(m) <= n_chunks
+        if 1 <= int(m) <= n_groups
     ]
 
 
@@ -145,10 +146,13 @@ def audit_sentence(
 
     all_chunks = list(chunks) + list(guidance_chunks)
     allowed_all = es.allowed_numbers(recommendation, all_chunks)
-    cited_idx = cited_chunk_indices(sentence, len(chunks))
-    cited_g_idx = cited_guidance_indices(sentence, len(guidance_chunks))
-    cited_chunks = [chunks[i] for i in cited_idx] + [
-        guidance_chunks[i] for i in cited_g_idx
+    # P9: one marker = one study/document = ALL of its retrieved passages.
+    groups = es.group_chunks_by_study(chunks)
+    g_groups = es.group_chunks_by_study(guidance_chunks)
+    cited_idx = cited_chunk_indices(sentence, len(groups))
+    cited_g_idx = cited_guidance_indices(sentence, len(g_groups))
+    cited_chunks = [c for i in cited_idx for c in groups[i][1]] + [
+        c for i in cited_g_idx for c in g_groups[i][1]
     ]
     allowed_cited = (
         es.allowed_numbers(recommendation, cited_chunks) if cited_chunks else None
@@ -198,7 +202,7 @@ def audit_sentence(
             + [f"G{i + 1}" for i in cited_g_idx]
         ),
         "cited_era_codes": ",".join(
-            str(c.get("era_code") or c.get("chunk_id")) for c in cited_chunks
+            dict.fromkeys(str(c.get("era_code") or c.get("url") or c.get("chunk_id")) for c in cited_chunks)
         ),
         "digit_tokens": ",".join(digits),
         "ungrounded_digits": ",".join(digit_bad),

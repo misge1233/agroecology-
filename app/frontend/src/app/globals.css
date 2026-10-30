@@ -16,12 +16,18 @@
   labelled "thin evidence". Danger is for system errors only.
 */
 :root {
-  --background: #f7f8f5;
+  /* U3: clean white page, a faint green-grey band for alternating sections. */
+  --background: #ffffff;
   --surface: #ffffff;
-  --surface-2: #eef2ee;
-  --text: #1c2a22;
-  --muted: #5b6b61;
-  --border: #dde4de;
+  --surface-2: #f3f6f2;
+  --text: #17241c;
+  --muted: #56655c;
+  --border: #e2e8e2;
+
+  /* Brand band (footer, CTA band): deep forest green with light text. */
+  --brand-band: #0d3b27;
+  --brand-band-fg: #f1f6f2;
+  --brand-band-muted: #b5cbbd;
 
   --primary: #1e6b46;
   --primary-hover: #175537;
@@ -63,17 +69,20 @@
   --shadow-1: 0 1px 2px rgb(28 42 34 / 0.06), 0 2px 8px rgb(28 42 34 / 0.06);
   --shadow-2: 0 4px 16px rgb(28 42 34 / 0.1), 0 12px 32px rgb(28 42 34 / 0.08);
 
-  --header-h: 3.75rem;
-  --bottombar-h: 3.75rem;
+  --header-h: 4rem;
 }
 
 .dark {
   --background: #0f1613;
-  --surface: #182019;
-  --surface-2: #1f2a22;
+  --surface: #162019;
+  --surface-2: #131c16;
   --text: #e8eee9;
   --muted: #9fb0a5;
-  --border: #2a362e;
+  --border: #26322a;
+
+  --brand-band: #0a1410;
+  --brand-band-fg: #e8eee9;
+  --brand-band-muted: #9fb0a5;
 
   --primary: #4caf7a;
   --primary-hover: #5fbf8b;
@@ -190,6 +199,35 @@ h4 {
 
 .leaflet-control-attribution a {
   color: var(--accent-text) !important;
+}
+
+@layer components {
+  /* The one page container: 1280 px max, 16 / 24 / 32 px side gutters. */
+  .container-page {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 80rem;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container-page {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Small uppercase label above a section heading. */
+  .eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
 }
 
 @layer utilities {

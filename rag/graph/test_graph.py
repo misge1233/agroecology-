@@ -61,6 +61,8 @@ EXPECTED_T0001_YIELD = {
     "share_positive": round(2 / 3, 6),                    # 0.666667
     "aez_belts": ["Dry Dega", "Wet Kolla"],
     "crop_groups": ["Cereal", "Pulse"],
+    # P9: two of the three yield rows were measured in Dry Dega, one in Wet Kolla.
+    "obs_by_belt": {"Dry Dega": 2, "Wet Kolla": 1},
 }
 
 
@@ -311,6 +313,16 @@ def test_reports_effect_aggregate_equals_hand_computed_value(graph_and_report):
         assert attrs[key] == expected, key
     assert attrs["source"] == "era_rows"
     assert attrs["indicator"] == "yield"
+
+
+def test_evidence_summary_reports_observations_per_belt(graph_and_report):
+    """P9: the advisory reads per-belt counts; they are the rows' own counts."""
+    graph, _ = graph_and_report
+    summary = GraphQuery(graph).evidence_summary("Mulch-Reduced Tillage", "yield")
+    assert summary["obs_by_belt"] == {"Dry Dega": 2, "Wet Kolla": 1}
+    assert summary["belt_counts_exact"] is True
+    assert sum(summary["obs_by_belt"].values()) == summary["n_obs"]
+    assert summary["studies"][0]["obs_by_belt"] == {"Dry Dega": 2, "Wet Kolla": 1}
 
 
 def test_study_corpus_status_from_manifest_and_chunks(graph_and_report):

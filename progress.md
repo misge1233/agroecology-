@@ -3482,3 +3482,209 @@ from the environment or `app/backend/.env`; never print or log it.
 **Order of launches from here:** P8 first (its brief stands above, "Next
 steps → Phase P8"; launch line unchanged), then P6b-ii when the token has
 arrived, then P9.
+
+### Decision (owner + reviewer, 28 Oct 2026) — P8 split; product track first
+P8 is not run as a phase. Its two user-facing items (per-study citation
+numbering; Tier-2 chunk-quality filter + prune) move into P9 below; its
+publication items (faithfulness audit dry run, expert-study protocol check)
+move to a later "publication readiness" phase. Order now: **P9 → P6b-ii
+(when the WOCAT token arrives) → P10 (production deployment: CI, Docker,
+TLS, observability, backups) → publication readiness.**
+
+Measured motivation for P9 (dataset v2, 35 challenge × objective cells):
+2 cells have no field evidence at all (today an error), 14 more have
+evidence but no practice with ≥ 3 studies and ≥ 10 observations, 19 have
+at least one such practice. Roughly half of all possible requests are thin
+or empty — exactly where knowledge sources must carry the advice.
+
+### Next steps → Phase P9 — Evidence-tiered advisory: model-led / hybrid / knowledge-led (assigned to Claude Code)
+Read CLAUDE.md first; then the decision record of 26 Oct (product
+direction) and the P6b-i review. This phase changes the product's core
+behaviour, so the doctrine is amended first and everything else follows it.
+
+**A. Doctrine amendment (edit `CLAUDE.md`, doctrine 1 and 2; keep the
+numbering):** *"The ML model owns every effect number. Knowledge sources
+(retrieved guidance documents, WOCAT practice records, graph relations) may
+PROPOSE practices with provenance, but never quantify an effect, a
+percentage, a ranking score or a study count that the model or the dataset
+did not produce."* and *"Cite or stay silent applies to every proposed
+practice: a knowledge candidate without at least one citation is not
+shown."* Record the amendment date and this phase id in the file.
+
+**B. Evidence sufficiency (new `app/backend/app/services/evidence_service.py`).**
+For a request (family, indicator, resolved context) and the engine's
+candidate pool, compute from the knowledge graph (`evidence_summary`) per
+candidate: `n_studies`, `n_obs`, `n_obs_in_belt` (observations whose AEZ
+belt equals the user's belt) and `n_obs_in_zone` (same moisture class:
+Dry/Moist/Wet × belt group — define and document the belt-grouping table
+from the 12 belts), `corpus_status`. Decide the **mode** with documented,
+config-driven thresholds (`app/config.py`, env-overridable, defaults
+below; `docs/decisions/evidence_tiered_advisory.md` explains them and
+shows the 35-cell table):
+- `model-led` — at least one of the top-3 ranked candidates has
+  `n_studies ≥ 3` and `n_obs ≥ 10`, AND at least one of the top-3 has
+  `n_obs_in_zone ≥ 1`;
+- `hybrid` — the engine returns a ranking but the condition above fails
+  (thin evidence, or evidence only from other zones);
+- `knowledge-led` — the engine raises its "No field evidence" error, or
+  every candidate has `n_studies = 0` for this indicator.
+Return a structured `evidence_sufficiency` object with the per-candidate
+counts and the reason strings (catalog keys, not prose) so the UI can
+explain the mode in all three languages.
+
+**C. Knowledge candidates (same service).** Sources, in this order, all
+WOCAT-independent now with the WOCAT slot wired:
+1. **Graph relations:** practices of the same family that have evidence
+   for OTHER indicators (via `related_practices` and the component layer);
+   label `evidence_other_objectives`; support = which indicators and how
+   many studies (counts only).
+2. **Guidance documents (Tier 2):** retrieve `guidance_corpus` passages
+   for the family × indicator × context query (reuse
+   `build_query_text`, `k ≈ 12`); map practice mentions in the passages to
+   the 44 components with the keyword table (import/extend
+   `FAMILY_KEYWORDS` from `fetch_gardian.py` — wrap, never fork) and roll
+   them up to components; label `documented_in_guidance`; support = number
+   of passages/documents, each candidate carrying its passage citations.
+   Apply the Tier-2 quality filter (item F) before this step so garbage
+   never becomes a candidate.
+3. **Practice records (Tier 3, WOCAT):** call
+   `similar_context_technologies(context_to_classes(ctx), practice=None,
+   k=5)`; label `documented_practice_record`; empty until P6b-ii — the code
+   path, schema and UI must already handle it.
+Rank candidates by support (distinct sources > distinct documents >
+passages), de-duplicate by component, cap at 5. Each candidate: component
+label (glossary key), the frozen practice strings it maps to (if any),
+source labels, support counts, citations (title/url/era_code/doc id),
+and a **deterministic template rationale** (no LLM) built only from
+citation metadata — no numbers other than counts. An optional LLM
+phrasing of the rationale goes through `explain_service`'s guardrail with
+the counts whitelisted exactly as the evidence base is.
+
+**D. API (wrap, never fork).** New `POST /advise` (`advisory_service.
+advise()`): calls `recommender_service.recommend()` (catching the
+no-evidence `ValueError`), computes B and C, and returns
+`{mode, reasons, model: <the unchanged /recommend payload or null>,
+knowledge_candidates: [...], evidence_sufficiency: {...}, language}`.
+`/recommend` and `/explain` are unchanged. `/chat`'s slot flow calls
+`advise()` and the narrative states the mode in plain words (catalog keys
+per language; the English texts byte-identical where the mode is
+model-led and no candidates exist, guarded by a test).
+
+**E. UI.** The Advisor results view consumes `/advise`: the source badge
+shows the mode (`Field-trial model` / `Hybrid` / `Documented practice`)
+with the reason text; model cards as today; a new **"Documented
+practices"** section (secondary-outline styling, never with an effect
+number, each card listing its sources and a "Why this is suggested"
+template line) shown in hybrid and knowledge-led modes; knowledge-led
+mode replaces the current no-evidence error state. Chat renders the same
+cards inline. Print sheet carries the mode and the candidates with their
+sources. Three languages. E2E: the three modes against mocked `/advise`
+fixtures (captured in UTF-8; add the mojibake guard from the U2 review).
+
+**F. Quality items folded in from P8.**
+1. **Per-study citation numbering:** group evidence passages per study in
+   the prompt (`[1a]`, `[1b]` shown, cited as `[1]`), align the guardrail
+   marker regex, `shape_citations` and the Evidence-panel chips, and the
+   faithfulness auditor's marker mapping; Tier 2 keeps `[Gn]` per
+   document; Tier 3 `[Wn]` per record. Tests for numbering, stripping and
+   chip ↔ marker consistency.
+2. **Tier-2 chunk quality:** `rag/ingest/quality.py` with a documented,
+   tested `chunk_quality(text) -> {score, flags}` (alpha ratio, short-token
+   share, caps share, digit share, mean word length, reference-list and
+   table patterns), a `--min-quality` gate in `chunk_guidance.py`, and
+   `rag/ingest/prune_collection.py` that deletes failing chunk ids from
+   an existing Chroma collection and rewrites the chunks file (no
+   re-embedding; `index_tools`-style safety). Calibrate on a labelled
+   sample of 100 chunks written to `rag/ingest/quality_sample.csv`
+   (owner spot-checks); target ≥ 95% precision on "garbage". Tier 1 is
+   never filtered. Report the expected removal count; the owner runs the
+   prune.
+
+**G. Offline mode report (light, for the product and later the paper).**
+`rag/eval/mode_report.py`: for all 35 cells × the 50 P3 scenario pins
+(`rag/eval/queries_v2.jsonl` locations), call `advise()` and tabulate the
+mode distribution, candidate counts per source, and a guard that no
+knowledge-candidate rationale contains a number other than its counts.
+Writes `rag/eval/results/mode_report.{json,md}`. Owner runs it (rasters).
+
+**H. Tests and scope.** Unit tests for the mode rules on synthetic
+graphs (every branch), candidate extraction from passage fixtures,
+`advise()` with fake retrievers/graph (incl. the no-evidence path → 200 +
+knowledge-led, never a 4xx), the LLM-free rationale has no stray numbers,
+citation numbering, quality filter; UI tests + E2E; all existing suites
+green. Scope guard: `recommend.py`, the model, the dataset, Tier-1 corpus
+and `era_corpus` untouched; `/recommend` and `/explain` response shapes
+unchanged (additive only).
+
+**I. Report** with the 35-cell mode table, screenshots of the three modes
+(en + am), the quality-filter funnel, and stop.
+
+**Launch (repo root):**
+`claude "Read CLAUDE.md, then progress.md. The latest '### Next steps → Phase P9' block is your task. Implement it exactly, verify as instructed, append your phase report to progress.md, and stop."`
+
+## Phase P9 — Evidence-tiered advisory: model-led / hybrid / knowledge-led (28 Oct 2026)
+
+**Built**
+
+- **A. Doctrine.** CLAUDE.md §1–2 amended as briefed (knowledge sources may *propose* practices with provenance, never quantify; "cite or stay silent" now covers every proposed practice).
+- **B. Evidence sufficiency** (`app/backend/app/services/evidence_service.py`, new). Per ranked practice: `n_studies`, `n_obs`, `n_obs_in_belt`, `n_obs_in_zone`, `aez_belts`, `corpus_status`, `belt_counts_exact`, `in_top3`. Zone = moisture regime × belt group (Berha/Kolla → lowland, Weyna Dega → midland, Dega/High Dega/Wurch → highland; e.g. `Dry-lowland`). Mode rules with config thresholds (`EVIDENCE_MIN_STUDIES=3`, `EVIDENCE_MIN_OBS=10`, `EVIDENCE_MIN_OBS_IN_ZONE=1`, plus `KNOWLEDGE_CANDIDATES_MAX=5`, `GUIDANCE_CANDIDATES_K=12`, `GUIDANCE_MIN_QUALITY=0.55`), reasons as catalog keys + params (`mode.reason.strong_evidence | thin_evidence | in_zone | other_zones_only | zone_unknown | engine_no_evidence | engine_unsupported | no_studies | graph_unavailable | no_candidates`). The graph had no per-belt observation counts, so `REPORTS_EFFECT` edges now carry `obs_by_belt` (`rag/graph/build_graph.py`), `evidence_summary` returns `obs_by_belt` + `belt_counts_exact` (`rag/graph/query.py`), and the store was **rebuilt** (720 nodes, 1 961 edges, 867/867 effect edges with counts summing to `n_obs`). A pre-P9 store degrades to presence-based in-zone counts flagged `belt_counts_exact: false`; no graph → model-led with `graph_unavailable`. Decision record: `docs/decisions/evidence_tiered_advisory.md` (rules, zone table, 35-cell table, calibration).
+- **C. Knowledge candidates.** Three sources: graph relations (`evidence_other_objectives`, same family, evidence for other indicators, cited per study), guidance passages (`documented_in_guidance`: `build_query_text` reused, k=12, quality gate first, mentions mapped to the 44 components by `rag/graph/component_keywords.py` — 41 components keyworded, left word-boundary regex so "organic fertilizer" never fires inside "inorganic fertilizer", import-time drift guard against `FAMILY_KEYWORDS`/`CANONICAL_COMPONENTS`), WOCAT records via `similar_context_technologies` (`documented_practice_record`). Candidates are components of practices of the requested family, de-duplicated by component, ranked sources > documents > passages, capped at 5, each with a deterministic template rationale (counts only; `rationale_numbers_are_counts` guard) and numbered citations. A citation must carry an identity (ERA code, dataset `study_no`, URL, WOCAT id, DOI or title) or it is refused; a candidate without citations is dropped.
+- **D. `POST /advise`** (`routers/advise.py`, `services/advisory_service.py`): `{mode, reasons, model, knowledge_candidates, evidence_sufficiency, context, language}`; `model` is the unchanged `/recommend` payload (null in knowledge-led); unsupported pairs and engine "No field evidence" return **200 knowledge-led** while `/recommend` keeps its 422. `/recommend` and `/explain` shapes unchanged (additive: `ExplainCitation.ref`, `MetadataResponse.advisory`). `/chat` calls `advise()`, emits an `advisory` SSE event (mode, reasons, candidates, sufficiency, context, resolved query) before `recommendation`; model-led narrative byte-identical (test), hybrid adds one sentence, knowledge-led streams a deterministic list.
+- **E. UI.** Results consume `/advise`; `ModeBadge` (mode + reasons tooltip) replaces the static source badge; `ModeReasons` card and a secondary-outline **Documented practices** section (sources, support counts, "Why this is suggested", citation chips `[n]`/`[Gn]`/`[Wn]`, first six + "Show all", never an effect number) in hybrid; knowledge-led replaces the no-evidence error with an info panel + context + reasons + candidates; chat renders the same cards inline (hybrid under the ranking, knowledge-led turn without a ranking, "Open in Advisor" from the advisory's query, quick replies do not reappear); print sheet carries mode, reasons and candidates; Evidence-panel chips show `[ref]`; en/am/om keys added (32 + 3). E2E `advisory-modes.spec.ts`: three modes × en/am, chat hybrid + knowledge-led, print sheet, mojibake guard (`â€|Ã.`), screenshots.
+- **F1. Per-study numbering.** `explain_service`: `study_key`, `group_chunks_by_study`, `shape_citations` one entry per study/document with `ref` and `n_passages`; prompt labels passages `[1a]/[1b]` and asks for `[1]`; guardrail regex `\[[GW]?\d+[a-z]?\]`; `[Gn]` per guidance document, `[Wn]` records; faithfulness auditor maps markers to study groups (`rag/eval/eval_faithfulness.py`).
+- **F2. Quality filter.** `rag/ingest/quality.py` (`chunk_quality(text) → {score, flags, stats}`, `MIN_QUALITY=0.55`), `--min-quality` gate in `chunk_guidance.py`, `rag/ingest/prune_collection.py` (dry run by default, refuses `era_corpus`), calibration sample `rag/ingest/quality_sample.csv` (100 stratified chunks, hand-labelled: 58 garbage / 3 mixed / 39 ok).
+- **G. `rag/eval/mode_report.py`** → `rag/eval/results/mode_report.{json,md}` (35 cells × 38 pins, per-cell mode counts, reason counts, candidates by source, rationale-number guard); `--guidance` run → `mode_report_guidance.{json,md}`.
+- **H. Tests.** Backend: `tests/test_evidence_service.py` (mode rules every branch, zone parsing, counts fallback, candidate extraction per source, ranking/dedupe/cap, rationale guard, dataset-only citations), `tests/test_advisory.py` (advise with fakes, no-evidence → knowledge-led, no graph → model-led, chat events, narrative identity), `test_explain.py` (+7 numbering/auditor tests), `test_api.py` (+5: `/advise` identity with `/recommend`, unsupported pair 200 vs 422, bounds, metadata block, chat advisory). Graph: `test_component_keywords.py` (5), `test_graph.py` (+1 per-belt). Ingest: `test_quality.py` (9). UI: `mode-badge.test.tsx`, `knowledge-candidates.test.tsx`.
+
+**Files** CLAUDE.md · backend: `app/config.py`, `app/main.py`, `app/metadata_service.py`, `app/schemas.py`, `app/i18n/{en,am,om}.py`, `app/routers/advise.py`*, `app/services/{advisory_service,evidence_service}.py`*, `app/services/{chat_service,explain_service}.py`, `tests/{test_advisory,test_evidence_service}.py`*, `tests/{test_api,test_explain}.py` · rag: `graph/{build_graph,query,test_graph}.py`, `graph/README.md`, `graph/component_keywords.py`*, `graph/test_component_keywords.py`*, `graph/store/graph.json` + `graph_report.json` (rebuilt), `ingest/chunk_guidance.py`, `ingest/{quality,prune_collection,test_quality}.py`*, `ingest/quality_sample.csv`*, `eval/eval_faithfulness.py`, `eval/mode_report.py`*, `eval/results/mode_report{,_guidance}.{json,md}`* · frontend: `README.md`, `e2e/support/api.ts`, `e2e/advisor-flow.spec.ts`, `e2e/advisory-modes.spec.ts`*, `e2e/fixtures/advise-{model,hybrid,knowledge}{,.am,.om}.json`*, `e2e/fixtures/{explain,metadata,recommend}.json` (re-captured, UTF-8), `messages/{en,am,om}.json`, `src/lib/{api,types}.ts`, `src/components/{chat-panel,evidence-panel}.tsx`, `src/components/advisor/{results,recommendation-panel,print-sheet}.tsx`, `src/components/advisor/{mode-badge,knowledge-candidates}.tsx`* (+ tests*), `src/components/advisor/source-badge.tsx` (removed, superseded) · docs: `docs/decisions/evidence_tiered_advisory.md`*, `docs/design/design_system.md`, `docs/design/screenshots/p9-{model-led,hybrid,knowledge-led}-{en,am}.png`*, `docs/i18n/TRANSLATION_STATUS.md` (regenerated). (* = new)
+
+**Decisions**
+
+1. **Mode distribution is hybrid-heavy under the briefed thresholds.** Over the 35 cells × 38 pins: model-led 281, hybrid 859, knowledge-led 190 (cells by dominant mode 9 / 21 / 5). The binding condition is the evidence depth of the engine's **own top 3**, not the zone: `thin_evidence` on 746 of 1 140 ranked advisories vs `other_zones_only` on 555. The ranking favours combination practices with few observations (at the demo pin, ECWM × soil loss ranks Mulch-Water Harvesting with 1 study / 3 obs while Physical SWC Measures has 19 soil-loss studies and is not in the top 3), so the demo cell itself is hybrid. I implemented the rule exactly as briefed and left the thresholds as settings; whether the "strong" test should look at the family's best-evidenced practice rather than the top 3, or lower `min_obs`, is the reviewer's call — the per-cell reason counts in the report give the data.
+2. **Candidates stay inside the family** (components of the family's frozen practices); a practice from another family is never proposed. Citation numbering is global per response (`[n]` studies, `[Gn]` guidance documents, `[Wn]` records), one number per distinct source; studies outside the ERA corpus (no code, no title) are cited by their dataset id ("Dataset study #CSA_18") instead of appearing as anonymous "Untitled study" rows.
+3. **Knowledge-led is reachable from chat and the API, not from the stepper.** The Advisor's objective step still offers only evidence-backed objectives (U2 decision), and a URL with an unsupported objective falls back to that step, so the five unsupported pairs never reach the results view; the E2E therefore mocks the knowledge-led answer onto the demo request (which is exactly what the backend returns when the engine has no evidence at a pin). Offering all seven objectives now that knowledge-led exists is a product decision I did not take.
+4. **Quality gate calibrated at 0.55** after adding bibliography-initials and dot-leader cues to recover reference lists and tables of contents: precision 95.5 % strict (43/45; 100 % counting "mixed" chunks as removable), recall 72.4 % on the labelled garbage; expected removal **2 073 of 19 997 chunks (10.4 %)**, 1 455 of 1 459 documents keep ≥ 1 chunk. Not applied — `prune_collection.py` ran as a dry run only; the Tier-1 corpus is never filtered.
+5. `/metadata.advisory.sources.practice_records` reflects the graph (true when non-synthetic Technology nodes exist — currently the P6b-i fixture records, which also yield the 38 `documented_practice_record` candidates in Livestock × income); `GraphQuery.has_practice_records()` added.
+6. The mode report's guidance retrieval is opt-in (`--guidance`); the default run keeps the report reproducible without the Chroma index and a key.
+
+**Verified**
+
+- `py_compile` on every touched Python file. Backend (owner's Windows venv, rasters + model): **190 passed, 1 skipped**. `rag/graph`: 62 passed; `rag/ingest`: 26 passed; `rag/eval`: 13 passed.
+- Frontend: `tsc --noEmit` clean, `eslint` clean (0 warnings), vitest **128 passed** (15 files), `next build --webpack` OK, Playwright full suite (desktop + phone projects, mocked API, fresh standalone build) **33 passed, 1 failed** — the failure was the very first navigation of the run (`page.goto … net::ERR_ABORTED` while the web server came up), the same test passes alone (1 passed) and in the two previous full runs; the three-mode spec `advisory-modes.spec.ts` (9 tests: 3 modes × en/am, chat hybrid, chat knowledge-led, screenshots) passes in every run.
+- `/advise` fixtures captured from a backend started from this working tree (port 8001, stopped afterwards) in UTF-8 (`ensure_ascii=False`) at the demo pin, in en/am/om (the mock serves the am/om files when the request's `language` says so, so rationales and the knowledge-led copy are the backend's own in every language): water use efficiency → model-led (`strong_evidence`: drip irrigation 8 studies / 28 obs; `in_zone`: furrow irrigation 11 obs in Dry-lowland), soil loss → hybrid (`thin_evidence`, `other_zones_only`), income → knowledge-led (`engine_unsupported`); no `â€`/`Ã` anywhere in the fixtures or catalogs (E2E guard).
+- Mode report: 35 cells × 38 pins = 1 330 advisories, 0 errors, rationale-number guard 0 failures in 5 207 candidates (table in `docs/decisions/evidence_tiered_advisory.md` and `rag/eval/results/mode_report.md`). A second run with `--guidance` (1 145 s) gives the same modes (retrieval never decides the mode) and 5 161 graph / 4 316 guidance / 38 record provenances; the quality-filter funnel measured on a 5-pin sample (`mode_report_guidance_sample.json`, 175 advisories, 144 with retrieval): 1 728 passages retrieved → 1 618 kept by the quality gate (110 = 6.4 % dropped at 0.55) → 948 mention a canonical component (58.6 % of kept).
+- English model-led narrative byte-identical to pre-P9 (`test_chat_emits_the_advisory_event_and_keeps_the_model_led_narrative_byte_identical`); `/advise.model` identical to `/recommend` for the same request (`test_api`).
+- Screenshots: `docs/design/screenshots/p9-{model-led,hybrid,knowledge-led}-{en,am}.png` (desktop 1280, full page, mocked API).
+- Scope guard: `recommend.py`, the model, the dataset, the Tier-1 corpus and `era_corpus` untouched; `backend/.env` untouched; nothing committed.
+
+**Needs local verification**
+
+- Amharic / Afaan Oromoo copy for the 35 new keys is machine-drafted (TRANSLATION_STATUS regenerated: 554 keys, all still "machine-draft") — the native-speaker review workflow from U2 applies.
+- `rag/ingest/prune_collection.py --apply` on the guidance collection (I only ran the dry run), then re-check `/explain` guidance citations.
+- Threshold choice (Decision 1) and whether the stepper should offer unsupported objectives (Decision 3).
+- Housekeeping: WSL `git status` fails on this checkout ("index uses extension … index file corrupt") while Windows git works — the index was rewritten by Windows git at 10:12; I did not touch it. A `uvicorn … --reload --port 8000` started from the owner's environment at 11:35 is still running (it reloads the P9 code; it answered one intermediate capture); the final fixtures and the explain fixture came from backends I started on port 8001 from this working tree, all stopped afterwards. The stray `3.4` file (a pip notice redirected by one of my commands) was removed; `docs/~$CAT_API…docx` is the owner's Word lock file.
+
+## Phase U3 — Site redesign: four pages, clean standard layout (30 Oct 2026)
+
+Owner request (direct, not from a Senior Engineer review): make the UI clean, modern and production-grade, with four pages (Home, About, Advisor, Chat), standard page width, a standard background, an agroecology image on the landing page, and redundant elements removed.
+
+**Built**
+- Shell: header with Home / Advisor / Chat / About (underline active state), language + theme controls, a "Get advice" button (lg+); phones get a hamburger disclosure menu (Escape closes) in place of the bottom tab bar. New deep-green footer: brand + attribution, Explore (four pages), Resources (About anchors), bottom bar with disclaimer, copyright, version; hidden on `/chat` (full-height app view).
+- Tokens: white page background, `surface-2` band for alternating sections, theme-aware `band` footer colours, fixed `forest` scale for text over photos, display sizes `4xl`/`5xl`, `.container-page` (1280 px, 16/24/32 px gutters), `.eyebrow`; `inverse`/`outline-inverse`/`xl` button variants.
+- Home: full-bleed hero on the terraced-highland practice photo with a forest scrim; evidence figures as one card overlapping the hero (4 figures: observations, studies, practices, belts; still live from `/metadata`); three-step "how it works" with connector; five challenge areas as photo cards linking to the Advisor with the family preset (compact rows on phones); closing CTA band.
+- About: `PageHeader` band, main column (what it is, confidence levels, data sources as icon cards), sticky aside (authorship, licence, Advisor CTA).
+- Advisor: title in a compact `PageHeader`; standard container; empty "Your request" summary hidden on phones until something is set.
+- Chat: removed the empty bordered composer strip shown before the first message; composer bar now full width; second headline line in primary green.
+
+**Removed as redundant**: bottom tab bar (`bottom-tab-bar.tsx` deleted); duplicated "Click the map…" hint under the map (now "No pin yet"); repeated footer column heading/link; family/objective counts in the figures strip; "Start with …" link text inside cards that are themselves links; floating Next.js dev badge (`devIndicators: false`).
+
+**Files** `tailwind.config.ts`, `next.config.ts`, `src/app/globals.css`, `src/app/[locale]/{layout,page,about/page}.tsx`, `src/components/shell/{nav-items.ts,site-header,site-footer,page-header,api-status-banner}.tsx`, `src/components/home/{hero,trust-strip,how,families,cta-band}.tsx`, `src/components/advisor/{advisor-flow,location-step}.tsx`, `src/components/chat-panel.tsx`, `src/components/ui/{button,toast}.tsx`, `messages/{en,am,om}.json` (+6 keys: `nav.cta`, `footer.explore`, `footer.resources`, `home.cta.title`, `home.cta.body`), `e2e/advisor.phone.spec.ts`, `docs/design/design_system.md`, `docs/i18n/TRANSLATION_STATUS.md`, screenshots `docs/design/screenshots/u3-*.png`.
+
+**Decisions**
+1. Hamburger menu instead of the U1 bottom tab bar, per the owner's "standard site" request; the phone E2E now asserts the menu instead of the bar.
+2. Hero and card images reuse the shipped practice photos (no new assets, no external fetches).
+3. Unused catalog keys (`nav.bottom`, `home.trust.families/objectives`, `home.families.open`) left in place rather than deleted, to keep the catalog diff additive; safe to prune later.
+
+**Verified**: `tsc --noEmit` clean; `eslint src e2e` clean (0 warnings); vitest 129 passed (15 files, incl. i18n hard-coded-string and catalog-parity gates). Visual check in the running dev server (Chrome via Playwright) at 1440 px and 390 px for all four pages, dark mode, Amharic, and the open phone menu; no horizontal overflow at 390 px.
+
+**Needs local verification**: Playwright E2E suite not run (Playwright's bundled browsers are not installed here); `next build` not run (dev server was using `.next`). Amharic / Afaan Oromoo copy for the 6 new keys is machine-drafted.

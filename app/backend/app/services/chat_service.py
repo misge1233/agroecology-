@@ -18,6 +18,7 @@ import re
 from typing import Any, AsyncIterator
 
 from app.config import get_settings
+from app.services import advisory_service as advisory
 from app.services import intent_llm
 from app.services import recommender_service as svc
 from app.services.openai_chat import (
@@ -157,6 +158,42 @@ def _run_recommend_from_slots(slots, top_n: int) -> dict[str, Any]:
     )
 
 
+def _advise_from_slots(slots, top_n: int, language: str) -> dict[str, Any]:
+    """The evidence-tiered advisory (P9) for a complete slot set — wraps recommend()."""
+    assert slots.is_complete
+    return advisory.advise(
+        lat=float(slots.lat),
+        lon=float(slots.lon),
+        practice_family=slots.practice_family,
+        indicator=slots.indicator,
+        crop_type=slots.crop_type,
+        top_n=top_n,
+        language=language,
+    )
+
+
+def _advisory_event(result: dict[str, Any], slots: Any) -> dict[str, Any]:
+    """The SSE ``advisory`` payload: everything but the model payload (sent as ``recommendation``).
+
+    ``query`` repeats the resolved slots so the UI can deep-link a knowledge-led
+    turn (which carries no ``recommendation.query``) to the Advisor.
+    """
+    return {
+        "mode": result["mode"],
+        "reasons": result["reasons"],
+        "knowledge_candidates": result["knowledge_candidates"],
+        "evidence_sufficiency": result["evidence_sufficiency"],
+        "context": result.get("context") or {},
+        "query": {
+            "lat": float(slots.lat),
+            "lon": float(slots.lon),
+            "practice_family": slots.practice_family,
+            "indicator": slots.indicator,
+            "crop_type": slots.crop_type,
+        },
+    }
+
+
 async def stream_chat(
     message: str,
     history: list[dict[str, str]],
@@ -219,19 +256,28 @@ async def stream_chat(
             yield chunk
         return
 
-    # Complete slots → score with the ML engine first (source of truth).
+    # Complete slots → score with the ML engine first (source of truth). P9:
+    # through the evidence-tiered advisory, so a thin or empty evidence base
+    # becomes a labelled mode with documented practices, not an error.
     try:
-        recommendation = _trim_recommendation(
-            _run_recommend_from_slots(slots, top_n), top_n
-        )
+        result = _advise_from_slots(slots, top_n, language)
     except Exception as exc:
-        logger.exception("Recommend from slots failed: %s", exc)
+        logger.exception("Advise from slots failed: %s", exc)
         yield _evt({"type": "error", "message": _error_message(exc, language)})
         return
 
-    yield _evt({"type": "recommendation", "data": recommendation})
+    yield _evt({"type": "advisory", "data": _advisory_event(result, slots)})
 
-    narrative = await _narrative_for_recommendation(message, history, recommendation, settings, language)
+    if result.get("model"):
+        recommendation = _trim_recommendation(result["model"], top_n)
+        yield _evt({"type": "recommendation", "data": recommendation})
+        narrative = await _narrative_for_recommendation(message, history, recommendation, settings, language)
+        # Model-led: byte-identical to the pre-P9 narrative. Hybrid: one sentence more.
+        narrative += advisory.hybrid_note(result, language)
+    else:
+        narrative = advisory.knowledge_led_text(
+            result, slots.practice_family, slots.indicator, language
+        )
     for piece in _chunk(narrative):
         yield _evt({"type": "token", "text": piece})
     yield _evt({"type": "done"})
@@ -395,6 +441,7 @@ async def run_chat(
     reply = ""
     recommendation: dict[str, Any] | None = None
     slots: dict[str, Any] | None = None
+    advisory_data: dict[str, Any] | None = None
     error: str | None = None
     async for chunk in stream_chat(message, history, last_recommendation, top_n, language, hint):
         raw = chunk[len("data: ") :].strip()
@@ -408,12 +455,15 @@ async def run_chat(
             recommendation = payload.get("data")
         elif t == "slots":
             slots = payload.get("data")
+        elif t == "advisory":
+            advisory_data = payload.get("data")
         elif t == "error":
             error = payload.get("message")
     return {
         "reply": reply,
         "recommendation": recommendation,
         "slots": slots,
+        "advisory": advisory_data,
         "error": error,
     }
 

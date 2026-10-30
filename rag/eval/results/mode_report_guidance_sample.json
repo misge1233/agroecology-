@@ -1,0 +1,672 @@
+{
+  "generated": "2026-10-28",
+  "queries": "rag\\eval\\queries_v2.jsonl",
+  "n_pins": 5,
+  "n_cells": 35,
+  "n_advisories": 175,
+  "guidance_retrieval": true,
+  "thresholds": {
+    "min_studies": 3,
+    "min_obs": 10,
+    "min_obs_in_zone": 1
+  },
+  "overall": {
+    "model-led": 31,
+    "hybrid": 119,
+    "knowledge-led": 25
+  },
+  "cells_by_dominant_mode": {
+    "hybrid": 24,
+    "model-led": 6,
+    "knowledge-led": 5
+  },
+  "candidates": {
+    "mean_per_advisory": 4.09,
+    "by_source": {
+      "evidence_other_objectives": 710,
+      "documented_in_guidance": 591,
+      "documented_practice_record": 5
+    }
+  },
+  "rationale_number_guard": {
+    "checked": 715,
+    "failures": 0,
+    "examples": []
+  },
+  "guidance_funnel": {
+    "graph": 1699,
+    "guidance.retrieved": 1728,
+    "guidance.kept": 1618,
+    "guidance.with_component": 948,
+    "records": 144
+  },
+  "reasons_overall": {
+    "thin_evidence": 99,
+    "other_zones_only": 91,
+    "strong_evidence": 51,
+    "in_zone": 59,
+    "engine_unsupported": 25
+  },
+  "errors": [],
+  "n_errors": 0,
+  "elapsed_s": 165.6,
+  "cells": [
+    {
+      "family": "Crop production and management",
+      "indicator": "yield",
+      "n": 5,
+      "model-led": 2,
+      "hybrid": 3,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 2,
+        "other_zones_only": 3,
+        "strong_evidence": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 15,
+        "documented_in_guidance": 9
+      }
+    },
+    {
+      "family": "Crop production and management",
+      "indicator": "biomass yield",
+      "n": 5,
+      "model-led": 4,
+      "hybrid": 1,
+      "knowledge-led": 0,
+      "dominant": "model-led",
+      "reasons": {
+        "strong_evidence": 5,
+        "in_zone": 4,
+        "other_zones_only": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 5,
+        "documented_in_guidance": 4
+      }
+    },
+    {
+      "family": "Crop production and management",
+      "indicator": "income",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "in_zone": 1,
+        "other_zones_only": 4
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 20
+      }
+    },
+    {
+      "family": "Crop production and management",
+      "indicator": "water use efficiency",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Crop production and management",
+      "indicator": "SOM content",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Crop production and management",
+      "indicator": "soil loss",
+      "n": 5,
+      "model-led": 2,
+      "hybrid": 3,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "strong_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 15,
+        "documented_in_guidance": 11
+      }
+    },
+    {
+      "family": "Crop production and management",
+      "indicator": "runoff",
+      "n": 5,
+      "model-led": 3,
+      "hybrid": 2,
+      "knowledge-led": 0,
+      "dominant": "model-led",
+      "reasons": {
+        "strong_evidence": 5,
+        "in_zone": 3,
+        "other_zones_only": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 10,
+        "documented_in_guidance": 7
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "yield",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 0,
+      "knowledge-led": 5,
+      "dominant": "knowledge-led",
+      "reasons": {
+        "engine_unsupported": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 7
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "biomass yield",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 11
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "income",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 15,
+        "documented_in_guidance": 5,
+        "documented_practice_record": 5
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "water use efficiency",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 0,
+      "knowledge-led": 5,
+      "dominant": "knowledge-led",
+      "reasons": {
+        "engine_unsupported": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 15
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "SOM content",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 0,
+      "knowledge-led": 5,
+      "dominant": "knowledge-led",
+      "reasons": {
+        "engine_unsupported": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 14
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "soil loss",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 4,
+        "in_zone": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 5
+      }
+    },
+    {
+      "family": "Livestock production and management",
+      "indicator": "runoff",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 2,
+        "in_zone": 3
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 8
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "yield",
+      "n": 5,
+      "model-led": 1,
+      "hybrid": 4,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 4,
+        "other_zones_only": 2,
+        "strong_evidence": 1,
+        "in_zone": 3
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 20,
+        "documented_in_guidance": 20
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "biomass yield",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "in_zone": 2,
+        "other_zones_only": 3
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "income",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 4,
+        "in_zone": 2,
+        "other_zones_only": 3,
+        "strong_evidence": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "water use efficiency",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "SOM content",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "in_zone": 1,
+        "other_zones_only": 4
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "soil loss",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 4,
+        "in_zone": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Integrated soil fertility management",
+      "indicator": "runoff",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 4,
+        "in_zone": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "yield",
+      "n": 5,
+      "model-led": 5,
+      "hybrid": 0,
+      "knowledge-led": 0,
+      "dominant": "model-led",
+      "reasons": {
+        "strong_evidence": 5,
+        "in_zone": 5
+      },
+      "candidates_by_source": {}
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "biomass yield",
+      "n": 5,
+      "model-led": 3,
+      "hybrid": 2,
+      "knowledge-led": 0,
+      "dominant": "model-led",
+      "reasons": {
+        "strong_evidence": 5,
+        "in_zone": 3,
+        "other_zones_only": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 10,
+        "documented_in_guidance": 10
+      }
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "income",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 0,
+      "knowledge-led": 5,
+      "dominant": "knowledge-led",
+      "reasons": {
+        "engine_unsupported": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "water use efficiency",
+      "n": 5,
+      "model-led": 3,
+      "hybrid": 2,
+      "knowledge-led": 0,
+      "dominant": "model-led",
+      "reasons": {
+        "strong_evidence": 5,
+        "in_zone": 3,
+        "other_zones_only": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 10,
+        "documented_in_guidance": 10
+      }
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "SOM content",
+      "n": 5,
+      "model-led": 4,
+      "hybrid": 1,
+      "knowledge-led": 0,
+      "dominant": "model-led",
+      "reasons": {
+        "strong_evidence": 5,
+        "in_zone": 4,
+        "other_zones_only": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 5,
+        "documented_in_guidance": 5
+      }
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "soil loss",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Erosion control and water management",
+      "indicator": "runoff",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "yield",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 4,
+        "in_zone": 2,
+        "other_zones_only": 3,
+        "strong_evidence": 1
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "biomass yield",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "income",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 0,
+      "knowledge-led": 5,
+      "dominant": "knowledge-led",
+      "reasons": {
+        "engine_unsupported": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "water use efficiency",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "other_zones_only": 5
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "SOM content",
+      "n": 5,
+      "model-led": 0,
+      "hybrid": 5,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "thin_evidence": 5,
+        "in_zone": 2,
+        "other_zones_only": 3
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 25,
+        "documented_in_guidance": 25
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "soil loss",
+      "n": 5,
+      "model-led": 2,
+      "hybrid": 3,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "strong_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 15,
+        "documented_in_guidance": 15
+      }
+    },
+    {
+      "family": "Agro-forestry and forest management",
+      "indicator": "runoff",
+      "n": 5,
+      "model-led": 2,
+      "hybrid": 3,
+      "knowledge-led": 0,
+      "dominant": "hybrid",
+      "reasons": {
+        "strong_evidence": 5,
+        "other_zones_only": 3,
+        "in_zone": 2
+      },
+      "candidates_by_source": {
+        "evidence_other_objectives": 15,
+        "documented_in_guidance": 15
+      }
+    }
+  ]
+}

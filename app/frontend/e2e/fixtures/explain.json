@@ -1,17 +1,18 @@
 {
-  "explanation": "In the context of the Dry Kolla agro-ecology in Ethiopia, characterized by an average annual rainfall of approximately 755.7 mm, a slope of 2.34%, and clay-rich soils, the recommended practices for erosion control and water management are particularly relevant. These practices aim to significantly reduce soil loss, which is critical for maintaining soil fertility and agricultural productivity in this semi-arid region.\n\n### Recommended Practices\n\n1. **Mulch-Water Harvesting**\n   - **Why Recommended**: This practice has shown a substantial effect in reducing soil loss, with evidence indicating a reduction of approximately 76% in soil loss. The use of mulch helps retain moisture and protect the soil surface from erosion, which is crucial in areas with high rainfall variability like the Dry Kolla region [1][2].\n   - **How to Apply**: \n     - Apply organic materials such as straw or crop residues as mulch on the soil surface.\n     - Ensure that the mulch layer is thick enough to cover the soil and prevent erosion during heavy rains.\n     - Combine this with water harvesting techniques, such as tied ridges, to enhance moisture retention and further reduce soil loss [G1].\n\n2. **Reduced Tillage-Water Harvesting**\n   - **Why Recommended**: This method is effective in minimizing soil disturbance, which can lead to erosion. It has been associated with a reduction of about 70% in soil loss. Reduced tillage helps maintain soil structure and organic matter, which are vital for soil health in the Dry Kolla region [1].\n   - **How to Apply**: \n     - Limit tillage operations to only what is necessary for planting.\n     - Use cover crops or crop residues to protect the soil surface between planting seasons.\n     - Implement water harvesting techniques alongside reduced tillage to capture and utilize rainfall effectively [G2].\n\n3. **Biological Soil and Water Conservation (SWC) Practices**\n   - **Why Recommended**: These practices, which include the use of vegetation and organic materials to stabilize soil, have been shown to reduce soil loss by approximately 68%. They are particularly effective in enhancing soil fertility and moisture retention, which are critical in the Dry Kolla context [1][4].\n   - **How to Apply**: \n     - Introduce leguminous plants or cover crops that can improve soil structure and fertility.\n     - Use contour planting or hedgerows to slow down water runoff and reduce erosion.\n     - Combine these biological practices with physical structures like bunds or terraces to maximize their effectiveness [G3].\n\n### Conclusion\nImplementing these practices in the Dry Kolla region can significantly mitigate soil erosion, enhance water retention, and improve soil fertility, thereby supporting sustainable agricultural productivity. Each practice should be tailored to local conditions, considering factors such as slope, soil type, and rainfall patterns to achieve the best results.",
+  "explanation": "### Recommended Practices for Erosion Control and Water Management\n\n#### 1. Mulch-Water Harvesting\n**Why Recommended:**\n- Mulch-water harvesting is particularly effective in the Dry Kolla agro-ecology of Ethiopia, where rainfall is about 755.7 mm annually. This practice helps retain moisture in the soil, which is crucial given the semi-arid conditions that can lead to significant soil erosion during the rainy season [1a].\n- Evidence from studies indicates that using straw mulch significantly reduces soil loss, with reductions reported as high as 90% when combined with other techniques like tied ridges [1a]. This aligns well with the local context where steep slopes and extensive cultivation make farmlands highly susceptible to erosion [1b].\n\n**How to Apply:**\n- Implement straw mulch by applying a layer of organic material (e.g., straw, leaves) on the soil surface after planting. This should be done before the onset of the rainy season to maximize moisture retention and erosion control.\n- Combine mulch application with other practices like tied ridges for enhanced effectiveness, as studies show that these combinations yield better results in reducing soil loss [1a].\n\n#### 2. Reduced Tillage-Water Harvesting\n**Why Recommended:**\n- Reduced tillage practices are beneficial in the context of the Dry Kolla region, where soil structure can be easily compromised by conventional tillage methods. This practice minimizes soil disturbance, helping to maintain soil integrity and reduce erosion [2a].\n- Evidence suggests that reduced tillage can lead to a significant reduction in soil loss, making it suitable for the local conditions characterized by a slope of 2.34% and a clay content of 31.7% [1].\n\n**How to Apply:**\n- Transition to reduced tillage by minimizing the frequency and intensity of soil cultivation. This can involve using tools that disturb the soil less and maintaining crop residues on the surface.\n- Plan tillage operations to coincide with dry periods to avoid soil compaction and erosion during the rainy season.\n\n#### 3. Biological Soil and Water Conservation (SWC) Practices\n**Why Recommended:**\n- Biological SWC practices, such as planting cover crops and using organic matter, are effective in enhancing soil structure and fertility while reducing erosion. These practices are particularly relevant in areas like Moist Dega and Moist Weyna Dega, where moisture retention is critical for crop productivity [1].\n- The integration of biological practices can lead to a reduction in soil loss by improving soil health and increasing organic matter content, which is vital in the context of declining soil fertility in Ethiopia [2b].\n\n**How to Apply:**\n- Introduce cover crops during the off-season to protect the soil from erosion and improve soil fertility. Choose legumes or other plants that can fix nitrogen and enhance soil structure.\n- Incorporate organic matter into the soil through composting or mulching with plant residues to improve soil health and moisture retention.\n\n### Conclusion\nThese practices are tailored to the specific agro-ecological conditions of the Dry Kolla region in Ethiopia, where soil erosion poses a significant threat to agricultural productivity. By implementing mulch-water harvesting, reduced tillage, and biological SWC practices, farmers can effectively manage soil erosion and improve water retention, thereby enhancing their agricultural resilience.",
   "citations": [
     {
       "era_code": "EO0016",
       "tier": "evidence",
       "url": null,
       "doi": "10.1002/ldr.2603",
-      "title": "Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in SemiâArid Northern Ethiopia",
+      "title": "Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi‐Arid Northern Ethiopia",
       "year": 2017,
       "journal": "Land Degradation & Development",
       "practice": "Mulch-Water Harvesting",
       "snippet": "For questions regarding the public availability of this article, please contact openscience.library@wur.nl . Please cite this publication as follows: Grum, B., Assefae, D., Hessel, R., Woldearegay, K., Kessler, C. A., Ritsema, C. J., & Geis",
-      "n_passages": 3
+      "n_passages": 3,
+      "ref": "1"
     },
     {
       "era_code": "LM0305",
@@ -23,58 +24,138 @@
       "journal": "Physical Geography",
       "practice": "Biological SWC practices",
       "snippet": "the Tigray region (Haregeweyn et al., 2008). This implies that SWC techniques greatly influence sediment transport processes due to small sediment retention basins created behind SWC structures (Nyssen et al., 2007a). Nyssen et al. (2009a) ",
-      "n_passages": 2
+      "n_passages": 2,
+      "ref": "2"
     },
     {
       "era_code": null,
       "tier": "guidance",
       "url": "https://cgspace.cgiar.org/rest/bitstreams/95fcef8a-10a1-426d-ae95-b51426a3de13/retrieve",
       "doi": null,
-      "title": "i Managing Nutrient Cycles to Sustain Soil Fertility in Sub-Saharan Africa Managing â¦",
+      "title": "i Managing Nutrient Cycles to Sustain Soil Fertility in Sub-Saharan Africa Managing …",
       "year": null,
       "journal": null,
       "practice": "Mulch-Water Harvesting",
       "snippet": "287 Soil Conservation and Fertility Improvement Using Leguminous Shrubs in Central Highlands of Kenya: NARFP Case Study Table 20.3: Total root length for maize, leucaena and calliandra at various soil depths at maize grain-filling stage in ",
-      "n_passages": 1
+      "n_passages": 1,
+      "ref": "G1"
     },
     {
       "era_code": null,
       "tier": "guidance",
       "url": "https://cgspace.cgiar.org/rest/bitstreams/e645ebf2-d5ef-4981-9d78-3a419339e3d2/retrieve",
       "doi": null,
-      "title": "Prospect of Payments for Environmental Services in the Blue Nile Basin: Examples â¦",
+      "title": "Prospect of Payments for Environmental Services in the Blue Nile Basin: Examples …",
       "year": null,
       "journal": null,
       "practice": "Mulch-Water Harvesting",
-      "snippet": "soil (e.g. 1,643 Mg km -2 yr -1 in Gumera and 1.66 Mg km -2 yr -1 for Koga watershed (show photos). On average this will result in a yield loss of equivalent to 200US$ ha -1 yr -1 . ï§ Off-site damage of erosion consists of deterioration in ",
-      "n_passages": 1
+      "snippet": "soil (e.g. 1,643 Mg km -2 yr -1 in Gumera and 1.66 Mg km -2 yr -1 for Koga watershed (show photos). On average this will result in a yield loss of equivalent to 200US$ ha -1 yr -1 .  Off-site damage of erosion consists of deterioration in ",
+      "n_passages": 1,
+      "ref": "G2"
     },
     {
       "era_code": null,
       "tier": "guidance",
       "url": "https://cgspace.cgiar.org/rest/bitstreams/eaeea756-5c84-4db0-b451-683b080ec08b/retrieve",
       "doi": null,
-      "title": "ADDIS ABABA UNIVERSITY COLLEGE OF NATURAL AND COMPUTATIONAL SCIENCE CENTER FOR ENVIRONMENTAL â¦",
+      "title": "ADDIS ABABA UNIVERSITY COLLEGE OF NATURAL AND COMPUTATIONAL SCIENCE CENTER FOR ENVIRONMENTAL …",
       "year": null,
       "journal": null,
       "practice": "Reduced Tillage-Water Harvesting",
       "snippet": "SOM, TN, pH, K+, available P, 22 SOC, clay and CEC (Mulugeta and Karl, 2010; Ademe et al., 2017). For instance, Wolka et al. (2011) found higher values of clay and silt fractions on terraced plots than on non-terraced ones. Agroforestry bas",
-      "n_passages": 1
+      "n_passages": 1,
+      "ref": "G3"
     },
     {
       "era_code": null,
       "tier": "guidance",
       "url": "https://cgspace.cgiar.org/rest/bitstreams/b9b84085-f3d9-492b-850c-dcc04c3b1b84/retrieve",
       "doi": null,
-      "title": "Improved Water and Land Management in the Ethiopian Highlands: Its Impact on â¦",
+      "title": "Improved Water and Land Management in the Ethiopian Highlands: Its Impact on …",
       "year": null,
       "journal": null,
       "practice": "Reduced Tillage-Water Harvesting",
       "snippet": "from unsustainable environmental degradation mainly reflected in the form of erosion and loss of soil fertility (Demel, 2004).Under the prevalent rainfed agricultural production system, the progressive degradation of the natural resource ba",
-      "n_passages": 1
+      "n_passages": 1,
+      "ref": "G4"
     }
   ],
   "grounded": true,
   "llm_used": true,
-  "evidence_base": {}
+  "evidence_base": {
+    "Mulch-Water Harvesting": {
+      "n_studies": 1,
+      "n_obs": 3,
+      "aez_belts": [
+        "Dry Weyna Dega"
+      ],
+      "crop_groups": [
+        "Cereal"
+      ],
+      "corpus_status": {
+        "full_text": 0,
+        "abstract": 1,
+        "none": 0
+      },
+      "studies": [
+        {
+          "era_code": "JS0247",
+          "title": "Effects of conservation agriculture on runoff, soil loss and crop yield under rainfed conditions in Tigray, Northern Ethiopia",
+          "year": 2011,
+          "doi": "10.1111/j.1475-2743.2011.00347.x",
+          "corpus_status": "abstract"
+        }
+      ]
+    },
+    "Reduced Tillage-Water Harvesting": {
+      "n_studies": 1,
+      "n_obs": 1,
+      "aez_belts": [
+        "Dry Weyna Dega"
+      ],
+      "crop_groups": [
+        "Cereal"
+      ],
+      "corpus_status": {
+        "full_text": 1,
+        "abstract": 0,
+        "none": 0
+      },
+      "studies": [
+        {
+          "era_code": "NN0206",
+          "title": "Short-term effects of conservation agriculture on Vertisols under tef (Eragrostis tef (Zucc.) Trotter) in the northern Ethiopian highlands",
+          "year": 2010,
+          "doi": "10.1016/j.still.2009.12.004",
+          "corpus_status": "full_text"
+        }
+      ]
+    },
+    "Biological SWC practices": {
+      "n_studies": 1,
+      "n_obs": 3,
+      "aez_belts": [
+        "Moist Dega",
+        "Moist Weyna Dega"
+      ],
+      "crop_groups": [
+        "Cereal",
+        "Cropland"
+      ],
+      "corpus_status": {
+        "full_text": 0,
+        "abstract": 0,
+        "none": 1
+      },
+      "studies": [
+        {
+          "era_code": null,
+          "title": null,
+          "year": null,
+          "doi": null,
+          "corpus_status": "none"
+        }
+      ]
+    }
+  }
 }

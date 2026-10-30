@@ -366,3 +366,55 @@ def test_geocode_gazetteer_hit_and_miss(client):
     miss = client.get("/geocode", params={"q": "Zzyzx nowhere"}).json()
     assert miss["found"] is False and miss["lat"] is None
     assert client.get("/geocode", params={"q": "a"}).status_code == 422
+
+
+# ------------------------------------------------------------- advisory (P9)
+def test_advise_model_led_returns_the_recommend_payload_unchanged(client):
+    rec = client.post("/recommend", json=DEMO).json()
+    r = client.post("/advise", json={**DEMO, "language": "en"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["mode"] in ("model-led", "hybrid")
+    assert body["model"] == rec  # byte-for-byte the /recommend payload
+    assert body["evidence_sufficiency"]["user_belt"] == rec["details"]["context"]["aez_belt"]
+    assert body["evidence_sufficiency"]["thresholds"] == {"min_studies": 3, "min_obs": 10, "min_obs_in_zone": 1}
+    assert all(set(c) >= {"n_studies", "n_obs", "n_obs_in_belt", "n_obs_in_zone"} for c in body["evidence_sufficiency"]["candidates"])
+    assert body["reasons"] and all("key" in x for x in body["reasons"])
+    if body["mode"] == "model-led":
+        assert body["knowledge_candidates"] == []
+    # No knowledge candidate ever carries a percentage.
+    for cand in body["knowledge_candidates"]:
+        assert "%" not in cand["rationale_text"] and cand["citations"]
+
+
+def test_advise_no_evidence_pair_is_knowledge_led_200(client):
+    # Livestock x soil loss has rows but the engine's grounded pool can be empty for some pins;
+    # the unsupported pair below is the deterministic rank-impossible case.
+    r = client.post("/advise", json={**DEMO, "practice_family": "Livestock production and management", "indicator": "yield"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["mode"] == "knowledge-led" and body["model"] is None
+    assert body["reasons"][0]["key"] == "mode.reason.engine_unsupported"
+    assert body["context"].get("aez_belt")
+    # /recommend itself is unchanged: still a 422.
+    assert client.post("/recommend", json={**DEMO, "practice_family": "Livestock production and management", "indicator": "yield"}).status_code == 422
+
+
+def test_advise_out_of_bounds_is_still_a_422(client):
+    assert client.post("/advise", json={**DEMO, "lat": 25.0}).status_code == 422
+
+
+def test_metadata_reports_the_advisory_thresholds(client):
+    body = client.get("/metadata").json()
+    assert body["advisory"]["modes"] == ["model-led", "hybrid", "knowledge-led"]
+    assert body["advisory"]["thresholds"]["min_studies"] == 3
+    assert set(body["advisory"]["sources"]) == {"graph", "guidance", "practice_records"}
+
+
+def test_chat_emits_an_advisory_for_a_scored_request(client, monkeypatch):
+    monkeypatch.setattr(get_settings(), "openai_api_key", "")
+    r = client.post("/chat", json={"message": "My farm is at 8.38, 39.37 and I want to reduce erosion.", "history": [], "stream": False})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["advisory"]["mode"] in ("model-led", "hybrid", "knowledge-led")
+    assert "evidence_sufficiency" in body["advisory"]

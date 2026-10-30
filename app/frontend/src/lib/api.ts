@@ -1,5 +1,6 @@
 import { retryFinished, retryStarted } from "./retry-store";
 import type {
+  AdviseResponse,
   ApiLanguage,
   ChatMessage,
   ChatSlotsHint,
@@ -85,6 +86,21 @@ export async function postRecommend(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    signal,
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+/** The evidence-tiered advisory (P9): /recommend wrapped with mode + knowledge candidates. */
+export async function postAdvise(
+  body: RecommendRequest & { language?: ApiLanguage },
+  signal?: AbortSignal
+): Promise<AdviseResponse> {
+  const res = await fetchWithRetry(`${API_BASE}/advise`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...body, language: body.language ?? "en" }),
     signal,
   });
   if (!res.ok) throw new Error(await parseError(res));

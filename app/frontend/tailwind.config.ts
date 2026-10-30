@@ -55,6 +55,21 @@ const config: Config = {
           text: "var(--danger-text)",
           soft: "var(--danger-soft)",
         },
+        // Footer / CTA band: theme-aware deep green.
+        band: {
+          DEFAULT: "var(--brand-band)",
+          fg: "var(--brand-band-fg)",
+          muted: "var(--brand-band-muted)",
+        },
+        // Fixed (theme-independent) forest scale for text and scrims laid over
+        // photography, where the page theme does not apply (U3 hero).
+        forest: {
+          50: "#eef6f1",
+          200: "#bfe3cd",
+          800: "#124a31",
+          900: "#0d3b27",
+          950: "#082518",
+        },
         chart: {
           1: "var(--chart-1)",
           2: "var(--chart-2)",
@@ -68,19 +83,23 @@ const config: Config = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         ethiopic: ["var(--font-ethiopic)", "var(--font-sans)", "sans-serif"],
       },
-      // Type scale 12 / 14 / 16 / 18 / 22 / 28 / 36 px; body 1.5, headings 1.2.
+      // Type scale 12 / 14 / 16 / 18 / 22 / 28 / 36 / 44 / 56 px; body 1.5,
+      // headings 1.2, display sizes (4xl/5xl, hero and page titles) tighter.
       fontSize: {
         xs: ["0.75rem", { lineHeight: "1.5" }],
         sm: ["0.875rem", { lineHeight: "1.5" }],
         base: ["1rem", { lineHeight: "1.5" }],
-        lg: ["1.125rem", { lineHeight: "1.5" }],
-        xl: ["1.375rem", { lineHeight: "1.2" }],
+        lg: ["1.125rem", { lineHeight: "1.55" }],
+        xl: ["1.375rem", { lineHeight: "1.3" }],
         "2xl": ["1.75rem", { lineHeight: "1.2" }],
-        "3xl": ["2.25rem", { lineHeight: "1.2" }],
+        "3xl": ["2.25rem", { lineHeight: "1.15" }],
+        "4xl": ["2.75rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "5xl": ["3.5rem", { lineHeight: "1.05", letterSpacing: "-0.025em" }],
       },
       borderRadius: {
         control: "0.5rem", // 8 px controls
         card: "0.75rem", // 12 px cards
+        panel: "1rem", // 16 px feature panels (stats, CTA band)
       },
       boxShadow: {
         1: "var(--shadow-1)",
@@ -91,7 +110,7 @@ const config: Config = {
         base: "200ms",
       },
       maxWidth: {
-        content: "72rem",
+        content: "80rem",
       },
     },
   },

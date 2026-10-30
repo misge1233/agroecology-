@@ -69,6 +69,20 @@ class Settings(BaseSettings):
     # Rate limiting (chat)
     chat_rate_limit_per_minute: int = 20
 
+    # Evidence-tiered advisory (P9) — documented in
+    # docs/decisions/evidence_tiered_advisory.md. A request is model-led when
+    # at least one of the engine's top-3 practices has >= evidence_min_studies
+    # studies AND >= evidence_min_obs field observations for the indicator,
+    # AND at least one top-3 practice has >= evidence_min_obs_in_zone
+    # observations in the user's moisture zone (Dry/Moist/Wet x belt group).
+    evidence_min_studies: int = Field(default=3, validation_alias=AliasChoices("EVIDENCE_MIN_STUDIES"))
+    evidence_min_obs: int = Field(default=10, validation_alias=AliasChoices("EVIDENCE_MIN_OBS"))
+    evidence_min_obs_in_zone: int = Field(default=1, validation_alias=AliasChoices("EVIDENCE_MIN_OBS_IN_ZONE"))
+    # Knowledge candidates: cap, Tier-2 retrieval depth and chunk-quality gate.
+    knowledge_candidates_max: int = Field(default=5, validation_alias=AliasChoices("KNOWLEDGE_CANDIDATES_MAX"))
+    guidance_candidates_k: int = Field(default=12, validation_alias=AliasChoices("GUIDANCE_CANDIDATES_K"))
+    guidance_min_quality: float = Field(default=0.55, validation_alias=AliasChoices("GUIDANCE_MIN_QUALITY"))
+
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]

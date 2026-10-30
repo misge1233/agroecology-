@@ -142,4 +142,46 @@ STRINGS: dict[str, str] = {
     "indicator_label.SOM content": "የአፈር ኦርጋኒክ ቁስን ማሻሻል",
     "indicator_label.soil loss": "የአፈር መሸርሸርን መቀነስ",
     "indicator_label.runoff": "የውሃ ፍሳሽን መቀነስ",
+    # ------------------------------------------------------------ advisory modes (P9)
+    "mode.model_led": "የመስክ ሙከራ ሞዴል",
+    "mode.hybrid": "ድብልቅ",
+    "mode.knowledge_led": "የተመዘገበ ልማድ",
+    "mode.reason.strong_evidence": "{practice} ለዚህ ዓላማ {n_studies} ጥናቶችና {n_obs} የመስክ ምልከታዎች አሉት።",
+    "mode.reason.thin_evidence": (
+        "በጣም የተደገፈው ልማድ {practice} ለዚህ ዓላማ {n_studies} ጥናቶችና {n_obs} የመስክ ምልከታዎች ብቻ አሉት "
+        "(የሞዴል መሪ ወሰን {min_studies} ጥናቶችና {min_obs} ምልከታዎች ነው)።"
+    ),
+    "mode.reason.in_zone": "{practice} በእርስዎ የእርጥበት ዞን ({zone}) የተለኩ {n_obs_in_zone} ምልከታዎች አሉት።",
+    "mode.reason.other_zones_only": "ከከፍተኛ ደረጃ ልማዶች አንዱም በእርስዎ የእርጥበት ዞን ({zone}) አልተለካም።",
+    "mode.reason.zone_unknown": "የአግሮ-ኢኮሎጂ ቀጠናዎ ሊፈታ አልቻለም፤ ስለዚህ የዞን ሽፋን አይታወቅም።",
+    "mode.reason.engine_no_evidence": "ለዚህ ፈተናና ዓላማ የመስክ ሙከራ መረጃ ስብስቡ ምልከታዎች የሉትም።",
+    "mode.reason.engine_unsupported": "ይህ የፈተናና ዓላማ ጥምረት በመስክ ሙከራ ሞዴል አይመዘንም።",
+    "mode.reason.no_studies": "ከደረጃ ከተሰጣቸው ልማዶች አንዱም ለዚህ ዓላማ ጥናት የለውም።",
+    "mode.reason.graph_unavailable": "የእውቀት ግራፉ አልተገነባም፤ ስለዚህ የማስረጃ ጥልቀት ሊገመገም አልቻለም።",
+    "mode.reason.no_candidates": "ለዚህ ጥያቄ ጥቅስ ያለው የተመዘገበ ልማድ አልተገኘም።",
+    "mode.hybrid_note": (
+        " ለዚህ ጥያቄ የመስክ ሙከራ ማስረጃ ቀጭን ነው፤ ስለዚህ ከመመሪያ ሰነዶችና ከልማድ መዝገቦች {n} የተመዘገቡ {practices_word} "
+        "ከምንጮች ጋር ጎን ለጎን {is_are} — የውጤት ቁጥሮች የላቸውም።"
+    ),
+    "mode.knowledge_led.lead": (
+        "በአካባቢዎ ለ**{challenge}** በ**{objective}** ዓላማ የመስክ ሙከራ ማስረጃ የለም፤ ስለዚህ ልማዶችን ደረጃ መስጠት ወይም "
+        "ውጤቶችን መገመት አልችልም። እነዚህ የተመዘገቡ ልማዶች ከተመሳሳይ ሁኔታዎች መመሪያ ሰነዶችና የልማድ መዝገቦች ናቸው፣ "
+        "ከምንጮቻቸው ጋር እና ያለ የውጤት ቁጥር፦"
+    ),
+    "mode.knowledge_led.item": "- **{label}** — {rationale}",
+    "mode.knowledge_led.none": (
+        "በአካባቢዎ ለ**{challenge}** በ**{objective}** ዓላማ የመስክ ሙከራ ማስረጃ የለም፣ እንዲሁም ጥቅስ ያለው የተመዘገበ "
+        "ልማድ አልተገኘም። ለዚህ ፈተና ሌላ ዓላማ ወይም የቅርብ ቦታ ይሞክሩ።"
+    ),
+    "mode.practice": "ልማድ",
+    "mode.practices": "ልማዶች",
+    "kc.rationale.guidance": "{label} ለ{family} እና {objective} በዚህ አውድ በተገኙ {n_docs} የመመሪያ {docs_word} ውስጥ ተገልጿል።",
+    "kc.rationale.other_objectives": "{label} ለሌሎች ዓላማዎች የመስክ ሙከራ ማስረጃ አለው፦ {objectives}።",
+    "kc.rationale.record": "{label} ከተመሳሳይ አውድ ({country}) የተመዘገበ የልማድ መዝገብ ነው።",
+    "kc.objective_item": "{objective} ({n} {studies_word})",
+    "kc.join": "፣ ",
+    "kc.document": "ሰነድ",
+    "kc.documents": "ሰነዶች",
+    "kc.study": "ጥናት",
+    "kc.studies": "ጥናቶች",
 }

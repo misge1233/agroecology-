@@ -292,7 +292,7 @@
   "model": {
     "name": "HistGBM",
     "cv_r2": 0.251,
-    "note": "This is a ranking tool trained on meta-analysis field evidence. Honest cross-validated skill is modest (grouped RÂ² â 0.25, close to the evidence mean), so treat the ordering of practices â not the exact percentages â as the useful signal."
+    "note": "This is a ranking tool trained on meta-analysis field evidence. Honest cross-validated skill is modest (grouped R² ≈ 0.25, close to the evidence mean), so treat the ordering of practices — not the exact percentages — as the useful signal."
   },
   "rag_ready": true,
   "graph_ready": true,
@@ -307,5 +307,22 @@
     "n_practices": 100,
     "n_belts": 12,
     "n_crop_types": 80
+  },
+  "advisory": {
+    "thresholds": {
+      "min_studies": 3,
+      "min_obs": 10,
+      "min_obs_in_zone": 1
+    },
+    "modes": [
+      "model-led",
+      "hybrid",
+      "knowledge-led"
+    ],
+    "sources": {
+      "graph": true,
+      "guidance": true,
+      "practice_records": true
+    }
   }
 }

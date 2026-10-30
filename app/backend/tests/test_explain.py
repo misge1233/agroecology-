@@ -396,8 +396,65 @@ def test_prompt_contains_guidance_block_with_g_markers():
     messages = es._build_messages(rec, None, chunks, make_guidance_chunks())
     user = messages[1]["content"]
     assert "GUIDANCE PASSAGES" in user
-    assert "[G1] Soil bund construction manual" in user
+    # Both fixture passages come from ONE document, so they are [G1a]/[G1b] (P9).
+    assert "[G1a] Soil bund construction manual" in user and "[G1b] Soil bund construction manual" in user
+    assert "\n[G2]" not in user  # no second document (the rule text itself mentions [G2])
     assert user.index("EVIDENCE PASSAGES") < user.index("GUIDANCE PASSAGES")
+
+
+# ------------------------------------------------ per-study numbering (P9)
+def make_chunks_two_per_study() -> list[dict[str, Any]]:
+    a, b = make_chunks()
+    a2 = {**a, "chunk_id": "c1b", "text": "A second passage of the mulching study, 40% less sediment."}
+    return [a, a2, b]
+
+
+def test_prompt_numbers_passages_per_study():
+    messages = es._build_messages(make_recommendation(), None, make_chunks_two_per_study())
+    user = messages[1]["content"]
+    assert "[1a] (NN0123)" in user and "[1b] (NN0123)" in user and "[2] (NN0456)" in user
+    assert "[3]" not in user
+    assert "numbered per study" in user
+    assert "cite the study as [1]" in messages[0]["content"]
+
+
+def test_shape_citations_refs_follow_the_prompt_numbering():
+    cites = es.shape_citations(make_chunks_two_per_study() + make_guidance_chunks())
+    assert [(c["ref"], c["n_passages"]) for c in cites] == [("1", 2), ("2", 1), ("G1", 2)]
+    assert cites[0]["era_code"] == "NN0123" and cites[2]["tier"] == "guidance"
+
+
+def test_shape_citations_numbers_practice_records_with_w():
+    chunk = {"chunk_id": "W_1_000", "tier": "practice", "title": "Stone bunds", "url": "https://w/1", "text": "t"}
+    assert es.shape_citations([chunk])[0]["ref"] == "W1"
+
+
+def test_group_chunks_by_study_keeps_first_appearance_order():
+    groups = es.group_chunks_by_study(make_chunks_two_per_study())
+    assert [key for key, _ in groups] == ["NN0123", "NN0456"]
+    assert [len(g) for _, g in groups] == [2, 1]
+
+
+def test_guardrail_strips_per_study_and_record_markers():
+    rec, chunks = make_recommendation(), make_chunks()
+    assert es.numbers_are_grounded("mulch helps [1a] [1b] [2] [G1a] [W3]", rec, chunks)
+    assert not es.numbers_are_grounded("yield rose 57% [1a]", rec, chunks)
+
+
+def test_faithfulness_auditor_maps_markers_to_studies():
+    import importlib.util
+    from pathlib import Path as _P
+
+    path = _P(__file__).resolve().parents[2].parent / "rag" / "eval" / "eval_faithfulness.py"
+    spec = importlib.util.spec_from_file_location("eval_faithfulness", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    chunks = make_chunks_two_per_study()
+    row = mod.audit_sentence("Mulch cut soil loss by 34% [1b].", make_recommendation(), chunks, es)
+    assert row["cite_markers"] == "1" and row["cited_era_codes"] == "NN0123"
+    assert row["cited_support"] == "yes"
+    row2 = mod.audit_sentence("Bunds retained runoff on 8% slopes [2].", make_recommendation(), chunks, es)
+    assert row2["cited_era_codes"] == "NN0456" and row2["cited_support"] == "yes"
 
 
 def test_prompt_without_guidance_has_no_guidance_block():

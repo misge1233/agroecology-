@@ -17,11 +17,15 @@ export const buttonVariants = cva(
         ghost: "text-text hover:bg-surface-2",
         danger: "bg-danger text-white shadow-1 hover:opacity-90",
         link: "h-auto px-0 text-accent-text underline-offset-4 hover:underline",
+        // For photography and the dark brand band (U3): fixed colours, not theme tokens.
+        inverse: "bg-white text-forest-900 shadow-1 hover:bg-forest-50",
+        "outline-inverse": "border border-white/50 text-white hover:border-white hover:bg-white/10",
       },
       size: {
         sm: "h-9 px-3 text-sm",
         md: "h-10 px-4 text-sm",
         lg: "h-11 px-5 text-base",
+        xl: "h-12 px-6 text-base",
         icon: "h-10 w-10",
       },
     },

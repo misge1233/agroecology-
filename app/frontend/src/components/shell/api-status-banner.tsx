@@ -15,8 +15,8 @@ export function ApiStatusBanner() {
   if (health.status !== "down") {
     if (!retrying) return null;
     return (
-      <div role="status" className="no-print border-b border-warning/50 bg-warning-soft px-4 py-1.5 text-sm text-text">
-        <div className="mx-auto flex max-w-content items-center gap-2">
+      <div role="status" className="no-print border-b border-warning/50 bg-warning-soft py-1.5 text-sm text-text">
+        <div className="container-page flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin text-warning-text" aria-hidden />
           {t("retrying")}
         </div>
@@ -26,9 +26,9 @@ export function ApiStatusBanner() {
   return (
     <div
       role="alert"
-      className="no-print border-b border-danger/40 bg-danger-soft px-4 py-2 text-sm text-text"
+      className="no-print border-b border-danger/40 bg-danger-soft py-2 text-sm text-text"
     >
-      <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-2">
+      <div className="container-page flex flex-wrap items-center justify-between gap-2">
         <span className="inline-flex items-center gap-2">
           <WifiOff className="h-4 w-4 text-danger-text" aria-hidden />
           {t("apiUnreachable")}

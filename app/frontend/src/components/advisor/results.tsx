@@ -5,11 +5,11 @@ import { FileDown, Link2, MessageSquare, RotateCcw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { postRecommend } from "@/lib/api";
-import type { RecommendResponse } from "@/lib/types";
+import { postAdvise } from "@/lib/api";
+import type { AdviseResponse } from "@/lib/types";
 import { useApiHealth } from "@/lib/health";
 import { useMetadata } from "@/components/metadata-provider";
-import { ExplainProvider, useExplain } from "@/components/evidence-panel";
+import { ExplainProvider, useExplainOptional } from "@/components/evidence-panel";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,18 +18,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { TOP_N_OPTIONS, requestKey, type AdvisorParams } from "./advisor-state";
 import { ContextCard } from "./context-card";
+import { KnowledgeCandidates } from "./knowledge-candidates";
+import { ModeBadge, ModeReasons } from "./mode-badge";
 import { PrintSheet } from "./print-sheet";
 import { RecommendationPanel } from "./recommendation-panel";
 
 /** "Save as PDF": make sure the evidence is loaded, then hand over to the browser. */
 function SavePdfButton() {
   const tp = useTranslations("advisor.results.print");
-  const { load, ragReady } = useExplain();
+  const explain = useExplainOptional();
   const [preparing, setPreparing] = useState(false);
   async function onPrint() {
     setPreparing(true);
     try {
-      if (ragReady) await load();
+      if (explain?.ragReady) await explain.load();
       // Let React commit the evidence into the print sheet before the dialog opens.
       await new Promise((r) => setTimeout(r, 120));
       window.print();
@@ -46,29 +48,29 @@ function SavePdfButton() {
 }
 
 type Outcome =
-  | { key: string; status: "ready"; result: RecommendResponse }
-  | { key: string; status: "error"; kind: "noEvidence" | "down" | "other"; message: string };
+  | { key: string; status: "ready"; advisory: AdviseResponse }
+  | { key: string; status: "error"; kind: "down" | "other"; message: string };
 
-function classify(e: unknown): { kind: "noEvidence" | "down" | "other"; message: string } {
+function classify(e: unknown): { kind: "down" | "other"; message: string } {
   const message = e instanceof Error ? e.message : String(e);
   if (e instanceof TypeError) return { kind: "down", message };
-  if (/no field evidence/i.test(message)) return { kind: "noEvidence", message };
   return { kind: "other", message };
 }
 
 /**
- * Scores the request in the URL. "Loading" is derived from whether the
- * stored outcome matches the current request key (F-1: no setState in the
- * effect body); the fetch is aborted when the request changes.
+ * Asks the advisory for the request in the URL (P9: /advise wraps /recommend
+ * with the evidence mode and the documented practices). "Loading" is derived
+ * from whether the stored outcome matches the current request key (F-1: no
+ * setState in the effect body); the fetch is aborted when the request changes.
  */
-function useRecommendation(params: AdvisorParams) {
-  const key = requestKey(params);
+function useAdvisory(params: AdvisorParams, language: Locale) {
+  const key = requestKey(params) ? `${requestKey(params)}|${language}` : null;
   const [outcome, setOutcome] = useState<Outcome | null>(null);
 
   useEffect(() => {
     if (!key || params.lat == null || params.lon == null || !params.family || !params.indicator) return;
     const ctl = new AbortController();
-    postRecommend(
+    postAdvise(
       {
         lat: params.lat,
         lon: params.lon,
@@ -76,16 +78,17 @@ function useRecommendation(params: AdvisorParams) {
         indicator: params.indicator,
         crop_type: params.crop,
         top_n: params.topN,
+        language,
       },
       ctl.signal
     )
-      .then((result) => setOutcome({ key, status: "ready", result }))
+      .then((advisory) => setOutcome({ key, status: "ready", advisory }))
       .catch((e: unknown) => {
         if (ctl.signal.aborted) return;
         setOutcome({ key, status: "error", ...classify(e) });
       });
     return () => ctl.abort();
-  }, [key, params.lat, params.lon, params.family, params.indicator, params.crop, params.topN]);
+  }, [key, params.lat, params.lon, params.family, params.indicator, params.crop, params.topN, language]);
 
   const current = key && outcome?.key === key ? outcome : null;
   return { key, loading: !!key && !current, outcome: current, retry: () => setOutcome(null) };
@@ -106,7 +109,7 @@ export function Results({
   const locale = useLocale() as Locale;
   const health = useApiHealth();
   const { meta } = useMetadata();
-  const { key, loading, outcome, retry } = useRecommendation(params);
+  const { key, loading, outcome, retry } = useAdvisory(params, locale);
 
   async function share() {
     try {
@@ -117,7 +120,9 @@ export function Results({
     }
   }
 
-  const result = outcome?.status === "ready" ? outcome.result : null;
+  const advisory = outcome?.status === "ready" ? outcome.advisory : null;
+  const result = advisory?.model ?? null;
+  const mode = advisory?.mode ?? "model-led";
   const explainQuery = result
     ? tp("explain", {
         lat: String(result.query.lat),
@@ -156,7 +161,7 @@ export function Results({
             <Link2 className="h-4 w-4" aria-hidden />
             {t("share")}
           </Button>
-          {result ? <SavePdfButton /> : null}
+          {advisory ? <SavePdfButton /> : null}
           <Button variant="ghost" size="sm" onClick={onReset}>
             <RotateCcw className="h-4 w-4" aria-hidden />
             {t("newRequest")}
@@ -166,7 +171,13 @@ export function Results({
 
       {/* Announce results to assistive tech without re-reading the whole page. */}
       <p className="no-print sr-only" aria-live="polite" role="status">
-        {loading ? t("loading") : result ? t("live", { n: result.recommendations.length }) : ""}
+        {loading
+          ? t("loading")
+          : result
+            ? t("live", { n: result.recommendations.length })
+            : advisory
+              ? t("liveDocumented", { n: advisory.knowledge_candidates.length })
+              : ""}
       </p>
 
       {!key ? (
@@ -182,11 +193,7 @@ export function Results({
           <Skeleton className="h-72 w-full" />
         </div>
       ) : outcome?.status === "error" ? (
-        outcome.kind === "noEvidence" ? (
-          <Alert variant="info" title={t("noEvidence.title")}>
-            {t("noEvidence.body")}
-          </Alert>
-        ) : outcome.kind === "down" || health.status === "down" ? (
+        outcome.kind === "down" || health.status === "down" ? (
           <Alert variant="danger" title={t("apiDown.title")}>
             <p>{t("apiDown.body")}</p>
             <Button variant="outline" size="sm" className="mt-3" onClick={retry}>
@@ -201,11 +208,13 @@ export function Results({
             </Button>
           </Alert>
         )
-      ) : result ? (
+      ) : advisory && result ? (
         <>
           <div className="no-print space-y-5">
             <ContextCard data={result} />
-            <RecommendationPanel data={result} withProvider={false} />
+            {mode !== "model-led" ? <ModeReasons mode={mode} reasons={advisory.reasons} /> : null}
+            <RecommendationPanel data={result} withProvider={false} mode={mode} reasons={advisory.reasons} />
+            {mode === "hybrid" ? <KnowledgeCandidates candidates={advisory.knowledge_candidates} mode="hybrid" /> : null}
             {explainQuery ? (
               <Button variant="secondary" asChild>
                 <Link href={{ pathname: "/chat", query: { q: explainQuery } }} locale={locale}>
@@ -215,7 +224,31 @@ export function Results({
               </Button>
             ) : null}
           </div>
-          <PrintSheet data={result} />
+          <PrintSheet data={result} advisory={advisory} />
+        </>
+      ) : advisory ? (
+        // Knowledge-led (P9): replaces the former "no field evidence" error state.
+        <>
+          <div className="no-print space-y-5" data-testid="knowledge-led">
+            <Alert variant="info" title={t("knowledgeLed.title")}>
+              <p>{t("knowledgeLed.body")}</p>
+              <div className="mt-2 flex items-center gap-2">
+                <ModeBadge mode="knowledge-led" reasons={advisory.reasons} />
+              </div>
+            </Alert>
+            {Object.keys(advisory.context ?? {}).length > 0 ? (
+              <ContextCard
+                data={{
+                  query: { lat: params.lat ?? 0, lon: params.lon ?? 0, practice_family: params.family ?? "", indicator: params.indicator ?? "", goal_direction: "" },
+                  recommendations: [],
+                  details: { context: advisory.context, crop_group: null, confidence: "low", ranked: [], n_candidates: 0, note: "" },
+                }}
+              />
+            ) : null}
+            <ModeReasons mode="knowledge-led" reasons={advisory.reasons} />
+            <KnowledgeCandidates candidates={advisory.knowledge_candidates} mode="knowledge-led" />
+          </div>
+          <PrintSheet data={null} advisory={advisory} params={params} />
         </>
       ) : null}
     </section>

@@ -8,12 +8,14 @@ Binding tokens for the production UI. Implemented as CSS variables in
 
 | token | light | dark | role |
 |---|---|---|---|
-| `background` | `#F7F8F5` | `#0F1613` | page |
-| `surface` | `#FFFFFF` | `#182019` | cards, header |
-| `surface-2` | `#EEF2EE` | `#1F2A22` | wells, map placeholder |
-| `text` | `#1C2A22` | `#E8EEE9` | body text |
-| `muted` | `#5B6B61` | `#9FB0A5` | secondary text |
-| `border` | `#DDE4DE` | `#2A362E` | hairlines |
+| `background` | `#FFFFFF` (U3; was `#F7F8F5`) | `#0F1613` | page |
+| `surface` | `#FFFFFF` | `#162019` | cards, header |
+| `surface-2` | `#F3F6F2` | `#131C16` | page-header band, alternating sections, wells |
+| `text` | `#17241C` | `#E8EEE9` | body text |
+| `muted` | `#56655C` (5.9:1 on white) | `#9FB0A5` | secondary text |
+| `border` | `#E2E8E2` | `#26322A` | hairlines |
+| `band` / `band-fg` / `band-muted` | `#0D3B27` / `#F1F6F2` / `#B5CBBD` (7.3:1) | `#0A1410` / `#E8EEE9` / `#9FB0A5` | footer (U3) |
+| `forest-50…950` | fixed | fixed | text, scrims and buttons over photography and the CTA band only (U3) |
 | `primary` | `#1E6B46` (hover `#175537`) | `#4CAF7A` | actions, high confidence, evidence tier |
 | `secondary` (soil / ochre) | `#8C5A2B` | `#C9915A` | practice-record tier (P9) |
 | `accent` (sky / water) | `#2E7FB8` | `#6FB3E6` | guidance tier, links |
@@ -189,3 +191,59 @@ outline / ghost / danger; sm / md / lg; loading), `Card`, `Badge`, `Chip`,
 - **Phone width.** The header's language switcher is icon-only below `sm` (the full
   trigger pushed the header past 390 px — the U1 review's item 0a); every screen is
   guarded at 360/390/412/768/1440 px by the Playwright overflow test.
+
+## P9 additions (28 Oct 2026) — evidence-tiered advisory
+
+- **Source badge is now mode-driven.** `ModeBadge` (`advisor/mode-badge.tsx`) maps the
+  API mode to the U1 glossary modes reserved for this: `model-led → "Field-trial model"`
+  (outline-primary), `hybrid → "Hybrid"` (outline-accent), `knowledge-led → "Documented
+  practice"` (outline-secondary). The tooltip explains the mode and lists the backend's
+  reasons; `ModeReasons` repeats them as a card above the ranking in hybrid and
+  knowledge-led mode. Reasons are catalog keys (`advisor.results.mode.reason.*`) with
+  params; the practice inside a reason is localised through the glossary, the moisture
+  zone stays an English code (`Dry-lowland`).
+- **Documented practices** (`advisor/knowledge-candidates.tsx`): secondary-outline cards
+  (`border-secondary/50`) ranked "Suggested #n", one source chip per provenance
+  (evidence green = field evidence for other objectives, guidance sky = described in
+  guidance documents, practice ochre = practice record), the glossary label of the
+  component, the backend's deterministic "Why this is suggested" line (counts only — the
+  rationale-number guard is tested), support counts, the frozen practices of the family
+  that contain the component, and citation chips with the per-study / per-document /
+  per-record markers `[n]`, `[Gn]`, `[Wn]` (first six shown, "Show all sources (n)"
+  folds the rest; a study outside the ERA corpus is labelled "Dataset study #id" rather
+  than "Untitled study"). **Never a percentage, never an effect sentence, never a chart** — the
+  honest-display rules of §6 apply unchanged; the E2E asserts no `%`/`±` in the section.
+- **Knowledge-led state** replaces the "no field evidence" error: an info Alert
+  (`advisor.results.knowledgeLed.*`) with the badge, the context card when the belt
+  resolved, the reasons card and the documented practices. No "Explain in chat" button
+  (there is no ranking to explain); "Save as PDF" stays and prints the same sections.
+- **Chat**: the `advisory` SSE event arrives before `recommendation`; hybrid turns show
+  the compact documented-practice cards under the ranking with a one-line caption,
+  knowledge-led turns show the badge + caption + cards and the "Open in Advisor" link
+  built from the advisory's own query. Quick-reply chips do not reappear after a
+  knowledge-led answer (the setup is complete).
+- **Evidence panel chips** show the citation marker (`[1]`, `[G2]`) the explanation
+  uses, so a reader can match a sentence to its study.
+- **Print sheet** carries the mode in the header, the reasons under the source line, and
+  a "Documented practices" section in hybrid / knowledge-led mode.
+
+
+## U3 — site structure and layout (30 Oct 2026)
+
+- **Four pages, one header.** Home `/`, About `/about`, Advisor `/advisor`,
+  Chat `/chat` (`nav-items.ts`). Desktop: underline-active links plus a
+  "Get advice" button from `lg`. Phones: a hamburger disclosure panel
+  (`#mobile-nav`, Escape closes); the U1 bottom tab bar is removed.
+- **One container.** `.container-page` (globals.css): max 1280 px, gutters
+  16 / 24 / 32 px. Every section uses it; no ad-hoc `max-w-*` page widths.
+- **Page header band.** Inner pages open with `PageHeader` (surface-2 band,
+  h1, one lead sentence); `compact` on task pages (Advisor).
+- **Type.** Display sizes `4xl` 44 px and `5xl` 56 px for the hero and page
+  titles; `.eyebrow` (13 px, uppercase, primary) above section headings.
+- **Imagery.** Home hero and challenge-area cards use the shipped practice
+  photos (`public/practices`), decorative (`alt=""`) with a forest scrim
+  under any text. Buttons over photos use the `inverse` / `outline-inverse`
+  variants.
+- **Footer.** Brand band: brand + attribution, Explore (the four pages),
+  Resources (About anchors), bottom bar with disclaimer, copyright, version.
+  Hidden on `/chat`, which is a full-height app view.

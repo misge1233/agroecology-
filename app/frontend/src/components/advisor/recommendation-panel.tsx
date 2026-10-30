@@ -3,11 +3,11 @@
 import { useLocale, useTranslations } from "next-intl";
 import { familyShort } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
-import type { RecommendResponse } from "@/lib/types";
+import type { AdvisoryMode, ModeReason, RecommendResponse } from "@/lib/types";
 import { useMetadata } from "@/components/metadata-provider";
 import { ExplainProvider } from "@/components/evidence-panel";
+import { ModeBadge } from "./mode-badge";
 import { ResultCard } from "./result-card";
-import { SourceBadge } from "./source-badge";
 
 /** The ranked list for one response — used by the Advisor results and by Chat.
  *  Pass `withProvider={false}` when an ExplainProvider already wraps the tree
@@ -16,10 +16,15 @@ export function RecommendationPanel({
   data,
   children,
   withProvider = true,
+  mode = "model-led",
+  reasons = [],
 }: {
   data: RecommendResponse;
   children?: React.ReactNode;
   withProvider?: boolean;
+  /** P9: the advisory mode behind this ranking (drives the source badge). */
+  mode?: AdvisoryMode;
+  reasons?: ModeReason[];
 }) {
   const t = useTranslations("advisor.results");
   const locale = useLocale() as Locale;
@@ -37,7 +42,7 @@ export function RecommendationPanel({
               </>
             ) : null}
           </p>
-          <SourceBadge mode="model" />
+          <ModeBadge mode={mode} reasons={reasons} />
         </div>
         {children}
         <ol className="space-y-4">

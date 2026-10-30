@@ -313,7 +313,7 @@ export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName,
         <p className="inline-flex min-w-0 items-center gap-2 text-sm text-muted" aria-live="polite">
           <MapPin className={hasPoint ? "h-4 w-4 shrink-0 text-primary" : "h-4 w-4 shrink-0"} aria-hidden />
           {!hasPoint ? (
-            <span>{t("help")}</span>
+            <span>{t("noPin")}</span>
           ) : zone.loading ? (
             <span className="inline-flex items-center gap-1">
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> {t("zoneLoading")}

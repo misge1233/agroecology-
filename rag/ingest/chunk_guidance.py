@@ -40,9 +40,11 @@ from pathlib import Path
 try:  # package import (repo root on path) or sibling-script import
     from rag.ingest.parse_and_chunk import chunk_text
     from rag.ingest.fetch_gardian import FAMILY_KEYWORDS
+    from rag.ingest.quality import MIN_QUALITY, chunk_quality
 except ImportError:
     from parse_and_chunk import chunk_text
     from fetch_gardian import FAMILY_KEYWORDS
+    from quality import MIN_QUALITY, chunk_quality
 
 CHUNK_ID_PREFIX = "G_"
 TIER = "guidance"
@@ -69,21 +71,27 @@ def guidance_chunks(
     text: str,
     min_words: int,
     max_per_doc: int = DEFAULT_MAX_CHUNKS_PER_DOC,
+    min_quality: float = 0.0,
 ) -> list[dict]:
     """Chunk records for one guidance document (pure — testable).
 
     Keeps only practice-keyword-bearing chunks, at most ``max_per_doc`` per
     document (ranked by distinct keywords, then total hits, then earlier
     position); output is in document order with original position ids.
+    ``min_quality`` (P9) drops chunks whose ``quality.chunk_quality`` score is
+    below it — tables, reference lists, OCR noise — before the cap is applied.
     """
-    candidates: list[tuple[int, int, int, str]] = []  # (pos, distinct, hits, text)
+    candidates: list[tuple[int, int, int, str, float]] = []  # (pos, distinct, hits, text, quality)
     for i, piece in enumerate(chunk_text(text)):
         if len(piece.split()) < min_words:
             continue
         distinct, hits = keyword_stats(piece)
         if distinct == 0:
             continue  # chunk-level relevance filter
-        candidates.append((i, distinct, hits, piece))
+        quality = chunk_quality(piece)["score"]
+        if quality < min_quality:
+            continue  # P9 quality gate
+        candidates.append((i, distinct, hits, piece, quality))
 
     if max_per_doc and len(candidates) > max_per_doc:
         candidates = sorted(
@@ -103,9 +111,10 @@ def guidance_chunks(
             "url": rec.get("url"),
             "source": "gardian",
             "kw_distinct": distinct,
+            "quality": quality,
             "text": piece,
         }
-        for pos, distinct, hits, piece in candidates
+        for pos, distinct, hits, piece, quality in candidates
     ]
 
 
@@ -119,6 +128,8 @@ def main() -> int:
                     default=DEFAULT_MAX_CHUNKS_PER_DOC,
                     help="cap per document, best keyword chunks kept "
                          "(0 = uncapped)")
+    ap.add_argument("--min-quality", type=float, default=MIN_QUALITY,
+                    help="drop chunks scoring below this (quality.py; 0 = off)")
     args = ap.parse_args()
 
     corpus = Path(args.corpus)
@@ -138,7 +149,7 @@ def main() -> int:
                 continue
             text = text_path.read_text(encoding="utf-8")
             chunks = guidance_chunks(
-                rec, text, args.min_words, args.max_chunks_per_doc
+                rec, text, args.min_words, args.max_chunks_per_doc, args.min_quality
             )
             if args.max_chunks_per_doc and len(chunks) == args.max_chunks_per_doc:
                 n_docs_capped += 1

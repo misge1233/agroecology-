@@ -5,7 +5,7 @@ import { Bot, Compass, Loader2, MapPinned, Navigation, Send, Sparkles, User, X }
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { postRecommend, streamChat } from "@/lib/api";
-import type { ChatMessage, ChatSlotsEvent, ChatSlotsHint, RecommendResponse } from "@/lib/types";
+import type { AdvisoryEvent, ChatMessage, ChatSlotsEvent, ChatSlotsHint, RecommendQuery, RecommendResponse } from "@/lib/types";
 import { deriveChatSetup, type ChatSlotsPayload } from "@/lib/chat-flow";
 import { advisorQuery, challengeMessage, locationMessage, objectiveMessage } from "@/lib/chat-protocol";
 import { familyShort, indicatorLabel } from "@/i18n/glossary";
@@ -15,6 +15,8 @@ import { useMetadata } from "./metadata-provider";
 import { AssistantMarkdown } from "./assistant-markdown";
 import { ChatQuickReplies } from "./chat-quick-replies";
 import { ContextCard } from "./advisor/context-card";
+import { KnowledgeCandidates } from "./advisor/knowledge-candidates";
+import { ModeBadge } from "./advisor/mode-badge";
 import { RecommendationPanel } from "./advisor/recommendation-panel";
 import { LocationPicker } from "./advisor/location-step";
 import { useZone } from "./advisor/use-zone";
@@ -49,6 +51,10 @@ interface Turn {
   at: number;
   hint?: ChatSlotsHint | null;
   recommendation?: RecommendResponse | null;
+  /** P9: the evidence mode, its reasons and the documented practices behind this answer. */
+  advisory?: AdvisoryEvent | null;
+  /** The advisory's resolved slots as a query (stable object; set once per turn). */
+  advisoryQuery?: RecommendQuery | null;
   showMap?: boolean;
   status?: TurnStatus;
   error?: string | null;
@@ -98,10 +104,13 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
     () => turns.filter((x) => x.content).map((x) => ({ role: x.role, content: x.content })),
     [turns]
   );
-  const lastQuery = useMemo(() => {
+  const lastQuery = useMemo<RecommendQuery | null>(() => {
     for (let i = turns.length - 1; i >= 0; i--) {
       const q = turns[i].recommendation?.query;
       if (q) return q;
+      // A knowledge-led turn has no model payload; the advisory repeats the slots.
+      const aq = turns[i].advisoryQuery;
+      if (aq) return aq;
     }
     return null;
   }, [turns]);
@@ -133,7 +142,8 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
 
   async function applyTopN(n: number) {
     setTopN(n);
-    if (!lastQuery) return;
+    // Nothing to re-rank for a knowledge-led answer (no model payload).
+    if (!lastQuery || !lastRecommendation) return;
     const patchLastRec = (rec: RecommendResponse) => {
       setTurns((prev) => {
         for (let i = prev.length - 1; i >= 0; i--) {
@@ -217,6 +227,16 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
           const complete = !!(slots.practice_family && slots.indicator && slots.lat != null && slots.lon != null);
           patch(assistantId, (x) => ({ ...x, status: complete ? "scoring" : "thinking" }));
         }
+        if (ev.type === "advisory" && ev.data) {
+          const advisoryEvent = ev.data as AdvisoryEvent;
+          const advisoryQuery: RecommendQuery | null = advisoryEvent.query ? { ...advisoryEvent.query, goal_direction: "" } : null;
+          patch(assistantId, (x) => ({
+            ...x,
+            advisory: advisoryEvent,
+            advisoryQuery,
+            status: advisoryEvent.mode === "knowledge-led" ? "streaming" : x.status,
+          }));
+        }
         if (ev.type === "recommendation" && ev.data) {
           recommendation = trimRecommendation(ev.data as RecommendResponse, topN);
           const rec = recommendation;
@@ -292,13 +312,20 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
 
   const last = turns[turns.length - 1];
   const showQuickReplies =
-    !busy && turns.length > 0 && !lastQuery && last?.role === "assistant" && !!last.content && !last.recommendation && last.status !== "error";
+    !busy &&
+    turns.length > 0 &&
+    !lastQuery &&
+    last?.role === "assistant" &&
+    !!last.content &&
+    !last.recommendation &&
+    !last.advisory &&
+    last.status !== "error";
 
   const examples = [t("examples.one"), t("examples.two"), t("examples.three")];
   const timeOf = (at: number) => format.dateTime(new Date(at), { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex h-[calc(100dvh-var(--header-h)-var(--bottombar-h))] flex-col md:h-[calc(100dvh-var(--header-h))]">
+    <div className="flex h-[calc(100dvh-var(--header-h))] flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl space-y-5 px-4 py-5 sm:px-6 sm:py-8">
           {turns.length === 0 ? (
@@ -307,11 +334,11 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                 <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
                 {t("eyebrow")}
               </p>
-              <h1 className="mt-5 text-balance text-3xl sm:text-4xl">
+              <h1 className="mt-6 text-balance text-3xl sm:text-4xl">
                 {t("title")}
-                <span className="block text-muted">{t("titleLine2")}</span>
+                <span className="block text-primary">{t("titleLine2")}</span>
               </h1>
-              <p className="mt-4 max-w-lg text-base text-muted">{t("intro")}</p>
+              <p className="mt-5 max-w-xl text-lg text-muted">{t("intro")}</p>
 
               <div className="mt-8 w-full max-w-xl">
                 <Composer
@@ -342,7 +369,7 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                       key={ex}
                       type="button"
                       onClick={() => void send(ex)}
-                      className="rounded-control border border-border bg-surface px-3.5 py-2 text-left text-sm text-text transition-colors duration-base hover:border-primary/50 hover:bg-surface-2"
+                      className="rounded-full border border-border bg-surface px-4 py-2 text-left text-sm text-text shadow-1 transition-colors duration-base hover:border-primary/50 hover:text-primary"
                     >
                       {ex}
                     </button>
@@ -431,7 +458,17 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                           {turn.recommendation ? (
                             <div className="space-y-3" data-testid="chat-recommendation">
                               <ContextCard data={turn.recommendation} compact title={t("contextTitle")} />
-                              <RecommendationPanel data={turn.recommendation} />
+                              <RecommendationPanel
+                                data={turn.recommendation}
+                                mode={turn.advisory?.mode ?? "model-led"}
+                                reasons={turn.advisory?.reasons ?? []}
+                              />
+                              {turn.advisory?.mode === "hybrid" ? (
+                                <div className="space-y-2" data-testid="chat-documented">
+                                  <p className="text-xs text-muted">{t("advisory.hybrid")}</p>
+                                  <KnowledgeCandidates candidates={turn.advisory.knowledge_candidates} mode="hybrid" compact />
+                                </div>
+                              ) : null}
                               <Button variant="outline" size="sm" asChild>
                                 <Link href={{ pathname: "/advisor", query: advisorQuery(turn.recommendation.query, topN) }}>
                                   <Compass className="h-4 w-4" aria-hidden />
@@ -439,8 +476,25 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                                 </Link>
                               </Button>
                             </div>
+                          ) : turn.advisory?.mode === "knowledge-led" ? (
+                            // P9: no model payload — the documented practices ARE the answer.
+                            <div className="space-y-3" data-testid="chat-knowledge-led">
+                              <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                                <ModeBadge mode="knowledge-led" reasons={turn.advisory.reasons} />
+                                <span>{t("advisory.knowledgeLed")}</span>
+                              </div>
+                              <KnowledgeCandidates candidates={turn.advisory.knowledge_candidates} mode="knowledge-led" compact />
+                              {turn.advisory.query ? (
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link href={{ pathname: "/advisor", query: advisorQuery(turn.advisoryQuery ?? { ...turn.advisory.query, goal_direction: "" }, topN) }}>
+                                    <Compass className="h-4 w-4" aria-hidden />
+                                    {t("openInAdvisor")}
+                                  </Link>
+                                </Button>
+                              ) : null}
+                            </div>
                           ) : null}
-                          {turn.content || turn.recommendation || turn.status === "error" ? stamp : null}
+                          {turn.content || turn.recommendation || turn.advisory || turn.status === "error" ? stamp : null}
                         </>
                       )}
                     </div>
@@ -482,7 +536,9 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl shrink-0 border-t border-border bg-background/95 px-4 pb-4 pt-3 backdrop-blur sm:px-6">
+      {turns.length > 0 || error ? (
+      <div className="shrink-0 border-t border-border bg-surface/95 backdrop-blur">
+      <div className="mx-auto w-full max-w-3xl px-4 pb-4 pt-3 sm:px-6">
         {lastQuery ? (
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-medium text-text">
@@ -562,6 +618,8 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
           </div>
         ) : null}
       </div>
+      </div>
+      ) : null}
 
       <Sheet open={mapOpen && !!meta} onOpenChange={setMapOpen}>
         <SheetContent closeLabel={tc("close")} className="sm:max-w-2xl">

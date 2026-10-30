@@ -19,16 +19,51 @@ export function fixture<T = unknown>(name: string): T {
   return structuredClone(cache.get(name)) as T;
 }
 
+export function hasFixture(name: string): boolean {
+  return fs.existsSync(path.join(FIXTURES, `${name}.json`));
+}
+
 const PNG_1X1 = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
   "base64"
 );
+
+export type AdviseFixtureName = "model" | "hybrid" | "knowledge";
+
+/**
+ * Which captured /advise answer fits a request (P9). The three fixtures were
+ * captured at the demo pin (8.38, 39.37 — Dry Kolla) for the Erosion-control
+ * challenge: water use efficiency is model-led, soil loss is hybrid and income
+ * (not scored by the model) is knowledge-led.
+ */
+export function adviseFixtureFor(indicator: string | undefined): AdviseFixtureName {
+  if (indicator === "income") return "knowledge";
+  if (indicator === "water use efficiency") return "model";
+  return "hybrid";
+}
+
+/** The chat `advisory` SSE event derived from a captured /advise answer. */
+export function advisoryEvent(name: AdviseFixtureName): Record<string, unknown> {
+  const adv = fixture<Record<string, unknown> & { model: { query: Record<string, unknown> } | null }>(`advise-${name}`);
+  const { mode, reasons, knowledge_candidates, evidence_sufficiency, context, model } = adv;
+  const rest = { mode, reasons, knowledge_candidates, evidence_sufficiency, context };
+  const query = model?.query ?? {
+    lat: 8.38,
+    lon: 39.37,
+    practice_family: "Erosion control and water management",
+    indicator: name === "knowledge" ? "income" : "soil loss",
+    crop_type: null,
+  };
+  return { ...rest, query };
+}
 
 export interface MockOptions {
   /** Simulate an unreachable API: every call fails at the network level. */
   down?: boolean;
   /** Override the /recommend answer (e.g. an error envelope). */
   recommend?: { status: number; body: unknown };
+  /** Force one /advise fixture, or an arbitrary answer (e.g. an error envelope). */
+  advise?: AdviseFixtureName | { status: number; body: unknown };
   /** Extra latency per call, to make loading states observable. */
   delayMs?: number;
   /** Events the chat stream should emit (SSE). */
@@ -43,10 +78,11 @@ function sse(events: unknown[]): string {
   return events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join("");
 }
 
-/** The default chat answer: slots → recommendation → a short narrative → done. */
+/** The default chat answer: slots → advisory → recommendation → a short narrative → done. */
 export function defaultChatEvents(): unknown[] {
   return [
     { type: "slots", data: fixture("chat-slots") },
+    { type: "advisory", data: advisoryEvent("hybrid") },
     { type: "recommendation", data: fixture("recommend") },
     { type: "token", text: "For your **Dry Kolla** area, the evidence ranks " },
     { type: "token", text: "**Mulch-Water Harvesting** to reduce soil loss." },
@@ -101,6 +137,23 @@ export async function mockApi(page: Page, opts: MockOptions = {}) {
         rec.recommendations = rec.recommendations.slice(0, topN);
         rec.details.ranked = rec.details.ranked.slice(0, topN);
         return json(route, rec);
+      }
+      case "/advise": {
+        if (opts.advise && typeof opts.advise === "object") return json(route, opts.advise.body, opts.advise.status);
+        const req = body as { indicator?: string; top_n?: number; language?: string } | undefined;
+        const name = typeof opts.advise === "string" ? opts.advise : adviseFixtureFor(req?.indicator);
+        // Rationales and the knowledge-led text are produced server-side in the UI
+        // language: `advise-<name>.<lang>.json` holds the am/om captures.
+        const lang = req?.language && req.language !== "en" ? req.language : null;
+        const adv = fixture<{ model: { recommendations: unknown[]; details: { ranked: unknown[] } } | null }>(
+          lang && hasFixture(`advise-${name}.${lang}`) ? `advise-${name}.${lang}` : `advise-${name}`
+        );
+        if (adv.model) {
+          const topN = Number(req?.top_n ?? 3);
+          adv.model.recommendations = adv.model.recommendations.slice(0, topN);
+          adv.model.details.ranked = adv.model.details.ranked.slice(0, topN);
+        }
+        return json(route, adv);
       }
       case "/explain":
         return json(route, fixture("explain"));

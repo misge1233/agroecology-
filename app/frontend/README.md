@@ -18,6 +18,23 @@ never figures (see `../../CLAUDE.md`, doctrine 1).
 `agro-locale` cookie → `Accept-Language` → `en`, and the language switcher keeps the
 route and query string.
 
+**Evidence-tiered advisory (P9).** The results view and the chat ask `POST /advise`,
+which wraps `/recommend` with an evidence *mode* and, when the field-trial evidence is
+thin or absent, up to five *documented practices*:
+
+- **model-led** — the ranking alone; the source badge says "Field-trial model".
+- **hybrid** — the ranking plus a "Documented practices" section (secondary outline,
+  sources and a "Why this is suggested" line, never an effect number); the badge says
+  "Hybrid" and a reasons card explains why (e.g. no observation in the user's moisture zone).
+- **knowledge-led** — no ranking at all: an info panel replaces the former "no field
+  evidence" error and the documented practices are the answer; the badge says
+  "Documented practice".
+
+The badge tooltip lists the backend's reasons (catalog keys rendered by the UI in the
+three languages); the print sheet carries the mode, the reasons and the documented
+practices; the chat renders the same cards inline (`advisory` SSE event). Components:
+`advisor/mode-badge.tsx`, `advisor/knowledge-candidates.tsx`.
+
 ## Stack
 
 Next.js 16 (App Router, `output: "standalone"`) · React 19 · TypeScript (strict) ·
@@ -105,6 +122,16 @@ Browser: the system Chrome (`channel: "chrome"`, no download). Without Chrome:
 npx playwright install chromium
 PLAYWRIGHT_CHANNEL=chromium npm run e2e
 ```
+
+`advisory-modes.spec.ts` covers the three modes in English and Amharic against
+`/advise` fixtures captured from the real backend at the demo pin
+(`advise-model.json` water use efficiency, `advise-hybrid.json` soil loss,
+`advise-knowledge.json` income; `advise-<name>.am.json` / `.om.json` are the same
+advisories answered in Amharic and Afaan Oromoo, served by the mock when the request's
+`language` says so), the chat's inline cards, the print sheet and a mojibake guard
+(`â€`, `Ã` must never reach the page). Fixtures are written in UTF-8
+with `ensure_ascii=False`; re-capture them with the backend running:
+`app\backend\.venv\Scripts\python.exe` + `urllib` (see the P9 report in `progress.md`).
 
 ## Low-bandwidth behaviour
 

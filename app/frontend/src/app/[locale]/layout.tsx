@@ -12,7 +12,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/ui/toast";
 import { SiteHeader } from "@/components/shell/site-header";
 import { SiteFooter } from "@/components/shell/site-footer";
-import { BottomTabBar } from "@/components/shell/bottom-tab-bar";
 import { ApiStatusBanner } from "@/components/shell/api-status-banner";
 import { SkipLink } from "@/components/shell/skip-link";
 import "../globals.css";
@@ -89,7 +88,7 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className={meta.ethiopic ? `${sans.variable} ${ethiopic.variable}` : sans.variable}
     >
-      <body className="font-sans antialiased" suppressHydrationWarning>
+      <body className="flex flex-col font-sans antialiased" suppressHydrationWarning>
         {/* Applies the stored theme before first paint. next/script keeps it out of
             React's hydration (a raw <script> in <head> hydrated inconsistently on
             streamed routes). */}
@@ -104,11 +103,10 @@ export default async function LocaleLayout({
                   <SkipLink />
                   <ApiStatusBanner />
                   <SiteHeader />
-                  <main id="main" className="min-h-[60dvh] pb-[var(--bottombar-h)] md:pb-0 print:min-h-0 print:pb-0">
+                  <main id="main" className="flex-1 print:min-h-0">
                     {children}
                   </main>
                   <SiteFooter />
-                  <BottomTabBar />
                 </MetadataProvider>
               </ToastProvider>
             </TooltipProvider>
