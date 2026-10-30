@@ -7,16 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { familyBlurb, familyShort } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
 import { useMetadata } from "@/components/metadata-provider";
-import { FAMILY_ICONS } from "@/components/advisor/family-icons";
-
-/** One representative practice photo per challenge family (from public/practices). */
-const FAMILY_IMAGES: Record<string, string> = {
-  "Crop production and management": "/practices/intercropping.webp",
-  "Livestock production and management": "/practices/pasture-management.webp",
-  "Integrated soil fertility management": "/practices/isfm.webp",
-  "Erosion control and water management": "/practices/water-harvesting.webp",
-  "Agro-forestry and forest management": "/practices/multistrata-agroforestry.webp",
-};
+import { FAMILY_ICONS, FAMILY_IMAGES } from "@/components/advisor/family-icons";
 
 export function HomeFamilies() {
   const t = useTranslations("home.families");
@@ -24,7 +15,7 @@ export function HomeFamilies() {
   const { meta } = useMetadata();
   const families = meta?.practice_families ?? Object.keys(FAMILY_ICONS);
   return (
-    <section aria-labelledby="families-title" className="border-y border-border bg-surface-2 py-20 sm:py-24">
+    <section aria-labelledby="families-title" className="py-20 sm:py-24">
       <div className="container-page">
         <div className="max-w-2xl">
           <p className="eyebrow">{t("eyebrow")}</p>

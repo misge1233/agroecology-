@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useId, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useEffect, useId, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 import { preconnect } from "react-dom";
 import dynamic from "next/dynamic";
-import { Loader2, LocateFixed, Map as MapIcon, MapPin, Search } from "lucide-react";
+import { ArrowRight, Loader2, LocateFixed, Map as MapIcon, MapPin, Search } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { fetchGeocode } from "@/lib/api";
 import type { Bounds, GeocodeResponse } from "@/lib/types";
@@ -12,6 +12,7 @@ import type { Locale } from "@/i18n/routing";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
+import { StepHeader, StepPanel } from "./step-layout";
 import { inBounds } from "./use-zone";
 
 // Phone detection as an external store (F-1). The server snapshot is `null`
@@ -225,10 +226,14 @@ export interface LocationPickerProps {
   mapClassName?: string;
   /** Mount the map immediately regardless of viewport (the chat sheet is opened on purpose). */
   eagerMap?: boolean;
+  /** Advisor layout: map left, controls in a side panel (lg+). */
+  split?: boolean;
+  /** Extra content at the bottom of the side panel (split layout only). */
+  aside?: ReactNode;
 }
 
 /** Map + coordinates + place search + device location. Shared by Advisor and Chat. */
-export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName, eagerMap = false }: LocationPickerProps) {
+export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName, eagerMap = false, split = false, aside }: LocationPickerProps) {
   const t = useTranslations("advisor.location");
   const ta = useTranslations("a11y");
   const locale = useLocale() as Locale;
@@ -267,106 +272,146 @@ export function LocationPicker({ lat, lon, bounds, onChange, zone, mapClassName,
     );
   }
 
+  const mapRegion = (
+    <div
+      role="region"
+      aria-label={t("mapLabel")}
+      className={mapClassName ?? "h-56 overflow-hidden rounded-card border border-border sm:h-80"}
+    >
+      {showMap ? (
+        <LocationMap
+          lat={lat}
+          lon={lon}
+          bounds={bounds}
+          onPick={(la, lo) => onChange(la, lo)}
+          pinLabel={pinLabel}
+          onTiles={setTiles}
+        />
+      ) : (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-surface-2 px-6 text-center">
+          <MapIcon className="h-8 w-8 text-muted" aria-hidden />
+          {isPhone ? (
+            <>
+              <p className="max-w-xs text-sm text-muted">{t("mapDeferred")}</p>
+              <Button type="button" variant="outline" size="sm" onClick={() => setMapRequested(true)}>
+                <MapPin className="h-4 w-4" aria-hidden />
+                {t("showMap")}
+              </Button>
+            </>
+          ) : (
+            <p className="text-sm text-muted">{t("mapLoading")}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+  const tilesAlert = tiles === "failed" ? <Alert variant="warning" title={t("tilesFailed")} /> : null;
+  const status = (
+    <p className="flex min-w-0 items-start gap-2 text-sm text-muted" aria-live="polite">
+      <MapPin className={hasPoint ? "mt-0.5 h-4 w-4 shrink-0 text-primary" : "mt-0.5 h-4 w-4 shrink-0"} aria-hidden />
+      {!hasPoint ? (
+        <span>{t("noPin")}</span>
+      ) : zone.loading ? (
+        <span className="inline-flex items-center gap-1">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> {t("zoneLoading")}
+        </span>
+      ) : zone.belt ? (
+        <span>
+          {t("zone")}: <span className="font-medium text-text">{aezName(zone.belt, locale)}</span>
+        </span>
+      ) : (
+        <span>{t("zoneUnavailable")}</span>
+      )}
+    </p>
+  );
+  const gpsButton = (
+    <div className="flex flex-col gap-1">
+      <Button
+        type="button"
+        variant="outline"
+        size={split ? "md" : "sm"}
+        onClick={useMyLocation}
+        loading={gps.status === "locating"}
+        className={split ? "w-full" : undefined}
+      >
+        {gps.status !== "locating" ? <LocateFixed className="h-4 w-4" aria-hidden /> : null}
+        {gps.status === "locating" ? t("locating") : t("useMyLocation")}
+      </Button>
+      {gps.status === "error" ? (
+        <p role="alert" className="text-sm text-danger-text">
+          {gps.message}
+        </p>
+      ) : null}
+    </div>
+  );
+  const search = <PlaceSearch onPick={(la, lo) => onChange(la, lo)} />;
+  const coords = (
+    <CoordinateFields
+      key={`${lat ?? ""}|${lon ?? ""}`}
+      initialLat={lat}
+      initialLon={lon}
+      bounds={bounds}
+      onCommit={onChange}
+    />
+  );
+
+  // Advisor (U5): a large map with the controls in a side panel.
+  if (split) {
+    return (
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <div className="min-w-0 space-y-3">
+          {mapRegion}
+          {tilesAlert}
+          <p className="sr-only">{ta("pinSetByKeyboard")}</p>
+        </div>
+        <div className="flex flex-col gap-5">
+          {search}
+          {coords}
+          {gpsButton}
+          <div className="rounded-card border border-border bg-surface-2 px-4 py-3">{status}</div>
+          {aside}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div
-        role="region"
-        aria-label={t("mapLabel")}
-        className={mapClassName ?? "h-56 overflow-hidden rounded-card border border-border sm:h-80"}
-      >
-        {showMap ? (
-          <LocationMap lat={lat} lon={lon} onPick={(la, lo) => onChange(la, lo)} pinLabel={pinLabel} onTiles={setTiles} />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-surface-2 px-6 text-center">
-            <MapIcon className="h-8 w-8 text-muted" aria-hidden />
-            {isPhone ? (
-              <>
-                <p className="max-w-xs text-sm text-muted">{t("mapDeferred")}</p>
-                <Button type="button" variant="outline" size="sm" onClick={() => setMapRequested(true)}>
-                  <MapPin className="h-4 w-4" aria-hidden />
-                  {t("showMap")}
-                </Button>
-              </>
-            ) : (
-              <p className="text-sm text-muted">{t("mapLoading")}</p>
-            )}
-          </div>
-        )}
-      </div>
-      {tiles === "failed" ? (
-        <Alert variant="warning" title={t("tilesFailed")} />
-      ) : null}
+      {mapRegion}
+      {tilesAlert}
       <p className="sr-only">{ta("pinSetByKeyboard")}</p>
-
       <div className="grid gap-4 md:grid-cols-2">
-        <PlaceSearch onPick={(la, lo) => onChange(la, lo)} />
-        <CoordinateFields
-          key={`${lat ?? ""}|${lon ?? ""}`}
-          initialLat={lat}
-          initialLon={lon}
-          bounds={bounds}
-          onCommit={onChange}
-        />
+        {search}
+        {coords}
       </div>
-
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="inline-flex min-w-0 items-center gap-2 text-sm text-muted" aria-live="polite">
-          <MapPin className={hasPoint ? "h-4 w-4 shrink-0 text-primary" : "h-4 w-4 shrink-0"} aria-hidden />
-          {!hasPoint ? (
-            <span>{t("noPin")}</span>
-          ) : zone.loading ? (
-            <span className="inline-flex items-center gap-1">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> {t("zoneLoading")}
-            </span>
-          ) : zone.belt ? (
-            <span>
-              {t("zone")}: <span className="font-medium text-text">{aezName(zone.belt, locale)}</span>
-            </span>
-          ) : (
-            <span>{t("zoneUnavailable")}</span>
-          )}
-        </p>
-        <div className="flex shrink-0 flex-col items-start gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={useMyLocation}
-            loading={gps.status === "locating"}
-          >
-            {gps.status !== "locating" ? <LocateFixed className="h-4 w-4" aria-hidden /> : null}
-            {gps.status === "locating" ? t("locating") : t("useMyLocation")}
-          </Button>
-          {gps.status === "error" ? (
-            <p role="alert" className="text-sm text-danger-text">
-              {gps.message}
-            </p>
-          ) : null}
-        </div>
+        {status}
+        <div className="shrink-0">{gpsButton}</div>
       </div>
     </div>
   );
 }
 
-/** Advisor step 1: the picker plus the step heading and the Next button. */
-export function LocationStep(props: LocationPickerProps & { onNext: () => void }) {
+/** Advisor step 1: the picker in its split layout, with the step heading and Next. */
+export function LocationStep(props: LocationPickerProps & { onNext: () => void; stepLabel: string }) {
   const t = useTranslations("advisor.location");
   const tc = useTranslations("common");
-  const ready = props.lat != null && props.lon != null;
+  const { onNext, stepLabel, ...picker } = props;
+  const ready = picker.lat != null && picker.lon != null;
   return (
-    <div className="space-y-5">
-      <div>
-        <h2 id="advisor-step-title" className="text-xl sm:text-2xl">
-          {t("title")}
-        </h2>
-        <p className="mt-1 text-sm text-muted">{t("help")}</p>
-      </div>
-      <LocationPicker {...props} />
-      <div className="flex justify-end">
-        <Button type="button" size="lg" disabled={!ready} onClick={props.onNext}>
-          {tc("next")}
-        </Button>
-      </div>
-    </div>
+    <StepPanel>
+      <StepHeader step={stepLabel} title={t("title")} help={t("help")} />
+      <LocationPicker
+        {...picker}
+        split
+        mapClassName="h-[22rem] overflow-hidden rounded-card border border-border sm:h-[28rem] lg:h-[32rem]"
+        aside={
+          <Button type="button" size="lg" className="mt-auto w-full" disabled={!ready} onClick={onNext}>
+            {tc("next")}
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Button>
+        }
+      />
+    </StepPanel>
   );
 }

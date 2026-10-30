@@ -3688,3 +3688,34 @@ Owner request (direct, not from a Senior Engineer review): make the UI clean, mo
 **Verified**: `tsc --noEmit` clean; `eslint src e2e` clean (0 warnings); vitest 129 passed (15 files, incl. i18n hard-coded-string and catalog-parity gates). Visual check in the running dev server (Chrome via Playwright) at 1440 px and 390 px for all four pages, dark mode, Amharic, and the open phone menu; no horizontal overflow at 390 px.
 
 **Needs local verification**: Playwright E2E suite not run (Playwright's bundled browsers are not installed here); `next build` not run (dev server was using `.next`). Amharic / Afaan Oromoo copy for the 6 new keys is machine-drafted.
+## Phase U4 — Home: "Under the hood" architecture section (31 Oct 2026)
+
+Owner request: explain on the home page how the ML model, RAG, the knowledge graph and the data sources work together, and show WOCAT and worldwide coverage as the future direction.
+
+**Built** New `HomeArchitecture` section after "How it works": four layer cards in pipeline order (Geospatial context, Machine-learning ranking, Retrieval-augmented explanation (RAG), Knowledge graph), each with its role and its sources, joined by connectors on wide screens; a "The model owns every number" card stating doctrine 1 and the cite-or-fallback rule; a "What comes next" card with WOCAT practice records and worldwide coverage marked Planned. Step 3 of "How it works" now mentions the cited explanation. Challenge areas moved to a white background so sections keep alternating.
+
+**Files** `src/components/home/architecture.tsx` (new), `src/app/[locale]/page.tsx`, `src/components/home/{families,cta-band}.tsx`, `messages/{en,am,om}.json` (+`home.architecture.*`, 25 keys; `home.how.steps.results.body` reworded), `docs/i18n/TRANSLATION_STATUS.md`.
+
+**Decisions** The section carries no figures, so it cannot drift from the model or dataset. WOCAT and worldwide coverage are labelled Planned because the graph currently holds only fixture WOCAT records and the stack covers Ethiopia only.
+
+**Verified** `tsc` clean, `eslint` clean, vitest 130 passed. Rendered in the dev server at 1440 px and 390 px (en) and 1440 px (am); no horizontal overflow.
+
+**Needs local verification** Amharic and Afaan Oromoo copy is machine-drafted. Playwright E2E and `next build` not run here.
+## Phase U5 — Advisor page redesign (31 Oct 2026)
+
+Owner request: remove the "Your request" panel so the map gets the space, centre the map on Ethiopia, polish and standardise the page (type, blocks, buttons, solid background) and remove em/en dashes.
+
+**Built**
+- Layout: white header band (title, subtitle, "Start over" once anything is set) over a solid `surface-2` work area; every input step is one white panel with the same eyebrow ("Step n of 5"), heading, helper text and footer (Back left, primary action right) via new `step-layout.tsx`.
+- Stepper: segmented progress bars per step with number, label and the value chosen there (belt, family, objective, crop); completed steps stay clickable. This replaces the summary rail (`summary-rail.tsx` deleted).
+- Location: large map (up to 32 rem) with search, coordinates, "Use my location", belt status and Next in a side panel; with no pin the map fits the country bounds from `/metadata` (quarter-step zoom). Chat's map sheet keeps its compact layout.
+- Challenge: photo cards (shared `FAMILY_IMAGES`) with a check and ring on the selected family. Objective: option tiles stating the direction (Increase / Reduce). Crop: same panel and footer.
+- Results: practice cards put the photo beside the summary from md up; opened Why / Evidence / How-to panels span the card width on a tinted well.
+- Dashes: all em/en dashes removed from the en/am/om catalogs (rewritten by hand in en; native separators in am/om; ranges now "to" / "እስከ" / "hanga"), the glossary, the print sheet, the result card and the evidence-base tooltip.
+
+**Files** `src/components/advisor/{advisor-flow,step-layout (new),location-step,challenge-step,objective-step,crop-step,result-card,print-sheet,family-icons}.tsx|ts`, `src/components/advisor/summary-rail.tsx` (deleted), `src/components/ui/stepper.tsx`, `src/components/location-map.tsx`, `src/components/home/families.tsx`, `src/i18n/glossary.ts`, `src/lib/evidence-base{,.test}.ts`, `messages/{en,am,om}.json` (+`advisor.objective.increase/decrease`; 16 strings per language reworded), `docs/i18n/TRANSLATION_STATUS.md`.
+
+**Verified** `tsc` clean, `eslint` clean, vitest 130 passed. Walked the whole flow in the dev server against the live backend at 1440 px (all five steps, pinned and unpinned map, results) and 390 px (location, objective, results); no horizontal overflow.
+
+**Needs local verification** Playwright E2E (stepper markup changed; selectors use roles and catalog text, so they should hold) and `next build` not run here. Reworded am/om strings are machine drafts.
+**U5 follow-up (owner feedback, 31 Oct 2026)** Advisor header band now uses a soft brand tint (`primary-soft`) with faint terrace contour lines and a compass icon tile, so it is distinct from the white site header and the grey work area; stepper inactive bars and circles switched to `surface` for contrast on the tint. Checked in light, dark and 390 px; tsc, eslint and vitest (130) pass.

@@ -6,6 +6,7 @@ import { HomeHow } from "@/components/home/how";
 import { TrustStrip } from "@/components/home/trust-strip";
 import { HomeFamilies } from "@/components/home/families";
 import { HomeCta } from "@/components/home/cta-band";
+import { HomeArchitecture } from "@/components/home/architecture";
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -16,6 +17,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <HomeHero />
       <TrustStrip />
       <HomeHow />
+      <HomeArchitecture />
       <HomeFamilies />
       <HomeCta />
     </NextIntlClientProvider>

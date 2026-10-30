@@ -30,7 +30,7 @@
       "label": "Afaan",
       "change": "Afaan jijjiiri",
       "current": "Afaan ammaa: {name}",
-      "draft": "Hiika ofumaan qophaa'e — dubbattoota afaanichaatiin gamaaggamamaa jira"
+      "draft": "Hiika ofumaan qophaa'e; dubbattoota afaanichaatiin gamaaggamamaa jira"
     }
   },
   "footer": {
@@ -50,7 +50,7 @@
     "apiStarting": "Tajaajilli gorsaa jalqabaa jira.",
     "checking": "Tajaajila mirkaneessaa jira…",
     "retry": "Amma irra deebi'ii yaali",
-    "retrying": "Rakkoo walitti dhufeenyaa — irra deebi'ee yaalaa jira…"
+    "retrying": "Rakkoo walitti dhufeenyaa; irra deebi'ee yaalaa jira…"
   },
   "home": {
     "hero": {
@@ -74,7 +74,51 @@
         },
         "results": {
           "title": "Gochaalee sadarkeeffaman gamaaggami",
-          "body": "Gochaaleen bu'aa yaaliiwwan dirree cimdii irraa eegamuun tartiibeffaman, tokkoon tokkoon amantaa isaa fi qorannoowwan duuba jiran waliin."
+          "body": "Gochaaleen bu'aa yaaliiwwan dirree cimdii irraa eegamuun tartiibeffaman, tokkoon tokkoon amantaa isaa, qorannoowwan duuba jiranii fi ibsa madda qabu waliin."
+        }
+      }
+    },
+    "architecture": {
+      "eyebrow": "Akkaataa keessaan itti hojjetu",
+      "title": "Moodeelli barnoota maashinii sadarkeessa. Barbaachi ibsa. Ibsi hundi madda qaba.",
+      "subtitle": "Sadarkaaleen afur mallattoo kaartaa gara gorsa isin mirkaneessuu dandeessanitti jijjiiru. Sadarkaan tokkoon tokkoon hojii tokko qaba; lakkoofsa kan uumu moodeela qofa.",
+      "layer": "Sadarkaa {n}",
+      "layers": {
+        "geo": {
+          "title": "Haala jiyoo-ispaashaalii",
+          "body": "Tuullaan raastarii sadarkaa 11 fi 250 m qabu rooba, ho'a, olka'iinsa, gaarummaa, biyyee fi yeroo guddinaa mallattoo jala jiru dubbisa, bakka sanas godina agro-ekoloojii isaa keessa kaa'a.",
+          "tag": "Maddawwan: WorldClim, SoilGrids, Copernicus, FAO"
+        },
+        "model": {
+          "title": "Sadarkeessuu barnoota maashinii",
+          "body": "Moodeelli yaaliiwwan dirree cimdii (gochaa waliin fi malee) irratti leenji'e bu'aa gochaa tokkoon tokkoon haala sana keessatti tilmaama, sadarkaa amantaa waliinis sadarkeessa. Madda qofa hammaa bu'aa fi dhibbeentaa ti.",
+          "tag": "Madda: yaaliiwwan dirree cimdii ERA, Itoophiyaa"
+        },
+        "rag": {
+          "title": "Ibsa barbaacha irratti hundaa'e (RAG)",
+          "body": "Barbaachi makaa hiikaa fi jecha furtuu qorannoowwan moodeelli irraa barate fi qajeelfama hojiirra oolmaa CGIAR irraa kutaalee baasa. Moodeelli afaanii sadarkeessa sana ibsa, tarkaanfii hojii kenna, madda hundas ni wabeeffata.",
+          "tag": "Maddawwan: kutaalee qorannoo, qajeelfama GARDIAN / CGSpace"
+        },
+        "graph": {
+          "title": "Giraafii beekumsaa",
+          "body": "Gochaalee, qorannoo, bu'aalee, godinaalee fi galmeewwan gochaa madda isaanii waliin walqunnamsiisa. Gadi fageenya ragaa safara, sadarkaa gorsaas murteessa: moodeelaan kan geggeeffamu, makaa ykn beekumsaan kan geggeeffamu.",
+          "tag": "Walqunnamtii: gochaalee, qorannoo, bu'aalee, godinaalee, galmeewwan"
+        }
+      },
+      "guardrail": {
+        "title": "Lakkoofsi hundi kan moodeelaa ti",
+        "body": "Beekumsi argame ni ibsa, ni barsiisa; garuu hamma bu'aa, sadarkaa ykn baay'ina qorannoo gonkumaa hin uumu, hin jijjiiru. Ibsi madda hin qabne hin agarsiifamu; ragaan walqabsiisuun yoo hin milkoofne, gorsaan gara unka salphaatti deebi'a."
+      },
+      "roadmap": {
+        "title": "Karoora itti aanu",
+        "badge": "Karoorfame",
+        "wocat": {
+          "title": "Galmeewwan gochaa WOCAT",
+          "body": "Teknooloojiiwwan bulchiinsa lafaa itti fufiinsa qabu Kuusaa Daataa SLM Addunyaa WOCAT irraa galmeeffaman, ragaa yaalii dirree cinaatti filannoo gochaa madda qabu ta'anii ni dabalamu."
+        },
+        "global": {
+          "title": "Haguuggii addunyaa",
+          "body": "Sadarkaalee jiyoo-ispaashaalii addunyaa fi bu'uura ragaa bal'aa, akka sadarkeessi ragaa dursu kun qonnaawwan Itoophiyaan alaas tajaajiluuf."
         }
       }
     },
@@ -133,10 +177,10 @@
       "search": "Bakka Itoophiyaa keessaa barbaadi",
       "searchPlaceholder": "fkn Dabra Birhaan",
       "searching": "Barbaadaa jira…",
-      "searchNone": "Bakki hin argamne — barreeffama biraa yaalaa ykn mallattoo kaa'aa",
+      "searchNone": "Bakki hin argamne; barreeffama biraa yaalaa ykn mallattoo kaa'aa",
       "useMyLocation": "Bakka koo fayyadami",
       "locating": "Bakka keessan barbaadaa jira…",
-      "outside": "Qabxiin sun Itoophiyaa alatti argama (laatitiyuudii {latMin}–{latMax}, longitiyuudii {lonMin}–{lonMax}). Mallattoo biyya keessatti sochoosaa.",
+      "outside": "Qabxiin sun Itoophiyaa alatti argama (laatitiyuudii {latMin} hanga {latMax}, longitiyuudii {lonMin} hanga {lonMax}). Mallattoo biyya keessatti sochoosaa.",
       "gpsUnavailable": "Bakki biraawzarii kana irratti hin argamu.",
       "gpsOutside": "Bakki meeshaa keessanii Itoophiyaa alatti argama. Bakka isaa kaartaa irratti qabxii filadhaa.",
       "gpsFailed": "Bakka keessan dubbisuun hin danda'amne. Hayyama mirkaneessaa ykn kaartaa fayyadamaa.",
@@ -149,7 +193,7 @@
       "pinAt": "Mallattoo {lat}, {lon} irratti",
       "showMap": "Kaartaa agarsiisi",
       "mapDeferred": "Daataa qusachuuf kaartaan yeroo bantu fe'ama. Dirreen armaan gadii isa malee ni hojjetu.",
-      "tilesFailed": "Fakkiiwwan kaartaa fe'amuu hin dandeenye. Armaan gadii bakka barbaadi yookiin qindoomina barreessi — pinni ammas ni hojjeta."
+      "tilesFailed": "Fakkiiwwan kaartaa fe'amuu hin dandeenye. Armaan gadii bakka barbaadi yookiin qindoomina barreessi; pinni ammas ni hojjeta."
     },
     "challenge": {
       "title": "Rakkoon maali?",
@@ -158,7 +202,9 @@
     "objective": {
       "title": "Maal jijjiiruu barbaaddu?",
       "help": "Kaayyoowwan rakkoo kanaaf ragaa dirree qaban qofatu dhihaata.",
-      "none": "Rakkoo kanaaf kaayyoon ragaa qabu hin jiru."
+      "none": "Rakkoo kanaaf kaayyoon ragaa qabu hin jiru.",
+      "increase": "Dabaluu",
+      "decrease": "Hir'isuu"
     },
     "crop": {
       "title": "Midhaan kam?",
@@ -179,7 +225,7 @@
       "newRequest": "Gaaffii haaraa",
       "share": "Liinkii gorsa kanaa garagalchi",
       "shared": "Liinkiin garagalfame",
-      "disclaimer": "Tilmaama ragaa dirree haalawwan walfakkaatan keessaa — sadarkeessuu malee wabii miti.",
+      "disclaimer": "Tilmaama ragaa dirree haalawwan walfakkaatan keessaa; sadarkeessuu malee wabii miti.",
       "source": {
         "label": "Madda sadarkeessuu kanaa"
       },
@@ -195,7 +241,7 @@
         "lgp": "Yeroo guddinaa",
         "temp": "Ho'a giddugaleessaa",
         "meaning": {
-          "belt": "godinaalee aadaa ol ka'iinsaa–jiidhinaa Itoophiyaa",
+          "belt": "godinaalee aadaa ol ka'iinsaa fi jiidhinaa Itoophiyaa",
           "rainfall": "ida'ama waggaa giddugaleessaa mallattoo irratti",
           "altitude": "ol ka'iinsa galaana gubbaa",
           "slope": "hammam akka lafti gad bu'u",
@@ -282,7 +328,7 @@
       },
       "documented": {
         "title": "Gochaalee galmaa'an",
-        "introHybrid": "Ragaan yaalii dirree gaaffii kanaaf qal'aa dha; kanaaf gochaaleen sanadoota qajeelfamaa fi galmeewwan gochaa irraa dhufan kun sadarkaa cinaatti tarreeffamu — maddoota isaanii waliin, lakkoofsa bu'aa malee.",
+        "introHybrid": "Ragaan yaalii dirree gaaffii kanaaf qal'aa dha; kanaaf gochaaleen sanadoota qajeelfamaa fi galmeewwan gochaa irraa dhufan kun sadarkaa cinaatti tarreeffamu; maddoota isaanii waliin, lakkoofsa bu'aa malee.",
         "introKnowledge": "Gaaffii kanaaf ragaan yaalii dirree hin jiru; kanaaf homtuu hin sadarkeeffamne yookiin hin tilmaamamne. Gochaaleen kun sanadoota qajeelfamaa fi galmeewwan gochaa haalawwan walfakkaataniif irraa dhufan, maddoota isaanii waliin.",
         "empty": "Gaaffii kanaaf gochi galmaa'e wabii qabu hin argamne. Rakkoo kanaaf kaayyoo biraa yookiin bakka dhihoo yaalaa.",
         "rank": "Kan yaadame #{rank}",
@@ -347,7 +393,7 @@
     "eyebrow": "Gorsaa gochaa Agro-ekoloojii+",
     "title": "Haala qonnaa ibsaa.",
     "titleLine2": "Gocha caalaa walsimu fudhadhaa.",
-    "intro": "Qonna afaan salphaadhaan ibsaa — maqaa bakkaa ykn mallattoo kaartaa, rakkoo fi kaayyoo. Gochaaleen godinaaf ragaa dirree irraa sadarkeeffamu malee hin uumaman.",
+    "intro": "Qonna afaan salphaadhaan ibsaa; maqaa bakkaa ykn mallattoo kaartaa, rakkoo fi kaayyoo. Gochaaleen godinaaf ragaa dirree irraa sadarkeeffamu malee hin uumaman.",
     "placeholderHero": "Waa'ee oomishaa, dhiqama biyyee, yaa'insa bishaanii gaafadhu…",
     "placeholder": "Qonna fi kaayyoo keessan ibsaa…",
     "ask": "Gaafadhu",
@@ -358,7 +404,7 @@
     "tryExample": "Fakkeenya yaali",
     "examples": {
       "one": "Dirree gadee koo Dabra Birhaan bira jiru irratti dhiqama biyyee hir'isuu barbaada",
-      "two": "Qonni koo 8.38, 39.37 irra jira — dhiqama biyyee akkamitti hir'isa?",
+      "two": "Qonni koo 8.38, 39.37 irra jira; dhiqama biyyee akkamitti hir'isa?",
       "three": "9.03, 38.74 irratti qamadii nan oomisha. Oomisha akkamitti dabaluu danda'a?"
     },
     "loadingMeta": "Odeeffannoo moodeelaa fe'aa jira…",
@@ -368,7 +414,7 @@
       "title": "Mallattoo kaa'uuf kaartaa bani",
       "body": "Daangaan Itoophiyaa ni mirkanaa'a; laatitiyuudii fi longitiyuudiin walsimee tura"
     },
-    "mapOfferReply": "Gaarii — kaartaa armaan gadii irratti mallattoo kaa'aa (ykn laatitiyuudii/longitiyuudii barreessaa). Erga kaa'amee booda bakka sana gorsaaf nan fayyadama.",
+    "mapOfferReply": "Gaarii; kaartaa armaan gadii irratti mallattoo kaa'aa (ykn laatitiyuudii/longitiyuudii barreessaa). Erga kaa'amee booda bakka sana gorsaaf nan fayyadama.",
     "errorFallback": "Gorsaa bira gahuun rakkoon uumame. Gorsaa yaalaa, ykn irra deebi'aa yaalaa.",
     "chatFailed": "Haasaan hin milkoofne",
     "loadMoreFailed": "Gochaalee dabalataa fe'uun hin danda'amne",
@@ -429,7 +475,7 @@
     "contextTitle": "Haala sadarkeessuu kanaaf fayyadame",
     "advisory": {
       "hybrid": "Ragaa yaalii dirree qal'aa: gochaaleen galmaa'an sadarkaa jalatti tarreeffamaniiru.",
-      "knowledgeLed": "Gaaffii kanaaf ragaan yaalii dirree hin jiru — gochaalee galmaa'an qofa."
+      "knowledgeLed": "Gaaffii kanaaf ragaan yaalii dirree hin jiru; gochaalee galmaa'an qofa."
     }
   },
   "about": {
@@ -437,18 +483,18 @@
     "lead": "Gorsaa ragaa irratti hundaa'e kan gochaalee agro-ekoloojii bakka murtaa'aa Itoophiyaa keessaatiif sadarkeessu fi qorannoowwan dirree gorsa hunda duuba jiran agarsiisu.",
     "what": {
       "title": "Maal akka ta'e",
-      "body": "AgroAdvisor-ET haala agro-ekoloojii mallattoo kaartaa jala jiru — rooba, ho'a, ol ka'iinsa, gadee lafaa, biyyee fi yeroo guddinaa kuusaa jiyoo-ispaashaalii 250 m irraa — dubbisa, gochaalees moodeela daawwannaawwan dirree cimdii kumaatamaan lakkaa'aman waliin/malee yaaliiwwan Itoophiyaa irraa leenji'een sadarkeessa. Achiis tarreen baasuu gorsa hunda kutaalee qorannoowwan moodeelichi irraa barate irraa fudhatamaniin ibsa."
+      "body": "AgroAdvisor-ET haala agro-ekoloojii mallattoo kaartaa jala jiru (rooba, ho'a, ol ka'iinsa, gadee lafaa, biyyee fi yeroo guddinaa kuusaa jiyoo-ispaashaalii 250 m irraa) dubbisa, gochaalees moodeela daawwannaawwan dirree cimdii kumaatamaan lakkaa'aman waliin/malee yaaliiwwan Itoophiyaa irraa leenji'een sadarkeessa. Achiis tarreen baasuu gorsa hunda kutaalee qorannoowwan moodeelichi irraa barate irraa fudhatamaniin ibsa."
     },
     "confidence": {
       "title": "Amantaa akkamitti dubbisuu",
       "body": "Kun meeshaa sadarkeessuu malee raaga oomishaa miti. Dandeettiin mirkaneeffannaa qaxxaamuraa amanamaan giddugaleessa, kanaaf dhibbeentaa sirrii caalaa tartiiba gochaalee amanaa.",
       "high": "haalawwan akka keessanii keessatti yaaliiwwan dirreetiin sirriitti deeggarame",
       "medium": "ragaa gahaa; tartiiba akka mallattootti fudhadhaa",
-      "low": "ragaa qal'aa — qabxii jalqabaa malee raaga miti. Gorsaan kijibuu mannaa kana jedha."
+      "low": "ragaa qal'aa; qabxii jalqabaa malee raaga miti. Gorsaan kijibuu mannaa kana jedha."
     },
     "sources": {
       "title": "Maddawwan daataa",
-      "evidence": "Evidence for Resilient Agriculture (ERA) — kutaa Itoophiyaa daawwannaawwan dirree cimdii, qorannoowwan qonna haala qilleensaatiin ogummaa qabu Adimaasuu fi kkf waliin.",
+      "evidence": "Evidence for Resilient Agriculture (ERA); kutaa Itoophiyaa daawwannaawwan dirree cimdii, qorannoowwan qonna haala qilleensaatiin ogummaa qabu Adimaasuu fi kkf waliin.",
       "geo": "Haala qilleensaa WorldClim, biyyee SoilGrids, ol ka'iinsa fi gadee Copernicus, uwwisa lafaa ESA WorldCover, daataa yeroo guddinaa FAO, fi godinaalee agro-ekoloojii Itoophiyaa.",
       "guidance": "Qajeelfama hojiirra oolmaa GARDIAN / CGSpace (oomishaalee beekumsaa CGIAR) tarree akkamitti-gochuutiif.",
       "practice": "Galmeewwan gochaa WOCAT Global SLM Database (CC BY-NC-SA 4.0), haala biyyoota gidduu gad-lakkiisa booda dhufuuf."
@@ -465,7 +511,7 @@
   },
   "errors": {
     "title": "Wanti tokko dogoggore",
-    "body": "Fuulli dogoggora hin eegamne mudate. Gaaffiin keessan hin badne — irra deebi'aa yaalaa ykn gara jalqabaatti deebi'aa.",
+    "body": "Fuulli dogoggora hin eegamne mudate. Gaaffiin keessan hin badne; irra deebi'aa yaalaa ykn gara jalqabaatti deebi'aa.",
     "retry": "Irra deebi'ii yaali",
     "home": "Gara jalqabaatti deemi",
     "details": "Bal'ina teeknikaa"

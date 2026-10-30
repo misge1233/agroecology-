@@ -119,12 +119,12 @@ describe("evidenceBaseSentence", () => {
 describe("studyLine / studiesTooltip", () => {
   it("renders provenance and retrievability per study", () => {
     expect(studyLine(mulching.studies[0], labels)).toBe(
-      "NN0123 · Mulching effects on erosion (2019) — full text"
+      "NN0123 · Mulching effects on erosion (2019): full text"
     );
     expect(studyLine(mulching.studies[1], labels)).toBe(
-      "NN0999 · Residue cover trial (2016) — abstract only"
+      "NN0999 · Residue cover trial (2016): abstract only"
     );
-    expect(studyLine(mulching.studies[2], labels)).toBe("Untitled study — not in the corpus");
+    expect(studyLine(mulching.studies[2], labels)).toBe("Untitled study: not in the corpus");
   });
 
   it("joins the studies into one tooltip, or none when the list is empty", () => {

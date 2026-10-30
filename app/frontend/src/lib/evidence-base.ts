@@ -53,7 +53,7 @@ export function studyLine(study: EvidenceBaseStudy, labels: StudyLabels): string
       : study.corpus_status === "abstract"
         ? labels.abstractOnly
         : labels.notInCorpus;
-  return `${head} — ${suffix}`;
+  return `${head}: ${suffix}`;
 }
 
 /** The whole study list as a tooltip, or undefined when there is none. */

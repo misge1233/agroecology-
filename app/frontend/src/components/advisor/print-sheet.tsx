@@ -96,7 +96,7 @@ export function PrintSheet({
   return (
     <article className="print-only print-sheet" aria-hidden>
       <header className="print-sheet__header">
-        <p className="print-sheet__brand">{tc("appName")} — {tc("tagline")}</p>
+        <p className="print-sheet__brand">{tc("appName")} · {tc("tagline")}</p>
         <h1>{tp("title")}: {indicatorLabel(query.indicator, locale)}</h1>
         <p className="print-sheet__meta">
           {generatedIso ? tp("generatedOn", { date: format.dateTime(new Date(generatedIso), { dateStyle: "long" }) }) : null}
@@ -170,10 +170,10 @@ export function PrintSheet({
                   </h3>
                   <p>
                     <strong>{tp("effect")}:</strong> {effect}
-                    {locale !== "en" ? <span className="print-sheet__muted"> — {item.effect}</span> : null}
+                    {locale !== "en" ? <span className="print-sheet__muted"> · {item.effect}</span> : null}
                   </p>
                   <p>
-                    <strong>{tcard("confidence")}:</strong> {confidenceLabel(data.details.confidence, locale)} — {confidenceMeaning(data.details.confidence, locale)}
+                    <strong>{tcard("confidence")}:</strong> {confidenceLabel(data.details.confidence, locale)}: {confidenceMeaning(data.details.confidence, locale)}
                     {ranked ? ` · ${tcard("observations", { n: ranked.n_evidence })}` : ""}
                   </p>
                   {graphReady && entry ? (
@@ -255,7 +255,7 @@ export function PrintSheet({
 
       <section>
         <p>
-          <strong>{t("source.label")}:</strong> {sourceModeLabel(sourceMode, locale)} — {sourceModeTooltip(sourceMode, locale)}
+          <strong>{t("source.label")}:</strong> {sourceModeLabel(sourceMode, locale)}: {sourceModeTooltip(sourceMode, locale)}
         </p>
         {advisory && advisory.reasons.length > 0 ? (
           <ul className="print-sheet__sources">

@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useRef } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
+import type { Bounds } from "@/lib/types";
 
 // A self-contained SVG pin in the primary token (avoids Leaflet's default
 // icon asset issues in bundlers; follows the theme because it is inline SVG).
@@ -40,12 +41,15 @@ function Recenter({ lat, lon }: { lat: number; lon: number }) {
 export default function LocationMap({
   lat,
   lon,
+  bounds,
   onPick,
   pinLabel,
   onTiles,
 }: {
   lat: number | null;
   lon: number | null;
+  /** Country extent: with no pin the map opens framed on it (U5). */
+  bounds?: Bounds;
   onPick: (lat: number, lon: number) => void;
   /** Accessible name for the marker, e.g. "Pin at 8.38, 39.37". */
   pinLabel: string;
@@ -54,13 +58,17 @@ export default function LocationMap({
 }) {
   const hasPoint = lat != null && lon != null;
   const center: [number, number] = hasPoint ? [lat as number, lon as number] : ETHIOPIA_CENTER;
+  // No pin yet: fit the whole country (Leaflet picks the zoom for the panel size).
+  const frame: L.LatLngBoundsExpression | undefined =
+    !hasPoint && bounds ? [[bounds.lat[0], bounds.lon[0]], [bounds.lat[1], bounds.lon[1]]] : undefined;
   const tileStats = useRef({ ok: 0, failed: 0 });
 
   return (
     <MapContainer
-      center={center}
-      zoom={hasPoint ? 8 : 6}
+      {...(frame ? { bounds: frame, boundsOptions: { padding: [12, 12] as [number, number] } } : { center, zoom: hasPoint ? 8 : 6 })}
       scrollWheelZoom
+      // Quarter-step zoom so the country fits the panel snugly instead of snapping out a whole level.
+      zoomSnap={0.25}
       className="h-full w-full"
       style={{ background: "var(--surface-2)" }}
     >

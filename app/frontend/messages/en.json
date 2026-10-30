@@ -30,7 +30,7 @@
       "label": "Language",
       "change": "Change language",
       "current": "Current language: {name}",
-      "draft": "Automatically drafted translation — under review by native speakers"
+      "draft": "Automatically drafted translation, under review by native speakers"
     }
   },
   "footer": {
@@ -50,7 +50,7 @@
     "apiStarting": "The advisory service is starting up.",
     "checking": "Checking the service…",
     "retry": "Retry now",
-    "retrying": "Connection problem — retrying…"
+    "retrying": "Connection problem. Retrying…"
   },
   "home": {
     "hero": {
@@ -74,7 +74,51 @@
         },
         "results": {
           "title": "Review the ranked practices",
-          "body": "Practices are ordered by expected effect from paired field trials, each with its confidence and the studies behind it."
+          "body": "Practices are ordered by expected effect from paired field trials, each with its confidence, the studies behind it and a cited explanation."
+        }
+      }
+    },
+    "architecture": {
+      "eyebrow": "Under the hood",
+      "title": "Machine learning ranks. Retrieval explains. Every claim is cited.",
+      "subtitle": "Four layers turn a map pin into advice you can check. Each layer has one job, and only the model produces numbers.",
+      "layer": "Layer {n}",
+      "layers": {
+        "geo": {
+          "title": "Geospatial context",
+          "body": "An 11-layer, 250 m raster stack reads rainfall, temperature, altitude, slope, soil and growing period under the pin and places it in its agro-ecological belt.",
+          "tag": "Sources: WorldClim, SoilGrids, Copernicus, FAO"
+        },
+        "model": {
+          "title": "Machine-learning ranking",
+          "body": "A model trained on paired with/without field trials predicts each practice's effect in that context and ranks the practices with a confidence level. It is the only source of effect sizes and percentages.",
+          "tag": "Source: ERA paired field trials, Ethiopia"
+        },
+        "rag": {
+          "title": "Retrieval-augmented explanation (RAG)",
+          "body": "Hybrid semantic and keyword search retrieves passages from the studies the model learned from and from CGIAR implementation guidance. A language model explains the ranking and gives how-to steps, citing every source.",
+          "tag": "Sources: study passages, GARDIAN / CGSpace guidance"
+        },
+        "graph": {
+          "title": "Knowledge graph",
+          "body": "Links practices, studies, outcomes, zones and practice records, each with its provenance. It measures how deep the evidence is and sets the advisory tier: model-led, hybrid or knowledge-led.",
+          "tag": "Links: practices, studies, outcomes, zones, records"
+        }
+      },
+      "guardrail": {
+        "title": "The model owns every number",
+        "body": "Retrieved knowledge explains and instructs, but never invents or changes an effect size, a ranking or a study count. A statement without a citation is not shown, and if grounding fails the advisor falls back to a plain template."
+      },
+      "roadmap": {
+        "title": "What comes next",
+        "badge": "Planned",
+        "wocat": {
+          "title": "WOCAT practice records",
+          "body": "Documented sustainable land management technologies from the WOCAT Global SLM Database, added as cited practice options alongside the field-trial evidence."
+        },
+        "global": {
+          "title": "Worldwide coverage",
+          "body": "Global geospatial layers and a wider evidence base, so the same evidence-first ranking can serve farms beyond Ethiopia."
         }
       }
     },
@@ -133,10 +177,10 @@
       "search": "Search a place in Ethiopia",
       "searchPlaceholder": "e.g. Debre Birhan",
       "searching": "Searching…",
-      "searchNone": "No place found — try another spelling or drop a pin",
+      "searchNone": "No place found. Try another spelling or drop a pin.",
       "useMyLocation": "Use my location",
       "locating": "Finding your location…",
-      "outside": "That point is outside Ethiopia (latitude {latMin}–{latMax}, longitude {lonMin}–{lonMax}). Move the pin inside the country.",
+      "outside": "That point is outside Ethiopia (latitude {latMin} to {latMax}, longitude {lonMin} to {lonMax}). Move the pin inside the country.",
       "gpsUnavailable": "Location is not available in this browser.",
       "gpsOutside": "Your device location is outside Ethiopia. Pick a point on the map instead.",
       "gpsFailed": "Could not read your location. Check permissions or use the map.",
@@ -149,7 +193,7 @@
       "pinAt": "Pin at {lat}, {lon}",
       "showMap": "Show the map",
       "mapDeferred": "The map loads when you open it, to save data. The fields below work without it.",
-      "tilesFailed": "The map tiles could not be loaded. Search a place or type coordinates below — the pin still works."
+      "tilesFailed": "The map tiles could not be loaded. Search a place or type coordinates instead; the pin still works."
     },
     "challenge": {
       "title": "What is the challenge?",
@@ -158,7 +202,9 @@
     "objective": {
       "title": "What do you want to change?",
       "help": "Only objectives with field evidence for this challenge are offered.",
-      "none": "No objectives have evidence for this challenge."
+      "none": "No objectives have evidence for this challenge.",
+      "increase": "Increase",
+      "decrease": "Reduce"
     },
     "crop": {
       "title": "Which crop?",
@@ -179,7 +225,7 @@
       "newRequest": "New request",
       "share": "Copy link to this advisory",
       "shared": "Link copied",
-      "disclaimer": "Estimates from field evidence in similar settings — a ranking, not a guarantee.",
+      "disclaimer": "Estimates from field evidence in similar settings. A ranking, not a guarantee.",
       "source": {
         "label": "Source of this ranking"
       },
@@ -195,7 +241,7 @@
         "lgp": "Growing period",
         "temp": "Mean temperature",
         "meaning": {
-          "belt": "Ethiopia's traditional altitude–moisture zones",
+          "belt": "Ethiopia's traditional altitude and moisture zones",
           "rainfall": "mean yearly total at the pin",
           "altitude": "height above sea level",
           "slope": "steepness of the land",
@@ -282,7 +328,7 @@
       },
       "documented": {
         "title": "Documented practices",
-        "introHybrid": "Field-trial evidence for this request is thin, so these practices from guidance documents and practice records are listed alongside the ranking — with their sources and without effect numbers.",
+        "introHybrid": "Field-trial evidence for this request is thin, so these practices from guidance documents and practice records are listed alongside the ranking, with their sources and without effect numbers.",
         "introKnowledge": "There is no field-trial evidence for this request, so nothing is ranked or estimated. These practices come from guidance documents and practice records for comparable settings, with their sources.",
         "empty": "No documented practice with a citation was found for this request. Try another objective for this challenge, or a nearby location.",
         "rank": "Suggested #{rank}",
@@ -347,7 +393,7 @@
     "eyebrow": "Agroecology+ practice advisor",
     "title": "Describe the farm context.",
     "titleLine2": "Receive the best-fit practice.",
-    "intro": "Describe the farm in plain language — a place name or map pin, the challenge and the goal. Practices are ranked from field evidence for the zone, never invented.",
+    "intro": "Describe the farm in plain language: a place name or map pin, the challenge and the goal. Practices are ranked from field evidence for the zone, never invented.",
     "placeholderHero": "Ask about yield, soil loss, runoff…",
     "placeholder": "Describe your farm and goal…",
     "ask": "Ask",
@@ -358,7 +404,7 @@
     "tryExample": "Try an example",
     "examples": {
       "one": "I want to reduce soil loss on my sloping field near Debre Birhan",
-      "two": "My farm is at 8.38, 39.37 — how do I cut soil erosion?",
+      "two": "My farm is at 8.38, 39.37. How do I cut soil erosion?",
       "three": "At 9.03, 38.74 I grow wheat. How can I raise yield?"
     },
     "loadingMeta": "Loading model metadata…",
@@ -368,7 +414,7 @@
       "title": "Open the map to drop a pin",
       "body": "Ethiopia bounds are validated; latitude and longitude stay in sync"
     },
-    "mapOfferReply": "Great — drop a pin on the map below (or type lat/long). Once set, I'll use that location for recommendations.",
+    "mapOfferReply": "Great. Drop a pin on the map below (or type lat/long). Once set, I'll use that location for recommendations.",
     "errorFallback": "Something went wrong reaching the assistant. Try the Advisor, or retry.",
     "chatFailed": "Chat failed",
     "loadMoreFailed": "Could not load more practices",
@@ -429,7 +475,7 @@
     "contextTitle": "Context used for this ranking",
     "advisory": {
       "hybrid": "Thin field-trial evidence: documented practices are listed below the ranking.",
-      "knowledgeLed": "No field-trial evidence for this request — documented practices only."
+      "knowledgeLed": "No field-trial evidence for this request. Documented practices only."
     }
   },
   "about": {
@@ -437,18 +483,18 @@
     "lead": "An evidence-grounded advisor that ranks agroecological practices for a specific place in Ethiopia and shows the field studies behind every recommendation.",
     "what": {
       "title": "What it is",
-      "body": "AgroAdvisor-ET reads the agro-ecological context under a map pin — rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack — and ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials. The retrieval layer then explains each recommendation with passages from the very studies the model learned from."
+      "body": "AgroAdvisor-ET reads the agro-ecological context under a map pin (rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack) and ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials. The retrieval layer then explains each recommendation with passages from the very studies the model learned from."
     },
     "confidence": {
       "title": "How to read confidence",
       "body": "This is a ranking tool, not a yield forecaster. Honest cross-validated skill is modest, so trust the order of practices more than the exact percentages.",
       "high": "well supported by field trials in settings like yours",
       "medium": "reasonable evidence; treat the order as the signal",
-      "low": "thin evidence — a starting point, not a forecast. The advisor says so instead of bluffing."
+      "low": "thin evidence: a starting point, not a forecast. The advisor says so instead of bluffing."
     },
     "sources": {
       "title": "Data sources",
-      "evidence": "Evidence for Resilient Agriculture (ERA) — Ethiopia subset of paired field observations, with the Adimassu et al. climate-smart agriculture studies.",
+      "evidence": "Evidence for Resilient Agriculture (ERA): the Ethiopia subset of paired field observations, with the Adimassu et al. climate-smart agriculture studies.",
       "geo": "WorldClim climate, SoilGrids soil, Copernicus elevation and slope, ESA WorldCover land cover, FAO growing-period data, and the Ethiopian agro-ecological belts.",
       "guidance": "GARDIAN / CGSpace implementation guidance (CGIAR knowledge products) for the how-to layer.",
       "practice": "WOCAT Global SLM Database practice records (CC BY-NC-SA 4.0), for cross-country context in a later release."
@@ -465,7 +511,7 @@
   },
   "errors": {
     "title": "Something went wrong",
-    "body": "The page hit an unexpected error. Your request is not lost — try again or go back to the start.",
+    "body": "The page hit an unexpected error. Your request is not lost. Try again or go back to the start.",
     "retry": "Try again",
     "home": "Go to the start",
     "details": "Technical details"

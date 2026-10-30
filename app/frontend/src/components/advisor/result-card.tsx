@@ -67,14 +67,18 @@ export function ResultCard({
   return (
     <Card className={cn("overflow-hidden", rank === 1 && "border-primary/50")}>
       <article aria-labelledby={`practice-${rank}`}>
+        {/* U5: photo beside the summary from md up, so the ranking stays above the fold. */}
+        <div className="md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <PracticeImage
           practice={item.practice}
           alt={t("image", { practice: name })}
           fallbackLabel={t("imageMissing")}
           title={name}
           priority={priority}
+          sizes="(min-width: 768px) 40vw, 100vw"
+          className="md:aspect-auto md:h-full md:min-h-[17rem]"
         />
-        <div className="space-y-3 p-4 sm:p-5">
+        <div className="flex flex-col gap-3 p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant={rank === 1 ? "primary" : "neutral"} className="tabular">
               {rank === 1 ? (
@@ -107,7 +111,7 @@ export function ResultCard({
           </p>
           <p className="text-sm text-muted">{confidenceMeaning(confidence, locale)}</p>
 
-          <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+          <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-3">
             {panels
               .filter((p) => p.show)
               .map(({ key, label, icon: Icon }) => (
@@ -131,13 +135,17 @@ export function ResultCard({
                 </button>
               ))}
           </div>
+        </div>
+        </div>
 
+        {/* Opened panels span the full card width below the summary. */}
+        <div className={cn("px-5 sm:px-6", open ? "pb-5 sm:pb-6" : null)}>
           {open === "why" ? (
-            <div id={`panel-${rank}-why`} className="space-y-3 rounded-card bg-background p-4">
+            <div id={`panel-${rank}-why`} className="space-y-3 rounded-card bg-surface-2 p-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{t("confidence")}</p>
                 <p className="mt-1 text-sm">
-                  <span className="font-semibold">{confidenceLabel(confidence, locale)}</span> —{" "}
+                  <span className="font-semibold">{confidenceLabel(confidence, locale)}</span>:{" "}
                   {confidenceMeaning(confidence, locale)}
                 </p>
               </div>
@@ -176,12 +184,12 @@ export function ResultCard({
             </div>
           ) : null}
           {open === "evidence" ? (
-            <div id={`panel-${rank}-evidence`} className="rounded-card bg-background p-4">
+            <div id={`panel-${rank}-evidence`} className="rounded-card bg-surface-2 p-4">
               <EvidenceBody practice={item.practice} />
             </div>
           ) : null}
           {open === "howto" ? (
-            <div id={`panel-${rank}-howto`} className="rounded-card bg-background p-4">
+            <div id={`panel-${rank}-howto`} className="rounded-card bg-surface-2 p-4">
               <HowToBody practice={item.practice} />
             </div>
           ) : null}

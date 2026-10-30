@@ -2,15 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { Compass, RotateCcw } from "lucide-react";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { aezName, familyShort, indicatorLabel } from "@/i18n/glossary";
+import type { Locale } from "@/i18n/routing";
 import { sanitizeIndicatorForFamily } from "@/lib/chat-flow";
 import { useMetadata } from "@/components/metadata-provider";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Stepper, type StepperStep } from "@/components/ui/stepper";
-import { PageHeader } from "@/components/shell/page-header";
 import {
   STEP_ORDER,
   autoStep,
@@ -25,32 +27,66 @@ import { CropStep } from "./crop-step";
 import { LocationStep } from "./location-step";
 import { ObjectiveStep } from "./objective-step";
 import { Results } from "./results";
-import { SummaryRail } from "./summary-rail";
+import { StepPanel } from "./step-layout";
 import { useZone } from "./use-zone";
 
+/** Whole-page placeholder (Suspense fallback): header band, stepper, step panel. */
 export function AdvisorSkeleton() {
   return (
-    <div className="container-page py-8" aria-busy>
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="mt-3 h-4 w-96 max-w-full" />
-      <Skeleton className="mt-6 h-10 w-full" />
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-64 w-full" />
+    <div aria-busy>
+      <div className="border-b border-border bg-primary-soft">
+        <div className="container-page py-8 sm:py-10">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="mt-3 h-5 w-96 max-w-full" />
+          <Skeleton className="mt-8 h-10 w-full" />
+        </div>
+      </div>
+      <div className="bg-surface-2">
+        <div className="container-page py-8 sm:py-10">
+          <Skeleton className="h-[32rem] w-full rounded-panel" />
+        </div>
       </div>
     </div>
   );
 }
 
-/** Only the step area while /metadata loads — the page header is already on screen. */
+/**
+ * Decorative terrace contour lines for the header band (U5): stacked curves in
+ * the primary colour at low opacity, anchored right and fading out to the left.
+ */
+function ContourLines() {
+  const lines = Array.from({ length: 9 }, (_, i) => i);
+  return (
+    <svg
+      aria-hidden
+      className="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-full max-w-3xl text-primary opacity-[0.14] [mask-image:linear-gradient(to_left,black_35%,transparent)]"
+      viewBox="0 0 600 240"
+      preserveAspectRatio="xMaxYMid slice"
+      fill="none"
+    >
+      {lines.map((i) => (
+        <path
+          key={i}
+          d={`M0 ${40 + i * 22} C 120 ${10 + i * 22}, 220 ${80 + i * 22}, 340 ${44 + i * 22} S 520 ${4 + i * 22}, 600 ${36 + i * 22}`}
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+      ))}
+    </svg>
+  );
+}
+
+/** Only the step area while /metadata loads; the page header is already on screen. */
 function StepSkeleton() {
   return (
-    <div aria-busy className="space-y-4">
-      <Skeleton className="h-7 w-64 max-w-full" />
-      <Skeleton className="h-4 w-80 max-w-full" />
-      <Skeleton className="h-64 w-full sm:h-80" />
-      <Skeleton className="h-10 w-full" />
-    </div>
+    <StepPanel>
+      <div aria-busy className="space-y-4">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-8 w-72 max-w-full" />
+        <Skeleton className="h-5 w-96 max-w-full" />
+        <Skeleton className="mt-4 h-80 w-full sm:h-[28rem]" />
+      </div>
+    </StepPanel>
   );
 }
 
@@ -58,12 +94,16 @@ function StepSkeleton() {
  * The four-step Advisor. The URL is the single source of truth for the
  * request (`?lat&lon&family&indicator&crop&top`), so a result can be shared
  * and survives reload; only "which step is open" lives in React state.
+ * U5: one white header band (title, start over, stepper with the chosen
+ * values) over a solid tinted work area; input steps sit in one white panel.
  */
 export function AdvisorFlow() {
   const t = useTranslations("advisor");
+  const tsum = useTranslations("advisor.summary");
   const ta = useTranslations("a11y");
   const ts = useTranslations("status");
-  const tc = useTranslations("common");
+  const locale = useLocale() as Locale;
+  const format = useFormatter();
   const { meta, loading, error, refresh } = useMetadata();
   const router = useRouter();
   const pathname = usePathname();
@@ -87,6 +127,11 @@ export function AdvisorFlow() {
     setStepOverride(nextStep ?? step);
   }
 
+  function reset() {
+    router.replace(pathname, { scroll: false });
+    setStepOverride("location");
+  }
+
   // A complete request in the URL scores straight away (POST /recommend runs in
   // parallel with /metadata); the input steps need the metadata lists first.
   // The title, subtitle and stepper never wait for metadata (they are the
@@ -94,9 +139,23 @@ export function AdvisorFlow() {
   const metaGate = !meta && step !== "results";
   const families = meta?.practice_families ?? [];
   const hasLocation = params.lat != null && params.lon != null;
+  const anySet = hasLocation || !!params.family;
+  const coords = (n: number) => format.number(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const values: Record<StepKey, string | null> = {
+    location: zone.belt
+      ? aezName(zone.belt, locale)
+      : hasLocation
+        ? `${coords(params.lat as number)}, ${coords(params.lon as number)}`
+        : null,
+    challenge: params.family ? familyShort(params.family, locale) : null,
+    objective: params.indicator ? indicatorLabel(params.indicator, locale) : null,
+    crop: params.crop ? params.crop : step === "results" ? tsum("anyCrop") : null,
+    results: null,
+  };
   const steps: StepperStep[] = STEP_ORDER.map((key) => ({
     key,
     label: t(`steps.${key}`),
+    value: values[key],
     reachable:
       key === "location" ||
       (key === "challenge" && hasLocation) ||
@@ -110,26 +169,48 @@ export function AdvisorFlow() {
       (key === "crop" && step === "results"),
   }));
   const stepIndex = STEP_ORDER.indexOf(step);
+  const stepLabel = t("stepOf", { current: stepIndex + 1, total: STEP_ORDER.length });
+  const back = () => setStepOverride(STEP_ORDER[Math.max(0, stepIndex - 1)]);
 
   return (
     <>
-    <PageHeader title={t("title")} description={t("subtitle")} compact />
-    <div className="container-page py-8 lg:py-10 print:p-0">
-      <Stepper
-        steps={steps}
-        current={step}
-        onSelect={(key) => setStepOverride(key as StepKey)}
-        label={ta("stepper")}
-        currentLabel={ta("currentStep")}
-        completedLabel={ta("completedStep")}
-        className="no-print"
-      />
-      <p className="no-print sr-only" aria-live="polite">
-        {t("stepOf", { current: stepIndex + 1, total: STEP_ORDER.length })}
-      </p>
+      <section className="no-print relative isolate overflow-hidden border-b border-border bg-primary-soft">
+        <ContourLines />
+        <div className="container-page pb-6 pt-8 sm:pt-10">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-4">
+              <span className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-card bg-primary text-primary-fg shadow-1 sm:flex">
+                <Compass className="h-7 w-7" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <h1 className="text-balance text-3xl">{t("title")}</h1>
+                <p className="mt-1.5 max-w-2xl text-base text-muted">{t("subtitle")}</p>
+              </div>
+            </div>
+            {anySet && step !== "results" ? (
+              <Button variant="outline" size="sm" onClick={reset}>
+                <RotateCcw className="h-4 w-4" aria-hidden />
+                {tsum("startOver")}
+              </Button>
+            ) : null}
+          </div>
+          <Stepper
+            steps={steps}
+            current={step}
+            onSelect={(key) => setStepOverride(key as StepKey)}
+            label={ta("stepper")}
+            currentLabel={ta("currentStep")}
+            completedLabel={ta("completedStep")}
+            className="mt-8"
+          />
+          <p className="sr-only" aria-live="polite">
+            {stepLabel}
+          </p>
+        </div>
+      </section>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] print:mt-0 print:block">
-        <div className="min-w-0">
+      <div className="bg-surface-2 print:bg-transparent">
+        <div className="container-page py-8 sm:py-10 print:p-0">
           {metaGate && !loading ? (
             <Alert variant="danger" title={ts("apiUnreachable")}>
               <p lang="en">{error}</p>
@@ -145,6 +226,7 @@ export function AdvisorFlow() {
               lon={params.lon}
               bounds={meta.bounds}
               zone={zone}
+              stepLabel={stepLabel}
               onChange={(lat, lon) => update({ lat, lon })}
               onNext={() => setStepOverride(params.family ? (params.indicator ? "crop" : "objective") : "challenge")}
             />
@@ -152,6 +234,8 @@ export function AdvisorFlow() {
             <ChallengeStep
               families={families}
               selected={params.family}
+              stepLabel={stepLabel}
+              onBack={back}
               onSelect={(family) => update({ family }, "objective")}
             />
           ) : step === "objective" && params.family && meta ? (
@@ -159,53 +243,26 @@ export function AdvisorFlow() {
               meta={meta}
               family={params.family}
               selected={params.indicator}
+              stepLabel={stepLabel}
+              onBack={back}
               onSelect={(indicator) => update({ indicator }, "crop")}
             />
           ) : step === "crop" && meta ? (
             <CropStep
               cropTypes={meta.crop_types}
               value={params.crop}
+              stepLabel={stepLabel}
+              onBack={back}
               onChange={(crop) => update({ crop })}
               onSubmit={() => setStepOverride("results")}
             />
           ) : step === "results" ? (
-            <Results
-              params={params}
-              onTopN={(topN) => update({ topN })}
-              onReset={() => {
-                router.replace(pathname, { scroll: false });
-                setStepOverride("location");
-              }}
-            />
+            <Results params={params} onTopN={(topN) => update({ topN })} onReset={reset} />
           ) : (
-            <AdvisorSkeleton />
+            <StepSkeleton />
           )}
-          {step !== "location" && step !== "results" ? (
-            <div className="no-print mt-6">
-              <Button variant="ghost" onClick={() => setStepOverride(STEP_ORDER[Math.max(0, stepIndex - 1)])}>
-                {tc("back")}
-              </Button>
-            </div>
-          ) : null}
         </div>
-
-        <SummaryRail
-          lat={params.lat}
-          lon={params.lon}
-          belt={zone.belt}
-          family={params.family}
-          indicator={params.indicator}
-          crop={params.crop}
-          onEdit={(key) => setStepOverride(key)}
-          onReset={() => {
-            router.replace(pathname, { scroll: false });
-            setStepOverride("location");
-          }}
-          // Phones: an all-empty summary is noise above step 1, so it appears once something is set.
-          className={`no-print order-first lg:order-none ${hasLocation || params.family ? "" : "hidden lg:block"}`}
-        />
       </div>
-    </div>
     </>
   );
 }

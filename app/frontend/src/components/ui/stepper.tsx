@@ -9,11 +9,14 @@ export interface StepperStep {
   /** Can the user jump to this step? (completed or current) */
   reachable: boolean;
   complete: boolean;
+  /** What was chosen at this step, shown under the label (U5). */
+  value?: string | null;
 }
 
 /**
- * Horizontal progress stepper. Completed steps are buttons (jump back);
- * the current step carries aria-current="step".
+ * Segmented progress stepper (U5): one column per step with a progress bar,
+ * the step number, its label and the value chosen there. Completed steps are
+ * buttons (jump back); the current step carries aria-current="step".
  */
 export function Stepper({
   steps,
@@ -34,59 +37,59 @@ export function Stepper({
 }) {
   return (
     <nav aria-label={label} className={cn("w-full", className)}>
-      <ol className="flex items-center gap-1 sm:gap-2">
+      <ol className="grid gap-2 sm:gap-4" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}>
         {steps.map((step, i) => {
           const isCurrent = step.key === current;
+          const done = step.complete && !isCurrent;
           const content = (
             <>
               <span
-                className={cn(
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular",
-                  isCurrent
-                    ? "bg-primary text-primary-fg"
-                    : step.complete
-                      ? "bg-primary-soft text-primary"
-                      : "bg-surface-2 text-muted"
-                )}
                 aria-hidden
-              >
-                {step.complete && !isCurrent ? <Check className="h-4 w-4" /> : i + 1}
-              </span>
-              <span
                 className={cn(
-                  "hidden text-sm sm:inline",
-                  isCurrent ? "font-semibold text-text" : "text-muted"
+                  "block h-1 w-full rounded-full transition-colors duration-base",
+                  isCurrent || step.complete ? "bg-primary" : "bg-surface"
                 )}
-              >
-                {step.label}
+              />
+              <span className="mt-3 flex min-w-0 items-start gap-2.5">
+                <span
+                  aria-hidden
+                  className={cn(
+                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular",
+                    isCurrent
+                      ? "bg-primary text-primary-fg shadow-1"
+                      : done
+                        ? "bg-surface text-primary ring-1 ring-primary"
+                        : "bg-surface text-muted ring-1 ring-border"
+                  )}
+                >
+                  {done ? <Check className="h-4 w-4" /> : i + 1}
+                </span>
+                <span aria-hidden className="hidden min-w-0 flex-col text-left md:flex">
+                  <span className={cn("truncate text-sm", isCurrent ? "font-semibold text-text" : done ? "font-medium text-text" : "text-muted")}>
+                    {step.label}
+                  </span>
+                  {step.value ? <span className="truncate text-xs text-muted">{step.value}</span> : null}
+                </span>
               </span>
               <span className="sr-only">
                 {step.label}
                 {isCurrent ? `, ${currentLabel}` : step.complete ? `, ${completedLabel}` : ""}
+                {step.value ? `: ${step.value}` : ""}
               </span>
             </>
           );
           return (
-            <li key={step.key} className="flex min-w-0 items-center gap-1 sm:gap-2">
-              {i > 0 ? (
-                <span
-                  className={cn("h-px w-4 sm:w-8", step.complete || isCurrent ? "bg-primary" : "bg-border")}
-                  aria-hidden
-                />
-              ) : null}
+            <li key={step.key} className="min-w-0">
               {step.reachable && !isCurrent ? (
                 <button
                   type="button"
                   onClick={() => onSelect(step.key)}
-                  className="flex items-center gap-2 rounded-control px-1 py-1 hover:bg-surface-2"
+                  className="block w-full min-w-0 rounded-control pb-1 text-left transition-opacity duration-base hover:opacity-80"
                 >
                   {content}
                 </button>
               ) : (
-                <span
-                  aria-current={isCurrent ? "step" : undefined}
-                  className="flex items-center gap-2 px-1 py-1"
-                >
+                <span aria-current={isCurrent ? "step" : undefined} className="block min-w-0 pb-1">
                   {content}
                 </span>
               )}

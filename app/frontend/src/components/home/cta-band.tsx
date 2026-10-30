@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export function HomeCta() {
   const t = useTranslations("home");
   return (
-    <section aria-labelledby="cta-title" className="py-20 sm:py-24">
+    <section aria-labelledby="cta-title" className="pb-20 sm:pb-24">
       <div className="container-page">
         <div className="relative overflow-hidden rounded-panel bg-forest-900 px-6 py-12 sm:px-12 sm:py-14">
           {/* Soft light shapes for depth; purely decorative. */}

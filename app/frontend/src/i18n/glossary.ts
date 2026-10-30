@@ -134,7 +134,7 @@ export const AEZ_BELTS: Record<string, Tri> = {
 // --------------------------------------------------------------- crop groups
 export const CROP_GROUPS: Record<string, Tri> = {
   Cereal: { en: "Cereal", am: "እህል", om: "Midhaan" },
-  "Cereal-Legume": { en: "Cereal–legume", am: "እህል–ጥራጥሬ", om: "Midhaan–dirribaa" },
+  "Cereal-Legume": { en: "Cereal-legume", am: "እህልና ጥራጥሬ", om: "Midhaan-dirribaa" },
   Cropland: { en: "Cropland", am: "የሰብል መሬት", om: "Lafa qonnaa" },
   Forage: { en: "Forage", am: "መኖ", om: "Marga horii" },
   "Forest-Woody": { en: "Forest / woody", am: "ደን / እንጨታማ", om: "Bosona / muka" },
@@ -173,9 +173,9 @@ export const CONFIDENCE_MEANING: Record<ConfidenceKey, Tri> = {
     om: "Kaayyoo kanaaf ragaa gahaa; tartiiba akka mallattootti fudhadhaa.",
   },
   low: {
-    en: "Few field observations for this objective here — a starting point, not a forecast.",
-    am: "እዚህ ለዚህ ዓላማ ጥቂት የመስክ ምልከታዎች ብቻ — መነሻ ነጥብ እንጂ ትንበያ አይደለም።",
-    om: "Kaayyoo kanaaf daawwannaa dirree muraasa qofa — qabxii jalqabaa malee raaga miti.",
+    en: "Few field observations for this objective here: a starting point, not a forecast.",
+    am: "እዚህ ለዚህ ዓላማ ጥቂት የመስክ ምልከታዎች ብቻ፤ መነሻ ነጥብ እንጂ ትንበያ አይደለም።",
+    om: "Kaayyoo kanaaf daawwannaa dirree muraasa qofa; qabxii jalqabaa malee raaga miti.",
   },
 };
 
@@ -199,9 +199,9 @@ export const SOURCE_MODES_TOOLTIP: Record<SourceMode, Tri> = {
     om: "Moodeela yaaliiwwan dirree cimdii irratti leenji'een sadarkeeffame; lakkoofsi hundi moodeela sana irraa dhufa.",
   },
   hybrid: {
-    en: "Field-trial evidence is thin here, so documented practices from similar contexts are shown alongside — clearly labelled, never with invented numbers.",
-    am: "እዚህ የመስክ ሙከራ ማስረጃ ቀጭን ነው፣ ስለዚህ ከተመሳሳይ አውዶች የተመዘገቡ ልማዶች ጎን ለጎን ይታያሉ — በግልጽ ተለይተው፣ ያለ ፈጠራ ቁጥር።",
-    om: "Ragaan yaalii dirree asitti qal'aa dha, kanaaf gochaaleen galmaa'an haalawwan walfakkaatan irraa cinaatti agarsiifamu — ifatti mallatteeffamanii, lakkoofsa uumameen miti.",
+    en: "Field-trial evidence is thin here, so documented practices from similar contexts are shown alongside, clearly labelled and, never with invented numbers.",
+    am: "እዚህ የመስክ ሙከራ ማስረጃ ቀጭን ነው፣ ስለዚህ ከተመሳሳይ አውዶች የተመዘገቡ ልማዶች ጎን ለጎን ይታያሉ፤ በግልጽ ተለይተው፣ ያለ ፈጠራ ቁጥር።",
+    om: "Ragaan yaalii dirree asitti qal'aa dha, kanaaf gochaaleen galmaa'an haalawwan walfakkaatan irraa cinaatti agarsiifamu; ifatti mallatteeffamanii, lakkoofsa uumameen miti.",
   },
   documented: {
     en: "No field-trial evidence for this request; these are documented practices from similar contexts with their provenance, and no effect numbers.",
