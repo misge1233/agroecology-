@@ -6,10 +6,11 @@ import { NextIntlClientProvider } from "next-intl";
 import en from "../../../messages/en.json";
 import { LanguageSwitcher } from "./language-switcher";
 
-const replace = vi.fn();
+const hardNavigate = vi.fn();
+vi.mock("@/lib/hard-navigate", () => ({ hardNavigate: (url: string) => hardNavigate(url) }));
 vi.mock("@/i18n/navigation", () => ({
   usePathname: () => "/advisor",
-  useRouter: () => ({ replace, push: vi.fn() }),
+  getPathname: ({ href, locale }: { href: string; locale: string }) => `/${locale}${href}`,
 }));
 vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams("lat=8.38&lon=39.37&family=Erosion+control+and+water+management"),
@@ -29,9 +30,9 @@ describe("LanguageSwitcher", () => {
     await user.click(trigger);
     await user.click(await screen.findByRole("option", { name: "አማርኛ" }));
 
-    expect(replace).toHaveBeenCalledWith(
-      "/advisor?lat=8.38&lon=39.37&family=Erosion+control+and+water+management",
-      { locale: "am" }
+    // A full navigation to the same route and query in the new language.
+    expect(hardNavigate).toHaveBeenCalledWith(
+      "/am/advisor?lat=8.38&lon=39.37&family=Erosion+control+and+water+management"
     );
   });
 });

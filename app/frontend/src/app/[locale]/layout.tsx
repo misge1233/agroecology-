@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
@@ -7,7 +6,8 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { routing, LOCALE_META, type Locale } from "@/i18n/routing";
 import { SHELL_NAMESPACES, pickMessages } from "@/i18n/messages";
 import { MetadataProvider } from "@/components/metadata-provider";
-import { ThemeProvider, THEME_INIT_SCRIPT } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/ui/toast";
 import { SiteHeader } from "@/components/shell/site-header";
@@ -88,13 +88,13 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className={meta.ethiopic ? `${sans.variable} ${ethiopic.variable}` : sans.variable}
     >
+      <head>
+        {/* Applies the stored theme before first paint. A plain server-rendered
+            <script> (U6): React hydrates it but never creates it on the client,
+            which is what React 19.2 warns about for next/script in a component. */}
+        <script id="theme-init" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex flex-col font-sans antialiased" suppressHydrationWarning>
-        {/* Applies the stored theme before first paint. next/script keeps it out of
-            React's hydration (a raw <script> in <head> hydrated inconsistently on
-            streamed routes). */}
-        <Script id="theme-init" strategy="beforeInteractive">
-          {THEME_INIT_SCRIPT}
-        </Script>
         <NextIntlClientProvider messages={shellMessages}>
           <ThemeProvider>
             <TooltipProvider delayDuration={200}>

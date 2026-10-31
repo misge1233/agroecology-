@@ -6,17 +6,17 @@ STRINGS: dict[str, str] = {
     "prompt.reply_in": "Reply in English.",
     # ------------------------------------------------------------ chat: social
     "social.with_prior": (
-        "You're welcome — glad it helped. Ask anytime if you want to know why, "
+        "You're welcome, glad it helped. Ask anytime if you want to know why, "
         "how to apply it, or try a different location, crop, or goal."
     ),
     "social.no_prior": (
-        "You're welcome. Share a map location, challenge area, and objective "
-        "whenever you're ready and I'll recommend suitable practices."
+        "You're welcome. Whenever you're ready, tell me where your farm is, the challenge "
+        "you face and your goal, and I'll recommend suitable practices."
     ),
     # ------------------------------------------------------------ chat: errors
     "error.rate_limit": (
         "The AI text service has reached its usage limit for now. Please wait a "
-        "few minutes and try again, or use the form for instant recommendations."
+        "few minutes and try again, or use the Advisor page for instant recommendations."
     ),
     "error.generic": (
         "I couldn't score practices for that request. Check the location is in "
@@ -26,8 +26,8 @@ STRINGS: dict[str, str] = {
     "clarify.all_missing": (
         "I can recommend evidence-based CSA practices once I know three things: "
         "your **challenge** (e.g. erosion control), your **objective** "
-        "(e.g. reduce soil loss), and your **location** (map pin, coordinates, "
-        "or a place name in Ethiopia)."
+        "(e.g. reduce soil loss), and your **location** (the nearest town or village in "
+        "Ethiopia, or coordinates)."
     ),
     "clarify.understood_prefix": "I understood ",
     "clarify.understood_join": ", ",
@@ -36,18 +36,18 @@ STRINGS: dict[str, str] = {
     "clarify.challenge": "challenge **{challenge}**",
     "clarify.objective": "objective **{objective}**",
     "clarify.ask_challenge": (
-        "which **challenge** fits best — crop production, livestock, soil fertility, "
+        "which **challenge** fits best: crop production, livestock, soil fertility, "
         "erosion & water, or agro-forestry"
     ),
     "clarify.ask_objective_erosion": (
-        "your **objective** — reduce soil loss / erosion, reduce runoff, "
+        "your **objective**: reduce soil loss / erosion, reduce runoff, "
         "or improve water-use efficiency"
     ),
     "clarify.ask_objective": (
         "your **objective** (e.g. increase yield, reduce soil loss, improve soil organic matter)"
     ),
     "clarify.ask_location": (
-        "your **location** — drop a map pin, share lat/long, or name a place in Ethiopia"
+        "your **location**: the nearest town or village in Ethiopia, or coordinates (latitude, longitude)"
     ),
     "clarify.one": "To rank practices from field evidence, please share {ask}.",
     "clarify.two": "Please share {a}, and {b}.",
@@ -71,7 +71,7 @@ STRINGS: dict[str, str] = {
     "summary.others": " Other strong options: {others}.",
     "summary.others_join": ", ",
     "summary.low_confidence": (
-        " Evidence for this setting is limited — treat this as a starting point."
+        " Evidence for this setting is limited, so treat this as a starting point."
     ),
     "summary.default_direction": "improve",
     "summary.default_indicator": "your goal",
@@ -116,8 +116,8 @@ STRINGS: dict[str, str] = {
     # Shown for am/om free text when no LLM is configured (U2).
     "clarify.use_advisor": (
         "I can only read free text in English on this server (the AI text service "
-        "is not configured). Use the choices below, or open the Advisor — every "
-        "step there is in your language."
+        "is not configured). Please write in English, or open the "
+        "Advisor, where every step is in your language."
     ),
     # ------------------------------------------------------------ advisory modes (P9)
     "mode.model_led": "Field-trial model",
@@ -141,8 +141,8 @@ STRINGS: dict[str, str] = {
     "mode.reason.no_candidates": "No documented practice with a citation was found for this request.",
     "mode.hybrid_note": (
         " Field-trial evidence for this request is thin, so {n} documented {practices_word} from "
-        "guidance documents and practice records {is_are} listed alongside, with sources — they "
-        "carry no effect numbers."
+        "guidance documents and practice records {is_are} listed alongside with their "
+        "sources; they carry no effect numbers."
     ),
     "mode.knowledge_led.lead": (
         "There is no field-trial evidence for **{challenge}** with the objective **{objective}** "
@@ -150,7 +150,7 @@ STRINGS: dict[str, str] = {
         "come from guidance documents and practice records for comparable settings, with their "
         "sources and no effect numbers:"
     ),
-    "mode.knowledge_led.item": "- **{label}** — {rationale}",
+    "mode.knowledge_led.item": "- **{label}**: {rationale}",
     "mode.knowledge_led.none": (
         "There is no field-trial evidence for **{challenge}** with the objective **{objective}** "
         "in your area, and no documented practice with a citation was found either. Try another "

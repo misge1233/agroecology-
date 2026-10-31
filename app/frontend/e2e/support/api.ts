@@ -157,6 +157,9 @@ export async function mockApi(page: Page, opts: MockOptions = {}) {
       }
       case "/explain":
         return json(route, fixture("explain"));
+      case "/speech/status":
+        // Deterministic: no server voice, so specs exercise the browser engines (stubbed per test).
+        return json(route, { stt: { en: false, am: false, om: false }, tts: { en: false, am: false, om: false } });
       case "/chat":
         if (opts.delayMs) await new Promise((r) => setTimeout(r, opts.delayMs));
         return route.fulfill({

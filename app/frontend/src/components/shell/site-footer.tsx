@@ -42,7 +42,7 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm">
             <li><Link href="/about#sources" className={linkClass}>{t("sources")}</Link></li>
             <li><Link href="/about#confidence" className={linkClass}>{t("method")}</Link></li>
-            <li><Link href="/about#licence" className={linkClass}>{t("licence")}</Link></li>
+            <li><Link href="/about#contact" className={linkClass}>{t("contact")}</Link></li>
           </ul>
         </div>
       </div>

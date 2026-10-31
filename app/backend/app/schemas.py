@@ -312,6 +312,8 @@ class MetadataResponse(BaseModel):
     #: True when rag/graph/store/graph.json exists — gates the evidence-base
     #: line in the UI's Evidence panel.
     graph_ready: bool = False
+    #: True when server-side voice (POST /speech/transcribe, /speech/synthesize) is configured (U6).
+    speech_ready: bool = False
     #: UI languages the API can answer in (U1): en, am, om.
     languages: list[str] = Field(default_factory=lambda: ["en", "am", "om"])
     # Additive (U1): headline evidence counts for the UI trust strip.

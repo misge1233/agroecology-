@@ -101,7 +101,7 @@ def test_hybrid_note_and_knowledge_led_text_carry_counts_only():
     assert note.startswith(" Field-trial evidence for this request is thin") and f"{n} documented" in note
     assert adv.hybrid_note({"mode": ev.MODEL_LED, "knowledge_candidates": [{}]}, "en") == ""
     text = adv.knowledge_led_text(out, ECWM, "soil loss", "en")
-    assert text.startswith("There is no field-trial evidence for **" + ECWM) and "- **Mulch** — " in text
+    assert text.startswith("There is no field-trial evidence for **" + ECWM) and "- **Mulch**: " in text
     assert "%" not in text  # never an effect
     assert all(ev.rationale_numbers_are_counts(c) for c in out["knowledge_candidates"])
 

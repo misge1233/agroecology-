@@ -41,7 +41,7 @@
 
   --accent: #2e7fb8;
   --accent-fg: #ffffff;
-  --accent-text: #2b77ad;
+  --accent-text: #286fa3; /* U6: 5.0:1 on surface-2 #F3F6F2 (was #2B77AD, 4.43:1 there) */
   --accent-soft: #e4eff8;
 
   --success: #2e8b57;

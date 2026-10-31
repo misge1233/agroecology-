@@ -34,6 +34,8 @@ export interface Metadata {
   rag_ready?: boolean;
   /** True when the knowledge graph is built — gates the evidence-base line. */
   graph_ready?: boolean;
+  /** Server voice is configured (U6); actual model access comes from GET /speech/status. */
+  speech_ready?: boolean;
   /** Languages the API answers in (U1, additive). */
   languages?: string[];
   /** Evidence-base counts for the trust strip (U1, additive). */

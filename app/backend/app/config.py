@@ -63,6 +63,19 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("OPENAI_TIMEOUT_SECONDS"),
     )
 
+    # Chat voice (U6): OpenAI audio models; the key is OPENAI_API_KEY above.
+    speech_stt_model: str = Field(default="gpt-4o-mini-transcribe", validation_alias=AliasChoices("SPEECH_STT_MODEL"))
+    speech_tts_model: str = Field(default="gpt-4o-mini-tts", validation_alias=AliasChoices("SPEECH_TTS_MODEL"))
+    speech_tts_voice: str = Field(default="alloy", validation_alias=AliasChoices("SPEECH_TTS_VOICE"))
+    speech_max_upload_mb: int = Field(default=10, validation_alias=AliasChoices("SPEECH_MAX_UPLOAD_MB"))
+    # Local MMS voice for Amharic / Afaan Oromoo (needs requirements-voice.txt).
+    speech_local_enabled: bool = Field(default=True, validation_alias=AliasChoices("SPEECH_LOCAL_ENABLED"))
+    speech_local_languages: str = Field(default="am,om", validation_alias=AliasChoices("SPEECH_LOCAL_LANGUAGES"))
+    # The shared recognizer is ~3.9 GB; set false to keep local voice output only.
+    speech_local_asr: bool = Field(default=True, validation_alias=AliasChoices("SPEECH_LOCAL_ASR"))
+    # Load the local models in a background thread at startup (first request is then fast).
+    speech_local_preload: bool = Field(default=True, validation_alias=AliasChoices("SPEECH_LOCAL_PRELOAD"))
+
     # CORS — comma-separated origins
     allowed_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 

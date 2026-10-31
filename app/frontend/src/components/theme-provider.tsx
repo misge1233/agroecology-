@@ -2,14 +2,9 @@
 
 import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
 
-type Theme = "light" | "dark";
-const STORAGE_KEY = "agro-theme";
+import { THEME_STORAGE_KEY as STORAGE_KEY } from "@/lib/theme-script";
 
-/**
- * Inline script for <head>: applies the stored/preferred theme class BEFORE
- * first paint so there is no flash. Kept here next to the store that reads it.
- */
-export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem("${STORAGE_KEY}");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
+type Theme = "light" | "dark";
 
 // External store (F-1): the DOM class is the source of truth; React reads it
 // with useSyncExternalStore instead of a setState-in-effect.

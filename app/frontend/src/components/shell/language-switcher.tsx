@@ -3,8 +3,9 @@
 import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { getPathname, usePathname } from "@/i18n/navigation";
 import { LOCALES, LOCALE_NAMES, type Locale } from "@/i18n/routing";
+import { hardNavigate } from "@/lib/hard-navigate";
 import {
   Select,
   SelectContent,
@@ -13,18 +14,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-/** Switches /[locale] while preserving the current route AND query string. */
+/**
+ * Switches /[locale] while preserving the current route AND query string.
+ * A full navigation (U6), not a client transition: see hard-navigate.ts.
+ */
 export function LanguageSwitcher({ className }: { className?: string }) {
   const t = useTranslations("nav.language");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
-  const router = useRouter();
   const search = useSearchParams();
 
   function change(next: string) {
     if (next === locale) return;
     const query = search.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { locale: next as Locale });
+    const path = getPathname({ href: pathname, locale: next as Locale });
+    hardNavigate(query ? `${path}?${query}` : path);
   }
 
   return (

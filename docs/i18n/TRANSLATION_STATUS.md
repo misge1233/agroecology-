@@ -15,7 +15,7 @@ Statuses: `machine-draft` (needs native review) · `reviewed` (signed off) ·
 Since U2 the chat quick-reply sentences are translated too (the backend reads
 the structured hint behind a chip and the translated sentence itself).
 
-**Totals (am + om cells):** 1178 machine-draft · 0 reviewed · 0 changed-since-review — 589 keys (114 glossary, 387 UI, 88 backend).
+**Totals (am + om cells):** 1230 machine-draft · 0 reviewed · 0 changed-since-review — 615 keys (114 glossary, 413 UI, 88 backend).
 
 | source | key | am | om |
 |---|---|---|---|
@@ -169,6 +169,7 @@ the structured hint behind a chip and the translated sentence itself).
 | `messages` | `footer.explore` | machine-draft | machine-draft |
 | `messages` | `footer.resources` | machine-draft | machine-draft |
 | `messages` | `footer.rights` | machine-draft | machine-draft |
+| `messages` | `footer.contact` | machine-draft | machine-draft |
 | `messages` | `status.apiUnreachable` | machine-draft | machine-draft |
 | `messages` | `status.apiStarting` | machine-draft | machine-draft |
 | `messages` | `status.checking` | machine-draft | machine-draft |
@@ -484,6 +485,28 @@ the structured hint behind a chip and the translated sentence itself).
 | `messages` | `chat.contextTitle` | machine-draft | machine-draft |
 | `messages` | `chat.advisory.hybrid` | machine-draft | machine-draft |
 | `messages` | `chat.advisory.knowledgeLed` | machine-draft | machine-draft |
+| `messages` | `chat.voice.mic` | machine-draft | machine-draft |
+| `messages` | `chat.voice.stop` | machine-draft | machine-draft |
+| `messages` | `chat.voice.cancel` | machine-draft | machine-draft |
+| `messages` | `chat.voice.listening` | machine-draft | machine-draft |
+| `messages` | `chat.voice.transcribing` | machine-draft | machine-draft |
+| `messages` | `chat.voice.listen` | machine-draft | machine-draft |
+| `messages` | `chat.voice.stopAudio` | machine-draft | machine-draft |
+| `messages` | `chat.voice.preparing` | machine-draft | machine-draft |
+| `messages` | `chat.voice.autoReadOn` | machine-draft | machine-draft |
+| `messages` | `chat.voice.autoReadOff` | machine-draft | machine-draft |
+| `messages` | `chat.voice.errors.denied` | machine-draft | machine-draft |
+| `messages` | `chat.voice.errors.noSpeech` | machine-draft | machine-draft |
+| `messages` | `chat.voice.errors.unsupportedLanguage` | machine-draft | machine-draft |
+| `messages` | `chat.voice.errors.failed` | machine-draft | machine-draft |
+| `messages` | `chat.voice.errors.ttsFailed` | machine-draft | machine-draft |
+| `messages` | `chat.voice.autoSend` | machine-draft | machine-draft |
+| `messages` | `chat.footnote` | machine-draft | machine-draft |
+| `messages` | `chat.evidence.title` | machine-draft | machine-draft |
+| `messages` | `chat.evidence.observations` | machine-draft | machine-draft |
+| `messages` | `chat.evidence.alsoDocumented` | machine-draft | machine-draft |
+| `messages` | `chat.copy` | machine-draft | machine-draft |
+| `messages` | `chat.copied` | machine-draft | machine-draft |
 | `messages` | `about.title` | machine-draft | machine-draft |
 | `messages` | `about.lead` | machine-draft | machine-draft |
 | `messages` | `about.what.title` | machine-draft | machine-draft |
@@ -498,11 +521,14 @@ the structured hint behind a chip and the translated sentence itself).
 | `messages` | `about.sources.geo` | machine-draft | machine-draft |
 | `messages` | `about.sources.guidance` | machine-draft | machine-draft |
 | `messages` | `about.sources.practice` | machine-draft | machine-draft |
-| `messages` | `about.authors.title` | machine-draft | machine-draft |
-| `messages` | `about.authors.body` | machine-draft | machine-draft |
-| `messages` | `about.licence.title` | machine-draft | machine-draft |
-| `messages` | `about.licence.body` | machine-draft | machine-draft |
+| `messages` | `about.sources.names.evidence` | machine-draft | machine-draft |
+| `messages` | `about.sources.names.geo` | machine-draft | machine-draft |
+| `messages` | `about.sources.names.guidance` | machine-draft | machine-draft |
+| `messages` | `about.sources.names.practice` | machine-draft | machine-draft |
 | `messages` | `about.cta` | machine-draft | machine-draft |
+| `messages` | `about.contact.title` | machine-draft | machine-draft |
+| `messages` | `about.contact.body` | machine-draft | machine-draft |
+| `messages` | `about.contact.cta` | machine-draft | machine-draft |
 | `messages` | `errors.title` | machine-draft | machine-draft |
 | `messages` | `errors.body` | machine-draft | machine-draft |
 | `messages` | `errors.retry` | machine-draft | machine-draft |

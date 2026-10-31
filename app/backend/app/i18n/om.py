@@ -8,17 +8,17 @@ from __future__ import annotations
 STRINGS: dict[str, str] = {
     "prompt.reply_in": "Reply in Afaan Oromoo.",
     "social.with_prior": (
-        "Homaa miti — gargaaruu isaatti gammadeera. Maaliif akka ta'e ykn akkamitti akka "
+        "Homaa miti; gargaaruu isaatti gammadeera. Maaliif akka ta'e ykn akkamitti akka "
         "hojiirra oolchitan beekuuf, ykn bakka, midhaan ykn kaayyoo biraa yaaluuf yeroo "
         "kamiyyuu gaafadhaa."
     ),
     "social.no_prior": (
-        "Homaa miti. Yeroo qophooftan bakka kaartaa, naannoo rakkoo fi kaayyoo qoodaa; "
-        "gochaalee mijatoo nan gorsa."
+        "Homaa miti. Yeroo qophooftan qonni keessan eessa akka jiru, rakkoo fi kaayyoo keessan "
+        "natti himaa; gochaalee mijatoo nan gorsa."
     ),
     "error.rate_limit": (
         "Tajaajilli barreeffama AI yeroo ammaa daangaa itti fayyadamaa gaheera. Maaloo "
-        "daqiiqaa muraasa eegaatii irra deebi'aa yaalaa, ykn gorsa hatattamaatiif foormii "
+        "daqiiqaa muraasa eegaatii irra deebi'aa yaalaa, ykn gorsa hatattamaatiif fuula Gorsaa "
         "fayyadamaa."
     ),
     "error.generic": (
@@ -29,8 +29,8 @@ STRINGS: dict[str, str] = {
     "clarify.all_missing": (
         "Gochaalee agro-ekoloojii ragaa irratti hundaa'an gorsuuf wantoota sadii beekuun "
         "na barbaachisa: **rakkoo** keessan (fkn to'annoo dhiqama biyyee), **kaayyoo** "
-        "keessan (fkn dhiqama biyyee hir'isuu), fi **bakka** keessan (mallattoo kaartaa, "
-        "koordineetii, ykn maqaa bakkaa Itoophiyaa keessaa)."
+        "keessan (fkn dhiqama biyyee hir'isuu), fi **bakka** keessan (maqaa magaalaa ykn "
+        "gandaa Itoophiyaa keessaa dhihoo jiru, ykn koordineetii)."
     ),
     "clarify.understood_prefix": "Hubadheera: ",
     "clarify.understood_join": ", ",
@@ -39,11 +39,11 @@ STRINGS: dict[str, str] = {
     "clarify.challenge": "rakkoo **{challenge}**",
     "clarify.objective": "kaayyoo **{objective}**",
     "clarify.ask_challenge": (
-        "**rakkoo** kamtu caalaa walsima — oomisha midhaanii, horii, gabbina biyyee, "
+        "**rakkoo** kamtu caalaa walsima: oomisha midhaanii, horii, gabbina biyyee, "
         "dhiqama fi bishaan, ykn agroo-forestrii"
     ),
     "clarify.ask_objective_erosion": (
-        "**kaayyoo** keessan — dhiqama biyyee hir'isuu, yaa'insa bishaanii hir'isuu, ykn "
+        "**kaayyoo** keessan: dhiqama biyyee hir'isuu, yaa'insa bishaanii hir'isuu, ykn "
         "bu'a qabeessummaa itti fayyadama bishaanii fooyyessuu"
     ),
     "clarify.ask_objective": (
@@ -51,8 +51,8 @@ STRINGS: dict[str, str] = {
         "orgaanikii biyyee fooyyessuu)"
     ),
     "clarify.ask_location": (
-        "**bakka** keessan — kaartaa irratti mallattoo kaa'aa, laatitiyuudii/longitiyuudii "
-        "qoodaa, ykn maqaa bakkaa Itoophiyaa keessaa himaa"
+        "**bakka** keessan: maqaa magaalaa ykn gandaa Itoophiyaa keessaa dhihoo jiru, "
+        "ykn koordineetii (laatitiyuudii, longitiyuudii)"
     ),
     "clarify.one": "Gochaalee ragaa dirree irraa sadarkeessuuf, maaloo {ask} qoodaa.",
     "clarify.two": "Maaloo {a}, fi {b} qoodaa.",
@@ -75,7 +75,7 @@ STRINGS: dict[str, str] = {
     "summary.others": " Filannoowwan biroo cimoo: {others}.",
     "summary.others_join": ", ",
     "summary.low_confidence": (
-        " Ragaan haala kanaaf jiru murtaa'aa dha — kana akka qabxii jalqabaatti fudhadhaa."
+        " Ragaan haala kanaaf jiru murtaa'aa dha; kana akka qabxii jalqabaatti fudhadhaa."
     ),
     "summary.default_direction": "fooyyessuuf",
     "summary.default_indicator": "kaayyoo keessan",
@@ -139,8 +139,8 @@ STRINGS: dict[str, str] = {
     "protocol.objective_note": "Kaayyoo: {objective}.",
     "clarify.use_advisor": (
         "Sarvarii kana irratti barreeffama bilisaa Afaan Ingilizii qofaan dubbisuu nan danda'a "
-        "(tajaajilli barreeffama AI hin qindoofne). Filannoo armaan gadii fayyadamaa, yookiin "
-        "Gorsaa banaa — achitti tarkaanfiin hundi afaan keessaniin."
+        "(tajaajilli barreeffama AI hin qindoofne). Maaloo Afaan Ingiliziin barreessaa, yookiin "
+        "Gorsaa banaa; achitti tarkaanfiin hundi afaan keessaniin."
     ),
     "indicator.yield": "oomisha",
     # UI objective labels (mirror src/i18n/glossary.ts INDICATORS; read back from typed chips)
@@ -170,14 +170,14 @@ STRINGS: dict[str, str] = {
     "mode.reason.no_candidates": "Gaaffii kanaaf gochi galmaa'e wabii qabu hin argamne.",
     "mode.hybrid_note": (
         " Ragaan yaalii dirree gaaffii kanaaf qal'aa dha; kanaaf {practices_word} galmaa'an {n} sanadoota qajeelfamaa "
-        "fi galmeewwan gochaa irraa maddoota waliin cinaatti {is_are} — lakkoofsa bu'aa hin qaban."
+        "fi galmeewwan gochaa irraa maddoota waliin cinaatti {is_are}; lakkoofsa bu'aa hin qaban."
     ),
     "mode.knowledge_led.lead": (
         "Naannoo keessanitti **{challenge}** kaayyoo **{objective}** waliin ragaan yaalii dirree hin jiru; kanaaf "
         "gochaalee sadarkeessuu yookiin bu'aa tilmaamuu hin danda'u. Gochaaleen galmaa'an kunneen sanadoota qajeelfamaa "
         "fi galmeewwan gochaa haalawwan walfakkaataniif qophaa'an irraa dhufan, maddoota isaanii waliin, lakkoofsa bu'aa malee:"
     ),
-    "mode.knowledge_led.item": "- **{label}** — {rationale}",
+    "mode.knowledge_led.item": "- **{label}**: {rationale}",
     "mode.knowledge_led.none": (
         "Naannoo keessanitti **{challenge}** kaayyoo **{objective}** waliin ragaan yaalii dirree hin jiru, akkasumas "
         "gochi galmaa'e wabii qabu hin argamne. Rakkoo kanaaf kaayyoo biraa yookiin bakka dhihoo yaalaa."

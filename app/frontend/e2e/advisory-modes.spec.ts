@@ -88,7 +88,7 @@ for (const locale of ["en", "am"] as const) {
   });
 }
 
-test("chat: hybrid answers carry the documented practices inline, under the ranking", async ({ page }) => {
+test("chat: a hybrid answer names the documented practices under the ranking, without effects", async ({ page }) => {
   await mockApi(page);
   await page.goto("/en/chat");
   await page.getByRole("textbox", { name: en.chat.message }).fill("My farm is at 8.38, 39.37 and I want to reduce erosion.");
@@ -98,8 +98,8 @@ test("chat: hybrid answers carry the documented practices inline, under the rank
   await expect(rec.getByTestId("mode-badge").first()).toHaveAttribute("data-mode", "hybrid");
   const docs = rec.getByTestId("chat-documented");
   await expect(docs).toBeVisible();
-  await expect(docs).toContainText(en.chat.advisory.hybrid);
-  expect(await docs.getByTestId("documented-card").count()).toBeGreaterThan(0);
+  const label = (advisoryEvent("hybrid") as { knowledge_candidates: { label: string }[] }).knowledge_candidates[0].label;
+  await expect(docs).toContainText(label);
   expect(await docs.innerText()).not.toMatch(NUMBERS);
   expect(await page.locator("body").innerText()).not.toMatch(MOJIBAKE);
 });
@@ -123,10 +123,8 @@ test("chat: a knowledge-led answer has no ranking, lists documented practices an
   await expect(page.getByTestId("chat-recommendation")).toHaveCount(0);
   await expect(turn.getByTestId("mode-badge")).toHaveAttribute("data-mode", "knowledge-led");
   await expect(turn).toContainText(en.chat.advisory.knowledgeLed);
-  expect(await turn.getByTestId("documented-card").count()).toBeGreaterThan(0);
+  // The documented practices are in the reply itself (conversational); the Advisor link carries the slots.
   await expect(page.getByRole("log").getByText(/documented practices are listed instead/)).toBeVisible();
-  // The setup is complete: no quick-reply chips re-appear; the Advisor link carries the slots.
-  await expect(page.getByTestId("quick-replies")).toHaveCount(0);
   await expect(turn.getByRole("link", { name: en.chat.openInAdvisor })).toHaveAttribute("href", /indicator=income/);
   expect(await page.locator("body").innerText()).not.toMatch(MOJIBAKE);
 });

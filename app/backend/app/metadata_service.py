@@ -12,7 +12,7 @@ from typing import Any
 
 from app.config import get_settings
 from app import i18n
-from app.services import evidence_service, explain_service
+from app.services import evidence_service, explain_service, speech_service
 from app.services import recommender_service as svc
 
 logger = logging.getLogger(__name__)
@@ -91,6 +91,9 @@ def build_metadata() -> dict[str, Any]:
         # True when the knowledge graph is built — gates the evidence-base
         # line in the UI's Evidence panel.
         "graph_ready": explain_service.graph_is_ready(),
+        # True when server-side voice (POST /speech/*) is configured (U6).
+        "speech_ready": speech_service.is_ready(get_settings())
+        or bool(speech_service.local_languages(get_settings())),
         # UI languages the API answers in (U1).
         "languages": list(i18n.LANGUAGES),
         # Size of the evidence base (counts only) for the home trust strip (U1).

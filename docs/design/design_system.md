@@ -18,7 +18,7 @@ Binding tokens for the production UI. Implemented as CSS variables in
 | `forest-50…950` | fixed | fixed | text, scrims and buttons over photography and the CTA band only (U3) |
 | `primary` | `#1E6B46` (hover `#175537`) | `#4CAF7A` | actions, high confidence, evidence tier |
 | `secondary` (soil / ochre) | `#8C5A2B` | `#C9915A` | practice-record tier (P9) |
-| `accent` (sky / water) | `#2E7FB8` | `#6FB3E6` | guidance tier, links |
+| `accent` (sky / water) | `#2E7FB8` | `#6FB3E6` | guidance tier, links (text token `accent-text` `#286FA3` since U6: 5.0:1 on `surface-2`) |
 | `success` | `#2E8B57` | `#2E8B57` | confirmations |
 | `warning` | `#C98A1E` | `#C98A1E` | medium confidence |
 | `danger` | `#B23A3A` | `#B23A3A` | **system errors only** — never for low confidence |

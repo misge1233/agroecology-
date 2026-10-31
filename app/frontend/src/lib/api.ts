@@ -190,3 +190,49 @@ export async function fetchGeocode(q: string, signal?: AbortSignal): Promise<Geo
 }
 
 export { API_BASE };
+
+// ------------------------------------------------------------------ voice (U6)
+/** Per direction and language: can the server do it (local MMS voice or OpenAI audio)? */
+export interface SpeechStatus {
+  stt: Partial<Record<ApiLanguage, boolean>>;
+  tts: Partial<Record<ApiLanguage, boolean>>;
+}
+
+const NO_SERVER_SPEECH: SpeechStatus = { stt: {}, tts: {} };
+
+export async function fetchSpeechStatus(): Promise<SpeechStatus> {
+  try {
+    const res = await fetch(`${API_BASE}/speech/status`, { cache: "no-store" });
+    if (!res.ok) return NO_SERVER_SPEECH;
+    const body = (await res.json()) as SpeechStatus;
+    // An older backend answered {stt: bool, tts: bool}: treat that as "no per-language info".
+    return typeof body.stt === "object" && typeof body.tts === "object" ? body : NO_SERVER_SPEECH;
+  } catch {
+    return NO_SERVER_SPEECH;
+  }
+}
+
+/** Speech-to-text: the recording is the raw request body. */
+export async function transcribeAudio(audio: Blob, language: ApiLanguage, signal?: AbortSignal): Promise<string> {
+  const res = await fetch(`${API_BASE}/speech/transcribe?language=${language}`, {
+    method: "POST",
+    headers: { "Content-Type": audio.type || "audio/webm" },
+    body: audio,
+    signal,
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  const body = (await res.json()) as { text: string };
+  return body.text;
+}
+
+/** Text-to-speech: returns an MP3 blob of the answer read aloud. */
+export async function synthesizeSpeech(text: string, language: ApiLanguage, signal?: AbortSignal): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/speech/synthesize`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, language }),
+    signal,
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.blob();
+}

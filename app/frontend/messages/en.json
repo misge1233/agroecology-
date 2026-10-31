@@ -43,7 +43,8 @@
     "licence": "Licence and data",
     "explore": "Explore",
     "resources": "Resources",
-    "rights": "© {year} AgroAdvisor-ET"
+    "rights": "© {year} AgroAdvisor-ET",
+    "contact": "Contact"
   },
   "status": {
     "apiUnreachable": "The advisory service is unreachable. Recommendations are unavailable until it returns.",
@@ -476,7 +477,35 @@
     "advisory": {
       "hybrid": "Thin field-trial evidence: documented practices are listed below the ranking.",
       "knowledgeLed": "No field-trial evidence for this request. Documented practices only."
-    }
+    },
+    "voice": {
+      "mic": "Speak your question",
+      "stop": "Done speaking",
+      "cancel": "Cancel recording",
+      "listening": "Listening…",
+      "transcribing": "Turning your voice into text…",
+      "listen": "Listen",
+      "stopAudio": "Stop",
+      "preparing": "Preparing audio…",
+      "autoReadOn": "Reading answers aloud",
+      "autoReadOff": "Read answers aloud",
+      "errors": {
+        "denied": "Microphone access is blocked. Allow it in your browser to speak your question.",
+        "noSpeech": "Nothing was heard. Please try again, a little closer to the microphone.",
+        "unsupportedLanguage": "Voice input in this language is not available in this browser. Please type your question.",
+        "failed": "Your voice could not be turned into text. Please try again or type your question.",
+        "ttsFailed": "This answer could not be read aloud."
+      },
+      "autoSend": "Pause when you finish and it sends itself."
+    },
+    "footnote": "Rankings come from field-trial evidence for your zone. Check local conditions before you act.",
+    "evidence": {
+      "title": "Evidence behind this answer",
+      "observations": "{n, plural, =0 {no field observations} one {# field observation} other {# field observations}}",
+      "alsoDocumented": "Also documented in guidance, without an effect estimate: {names}"
+    },
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "about": {
     "title": "About AgroAdvisor-ET",
@@ -497,17 +526,20 @@
       "evidence": "Evidence for Resilient Agriculture (ERA): the Ethiopia subset of paired field observations, with the Adimassu et al. climate-smart agriculture studies.",
       "geo": "WorldClim climate, SoilGrids soil, Copernicus elevation and slope, ESA WorldCover land cover, FAO growing-period data, and the Ethiopian agro-ecological belts.",
       "guidance": "GARDIAN / CGSpace implementation guidance (CGIAR knowledge products) for the how-to layer.",
-      "practice": "WOCAT Global SLM Database practice records (CC BY-NC-SA 4.0), for cross-country context in a later release."
+      "practice": "WOCAT Global SLM Database practice records (CC BY-NC-SA 4.0), for cross-country context in a later release.",
+      "names": {
+        "evidence": "Field-trial evidence",
+        "geo": "Geospatial layers",
+        "guidance": "Implementation guidance",
+        "practice": "Practice records"
+      }
     },
-    "authors": {
-      "title": "Authorship",
-      "body": "Misganu Tuse (Alliance of Bioversity International and CIAT, Addis Ababa) and Wuletawu Abera (Alliance of Bioversity International and CIAT, Accra)."
-    },
-    "licence": {
-      "title": "Licence",
-      "body": "Research software. Underlying datasets carry their own licences; WOCAT-derived data is CC BY-NC-SA 4.0. Translations into Amharic and Afaan Oromoo are machine drafts under native review."
-    },
-    "cta": "Open the Advisor"
+    "cta": "Open the Advisor",
+    "contact": {
+      "title": "Contact us",
+      "body": "Questions, feedback or ideas for collaboration? Write to the team behind AgroAdvisor-ET and we will get back to you.",
+      "cta": "Send an email"
+    }
   },
   "errors": {
     "title": "Something went wrong",

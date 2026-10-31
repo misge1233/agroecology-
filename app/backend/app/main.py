@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from app import __version__
 from app.config import get_settings
 from app.helpers import RequestIdMiddleware
-from app.routers import advise, chat, explain, geocode, health, metadata, models, recommend
+from app.routers import advise, chat, explain, geocode, health, metadata, models, recommend, speech
 from app.services.recommender_service import warmup
 
 logging.basicConfig(
@@ -28,7 +28,20 @@ async def lifespan(_app: FastAPI):
     logger.info("Warming up recommender engine (model + dataset + rasters)…")
     warmup()
     logger.info("Recommender engine ready.")
+    _preload_local_voice()
     yield
+
+
+def _preload_local_voice() -> None:
+    """Warm the optional local Amharic / Oromo voice in the background (U6)."""
+    from app.services import local_speech
+    from app.services.speech_service import local_languages
+
+    settings = get_settings()
+    languages = sorted(local_languages(settings))
+    if languages and settings.speech_local_preload:
+        logger.info("Preloading local voice for %s in the background", ",".join(languages))
+        local_speech.preload(languages, with_asr=settings.speech_local_asr)
 
 
 def create_app() -> FastAPI:
@@ -56,6 +69,7 @@ def create_app() -> FastAPI:
     application.include_router(explain.router)
     application.include_router(geocode.router)
     application.include_router(advise.router)
+    application.include_router(speech.router)
 
     @application.exception_handler(HTTPException)
     async def http_handler(_request: Request, exc: HTTPException):

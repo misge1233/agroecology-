@@ -43,7 +43,8 @@
     "licence": "Hayyama fi daataa",
     "explore": "Daawwadhu",
     "resources": "Qabeenyota",
-    "rights": "© {year} AgroAdvisor-ET"
+    "rights": "© {year} AgroAdvisor-ET",
+    "contact": "Quunnamtii"
   },
   "status": {
     "apiUnreachable": "Tajaajilli gorsaa hin argamu. Hanga deebi'utti gorsi hin jiru.",
@@ -476,7 +477,35 @@
     "advisory": {
       "hybrid": "Ragaa yaalii dirree qal'aa: gochaaleen galmaa'an sadarkaa jalatti tarreeffamaniiru.",
       "knowledgeLed": "Gaaffii kanaaf ragaan yaalii dirree hin jiru; gochaalee galmaa'an qofa."
-    }
+    },
+    "voice": {
+      "mic": "Gaaffii kee sagaleedhaan dubbadhu",
+      "stop": "Xumureera",
+      "cancel": "Waraabbii haqi",
+      "listening": "Dhaggeeffachaa jira…",
+      "transcribing": "Sagalee kee gara barreeffamaatti jijjiiraa jira…",
+      "listen": "Dhaggeeffadhu",
+      "stopAudio": "Dhaabi",
+      "preparing": "Sagalee qopheessaa jira…",
+      "autoReadOn": "Deebiiwwan sagaleedhaan dubbifamaa jiru",
+      "autoReadOff": "Deebiiwwan sagaleedhaan dubbisi",
+      "errors": {
+        "denied": "Seensi maaykiroofoonii dhorkameera. Gaaffii kee dubbachuuf barbaadduu keessatti hayyami.",
+        "noSpeech": "Homtuu hin dhagahamne. Maaykiroofoonitti dhihaachuun irra deebi'ii yaali.",
+        "unsupportedLanguage": "Galchi sagalee afaan kanaan barbaadduu kana irratti hin argamu. Maaloo gaaffii kee barreessi.",
+        "failed": "Sagaleen kee gara barreeffamaatti jijjiiramuu hin dandeenye. Irra deebi'ii yaali ykn gaaffii kee barreessi.",
+        "ttsFailed": "Deebiin kun sagaleedhaan dubbifamuu hin dandeenye."
+      },
+      "autoSend": "Yeroo xumurtu xiqqoo turi; ofumaan ni ergama."
+    },
+    "footnote": "Sadarkaaleen ragaa yaalii dirree godina keetiif irraa dhufan. Osoo hin hojiirra oolchin dura haala naannoo mirkaneessi.",
+    "evidence": {
+      "title": "Ragaa deebii kana duuba jiru",
+      "observations": "{n, plural, =0 {daawwannaa dirree hin jiru} one {daawwannaa dirree #} other {daawwannaawwan dirree #}}",
+      "alsoDocumented": "Qajeelfama keessatti kan galmaa'an, tilmaama bu'aa malee: {names}"
+    },
+    "copy": "Garagalchi",
+    "copied": "Garagalfameera"
   },
   "about": {
     "title": "Waa'ee AgroAdvisor-ET",
@@ -497,17 +526,20 @@
       "evidence": "Evidence for Resilient Agriculture (ERA); kutaa Itoophiyaa daawwannaawwan dirree cimdii, qorannoowwan qonna haala qilleensaatiin ogummaa qabu Adimaasuu fi kkf waliin.",
       "geo": "Haala qilleensaa WorldClim, biyyee SoilGrids, ol ka'iinsa fi gadee Copernicus, uwwisa lafaa ESA WorldCover, daataa yeroo guddinaa FAO, fi godinaalee agro-ekoloojii Itoophiyaa.",
       "guidance": "Qajeelfama hojiirra oolmaa GARDIAN / CGSpace (oomishaalee beekumsaa CGIAR) tarree akkamitti-gochuutiif.",
-      "practice": "Galmeewwan gochaa WOCAT Global SLM Database (CC BY-NC-SA 4.0), haala biyyoota gidduu gad-lakkiisa booda dhufuuf."
+      "practice": "Galmeewwan gochaa WOCAT Global SLM Database (CC BY-NC-SA 4.0), haala biyyoota gidduu gad-lakkiisa booda dhufuuf.",
+      "names": {
+        "evidence": "Ragaa yaalii dirree",
+        "geo": "Sadarkaalee jiyoo-ispaashaalii",
+        "guidance": "Qajeelfama hojiirra oolmaa",
+        "practice": "Galmeewwan gochaa"
+      }
     },
-    "authors": {
-      "title": "Barreessitoota",
-      "body": "Misganu Tuse (Alliance of Bioversity International fi CIAT, Finfinnee) fi Wuletawu Abera (Alliance of Bioversity International fi CIAT, Akraa)."
-    },
-    "licence": {
-      "title": "Hayyama",
-      "body": "Sooftiweerii qorannoo. Kuusaawwan daataa bu'uuraa hayyama mataa isaanii qabu; daataan WOCAT irraa argame CC BY-NC-SA 4.0 dha. Hiikkaawwan Afaan Amaaraa fi Afaan Oromoo wixinee maashinii dubbattoota afaanichaatiin gamaaggamamaa jiranidha."
-    },
-    "cta": "Gorsaa bani"
+    "cta": "Gorsaa bani",
+    "contact": {
+      "title": "Nu quunnamaa",
+      "body": "Gaaffii, yaada ykn yaada hojii waliinii qabduu? Garee AgroAdvisor-ET tiif barreessaa; deebii isiniif ni kennina.",
+      "cta": "Imeelii ergaa"
+    }
   },
   "errors": {
     "title": "Wanti tokko dogoggore",

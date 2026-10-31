@@ -77,7 +77,8 @@ function ObjectiveTiles({ meta, family, selected, onSelect }: ObjectiveProps) {
             </span>
             <span className="min-w-0 flex-1">
               <span className="block font-semibold text-text">{indicatorLabel(ind.key, locale)}</span>
-              <span className="mt-0.5 block text-sm text-muted">{up ? t("increase") : t("decrease")}</span>
+              {/* Visual cue only: the label already states the direction for screen readers. */}
+              <span aria-hidden className="mt-0.5 block text-sm text-muted">{up ? t("increase") : t("decrease")}</span>
             </span>
             {active ? <Check className="h-5 w-5 shrink-0 text-primary" aria-hidden /> : null}
           </button>
