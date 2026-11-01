@@ -158,6 +158,29 @@ _CROPS = (
     "rice",
 )
 
+#: Soil constraints named in the message (U9, A6) → the challenge that
+#: addresses them. Matched in English, Amharic and Afaan Oromoo.
+SOIL_CONSTRAINTS: dict[str, tuple[re.Pattern[str], str]] = {
+    "acidic_soil": (
+        re.compile(r"(?i)\bacid(?:ic|ity)?\b|\blow\s+ph\b|\bph\s+is\s+(?:low|too\s+low)\b|አሲዳማ|አሲድ|asiidii|asiidummaa"),
+        "Integrated soil fertility management",
+    ),
+    "waterlogging": (
+        re.compile(r"(?i)water[\s-]?logg|\bpoor\s+drainage\b|\bstanding\s+water\b|ውሃ\s*የሚያቁር|ረግረግ|bishaan\s+ni\s+kuufama|jiidhina\s+baay'ee"),
+        "Erosion control and water management",
+    ),
+    "salinity": (
+        re.compile(r"(?i)\bsalin(?:e|ity)\b|\bsalty\s+soil\b|ጨዋማ|soogiddaa"),
+        "Integrated soil fertility management",
+    ),
+}
+
+
+def constraints_from_text(text: str) -> list[str]:
+    """Soil constraints named in ``text`` (keys of ``SOIL_CONSTRAINTS``), in table order."""
+    return [key for key, (pattern, _) in SOIL_CONSTRAINTS.items() if pattern.search(text or "")]
+
+
 _FOLLOWUP_RE = re.compile(
     r"(?i)\b(why|explain|how\s+sure|evidence|confidence|detail|because|"
     r"how\s+(?:do|to|can)|implement|apply|steps|alternativ|other\s+option|"
@@ -188,6 +211,8 @@ class ChatSlots:
     source: str | None = None
     #: True when the Amharic/Afaan Oromoo LLM pass contributed (U2).
     llm_used: bool = False
+    #: Soil constraints the user named (U9, A6): "acidic_soil", "waterlogging", "salinity".
+    constraints: list[str] = field(default_factory=list)
 
     @property
     def is_complete(self) -> bool:
@@ -569,6 +594,16 @@ def extract_slots(
     # Structured values behind a chip beat anything parsed from text.
     apply_hint(slots, hint)
 
+    # A6: a named soil constraint decides the challenge unless the user named
+    # one explicitly ("my soil is acidic … improve yield" → soil fertility,
+    # not crop production, so pH control / ISFM practices are ranked).
+    slots.constraints = constraints_from_text(corpus)
+    if slots.constraints and slots.confidence.get("practice_family") not in ("high", "protocol"):
+        fam = SOIL_CONSTRAINTS[slots.constraints[0]][1]
+        if slots.indicator is None or is_supported_family_indicator(fam, slots.indicator):
+            slots.practice_family = fam
+            slots.confidence["practice_family"] = "constraint"
+
     if slots.practice_family is None:
         fam, fconf = _family_from_text(corpus)
         if fam:
@@ -765,3 +800,20 @@ def evidence_summary(recommendation: dict[str, Any], language: str = "en") -> st
         text += t(language, "summary.low_confidence")
     return text
 
+
+
+def context_intro(recommendation: dict[str, Any], language: str = "en") -> str:
+    """"For your **Dry Kolla** area (~750 mm rainfall, slope ~2%):" — the pin's own facts (U9 chat opener)."""
+    q = recommendation.get("query") or {}
+    ctx = (recommendation.get("details") or {}).get("context") or {}
+    raw_zone = ctx.get("aez_belt")
+    zone = term(language, "aez", raw_zone) if raw_zone else t(language, "summary.your_area")
+    facts: list[str] = []
+    for key, field in (("summary.fact_rain", "Rainfall"), ("summary.fact_slope", "slope"), ("summary.fact_clay", "soil_clay")):
+        value = ctx.get(field)
+        if isinstance(value, (int, float)):
+            facts.append(t(language, key, **{key.rsplit("_", 1)[1]: f"{value:.0f}"}))
+    fact_bit = f" ({t(language, 'summary.fact_join').join(facts)})" if facts else ""
+    crop = q.get("crop_type")
+    crop_bit = t(language, "summary.crop", crop=crop) if crop else ""
+    return t(language, "fusion.intro", zone=zone, facts=fact_bit, crop=crop_bit)

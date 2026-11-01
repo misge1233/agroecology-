@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PRACTICE_IMAGE_EXTENSIONS, practiceSlug } from "@/lib/practice-images";
+import { practiceImagePath } from "@/lib/practice-images";
 
 type PracticeImageProps = {
   practice: string;
@@ -27,7 +27,7 @@ const BLUR_DATA_URL =
     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="9"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3efe8"/><stop offset="1" stop-color="#f3eadf"/></linearGradient></defs><rect width="16" height="9" fill="url(#g)"/></svg>'
   );
 
-/** One of the 55 practice photos under /public/practices, via next/image. */
+/** A practice photo (own, alias or first component) under /public/practices, via next/image. */
 export function PracticeImage({
   practice,
   alt,
@@ -37,21 +37,11 @@ export function PracticeImage({
   priority,
   sizes = "(max-width: 768px) 100vw, 480px",
 }: PracticeImageProps) {
-  const slug = useMemo(() => practiceSlug(practice), [practice]);
-  const [extIdx, setExtIdx] = useState(0);
+  // Resolved against the list of photos on disk: a missing photo costs no request (U9, D12).
+  const path = useMemo(() => practiceImagePath(practice), [practice]);
   const [failed, setFailed] = useState(false);
 
-  const path = `/practices/${slug}.${PRACTICE_IMAGE_EXTENSIONS[extIdx]}`;
-
-  const onError = useCallback(() => {
-    if (extIdx < PRACTICE_IMAGE_EXTENSIONS.length - 1) {
-      setExtIdx((i) => i + 1);
-      return;
-    }
-    setFailed(true);
-  }, [extIdx]);
-
-  if (failed) {
+  if (failed || !path) {
     return (
       <div
         className={cn(
@@ -84,7 +74,7 @@ export function PracticeImage({
         loading={priority ? undefined : "lazy"}
         placeholder="blur"
         blurDataURL={BLUR_DATA_URL}
-        onError={onError}
+        onError={() => setFailed(true)}
       />
     </div>
   );

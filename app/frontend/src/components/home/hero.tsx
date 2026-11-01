@@ -3,9 +3,14 @@ import { ArrowRight, MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-
-/** Hero photo: terraced, grass-strip-stabilised highland fields (agronomic + biological SWC). */
-const HERO_IMAGE = "/practices/agronomic-biological-swcp.webp";
+/**
+ * Hero photo (owner-provided, 1 Nov 2026): an Ethiopian highland landscape at
+ * dawn: stone-bunded terraces with grass strips, a water-harvesting pond,
+ * maize and cereal fields, and a farming family with oxen. Static import, so
+ * Next knows its size (no layout shift) and paints a blurred preview at once.
+ * Source: public/practices/hero_image.png, optimised to WebP (1915×821).
+ */
+import heroImage from "../../../public/hero/agroecology-landscape.webp";
 
 export function HomeHero() {
   const t = useTranslations("home.hero");
@@ -13,17 +18,23 @@ export function HomeHero() {
     <section className="relative isolate overflow-hidden bg-forest-950">
       {/* Decorative: the headline carries the meaning. */}
       <Image
-        src={HERO_IMAGE}
+        src={heroImage}
         alt=""
         fill
         priority
+        placeholder="blur"
         sizes="100vw"
-        className="-z-20 object-cover object-[center_40%]"
+        quality={80}
+        // Phones keep the family and the terraces (right of the frame) in view;
+        // wide screens show the whole valley behind the headline.
+        className="-z-20 object-cover object-[78%_center] md:object-[65%_center] xl:object-center"
       />
-      {/* Scrim: solid behind the text column, clear on the right so the landscape reads. */}
+      {/* Scrim: dense behind the text column (the bright dawn sky sits there), clear
+          on the right so the terraces and the farmers read. Darker on phones, where
+          the text covers the whole frame. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-forest-950/95 via-forest-950/75 to-forest-950/25"
+        className="absolute inset-0 -z-10 bg-gradient-to-r from-forest-950/90 via-forest-950/75 to-forest-950/45 md:via-forest-950/60 md:to-forest-950/5"
       />
       <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-forest-950/60 to-transparent" />
 

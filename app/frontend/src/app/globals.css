@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /*
-  AgroAdvisor-ET design tokens — "Ethiopian highland" (U1).
+  AgroEcoAdvisor design tokens — "Ethiopian highland" (U1).
   Binding palette from the U1 brief, plus DERIVED text tokens where the
   brief's hue fails WCAG AA as text (measured in docs/design/design_system.md):
     light warning  #C98A1E on #F7F8F5 = 2.76:1 -> warning-text  #976816 (4.57:1)
@@ -14,57 +14,62 @@
   #4CAF7A takes DARK text (6.75:1) because white on it is only 2.72:1.
   Confidence semantics: high = primary, medium = warning, low = neutral grey
   labelled "thin evidence". Danger is for system errors only.
+
+  FORMAT (U9 B2): every colour token holds space-separated RGB CHANNELS
+  ("255 255 255"), hex kept as a trailing comment. Tailwind consumes them as
+  rgb(var(--x) / <alpha-value>) so opacity modifiers (bg-surface/90) work;
+  plain CSS/JS must write rgb(var(--x)), never bare var(--x).
 */
 :root {
   /* U3: clean white page, a faint green-grey band for alternating sections. */
-  --background: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #f3f6f2;
-  --text: #17241c;
-  --muted: #56655c;
-  --border: #e2e8e2;
+  --background: 255 255 255; /* #ffffff */
+  --surface: 255 255 255; /* #ffffff */
+  --surface-2: 243 246 242; /* #f3f6f2 */
+  --text: 23 36 28; /* #17241c */
+  --muted: 86 101 92; /* #56655c */
+  --border: 226 232 226; /* #e2e8e2 */
 
   /* Brand band (footer, CTA band): deep forest green with light text. */
-  --brand-band: #0d3b27;
-  --brand-band-fg: #f1f6f2;
-  --brand-band-muted: #b5cbbd;
+  --brand-band: 13 59 39; /* #0d3b27 */
+  --brand-band-fg: 241 246 242; /* #f1f6f2 */
+  --brand-band-muted: 181 203 189; /* #b5cbbd */
 
-  --primary: #1e6b46;
-  --primary-hover: #175537;
-  --primary-fg: #ffffff;
-  --primary-soft: #e3efe8;
+  --primary: 30 107 70; /* #1e6b46 */
+  --primary-hover: 23 85 55; /* #175537 */
+  --primary-fg: 255 255 255; /* #ffffff */
+  --primary-soft: 227 239 232; /* #e3efe8 */
 
-  --secondary: #8c5a2b;
-  --secondary-fg: #ffffff;
-  --secondary-text: #8c5a2b;
-  --secondary-soft: #f3eadf;
+  --secondary: 140 90 43; /* #8c5a2b */
+  --secondary-fg: 255 255 255; /* #ffffff */
+  --secondary-text: 140 90 43; /* #8c5a2b */
+  --secondary-soft: 243 234 223; /* #f3eadf */
 
-  --accent: #2e7fb8;
-  --accent-fg: #ffffff;
-  --accent-text: #286fa3; /* U6: 5.0:1 on surface-2 #F3F6F2 (was #2B77AD, 4.43:1 there) */
-  --accent-soft: #e4eff8;
+  --accent: 46 127 184; /* #2e7fb8 */
+  --accent-fg: 255 255 255; /* #ffffff */
+  --accent-text: 40 111 163; /* #286fa3 — U6: 5.0:1 on surface-2 #F3F6F2 (was #2B77AD, 4.43:1 there) */
+  --accent-soft: 228 239 248; /* #e4eff8 */
 
-  --success: #2e8b57;
-  --success-text: #2b8151;
-  --success-soft: #e3f1e8;
+  --success: 46 139 87; /* #2e8b57 */
+  --success-text: 43 129 81; /* #2b8151 */
+  --success-soft: 227 241 232; /* #e3f1e8 */
 
-  --warning: #c98a1e;
-  --warning-text: #976816;
-  --warning-soft: #f8efdc;
+  --warning: 201 138 30; /* #c98a1e */
+  --warning-text: 151 104 22; /* #976816 */
+  --warning-soft: 248 239 220; /* #f8efdc */
 
-  --danger: #b23a3a;
-  --danger-text: #b23a3a;
-  --danger-soft: #f6e4e4;
+  --danger: 178 58 58; /* #b23a3a */
+  --danger-text: 178 58 58; /* #b23a3a */
+  --danger-soft: 246 228 228; /* #f6e4e4 */
 
-  --ring: #1e6b46;
+  --ring: 30 107 70; /* #1e6b46 */
 
   /* 6-step categorical chart palette, CVD-checked (design_system.md §Chart) */
-  --chart-1: #3f2e1d;
-  --chart-2: #193c55;
-  --chart-3: #246345;
-  --chart-4: #169055;
-  --chart-5: #9c591a;
-  --chart-6: #2692de;
+  --chart-1: 63 46 29; /* #3f2e1d */
+  --chart-2: 25 60 85; /* #193c55 */
+  --chart-3: 36 99 69; /* #246345 */
+  --chart-4: 22 144 85; /* #169055 */
+  --chart-5: 156 89 26; /* #9c591a */
+  --chart-6: 38 146 222; /* #2692de */
 
   --shadow-1: 0 1px 2px rgb(28 42 34 / 0.06), 0 2px 8px rgb(28 42 34 / 0.06);
   --shadow-2: 0 4px 16px rgb(28 42 34 / 0.1), 0 12px 32px rgb(28 42 34 / 0.08);
@@ -73,52 +78,52 @@
 }
 
 .dark {
-  --background: #0f1613;
-  --surface: #162019;
-  --surface-2: #131c16;
-  --text: #e8eee9;
-  --muted: #9fb0a5;
-  --border: #26322a;
+  --background: 15 22 19; /* #0f1613 */
+  --surface: 22 32 25; /* #162019 */
+  --surface-2: 19 28 22; /* #131c16 */
+  --text: 232 238 233; /* #e8eee9 */
+  --muted: 159 176 165; /* #9fb0a5 */
+  --border: 38 50 42; /* #26322a */
 
-  --brand-band: #0a1410;
-  --brand-band-fg: #e8eee9;
-  --brand-band-muted: #9fb0a5;
+  --brand-band: 10 20 16; /* #0a1410 */
+  --brand-band-fg: 232 238 233; /* #e8eee9 */
+  --brand-band-muted: 159 176 165; /* #9fb0a5 */
 
-  --primary: #4caf7a;
-  --primary-hover: #5fbf8b;
-  --primary-fg: #0f1613;
-  --primary-soft: #1d3327;
+  --primary: 76 175 122; /* #4caf7a */
+  --primary-hover: 95 191 139; /* #5fbf8b */
+  --primary-fg: 15 22 19; /* #0f1613 */
+  --primary-soft: 29 51 39; /* #1d3327 */
 
-  --secondary: #c9915a;
-  --secondary-fg: #0f1613;
-  --secondary-text: #c9915a;
-  --secondary-soft: #33271a;
+  --secondary: 201 145 90; /* #c9915a */
+  --secondary-fg: 15 22 19; /* #0f1613 */
+  --secondary-text: 201 145 90; /* #c9915a */
+  --secondary-soft: 51 39 26; /* #33271a */
 
-  --accent: #6fb3e6;
-  --accent-fg: #0f1613;
-  --accent-text: #6fb3e6;
-  --accent-soft: #1a2b3a;
+  --accent: 111 179 230; /* #6fb3e6 */
+  --accent-fg: 15 22 19; /* #0f1613 */
+  --accent-text: 111 179 230; /* #6fb3e6 */
+  --accent-soft: 26 43 58; /* #1a2b3a */
 
-  --success: #2e8b57;
-  --success-text: #5fbf8b;
-  --success-soft: #1d3327;
+  --success: 46 139 87; /* #2e8b57 */
+  --success-text: 95 191 139; /* #5fbf8b */
+  --success-soft: 29 51 39; /* #1d3327 */
 
-  --warning: #c98a1e;
-  --warning-text: #c98a1e;
-  --warning-soft: #332a14;
+  --warning: 201 138 30; /* #c98a1e */
+  --warning-text: 201 138 30; /* #c98a1e */
+  --warning-soft: 51 42 20; /* #332a14 */
 
-  --danger: #b23a3a;
-  --danger-text: #c26363;
-  --danger-soft: #341c1c;
+  --danger: 178 58 58; /* #b23a3a */
+  --danger-text: 194 99 99; /* #c26363 */
+  --danger-soft: 52 28 28; /* #341c1c */
 
-  --ring: #4caf7a;
+  --ring: 76 175 122; /* #4caf7a */
 
-  --chart-1: #ae6f34;
-  --chart-2: #6695b6;
-  --chart-3: #4cd895;
-  --chart-4: #e39c5a;
-  --chart-5: #8cc6ee;
-  --chart-6: #c6edda;
+  --chart-1: 174 111 52; /* #ae6f34 */
+  --chart-2: 102 149 182; /* #6695b6 */
+  --chart-3: 76 216 149; /* #4cd895 */
+  --chart-4: 227 156 90; /* #e39c5a */
+  --chart-5: 140 198 238; /* #8cc6ee */
+  --chart-6: 198 237 218; /* #c6edda */
 
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.35);
   --shadow-2: 0 4px 16px rgb(0 0 0 / 0.45), 0 12px 32px rgb(0 0 0 / 0.4);
@@ -134,8 +139,8 @@ html.dark {
 }
 
 body {
-  color: var(--text);
-  background-color: var(--background);
+  color: rgb(var(--text));
+  background-color: rgb(var(--background));
   min-height: 100dvh;
   font-feature-settings: "tnum" 1; /* tabular numerals for every figure */
 }
@@ -158,18 +163,18 @@ h3,
 h4 {
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--text);
+  color: rgb(var(--text));
 }
 
 /* Focus ring: 2 px primary with offset, visible on every interactive element. */
 :focus-visible {
-  outline: 2px solid var(--ring);
+  outline: 2px solid rgb(var(--ring));
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  background: rgb(var(--primary) / 0.22);
 }
 
 /* Motion <= 200 ms everywhere; none at all when the user asks. */
@@ -187,18 +192,18 @@ h4 {
 /* Leaflet lives in its own CSS; make its controls match the tokens. */
 .leaflet-container {
   font-family: inherit;
-  background: var(--surface-2);
+  background: rgb(var(--surface-2));
 }
 
 .leaflet-bar a,
 .leaflet-control-attribution {
-  color: var(--text) !important;
-  background: var(--surface) !important;
-  border-color: var(--border) !important;
+  color: rgb(var(--text)) !important;
+  background: rgb(var(--surface)) !important;
+  border-color: rgb(var(--border)) !important;
 }
 
 .leaflet-control-attribution a {
-  color: var(--accent-text) !important;
+  color: rgb(var(--accent-text)) !important;
 }
 
 @layer components {
@@ -226,7 +231,7 @@ h4 {
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--primary);
+    color: rgb(var(--primary));
   }
 }
 
@@ -402,4 +407,31 @@ h4 {
   word-break: break-all;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 8.5pt;
+}
+
+/* U9 (D9): the chat route is exactly one viewport tall; only the conversation scrolls. */
+html.chat-route,
+html.chat-route body {
+  height: 100%;
+  overflow: hidden;
+}
+html.chat-route body {
+  height: 100dvh;
+}
+html.chat-route #main {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+html.chat-route .chat-view {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+/* The composer placeholder stays on one line (ellipsis) instead of wrapping. */
+.chat-composer::placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

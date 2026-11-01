@@ -1,0 +1,53 @@
+{
+  "n_advisories_compared": 1140,
+  "mean_top3_overlap": 0.717,
+  "top1_agreement": 0.532,
+  "physical_swc_soil_loss_in_top3": {
+    "model": "0/38",
+    "conservative": "13/38"
+  },
+  "most_often_entering_top3": [
+    [
+      "Mulch",
+      56
+    ],
+    [
+      "Organic Fertilizer",
+      46
+    ],
+    [
+      "Physical SWC measures",
+      41
+    ],
+    [
+      "organic amedements",
+      36
+    ],
+    [
+      "Inorganic Fertilizer",
+      36
+    ]
+  ],
+  "most_often_leaving_top3": [
+    [
+      "Organic Fertilizer-Water Harvesting",
+      92
+    ],
+    [
+      "In-situ water harvesting",
+      61
+    ],
+    [
+      "Reduced Tillage-Water Harvesting",
+      58
+    ],
+    [
+      "Inorganic Fertilizer-Water Harvesting",
+      51
+    ],
+    [
+      "Water Harvesting",
+      47
+    ]
+  ]
+}

@@ -14,6 +14,7 @@
  * (a Python test asserts the two component lists stay identical).
  */
 import type { Locale } from "./routing";
+import COMPONENT_NAMES from "./component-names.json";
 
 type Tri = Record<Locale, string>;
 
@@ -194,12 +195,12 @@ export const SOURCE_MODES: Record<SourceMode, Tri> = {
 
 export const SOURCE_MODES_TOOLTIP: Record<SourceMode, Tri> = {
   model: {
-    en: "Ranked by a model trained on paired field trials; every number comes from that model.",
-    am: "በተጣመሩ የመስክ ሙከራዎች በሰለጠነ ሞዴል ደረጃ የተሰጠው፤ እያንዳንዱ ቁጥር ከዚያ ሞዴል ነው።",
-    om: "Moodeela yaaliiwwan dirree cimdii irratti leenji'een sadarkeeffame; lakkoofsi hundi moodeela sana irraa dhufa.",
+    en: "Ranked by the field-trial model and published field studies; every number shows its source.",
+    am: "በመስክ ሙከራ ሞዴሉና በታተሙ የመስክ ጥናቶች ደረጃ የተሰጠው፤ እያንዳንዱ ቁጥር ምንጩን ያሳያል።",
+    om: "Moodela qorannoo dirree fi qorannoowwan dirree maxxanfamaniin sadarkeeffame; lakkoofsi hundi madda isaa agarsiisa.",
   },
   hybrid: {
-    en: "Field-trial evidence is thin here, so documented practices from similar contexts are shown alongside, clearly labelled and, never with invented numbers.",
+    en: "Field-trial evidence is thin here, so documented practices from similar contexts are shown alongside, clearly labelled, and never with invented numbers.",
     am: "እዚህ የመስክ ሙከራ ማስረጃ ቀጭን ነው፣ ስለዚህ ከተመሳሳይ አውዶች የተመዘገቡ ልማዶች ጎን ለጎን ይታያሉ፤ በግልጽ ተለይተው፣ ያለ ፈጠራ ቁጥር።",
     om: "Ragaan yaalii dirree asitti qal'aa dha, kanaaf gochaaleen galmaa'an haalawwan walfakkaatan irraa cinaatti agarsiifamu; ifatti mallatteeffamanii, lakkoofsa uumameen miti.",
   },
@@ -263,81 +264,9 @@ export const COMPONENT_ALIASES: Record<string, string> = {
   "overhead irrigation with mulching": "Overhead Irrigation with Mulching",
 };
 
-/** Canonical component → display name in the three languages. */
-export const COMPONENTS: Record<string, Tri> = {
-  "Agroforestry Fallow": { en: "Agroforestry fallow", am: "የአግሮ-ፎረስትሪ ጦም መሬት", om: "Lafa boqonnaa agroo-forestrii" },
-  "Agroforestry Pruning": { en: "Agroforestry pruning", am: "የአግሮ-ፎረስትሪ መግረዝ", om: "Muruu agroo-forestrii" },
-  "Agronomic/Biological SWC Practices": {
-    en: "Agronomic / biological soil & water conservation",
-    am: "አግሮኖሚያዊ / ባዮሎጂያዊ የአፈርና ውሃ ጥበቃ",
-    om: "Eegumsa biyyee fi bishaanii agronomii / baayoloojii",
-  },
-  Alleycropping: { en: "Alley cropping", am: "የመስመር ሰብል (አሊ ክሮፒንግ)", om: "Qonna daandii gidduu (alley cropping)" },
-  "Alternate Furrow Irrigation": { en: "Alternate-furrow irrigation", am: "ተለዋጭ የቦይ መስኖ", om: "Jallisii boo'oo wal-jijjiiraa" },
-  "Animal Feed Management": { en: "Animal feed management", am: "የእንስሳት መኖ አያያዝ", om: "Bulchiinsa nyaata horii" },
-  Biochar: { en: "Biochar", am: "ባዮቻር", om: "Baayoochaarii" },
-  "Biological SWC Practices": {
-    en: "Biological soil & water conservation",
-    am: "ባዮሎጂያዊ የአፈርና ውሃ ጥበቃ",
-    om: "Eegumsa biyyee fi bishaanii baayoloojii",
-  },
-  "Conservation Tillage": { en: "Conservation tillage", am: "ጥበቃዊ እርሻ", om: "Qotiinsa eegumsaa" },
-  "Crop Residue Incorporation": { en: "Crop residue incorporation", am: "የሰብል ተረፈ ምርት ማካተት", om: "Haftee midhaanii biyyee keessa galchuu" },
-  "Crop Rotation": { en: "Crop rotation", am: "የሰብል ፈረቃ", om: "Jijjiirraa midhaanii" },
-  "Deficit Irrigation": { en: "Deficit irrigation", am: "የተቀነሰ መስኖ", om: "Jallisii hir'ataa" },
-  "Drip Irrigation": { en: "Drip irrigation", am: "የጠብታ መስኖ", om: "Jallisii copha" },
-  "Drought Tolerant Crops": { en: "Drought-tolerant crops", am: "ድርቅን የሚቋቋሙ ሰብሎች", om: "Midhaan hongee dandamatu" },
-  Exclosure: { en: "Area exclosure", am: "ክልል ማድረግ (ከግጦሽ መከልከል)", om: "Lafa daangeffame (kutaa eegumsaa)" },
-  "Feed Addition": { en: "Feed addition", am: "መኖ መጨመር", om: "Nyaata horii dabaluu" },
-  "Feed Processing": { en: "Feed processing", am: "መኖ ማዘጋጀት", om: "Qophii nyaata horii" },
-  "Feed Substitution": { en: "Feed substitution", am: "መኖ መተካት", om: "Bakka buusuu nyaata horii" },
-  "Furrow Irrigation": { en: "Furrow irrigation", am: "የቦይ መስኖ", om: "Jallisii boo'oo" },
-  "Grazing Management": { en: "Grazing management", am: "የግጦሽ አያያዝ", om: "Bulchiinsa dheedaa" },
-  ISFM: {
-    en: "Integrated soil fertility management",
-    am: "የተቀናጀ የአፈር ለምነት አያያዝ",
-    om: "Bulchiinsa gabbina biyyee walitti hidhame",
-  },
-  IWM: {
-    en: "Integrated watershed management",
-    am: "የተቀናጀ የተፋሰስ አያያዝ",
-    om: "Bulchiinsa sulula bishaanii walitti hidhame",
-  },
-  "Improved Fallow": { en: "Improved fallow", am: "የተሻሻለ ጦም መሬት", om: "Lafa boqonnaa fooyya'e" },
-  "Improved Varieties": { en: "Improved varieties", am: "የተሻሻሉ ዝርያዎች", om: "Sanyiiwwan fooyya'an" },
-  "In-situ Water Harvesting": { en: "In-field water harvesting", am: "በማሳ ውስጥ ውሃ ማሰባሰብ", om: "Bishaan dirree keessatti walitti qabuu" },
-  "Inorganic Fertilizer": { en: "Inorganic fertilizer", am: "ኬሚካል ማዳበሪያ", om: "Xaa'oo keemikaalaa" },
-  "Inorganic Fertilizer Reduction": { en: "Reduced inorganic fertilizer", am: "የተቀነሰ ኬሚካል ማዳበሪያ", om: "Xaa'oo keemikaalaa hir'ifame" },
-  Intercropping: { en: "Intercropping", am: "ድብልቅ ሰብል", om: "Qonna makaa" },
-  "Intercropping or Rotation": { en: "Intercropping or rotation", am: "ድብልቅ ሰብል ወይም ፈረቃ", om: "Qonna makaa ykn jijjiirraa" },
-  Mulch: { en: "Mulch", am: "ገለባ ሽፋን (ማልች)", om: "Haftee uwwisuu (malchii)" },
-  "Multistrata Agroforestry": { en: "Multi-storey agroforestry", am: "ባለ ብዙ ደረጃ አግሮ-ፎረስትሪ", om: "Agroo-forestrii sadarkaa baay'ee" },
-  "Organic Amendments": { en: "Organic amendments", am: "ኦርጋኒክ ማሻሻያዎች", om: "Fooyya'iinsa orgaanikii" },
-  "Organic Fertilizer": { en: "Organic fertilizer", am: "ኦርጋኒክ ማዳበሪያ", om: "Xaa'oo orgaanikii" },
-  "Other Agroforestry": { en: "Other agroforestry", am: "ሌላ አግሮ-ፎረስትሪ", om: "Agroo-forestrii biroo" },
-  "Overhead Irrigation with Mulching": {
-    en: "Overhead irrigation with mulching",
-    am: "ከላይ የሚረጭ መስኖ ከገለባ ሽፋን ጋር",
-    om: "Jallisii gubbaa haftee uwwisuu waliin",
-  },
-  Parklands: { en: "Parkland trees", am: "የፓርክላንድ ዛፎች", om: "Mukkeen paarkilaandii" },
-  "Pasture Management": { en: "Pasture management", am: "የግጦሽ መሬት አያያዝ", om: "Bulchiinsa lafa margaa" },
-  "Physical + Biological SWC Practices": {
-    en: "Physical + biological soil & water conservation",
-    am: "አካላዊ + ባዮሎጂያዊ የአፈርና ውሃ ጥበቃ",
-    om: "Eegumsa biyyee fi bishaanii fiizikaalaa + baayoloojii",
-  },
-  "Physical SWC Measures": {
-    en: "Physical soil & water conservation",
-    am: "አካላዊ የአፈርና ውሃ ጥበቃ",
-    om: "Eegumsa biyyee fi bishaanii fiizikaalaa",
-  },
-  "Reduced Tillage": { en: "Reduced tillage", am: "የተቀነሰ እርሻ", om: "Qotiinsa hir'ataa" },
-  "Supplemental Irrigation": { en: "Supplemental irrigation", am: "ተጨማሪ መስኖ", om: "Jallisii dabalataa" },
-  "Water Harvesting": { en: "Water harvesting", am: "ውሃ ማሰባሰብ", om: "Bishaan walitti qabuu" },
-  Weeding: { en: "Weeding", am: "አረም ማረም", om: "Aramaa" },
-  "pH Control": { en: "Soil pH control (liming)", am: "የአፈር ፒኤች ቁጥጥር (ኖራ)", om: "To'annoo pH biyyee (noora)" },
-};
+/** Canonical component → display name in the three languages. Lives in
+ * component-names.json so the backend (chat answers) uses the very same names. */
+export const COMPONENTS: Record<string, Tri> = COMPONENT_NAMES;
 
 const JOINER: Tri = { en: " + ", am: " + ", om: " + " };
 

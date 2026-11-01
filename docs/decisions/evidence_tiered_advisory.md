@@ -1,5 +1,7 @@
 # Decision record — Evidence-tiered advisory (Phase P9)
 
+> **Superseded in part (1 Nov 2026):** the owner adopted **evidence fusion** — `docs/decisions/evidence_fusion.md`. The modes below remain an internal, backward-compatible signal; "the model owns every number" and "documented practices carry no effect numbers" no longer hold: study-level effects (graph `REPORTS_EFFECT`) and verbatim passage figures are allowed with provenance, and a context-matched study can lead a recommendation.
+
 **Status:** implemented 28 Oct 2026 (Phase P9). **Owner of the numbers:** the ML model
 (`app/backend/recommend.py`), unchanged. **Doctrine:** CLAUDE.md §1–2 as amended in P9 —
 knowledge sources may *propose* practices with provenance, never *quantify* them.

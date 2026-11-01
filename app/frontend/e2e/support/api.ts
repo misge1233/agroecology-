@@ -45,8 +45,9 @@ export function adviseFixtureFor(indicator: string | undefined): AdviseFixtureNa
 /** The chat `advisory` SSE event derived from a captured /advise answer. */
 export function advisoryEvent(name: AdviseFixtureName): Record<string, unknown> {
   const adv = fixture<Record<string, unknown> & { model: { query: Record<string, unknown> } | null }>(`advise-${name}`);
-  const { mode, reasons, knowledge_candidates, evidence_sufficiency, context, model } = adv;
-  const rest = { mode, reasons, knowledge_candidates, evidence_sufficiency, context };
+  const { mode, reasons, knowledge_candidates, evidence_sufficiency, context, model, practices } = adv;
+  // U9: the chat event carries the evidence bundles of the shown practices.
+  const rest = { mode, reasons, knowledge_candidates, evidence_sufficiency, context, practices: practices ?? [] };
   const query = model?.query ?? {
     lat: 8.38,
     lon: 39.37,
@@ -83,7 +84,8 @@ export function defaultChatEvents(): unknown[] {
   return [
     { type: "slots", data: fixture("chat-slots") },
     { type: "advisory", data: advisoryEvent("hybrid") },
-    { type: "recommendation", data: fixture("recommend") },
+    // The engine payload the backend sends with the advisory (same practices as its bundles).
+    { type: "recommendation", data: fixture<{ model: unknown }>("advise-hybrid").model },
     { type: "token", text: "For your **Dry Kolla** area, the evidence ranks " },
     { type: "token", text: "**Mulch-Water Harvesting** to reduce soil loss." },
     { type: "done" },
@@ -121,6 +123,9 @@ export async function mockApi(page: Page, opts: MockOptions = {}) {
         return json(route, fixture("metadata"));
       case "/context":
         return json(route, fixture("context"));
+      case "/geocode/nearest":
+        // The demo pin (8.38, 39.37) is about 20 km from Adama: "Near Adama (8.38, 39.37)".
+        return json(route, { found: true, name: "Adama", distance_km: 19.6 });
       case "/geocode": {
         const q = (url.searchParams.get("q") || "").toLowerCase();
         return json(

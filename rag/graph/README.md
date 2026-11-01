@@ -1,4 +1,4 @@
-# `rag/graph` — the AgroAdvisor-ET knowledge graph
+# `rag/graph` — the AgroEcoAdvisor knowledge graph
 
 **Phase P6a — foundation.** A zero-ops knowledge graph (`networkx` +
 serialized node-link JSON, no new infrastructure) that joins three things

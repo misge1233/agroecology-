@@ -10,8 +10,19 @@ import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { NAV_ITEMS, isActive } from "./nav-items";
 
-/** Wordmark: leaf tile + product name. Shared by the header and footer. */
-export function BrandMark({ className, tileClassName }: { className?: string; tileClassName?: string }) {
+/**
+ * Wordmark: leaf tile + product name, optionally with the programme tagline
+ * as a second line (header, from md up). Shared by the header and footer.
+ */
+export function BrandMark({
+  className,
+  tileClassName,
+  withTagline = false,
+}: {
+  className?: string;
+  tileClassName?: string;
+  withTagline?: boolean;
+}) {
   const t = useTranslations("common");
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
@@ -23,7 +34,12 @@ export function BrandMark({ className, tileClassName }: { className?: string; ti
       >
         <Leaf className="h-[1.125rem] w-[1.125rem]" aria-hidden />
       </span>
-      <span className="truncate text-[1.0625rem] font-semibold tracking-tight">{t("appName")}</span>
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="truncate text-[1.0625rem] font-semibold tracking-tight">{t("appName")}</span>
+        {withTagline ? (
+          <span className="hidden truncate text-[0.6875rem] font-medium text-muted lg:block">{t("tagline")}</span>
+        ) : null}
+      </span>
     </span>
   );
 }
@@ -45,8 +61,8 @@ export function SiteHeader() {
   return (
     <header className="no-print sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur-md">
       <div className="container-page flex h-[var(--header-h)] items-center gap-4">
-        <Link href="/" className="min-w-0 rounded-control text-text" aria-label={t("nav.home")}>
-          <BrandMark />
+        <Link href="/" className="min-w-0 rounded-control text-text">
+          <BrandMark withTagline />
         </Link>
 
         <nav aria-label={t("nav.main")} className="ml-6 hidden h-full items-stretch gap-1 md:flex">

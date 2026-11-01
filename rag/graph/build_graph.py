@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the AgroAdvisor-ET knowledge graph (Phase P6a).
+"""Build the AgroEcoAdvisor knowledge graph (Phase P6a).
 
 Sources, in the order they are layered into the graph:
 

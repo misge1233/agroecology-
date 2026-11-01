@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import en from "../../../messages/en.json";
@@ -86,3 +86,22 @@ describe("KnowledgeCandidates", () => {
     expect(screen.getByRole("heading", { level: 4, name: candidateLabel(CANDIDATES[0], "am") })).toBeInTheDocument();
   });
 });
+
+describe("one chip per source (two PDFs of one CGSpace item)", () => {
+  it("shows a shared handle page once and raises no duplicate-key warning", () => {
+    const handle = "https://cgspace.cgiar.org/handle/10568/151652";
+    const twin: KnowledgeCandidate = {
+      ...CANDIDATES[0],
+      citations: [
+        { tier: "guidance", ref: "G1", era_code: null, title: "Integrating meta-analysis", year: 2024, doi: null, url: handle, snippet: "a", indicator: null, practice: null },
+        { tier: "guidance", ref: "G2", era_code: null, title: "Integrating meta-analysis", year: 2024, doi: null, url: handle, snippet: "b", indicator: null, practice: null },
+      ],
+    };
+    const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    renderCandidates("en", "hybrid", [twin]);
+    expect(screen.getAllByRole("link", { name: /Integrating meta-analysis/ })).toHaveLength(1);
+    expect(errors.mock.calls.flat().join(" ")).not.toMatch(/same key/);
+    errors.mockRestore();
+  });
+});
+

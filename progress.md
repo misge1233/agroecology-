@@ -3782,3 +3782,205 @@ Owner request: remove the Authorship and Licence blocks, add a horizontal Contac
 **Verified** tsc, eslint clean; vitest 135 passed; `next build --webpack` OK; Playwright 34/34 (axe contrast clean on /en, /am, /om about); screenshots at 1440 px (light, dark, Amharic) and 390 px with no overflow; console clean.
 
 **Needs local verification** New am/om strings are machine drafts.
+
+### Review (Senior Engineer) — user-level review of P9 + U3–U8 + R1; owner decision: evidence fusion (1 Nov 2026)
+
+**Scope.** Browser review of `localhost:3000` as a user (Chrome, 1280 px and 390 px; en/om/am; light/dark): Home, the full Advisor flow (Debre Birhan → Erosion & water → soil loss; Top 1 and Top 5; Why this? / Evidence / How to implement), Chat, About. Code review of P9/U3–U8 is still pending; this block covers behaviour and UX.
+
+**Verdict.** The design is strong and the flow works end to end (geocode, pin, belt, context card, mode badge, reasons, Top-N, copy link, deferred map, dark mode, mobile layout, i18n key parity 413/413). It is not release-ready. Must-fix: Chrome auto-translate crashes the app (React `removeChild`); the header is transparent (`bg-surface/90` on `var()` hex tokens); the Evidence panel shows raw Markdown; citation labels collide across panels (`[G1]` = two documents) and a study is cited for the user's own rainfall; ranked and documented lists overlap and contradict each other; "How to implement" shows raw chunks (bibliography lines); guidance titles are PDF first-line text; CSA sources have no reference; chat ignored "acidic soil" and recommended drought-tolerant crops (~100%) to a teff grower.
+
+**Owner decision (1 Nov 2026) — evidence fusion.** The system no longer treats the model as the only source of numbers. The best evidence for the user's context leads (model-led, study-led or documented); numbers reported by studies are allowed with provenance ("reported in study [n]"), shown as labels in Why/Evidence, print and on request in chat, while default answers stay in plain language. Recorded in `docs/decisions/evidence_fusion.md`; CLAUDE.md doctrine §1–2 amended; `evidence_tiered_advisory.md` marked superseded in part.
+
+**Next steps.** Phase **U9 — Evidence fusion and user-review fixes**: implement `docs/briefs/U9_user_review_fixes.md` exactly (Parts A–E; Part F, the hero image, is deferred by the owner), verify as listed under Acceptance, append the U9 report here, and stop.
+
+## Phase R1 — Rename to AgroEcoAdvisor (1 Nov 2026)
+
+### Decision record (owner + supervisor + reviewer, 31 Oct 2026)
+- **Display name:** `AgroEcoAdvisor` (one word, this exact casing).
+- **Tagline:** `AI-Powered Agroecology+ Solutions` (the supervisor's programme
+  name). Header, page titles, print sheet, About and README use both.
+- **Why:** the work now extends beyond Ethiopia ("-ET" no longer fits) and
+  belongs to the AI-Powered Agroecology+ Solutions programme. A light web check
+  (31 Oct) found no product named AgroEcoAdvisor; an unrelated "AgroAdvisor"
+  product exists elsewhere, another reason to move away from the old name.
+- **Previous names:** AgroGuide (prototype) → AgroAdvisor-ET (18 Aug – 31 Oct
+  2026) → AgroEcoAdvisor.
+- **Slug** (where a lowercase identifier is needed): `agroecoadvisor`.
+- **Languages:** the brand stays in Latin script in all three languages
+  (`AgroEcoAdvisor`); the tagline is translated in `am` and `om` (machine
+  draft, status `machine-draft` in `docs/i18n/TRANSLATION_STATUS.md`; keep
+  "AI" and "Agroecology+" recognisable).
+
+**Built** Display name `AgroEcoAdvisor` and tagline `AI-Powered Agroecology+ Solutions` (am: `በAI የተደገፉ የAgroecology+ መፍትሔዎች`, om: `Furmaata Agroecology+ AI irratti hundaa'an`, machine drafts) across the UI catalogs, header wordmark (tagline as a second line from lg), page titles (`AgroEcoAdvisor — <tagline>`, template `%s · AgroEcoAdvisor`), Open Graph metadata, footer (`© {year} AgroEcoAdvisor · Alliance of Bioversity International and CIAT`), print sheet, About; backend LLM persona and prompts (`advisor_agent.py`, `explain_service.py`), FastAPI title, model label, `recommend.py` docstring; User-Agents `AgroEcoAdvisor corpus builder (research use; mailto:{email})` and `agroecoadvisor/1.0`; `package.json` name `agroecoadvisor-frontend` (lockfile regenerated, name lines only); docs (README x3, design system, rag/graph README and docstrings, CLAUDE.md, research plan and manuscript skeleton with "Formerly AgroAdvisor-ET (renamed 31 Oct 2026)" and the new working title); `model/evaluate.py` title with `docs/reports/model_evaluation_report.md` regenerated from the stored `model_eval.json` (diff: the title line only).
+
+**Before inventory** (`AgroAdvisor-ET` occurrences per file, outside history files):
+
+| File | Count |
+|---|---|
+| CLAUDE.md | 3 |
+| README.md | 2 |
+| app/backend/README.md | 1 |
+| app/backend/advisor_agent.py | 3 |
+| app/backend/app/config.py | 1 |
+| app/backend/app/routers/models.py | 1 |
+| app/backend/app/services/explain_service.py | 1 |
+| app/backend/recommend.py | 1 |
+| app/frontend/README.md | 1 |
+| app/frontend/messages/am.json | 7 |
+| app/frontend/messages/en.json | 7 |
+| app/frontend/messages/om.json | 7 |
+| app/frontend/src/app/[locale]/about/page.tsx | 1 |
+| app/frontend/src/app/globals.css | 1 |
+| app/frontend/src/lib/i18n-audit.test.ts | 1 |
+| app/frontend/src/lib/types.ts | 1 |
+| docs/design/design_system.md | 1 |
+| docs/reports/model_evaluation_report.md | 1 |
+| model/evaluate.py | 1 |
+| paper/manuscript/manuscript_skeleton.md | 2 |
+| rag/graph/README.md | 1 |
+| rag/graph/__init__.py | 1 |
+| rag/graph/build_graph.py | 1 |
+| rag/graph/schema.py | 1 |
+| rag/ingest/fetch_papers.py | 1 |
+| research_project_plan.md | 6 |
+
+**Kept as is (per brief)** internal class `AgroAdvisor` (+ `CSAAdvisor` alias, `groq_agent` shim); the folder `agroadvisor-et/` in the research plan's tree and the P1 history row; `progress.md`, `SESSION_HANDOFF.md`, `MIGRATION_MAP.md`; corpus/index/graph store (diff empty); storage keys (`agro-theme`, `agro-locale`: no brand inside).
+
+**Fixture** `tests/fixtures/en_texts_pre_u1.json` needed no regeneration: the brand occurs in none of the snapshotted deterministic texts, and `test_i18n` passes unchanged.
+
+**Verified** py_compile on all touched Python; backend 226 passed, 1 skipped; frontend tsc, `eslint .` 0/0, vitest 135 passed, `next build --webpack` OK, Playwright 34/34. Final grep: zero `AgroAdvisor-ET`/`agroadvisor-et` outside history files, the two allowed folder/history lines and the "Formerly" lines; `AgroAdvisor` only as the internal class. Screenshots `docs/design/screenshots/r1-home-{en,am,om}.png`, `r1-header-390.png`.
+
+**Needs local verification** Native review of the two tagline translations; renaming the GitHub repository and local folder is a later decision.
+
+## Phase U9 — Evidence fusion and user-review fixes (1 Nov 2026)
+
+**Built**
+
+*A. Backend fusion* (`docs/decisions/evidence_fusion.md`, binding)
+- `fusion_service.py`: one evidence bundle per shown practice: the model estimate (confidence, observations in zone, SE from the P7 out-of-fold RMSE), the study-level effects from the dataset (graph `REPORTS_EFFECT`, per-study SD), the match level (zone → belt group → moisture → other), the lead source (model-led when confidence is medium/high and ≥ 1 observation in the zone, else study-led when a matching study exists), disagreement (opposite sign or a gap > 25 points: the headline becomes a range) and the ≥ 80 % caution.
+- Ordering: `ADVISORY_ORDERING=conservative|model` (default conservative, `bound = d·est − k·SE`, k = `CONFIDENCE_K_SD`). `/advise` fetches all practices, fuses, orders, trims; the engine's own items are returned unchanged in the fused order (wrap, never fork).
+- Guard v2 (`explain_service.guard_v2`): sentence-level; model/study/context/count numbers allowed anywhere, a passage number only in the sentence that cites it; a count must have no unit after it; unsourced sentences are removed; too many removals fall back to the deterministic fused text. Numbers come back as provenance objects `{value, unit, source, ref, display}`.
+- Two registers: `summary` (plain, no markers) and `evidence` (labelled, cited). Chat switches to the evidence register when the user asks why / for evidence, in en/am/om.
+- Request fit: soil constraints from chat text (`acidic_soil` → pH Control, …); a constraint pick is added when nothing shown matches; replaces-crop note for drought-tolerant crops. The acidic-soil teff question (eval case C001) now parses to ISFM / yield / Teff / Bahir Dar / acidic soil.
+
+*B. Must-fix defects*
+- B1 `translate="no"` + notranslate meta; B2 header alpha (RGB-channel tokens); B3 Evidence renders Markdown, never literal `###`/`**`.
+- B4 one citation registry per page (`citation-registry.ts`, `CitationsProvider`, `CitationsScope` for components outside a page provider), keyed by source identity; context-only sentences lose study markers; `[1a]` → `[1]`.
+- B5 documented ∩ ranked = ∅.
+
+*C. Source quality*
+- C1 guidance passage filter (quality, English, region, relevance) and synthesised how-to steps (JSON LLM call + guard, cited `[Gn]`).
+- C2 CGSpace titles, years and handle pages for guidance (background agent: `rag/ingest/backfill_guidance_metadata.py` → `rag/corpus/guidance/doc_metadata.json`; 1,248 of 1,459 documents resolved, all that have a DSpace link; 211 non-DSpace documents keep their content-head title).
+- C3 dataset-study references (`pipelines/dataset/build_csa_references.py` → `data/processed/csa_study_references.json`; all 133 `CSA_*` ids mapped; ambiguous / truncated / short-form entries flagged per entry; unmapped ids cite the Adimassu et al. 2024 compilation with the study number).
+- Wired through `source_meta.enrich_citation` in `shape_citations`, the fused study registry and documented candidates; identity fields never change, so registry labels stay stable. New fields `reference`, `reference_truncated`, `compilation`, `source_url` on both citation schemas; the UI shows the reference as the chip tooltip and in print.
+
+*D. UI/UX*
+- D1 card: plain headline from the bundle ("About 84% less soil loss" / range when sources disagree), one source chip (Field-trial model / Field study · your zone / similar area / similar rainfall), "Why this?" with labelled model and study values, disagreement note, 0-anchored dot-and-interval chart (hidden below 2 rows).
+- D2 Top 3 by default; skeletons; top card's explanation prefetched; `/explain` cache per (locale, pin, family, indicator, crop, practices).
+- D3 ICU plurals ("1 study", "1 field observation") in `messages/*.json` and backend `reason_text`; "Among the top-ranked practices, {practice} has the most evidence…"; the "clearly labelled, and never" comma.
+- D4 zone names go through the glossary everywhere (belt names translated; the source chip names the match level instead of internal codes).
+- D5 one confidence vocabulary: backend `fusion.confidence.*` = glossary labels (test enforces parity); the chat attachment shows the Advisor's headline and source chip from the bundles now sent on the chat `advisory` event.
+- D6 print: Save as PDF waits for the evidence (prefetched anyway); fused headline + source label; registry labels; full study reference.
+- D7 map: `isolate` stacking context (controls stay under the sticky header); `fitBounds(Ethiopia)` after `invalidateSize` on mount and on panel resize; tile provider configurable via `NEXT_PUBLIC_MAP_TILE_URL` / `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION` (default OSM; `.env.example` documents a keyed provider).
+- D8 the step heading is scrolled to and focused on every step change (reduced-motion aware); "Complete the steps above" replaces "four steps".
+- D9 chat: the route is pinned to one viewport (no double scrollbar, also with the API banner); composer shows a scrollbar only past its height cap, placeholder stays on one line; compact welcome block at short heights; one visible author line; axe fixes (live log wraps the list, sr-only h1 once the conversation starts).
+- D10 place name with coordinates ("Near Adama (8.38, 39.37)") from a new offline `GET /geocode/nearest` (gazetteer, none beyond 40 km); SOC unit g/kg; raw dataset labels removed under display names (card, documented card, print); chat lists documented practices by display name.
+- D11 om/am leaks: no duplicated English headline in print; the engine's English note and ranking scope replaced by translated copy; practice display names inside am/om reason sentences (the reason dict keeps the frozen English string).
+- D12 practice images resolve against the list of files on disk (no 404 requests): own photo, alias (Biological SWC practices → agronomic-biological-swcp), or the first illustrated component of a combination.
+- D13 see Verified (Lighthouse, axe, layout shift).
+
+*E. Copy and docs (en/am/om)*
+- Home "Every number has a source" card and the architecture section; Advisor subtitle; About: "How the advisor decides" (model-led / study-led / documented / disagreement), confidence and sources updated, "Licences, privacy and citation" (data licences, voice privacy, version, how to cite), "bluffing" and the doubled "Thin evidence" removed; footer shows the build version (`NEXT_PUBLIC_APP_VERSION`, default package.json) and links to "How the advisor decides" / "How to cite"; mode tooltip no longer says "every number comes from that model".
+- Docs: README.md, app/frontend/README.md, docs/decisions/rag_design.md (amendment note + guard v2 row), research_project_plan.md, paper/manuscript/manuscript_skeleton.md (working title and framing per decision §9), docstrings in explain_service.py, evidence_service.py, recommender_service.py, rag/graph/schema.py.
+
+**Evaluation**
+
+Mode report, 35 cells × 38 pins = 1,330 advisories, 0 errors, rationale-number guard failures 0 (`rag/eval/results/mode_report_u9_{model,conservative}.{json,md}`; run without guidance retrieval):
+
+| Run | model-led | hybrid | knowledge-led |
+|---|---|---|---|
+| P9 baseline | 281 | 859 | 190 |
+| U9, model ordering | 281 | 859 | 190 |
+| U9, conservative ordering | 294 | 846 | 190 |
+
+Fusion metrics over the shown practices:
+
+| Metric | Model ordering | Conservative ordering |
+|---|---|---|
+| Lead source study / model | 1,973 / 991 | 2,273 / 691 |
+| Disagreements | 1,238 | 772 |
+| Mean studies per top-3 practice | 2.33 | 2.51 |
+| Best-studied practice in the top 3 | 51.1 % (of 1,140) | 62.7 % |
+
+Ordering comparison, pin by pin (`rag/eval/results/ordering_comparison_u9.json`, `rag/eval/compare_orderings.py`): 1,140 advisories compared, mean top-3 overlap 0.717, top-1 agreement 0.532; physical SWC measures in the soil-loss top 3: 0/38 (model) vs 13/38 (conservative). Mulch and Organic Fertilizer most often enter the top 3 under the conservative order; Water-Harvesting combinations most often leave it.
+
+**Decisions**
+- Conservative ordering is the default; `ADVISORY_ORDERING=model` restores the P9 order (both are reported).
+- Cross-validated ranking metrics (P7 style) for the conservative order are not reported: the bound uses in-sample study evidence, so a CV score would leak.
+- Display names replace raw dataset labels on screen and in print; the frozen names stay in the API and data.
+- Map tiles stay on OSM by default so nothing breaks; production needs a keyed provider (OSM's tile policy).
+- The C3 compilation fallback is Adimassu et al. (2024), *Farming System* 2(4) 100110 (the agent's choice, reasoning in `data/processed/README.md`): **owner to confirm**.
+- `/advise` E2E fixtures recaptured from the current backend (`app/backend/scripts/capture_advise_fixtures.py`), so the mocked UI shows the fused cards.
+
+**Files** (main)
+- Backend new: `app/services/{fusion_service,numbers,practice_names,source_meta}.py`, `scripts/capture_advise_fixtures.py`; tests `test_fusion.py`, `test_guard_v2.py`, `test_chat_u9.py`, `test_guidance_quality.py`, `test_source_meta.py`, `test_source_titles.py`, `test_nearest_place.py`.
+- Backend changed: `config.py`, `schemas.py`, `metadata_service.py`, `routers/geocode.py`, services `advisory`, `chat`, `evidence`, `explain`, `geocode`, `recommender`, `slot_extraction`; `i18n/{en,am,om}.py`; tests `test_advisory.py`, `test_api.py`, `test_explain.py`, `test_evidence_service.py`.
+- Frontend new: `lib/{numbers,citation-registry}.ts` (+ tests), `components/citations.tsx`, `components/advisor/{evidence-why.tsx,use-place.ts,u9-acceptance.test.tsx}`, `lib/practice-images.test.ts`, `i18n/component-names.json` (+ practice-names test), e2e `axe-locales.spec.ts`, `u9-screenshots.spec.ts`.
+- Frontend changed: result card, recommendation panel, results, knowledge candidates, evidence panel, print sheet, context card, advisor flow, step layout, location map, practice image, chat panel, chat evidence, site header, site footer, about page, glossary, types, api, `globals.css`, `next.config.ts`, `.env.example`, `messages/{en,am,om}.json`, e2e support and specs, recaptured fixtures.
+- Data/RAG: `rag/eval/{mode_report,compare_orderings}.py`, `rag/eval/chat_eval.jsonl`, results above, C2/C3 sidecars and scripts.
+- Screenshots: `docs/design/screenshots/u9/{home,about,advisor,chat}-{en,am,om}-{light,dark}-{390,1440}.png` (48).
+
+**Verified**
+- `py_compile` on every touched Python file; backend pytest **306 passed, 1 skipped**.
+- Frontend: `tsc --noEmit` clean; `eslint .` 0 errors; vitest **264 passed**; `next build --webpack` OK.
+- Playwright **46 passed** (desktop + phone; 12 opt-in screenshot tests skipped in the normal run), including axe A/AA + contrast on Home, About, Advisor results and an answered chat in **en, am and om, light and dark**.
+- Lighthouse 12.8.2 (desktop preset, production build): accessibility **100** and best practices **96** on Home, About, Advisor results, Chat (en), Home (am) and About (om); performance 88–97. The remaining best-practices deduction is console errors from CORS: the audit server ran on port 3200, which the backend does not allow-list, so pages were audited with the API blocked. The same setup caused the Advisor's layout shift of 0.154 (the footer moves when the error state replaces the loading skeleton); elsewhere CLS is 0.037. The one real finding (brand link name ≠ visible text) is fixed.
+- Local speech: the MMS recognizer download is now complete (blob SHA-256 verified, `asr_ready()` true). Round trip TTS → STT: Amharic returned almost verbatim ("ገለባ ሽፋን ያፈር መሸርሸርን ይቀንሳል"), Afaan Oromoo kept the key words with spelling drift ("haftii ruwwesuun dhiqama biyyee kerrisaa").
+
+**Needs local verification**
+- Native-speaker review of all new am/om copy (About sections, fusion strings, engine note, place labels); the D11 Amharic visual re-check is covered only by screenshots.
+- Lighthouse with the API reachable (allow-list the audit origin or audit on port 3000) to confirm CLS < 0.1 on Advisor results.
+- Data licences text (WorldClim, Copernicus DEM, FAO, CGSpace per-document licences) against the providers' current terms.
+- C3: the compilation fallback, the 19 ambiguous and 36 truncated CSA references; 211 guidance documents still without CGSpace titles; no Crossref DOI lookup.
+- A production map tile provider and key.
+- Two stale partial downloads of the recognizer (about 2.4 GB of `*.incomplete` blobs in the Hugging Face cache) can be deleted by hand; they are not used.
+- Nothing committed (the owner commits).
+
+## Phase U9.1 — Advisor opens at the top, four steps, new hero image (1 Nov 2026)
+
+Owner requests after the U9 review.
+
+**Built**
+- **Advisor opens at the top.** The U9 step-focus effect used a "first render" flag, which React Strict Mode (development) defeats by running effects twice, so `/advisor` jumped to "Step 1 of 5". The effect now compares with the previous step: the page load opens at the top like every page. On a real step change it focuses the heading and scrolls only when the heading is off screen.
+- **Four steps for every challenge: Location, Challenge, Objective, Results.** The Crop step is gone. The optional crop picker now sits inside the Objective step and appears only for "Crop production and management". It lists the crops measured in that family: a new additive metadata field `crop_types_by_family` has 42 crops, without the livestock and land-cover labels of the global list of 80. Choosing an objective selects it, and an explicit "Get recommendation" submits, for every challenge. Switching to another challenge drops the crop. A crop that arrives in the URL (for example from a chat question that names one) is kept and shown in the stepper ("Increase crop yield · Teff"). Chat users can still name a crop in their question. The print sheet shows the crop row only when a crop is set.
+- **Hero image (Part F, now requested by the owner).** `public/practices/hero_image.png` (1915×821) is optimised to `public/hero/agroecology-landscape.webp` (298 KB) and statically imported: known size (no layout shift), blurred preview, `priority`. The crop keeps the farmers and terraces in view on phones (`object-[78%_center]`), and the scrim is dense behind the text and clear on the right. The original PNG is left in place and is not served by any page.
+
+**Files** `advisor-flow.tsx`, `advisor-state.ts` (+ new `advisor-state.test.ts`), `objective-step.tsx`, `crop-step.tsx` (deleted), `print-sheet.tsx`, `home/hero.tsx`, `public/hero/agroecology-landscape.webp`, `lib/types.ts`, `messages/{en,am,om}.json` (the "Crop" step label removed), e2e `advisor-flow.spec.ts` (new crop-field test, starts-at-top check) and `fixtures/metadata.json`; backend `recommender_service.py`, `metadata_service.py`, `schemas.py`, `tests/test_api.py`.
+
+**Verified** backend pytest 306 passed, 1 skipped; tsc, `eslint .`, vitest 267 passed, `next build --webpack`; Playwright 47 passed (12 opt-in screenshot tests skipped). Screenshots of the Advisor on load (1440 and 390 px), the crop production Objective step and the new hero (1440 and 390 px) were reviewed by eye.
+
+**Needs local verification** Crop names in the picker are the dataset's English labels in all three languages (data contract, as before). The U9 report screenshots in `docs/design/screenshots/u9/` predate these changes. Nothing committed.
+
+## Phase U9.2 — Duplicate source key fix (1 Nov 2026)
+
+**Problem** On `/en/advisor?lat=8.6577&lon=36.6616&family=Crop+production+and+management&indicator=yield&crop=Maize`, React reported two children with the same key (`G1-https://cgspace.cgiar.org/handle/10568/151652`) in a documented-practice card. The cause was a side effect of C2: several PDFs belong to one CGSpace item (12 handles are shared by 2–3 documents), and after enrichment they share its handle page. `_Candidate.add_citation` de-duplicated before enrichment, so both rows survived.
+
+**Fix**
+- Backend (`evidence_service.py`): enrich first, then de-duplicate by source identity. Guidance documents are counted per CGSpace item (its handle page), not per PDF.
+- Frontend: `uniqueSources` and `sourceKey` (`lib/citation-registry.ts`). Every displayed list shows a source once and keys it by its identity: documented-practice chips, Evidence source lists, guidance snippets and both print lists. The explanation's citation list keeps both rows, because its text cites each by its own marker; the page registry already gives them one label.
+
+**Verified** The reported request run in-process: hybrid, 4 documented practices, 0 duplicate sources in any card. New tests: backend `test_two_pdfs_of_one_cgspace_item_are_one_source`; vitest `uniqueSources / sourceKey` and "one chip per source" (no duplicate-key warning). Backend 307 passed, 1 skipped; tsc, eslint, vitest 269 passed, build OK, Playwright 47 passed. The running backend (`--reload`) and dev server pick the change up without a restart. Nothing committed.
+
+## Phase U9.3 — Chat: wider, conversational, no evidence card (1 Nov 2026)
+
+**Built**
+- **Wider chat.** The conversation and composer are 64 rem wide instead of 48 rem (`max-w-5xl`).
+- **No evidence card under answers.** The "Evidence behind this answer" card (ranking, chips, mode badge, documented list) is removed from the chat. The answer is the conversation; the ranking and its sources are one link away through a quiet "Open in Advisor" action beside Listen and Copy, which carries the resolved request. `components/chat/chat-evidence.tsx` is deleted, along with its unused `chat.evidence.*` and `chat.advisory.*` strings in en/am/om.
+- **Evidence only on request, in prose.** When the user asks why or for evidence, the existing evidence register answers. It is now one short paragraph per practice plus one sentence naming the sources, with the same labelled values and markers: no bold headings, bullets or source list. The default plain answer is one paragraph too.
+- **The AI writer talks, not lists.** `CONVERSATION_STYLE` is added to both narrative prompts: one or two short paragraphs, no lists, headings, tables or menus.
+
+**Files** `components/chat-panel.tsx`, `components/chat/chat-evidence.tsx` (deleted), `messages/{en,am,om}.json`; e2e `chat.spec.ts`, `advisory-modes.spec.ts`, `axe-locales.spec.ts`, `screenshots.spec.ts`, `u9-screenshots.spec.ts`; backend `services/chat_service.py`, `tests/test_chat_u9.py` (prose and style tests).
+
+**Verified** backend 309 passed, 1 skipped; tsc, eslint, vitest 268 passed, build OK; Playwright 47 passed, including axe on the answered chat in en/am/om, light and dark. A 1440 px chat screenshot was reviewed by eye.
+
+**Needs local verification** The tone of LLM-written answers with the new style rule (it depends on the live model). The U9 report screenshots in `docs/design/screenshots/u9/` still show the earlier chat. Nothing committed.

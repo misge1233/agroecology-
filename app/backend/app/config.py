@@ -23,7 +23,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "AgroAdvisor-ET — AI-Powered Agroecology+ Advisor"
+    app_name: str = "AgroEcoAdvisor — AI-Powered Agroecology+ Solutions"
     debug: bool = False
 
     # Root that holds the canonical engine + ML artifacts.
@@ -95,6 +95,17 @@ class Settings(BaseSettings):
     knowledge_candidates_max: int = Field(default=5, validation_alias=AliasChoices("KNOWLEDGE_CANDIDATES_MAX"))
     guidance_candidates_k: int = Field(default=12, validation_alias=AliasChoices("GUIDANCE_CANDIDATES_K"))
     guidance_min_quality: float = Field(default=0.55, validation_alias=AliasChoices("GUIDANCE_MIN_QUALITY"))
+
+    # Evidence fusion (U9) — docs/decisions/evidence_fusion.md §3–§4.
+    # Ordering of ranked practices: "conservative" (estimate − k·uncertainty of
+    # the leading evidence) or "model" (the engine's own order).
+    advisory_ordering: str = Field(default="conservative", validation_alias=AliasChoices("ADVISORY_ORDERING"))
+    # k in the conservative bound; the same value P7 uses for confidence flags.
+    confidence_k_sd: float = Field(default=1.0, validation_alias=AliasChoices("CONFIDENCE_K_SD"))
+    # Model and leading studies "disagree" beyond this many percentage points.
+    evidence_disagree_pct: float = Field(default=25.0, validation_alias=AliasChoices("EVIDENCE_DISAGREE_PCT"))
+    # Headline increases at or above this (%) carry a caution note.
+    headline_caution_pct: float = Field(default=80.0, validation_alias=AliasChoices("HEADLINE_CAUTION_PCT"))
 
     @property
     def cors_origins(self) -> list[str]:

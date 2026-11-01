@@ -193,7 +193,7 @@ def _nominatim(place: str) -> GeocodeHit | None:
     if len(q) < 3:
         return None
     try:
-        with httpx.Client(timeout=6.0, headers={"User-Agent": "agroecology-ai/1.0"}) as client:
+        with httpx.Client(timeout=6.0, headers={"User-Agent": "agroecoadvisor/1.0"}) as client:
             resp = client.get(
                 "https://nominatim.openstreetmap.org/search",
                 params={
@@ -220,3 +220,34 @@ def _nominatim(place: str) -> GeocodeHit | None:
     display = rows[0].get("display_name") or q
     short = display.split(",")[0].strip()
     return GeocodeHit(name=short, lat=lat, lon=lon, source="nominatim")
+
+
+# U9 (D10): the town a pin is in or near, for "Debre Birhan (9.68, 39.53)".
+_DISPLAY_FIX = {"hosea": "Hosanna", "butejira": "Butajira", "debre birhan town": "Debre Birhan"}
+
+
+def _canonical_places() -> list[tuple[str, float, float]]:
+    """One display name per gazetteer location (the first alias listed wins)."""
+    seen: dict[tuple[float, float], str] = {}
+    for alias, coords in _GAZETTEER.items():
+        seen.setdefault(coords, _DISPLAY_FIX.get(alias, alias.title()))
+    return [(name, lat, lon) for (lat, lon), name in seen.items()]
+
+
+def nearest_place(lat: float, lon: float, max_km: float = 40.0) -> tuple[str, float] | None:
+    """The nearest gazetteer town and its distance in km, or None beyond ``max_km``.
+
+    Offline and deterministic (haversine over the curated list); a pin in open
+    country far from any listed town gets no name rather than a misleading one.
+    """
+    import math
+
+    best: tuple[str, float] | None = None
+    for name, plat, plon in _canonical_places():
+        p1, p2 = math.radians(lat), math.radians(plat)
+        dphi, dl = p2 - p1, math.radians(plon - lon)
+        a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+        km = 2 * 6371.0 * math.asin(math.sqrt(a))
+        if best is None or km < best[1]:
+            best = (name, km)
+    return best if best and best[1] <= max_km else None

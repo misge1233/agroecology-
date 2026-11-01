@@ -2,9 +2,29 @@ import { sanitizeIndicatorForFamily } from "@/lib/chat-flow";
 import type { Metadata } from "@/lib/types";
 import { inBounds } from "./use-zone";
 
-export type StepKey = "location" | "challenge" | "objective" | "crop" | "results";
-export const STEP_ORDER: StepKey[] = ["location", "challenge", "objective", "crop", "results"];
+/** Four steps for every challenge (1 Nov 2026): the crop is a field of the Objective step, not a step. */
+export type StepKey = "location" | "challenge" | "objective" | "results";
+export const STEP_ORDER: StepKey[] = ["location", "challenge", "objective", "results"];
+
+/**
+ * Challenge families where the Advisor offers the optional crop filter. Other
+ * families never show it; a crop can still arrive in the URL (for example
+ * from a chat question that names one) and is then kept and shown.
+ */
+export const CROP_FAMILIES: ReadonlySet<string> = new Set(["Crop production and management"]);
+
+export function familyTakesCrop(family: string | null | undefined): boolean {
+  return !!family && CROP_FAMILIES.has(family);
+}
+
+/** The crops offered for a family: those measured in it, else the global list. */
+export function cropOptions(meta: Metadata, family: string): string[] {
+  const own = meta.crop_types_by_family?.[family];
+  return own && own.length > 0 ? own : meta.crop_types;
+}
 export const TOP_N_OPTIONS = [1, 2, 3, 5] as const;
+/** U9 (D2): three practices by default, so the ranking always shows alternatives. */
+export const DEFAULT_TOP_N = 3;
 
 /** The request, exactly as carried by the URL (`?lat&lon&family&indicator&crop&top`). */
 export interface AdvisorParams {
@@ -42,7 +62,7 @@ export function parseParams(sp: URLSearchParams, meta: Metadata | null): Advisor
   let crop = sp.get("crop")?.trim() || null;
   if (crop && meta && !meta.crop_types.includes(crop)) crop = null;
   const top = Number(sp.get("top"));
-  const topN = (TOP_N_OPTIONS as readonly number[]).includes(top) ? top : 1;
+  const topN = (TOP_N_OPTIONS as readonly number[]).includes(top) ? top : DEFAULT_TOP_N;
   return { lat, lon, family, indicator, crop, topN };
 }
 
@@ -55,7 +75,7 @@ export function toSearch(p: AdvisorParams): string {
   if (p.family) qs.set("family", p.family);
   if (p.indicator) qs.set("indicator", p.indicator);
   if (p.crop) qs.set("crop", p.crop);
-  if (p.topN !== 1) qs.set("top", String(p.topN));
+  if (p.topN !== DEFAULT_TOP_N) qs.set("top", String(p.topN));
   return qs.toString();
 }
 

@@ -67,7 +67,9 @@ describe("ResultCard", () => {
     fireEvent.click(why);
     // recharts is behind next/dynamic, so the chart arrives after a tick.
     expect(await screen.findByTestId("chart")).toBeInTheDocument();
-    expect(screen.getByText("Effects are model estimates.")).toBeInTheDocument();
+    // U9 (D11): the translated note, never the engine's English string.
+    expect(screen.getByText(en.advisor.results.engineNote)).toBeInTheDocument();
+    expect(screen.queryByText("Effects are model estimates.")).toBeNull();
     expect(screen.getByRole("button", { name: /Hide details/ })).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -78,6 +80,7 @@ describe("ResultCard", () => {
     expect(effect.textContent).toMatch(/[ሀ-፿]/);
     // The original API sentence stays reachable for auditing.
     expect(effect).toHaveAttribute("title", expect.stringContaining("~42% reduction in soil loss"));
-    expect(screen.getByText("Biochar-Inorganic Fertilizer")).toHaveAttribute("lang", "en");
+    // U9 (D10): no internal data label under the display name.
+    expect(screen.queryByText("Biochar-Inorganic Fertilizer")).toBeNull();
   });
 });

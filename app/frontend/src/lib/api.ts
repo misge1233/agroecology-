@@ -189,6 +189,19 @@ export async function fetchGeocode(q: string, signal?: AbortSignal): Promise<Geo
   return res.json();
 }
 
+/** U9 (D10): the gazetteer town a pin is in or near (offline; none beyond 40 km). */
+export interface NearestPlace {
+  found: boolean;
+  name: string | null;
+  distance_km: number | null;
+}
+
+export async function fetchNearestPlace(lat: number, lon: number, signal?: AbortSignal): Promise<NearestPlace> {
+  const res = await fetchWithRetry(`${API_BASE}/geocode/nearest?lat=${lat}&lon=${lon}`, { signal });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
 export { API_BASE };
 
 // ------------------------------------------------------------------ voice (U6)

@@ -33,7 +33,7 @@ const USER_FACING_ATTRS = new Set([
 const NON_WORD = /^[\s\d.,:;!?%°×#()[\]{}+\-–—/|·•●…©&→←↑↓'"“”‘’]*$/;
 /** Deliberately literal: brand names and protocol tokens. */
 // "blur" is next/image's placeholder MODE, not a string a reader sees.
-const ALLOWLIST = new Set(["AgroAdvisor-ET", "WOCAT", "CIAT", "ERA", "GARDIAN", "404", "Agroecology+", "blur"]);
+const ALLOWLIST = new Set(["AgroEcoAdvisor", "WOCAT", "CIAT", "ERA", "GARDIAN", "404", "Agroecology+", "blur"]);
 
 function hardCodedStrings(file: string): string[] {
   const source = ts.createSourceFile(file, fs.readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -125,14 +125,14 @@ describe("catalog parity", () => {
       expect(broken).toEqual([]);
     });
     it(`${locale} is actually translated (not a copy of en)`, () => {
-      const same = Object.keys(en).filter((k) => en[k] === other[k] && !k.startsWith("chat.protocol.") && !/appName|rights|rank$|passages|units\.(mm|m|percent|celsius)|percent/.test(k));
+      const same = Object.keys(en).filter((k) => en[k] === other[k] && !k.startsWith("chat.protocol.") && !/appName|rights|legal\.cite\.body|context\.placeExact|rank$|passages|units\.(mm|m|percent|celsius)|percent/.test(k));
       // A few keys are legitimately identical (numbers, symbols, brand).
       expect(same.length).toBeLessThan(8);
     });
   }
   it("Amharic strings are written in Ethiopic script", () => {
     const am = load("am");
-    const latinOnly = Object.entries(am).filter(([k, v]) => !/[ሀ-፿]/.test(v) && !k.startsWith("chat.protocol.") && !/appName|rights|rank$|passages|units\.(mm|m|percent|celsius)|percent/.test(k));
+    const latinOnly = Object.entries(am).filter(([k, v]) => !/[ሀ-፿]/.test(v) && !k.startsWith("chat.protocol.") && !/appName|rights|legal.cite.body|context.placeExact|rank$|passages|units\.(mm|m|percent|celsius)|percent/.test(k));
     expect(latinOnly.map(([k]) => k)).toEqual([]);
   });
 });

@@ -1,4 +1,4 @@
-# Backend — AgroAdvisor-ET API (FastAPI)
+# Backend — AgroEcoAdvisor API (FastAPI)
 
 Wraps the canonical recommender engine (`recommend.py` + `advisor_agent.py`, the
 **source of truth** for all ML logic) behind a clean service layer and exposes:

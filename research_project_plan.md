@@ -1,7 +1,7 @@
-# Research Project Plan — AgroAdvisor-ET: AI-Powered Agroecology+ Solutions
+# Research Project Plan — AgroEcoAdvisor: AI-Powered Agroecology+ Solutions
 
 **Project short title:** AI-Powered Agroecology+ Solutions
-**System name:** **AgroAdvisor-ET** (evolves from the AgroGuide prototype)
+**System name:** **AgroEcoAdvisor** (evolves from the AgroGuide prototype). Formerly AgroAdvisor-ET (renamed 31 Oct 2026).
 **Author / PI:** Misganu Tuse — Alliance of Bioversity International & CIAT
 **Prepared:** 18 August 2026 · **Status:** v1.1 (19 Aug 2026) — Phase-2 corpus
 expansion (GARDIAN-CIGI + CGSpace) pulled FORWARD, before the expert study and
@@ -24,8 +24,11 @@ system** in three moves:
 1. **Reframe** — from "CSA recommender" to **Agroecology+ advisory**: the ML model
    ranks practices from field evidence; a **retrieval-augmented generation (RAG)**
    layer grounds every explanation in the *actual source literature* — starting
-   with the ~295 DOI-linked papers behind the ERA training data itself. The model
-   owns the numbers; RAG owns the science behind them.
+   with the ~295 DOI-linked papers behind the ERA training data itself. Evidence is
+   **fused** (amended 1 Nov 2026, `docs/decisions/evidence_fusion.md`): the model's
+   estimate, study-level field effects, retrieved passages, guidance and the
+   knowledge graph each supply what they know best, the strongest evidence for the
+   user's context leads, and every number carries its source.
 2. **Reorganize** — a new clean, standard research-repo structure; originals kept,
    nothing deleted, every move documented in a migration map.
 3. **Publish** — a systems/methods manuscript targeted at
@@ -67,7 +70,7 @@ reframe:
 
 ```
                       ┌─────────────────────────────────────────┐
- User (pin + goal or  │            AgroAdvisor-ET               │
+ User (pin + goal or  │            AgroEcoAdvisor               │
  free-text question)  │                                         │
         │             │  ┌───────────┐    ┌──────────────────┐  │
         ▼             │  │ Geospatial │   │  Evidence model  │  │
@@ -92,9 +95,10 @@ reframe:
 
 | Layer | Owns | Never does |
 |---|---|---|
-| RandomForest model | all effect sizes, rankings, confidence flags | explain |
+| RandomForest model | context-conditioned effect estimates and confidence; leads where it has local trials | explain |
+| Study-level evidence (graph `REPORTS_EFFECT`) | effects measured per study, matched by zone, belt group or rainfall; leads where the model has few local trials | extrapolate beyond the matched studies |
 | Geospatial engine | the context (AEZ belt + 10 features from lat/lon) | — |
-| RAG layer | *why it works here* + *how to implement*, with citations | invent or alter numbers |
+| RAG layer | *why it works here* + *how to implement*, with citations; may quote a passage's own figure in the sentence that cites it | invent or alter numbers |
 | LLM | phrasing, dialogue, slot extraction | free-form agronomic claims |
 
 RAG serves two distinct functions, and the paper should name them:
@@ -111,12 +115,10 @@ RAG serves two distinct functions, and the paper should name them:
 
 ### 1.3 Naming and title
 
-- **System:** AgroAdvisor-ET (repo/app); tagline "AI-Powered Agroecology+
+- **System:** AgroEcoAdvisor (repo/app); tagline "AI-Powered Agroecology+
   Solutions". The deck's "AgroGuide" is acknowledged as the prototype name.
 - **Working manuscript title (primary):**
-  > **"AgroAdvisor-ET: coupling meta-analytic machine learning with
-  > retrieval-augmented generation for evidence-grounded agroecological
-  > practice recommendation in Ethiopia"**
+  > **"AgroEcoAdvisor: coupling meta-analytic machine learning, retrieval-augmented generation and a knowledge graph for evidence-grounded agroecological advisory — a case study from Ethiopia"**
 - Alternates to keep in reserve:
   - "From evidence to advisory: a hybrid machine-learning and
     retrieval-augmented-generation system for context-specific agroecological

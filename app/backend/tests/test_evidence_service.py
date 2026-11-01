@@ -316,4 +316,8 @@ def test_dataset_only_studies_are_cited_by_dataset_id_and_uncitable_rows_are_dro
     assert "Mulch" in keys and "Physical SWC Measures" not in keys
     mulch = next(c for c in cands if c["key"] == "Mulch")
     assert [(c["ref"], c["study_no"]) for c in mulch["citations"]] == [("1", "101"), ("2", "102")]
-    assert all(c["era_code"] is None and c["title"] is None for c in mulch["citations"])
+    assert all(c["era_code"] is None for c in mulch["citations"])
+    # U9 (C3): a dataset study is cited with its reference (own entry or the compilation).
+    from app.services.source_meta import csa_reference
+    if csa_reference("101"):
+        assert all(c.get("reference") for c in mulch["citations"])

@@ -28,30 +28,45 @@ def _settings(**kw: Any) -> Settings:
     return Settings(_env_file=None, openai_api_key="", **kw)
 
 
-def _advise(gq, recommend, guidance=None, **kw):
+def _advise(gq, recommend, guidance=None, settings=None, **kw):
     return adv.advise(8.38, 39.37, ECWM, "soil loss", top_n=3, graph_query=gq, guidance_retriever=guidance,
                       recommend_fn=recommend, context_fn=lambda la, lo: {"aez_belt": "Dry Kolla", "Rainfall": 700, "slope": 3},
-                      pool_fn=lambda fam: POOL, indicators=INDICATORS, settings=_settings(), **kw)
+                      pool_fn=lambda fam: POOL, indicators=INDICATORS, settings=settings or _settings(),
+                      # hermetic study statistics and model RMSE (no dataset, no model_eval.json)
+                      stats_fn=lambda: ({}, {"soil loss": 0.6}), rmse_fn=lambda: {"soil loss": 0.4}, **kw)
 
 
 def test_model_led_returns_the_engine_payload_unchanged_and_no_candidates():
     payload = model(["Mulch", "Physical SWC Measures", "Deficit Irrigation"])
     gq = FakeGraphQuery({("Mulch", "soil loss"): summary(4, {"Dry Kolla": 12})})
     out = _advise(gq, lambda **kw: payload, guidance=FakeGuidance(passages()))
-    assert out["mode"] == ev.MODEL_LED
-    assert out["model"] is payload and out["knowledge_candidates"] == []
+    assert out["mode"] == ev.MODEL_LED and out["knowledge_candidates"] == []
+    # U9: the engine's own items (same objects, same numbers), in the fused order.
+    engine_items = {id(r) for r in payload["details"]["ranked"]}
+    assert all(id(r) in engine_items for r in out["model"]["details"]["ranked"])
+    assert {r["practice"] for r in out["model"]["details"]["ranked"]} == set(_names(payload))
+    assert [b["practice"] for b in out["practices"]] == [r["practice"] for r in out["model"]["details"]["ranked"]]
     assert out["reasons"][0]["key"] == "mode.reason.strong_evidence"
     assert out["context"]["aez_belt"] == "Dry Kolla"
 
 
 def test_hybrid_keeps_the_ranking_and_adds_cited_candidates():
-    payload = model(["Mulch", "Physical SWC Measures"])
-    gq = FakeGraphQuery({("Mulch", "soil loss"): summary(1, {"Wet Dega": 2}), ("Mulch", "yield"): summary(5, {"Dry Kolla": 20})})
+    payload = model(["Physical SWC Measures"])
+    gq = FakeGraphQuery({("Physical SWC Measures", "soil loss"): summary(1, {"Wet Dega": 2}),
+                         ("Mulch", "yield"): summary(5, {"Dry Kolla": 20})})
     out = _advise(gq, lambda **kw: payload, guidance=FakeGuidance(passages()))
-    assert out["mode"] == ev.HYBRID and out["model"] is payload
+    assert out["mode"] == ev.HYBRID
+    assert out["knowledge_candidates"][0]["key"] == "Mulch"  # evidence for another objective only
     assert out["knowledge_candidates"] and all(c["citations"] for c in out["knowledge_candidates"])
-    assert out["knowledge_candidates"][0]["key"] == "Mulch"
+    # U9 (B5): documented ∩ ranked = ∅ — Mulch is ranked, so it is not documented too.
+    ranked = set(_names(out["model"]))
+    assert all(c["component"] not in ranked for c in out["knowledge_candidates"])
+    assert all(not (set(c["practices"]) & ranked) for c in out["knowledge_candidates"])
     assert out["funnel"]["guidance"]["retrieved"] == 5
+
+
+def _names(payload: dict[str, Any]) -> list[str]:
+    return [r["practice"] for r in payload["details"]["ranked"]]
 
 
 def test_no_evidence_error_is_knowledge_led_not_an_exception():
@@ -101,7 +116,8 @@ def test_hybrid_note_and_knowledge_led_text_carry_counts_only():
     assert note.startswith(" Field-trial evidence for this request is thin") and f"{n} documented" in note
     assert adv.hybrid_note({"mode": ev.MODEL_LED, "knowledge_candidates": [{}]}, "en") == ""
     text = adv.knowledge_led_text(out, ECWM, "soil loss", "en")
-    assert text.startswith("There is no field-trial evidence for **" + ECWM) and "- **Mulch**: " in text
+    first = out["knowledge_candidates"][0]["label"]
+    assert text.startswith("There is no field-trial evidence for **" + ECWM) and f"- **{first}**: " in text
     assert "%" not in text  # never an effect
     assert all(ev.rationale_numbers_are_counts(c) for c in out["knowledge_candidates"])
 
@@ -110,22 +126,31 @@ def test_reasons_render_in_the_three_languages():
     reason = {"key": "mode.reason.strong_evidence", "params": {"practice": "Mulch", "n_studies": 4, "n_obs": 12}}
     for lang in ("en", "am", "om"):
         text = adv.reason_text(reason, lang)
-        assert "Mulch" in text and "4" in text and "12" in text
+        # U9 (D11): the practice appears under its display name in that language.
+        from app.services.practice_names import practice_name
+
+        assert practice_name("Mulch", lang) in text and "4" in text and "12" in text
 
 
 @pytest.mark.asyncio
-async def test_chat_emits_the_advisory_event_and_keeps_the_model_led_narrative_byte_identical(monkeypatch):
+async def test_chat_emits_the_advisory_event_and_answers_in_the_plain_register(monkeypatch):
     from app.config import get_settings
     from app.services import chat_service as cs
-    from app.services import slot_extraction as se
 
     monkeypatch.setattr(get_settings(), "openai_api_key", "")
     payload = model(["Mulch", "Physical SWC Measures"])
     gq = FakeGraphQuery({("Mulch", "soil loss"): summary(4, {"Dry Kolla": 12})})
-    monkeypatch.setattr(cs, "_advise_from_slots", lambda slots, top_n, language: adv.advise(
-        8.38, 39.37, ECWM, "soil loss", top_n=top_n, language=language, graph_query=gq,
-        recommend_fn=lambda **kw: payload, context_fn=lambda la, lo: payload["details"]["context"],
-        pool_fn=lambda fam: POOL, indicators=INDICATORS, settings=_settings()))
+    captured: dict[str, Any] = {}
+
+    def fake_advise(slots, top_n, language):
+        captured["result"] = adv.advise(
+            8.38, 39.37, ECWM, "soil loss", top_n=top_n, language=language, graph_query=gq,
+            recommend_fn=lambda **kw: payload, context_fn=lambda la, lo: payload["details"]["context"],
+            pool_fn=lambda fam: POOL, indicators=INDICATORS, settings=_settings(),
+            stats_fn=lambda: ({}, {"soil loss": 0.6}), rmse_fn=lambda: {"soil loss": 0.4})
+        return captured["result"]
+
+    monkeypatch.setattr(cs, "_advise_from_slots", fake_advise)
     events = []
     async for chunk in cs.stream_chat("My farm is at 8.38, 39.37 and I want to reduce erosion.", [], None, 3, "en"):
         events.append(json.loads(chunk[len("data: "):]))
@@ -133,7 +158,11 @@ async def test_chat_emits_the_advisory_event_and_keeps_the_model_led_narrative_b
     assert types[:3] == ["slots", "advisory", "recommendation"] and types[-1] == "done"
     assert events[1]["data"]["mode"] == ev.MODEL_LED and events[1]["data"]["knowledge_candidates"] == []
     narrative = "".join(e.get("text", "") for e in events if e["type"] == "token")
-    assert narrative == se.evidence_summary(payload, "en")  # byte-identical to pre-P9
+    # U9: the default answer is the plain register built from the evidence
+    # bundles (decision §6), opened by the pin's own context facts; no markers.
+    rec = next(e["data"] for e in events if e["type"] == "recommendation")
+    assert narrative == cs.chat_summary(captured["result"]["practices"], rec, "en")
+    assert narrative.startswith("For your **Dry Kolla** area") and "[" not in narrative
 
 
 @pytest.mark.asyncio

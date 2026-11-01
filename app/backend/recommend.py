@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-recommend.py  -  the agroecological practice recommender (AgroAdvisor-ET engine).
+recommend.py  -  the agroecological practice recommender (AgroEcoAdvisor engine).
 
 recommend(lat, lon, practice_family, indicator, crop_type=None, top_n=3) -> dict
 

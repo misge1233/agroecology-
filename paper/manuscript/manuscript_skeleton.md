@@ -1,8 +1,20 @@
 # Manuscript skeleton — Computers and Electronics in Agriculture
 
 **Working title:**
-**AgroAdvisor-ET: coupling meta-analytic machine learning with retrieval-augmented
-generation for evidence-grounded agroecological practice recommendation in Ethiopia**
+**AgroEcoAdvisor: evidence fusion of meta-analytic machine learning, field-study evidence, retrieval-augmented generation and a knowledge graph for agroecological advisory — a case study from Ethiopia**
+
+*Framing (amended 1 Nov 2026, `docs/decisions/evidence_fusion.md` §9):* the contribution is
+**evidence fusion**: a context-conditioned meta-analytic model, study-level field evidence,
+RAG and a knowledge graph, combined by explicit lead-source rules (model-led, study-led,
+documented) with a provenance guarantee for every number. Evaluation: the lead-source
+distribution over the 35 challenge × objective cells, ordering metrics (conservative vs
+model), guard faithfulness, citation correctness and, later, an expert review.
+
+*Previous working title:* "AgroEcoAdvisor: coupling meta-analytic machine learning,
+retrieval-augmented generation and a knowledge graph for evidence-grounded agroecological
+advisory — a case study from Ethiopia".
+
+*Formerly AgroAdvisor-ET (renamed 31 Oct 2026).*
 
 *Reserve titles:* "From evidence to advisory: a hybrid machine-learning and
 retrieval-augmented-generation system for context-specific agroecological practice
@@ -74,7 +86,7 @@ significance (transferable architecture for evidence-grounded advisory).
 - [ ] Cite-or-silent generation; numeric-guardrail
 - Source material: docs/decisions/rag_design.md
 
-## 7. System: AgroAdvisor-ET
+## 7. System: AgroEcoAdvisor
 - [ ] Architecture (Fig. 1); FastAPI wrap-never-fork; SSE chat; Next.js UI; honesty-by-design table
 - Source material: deck 15–19, app/ code
 
@@ -133,4 +145,4 @@ per-indicator metrics · T4 RAG corpus coverage & evaluation results
 | "R² is only 0.19" | ranking framing; beats mean-baseline; grouped CV is honest where random splits inflate; confidence flags |
 | "Source imbalance" | per-source metrics; source kept as diagnostic, never a feature |
 | "Practice taxonomy mixed granularity" | crosswalk section + explicit limitation + roadmap |
-| "LLM hallucination risk" | architecture: model owns numbers; cite-or-silent; guardrail regex; faithfulness metrics |
+| "LLM hallucination risk" | architecture: evidence fusion with a provenance object for every number; cite-or-silent; sentence-level numeric guard (v2); faithfulness metrics |

@@ -18,18 +18,23 @@ import {
 } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
 import { useExplainOptional } from "@/components/evidence-panel";
+import { useCitations } from "@/components/citations";
+import { sourceKey, uniqueSources } from "@/lib/citation-registry";
+import { displayText } from "@/lib/numbers";
+import { indicatorNoun } from "@/i18n/glossary";
 import type { AdvisorParams } from "./advisor-state";
 import { candidateLabel, citationLabel } from "./knowledge-candidates";
 import { sourceModeOf, useReasonText } from "./mode-badge";
+import { usePlaceLabel } from "./use-place";
 
-const CONTEXT_FIELDS: { key: string; k: string; unit: "mm" | "m" | "percent" | "days" | "celsius" | null; digits: number }[] = [
+const CONTEXT_FIELDS: { key: string; k: string; unit: "mm" | "m" | "percent" | "days" | "celsius" | "gkg" | null; digits: number }[] = [
   { key: "Rainfall", k: "rainfall", unit: "mm", digits: 0 },
   { key: "temp_mean_annual", k: "temp", unit: "celsius", digits: 1 },
   { key: "Altitude_r", k: "altitude", unit: "m", digits: 0 },
   { key: "slope", k: "slope", unit: "percent", digits: 1 },
   { key: "soil_clay", k: "clay", unit: "percent", digits: 0 },
   { key: "soil_ph", k: "ph", unit: null, digits: 1 },
-  { key: "soil_soc", k: "soc", unit: null, digits: 1 },
+  { key: "soil_soc", k: "soc", unit: "gkg", digits: 1 },
   { key: "lgp_days", k: "lgp", unit: "days", digits: 0 },
 ];
 
@@ -62,6 +67,8 @@ export function PrintSheet({
   const tb = useTranslations("evidence.evidenceBase");
   const tsum = useTranslations("advisor.summary");
   const tc = useTranslations("common");
+  const tf = useTranslations("advisor.results.card.fusion");
+  const { label: refOf } = useCitations();
   const locale = useLocale() as Locale;
   const format = useFormatter();
   const reasonText = useReasonText();
@@ -80,11 +87,13 @@ export function PrintSheet({
     goal_direction: "",
   };
   const ctx = data?.details.context ?? advisory?.context ?? {};
+  const place = usePlaceLabel(query.lat || null, query.lon || null);
   const belt = typeof ctx.aez_belt === "string" ? ctx.aez_belt : null;
   const explain = explainCtx?.state.status === "ready" ? explainCtx.state.result : null;
   const ragReady = !!explainCtx?.ragReady;
   const graphReady = !!explainCtx?.graphReady;
   const byPractice = new Map((data?.details.ranked ?? []).map((r) => [r.practice, r]));
+  const bundles = new Map((advisory?.practices ?? []).map((b) => [b.practice, b]));
   const citationsFor = (practice: string, tier: "evidence" | "guidance") => {
     if (!explain) return [];
     const all = explain.citations.filter((c) => (tier === "guidance") === (c.tier === "guidance"));
@@ -110,15 +119,19 @@ export function PrintSheet({
         <dl className="print-sheet__dl">
           <dt>{tsum("location")}</dt>
           <dd className="tabular">
-            {query.lat}, {query.lon}
+            {place ?? `${query.lat}, ${query.lon}`}
             {belt ? ` · ${tcx("belt")}: ${aezName(belt, locale)}` : ""}
           </dd>
           <dt>{tsum("challenge")}</dt>
           <dd>{familyName(query.practice_family, locale)}</dd>
           <dt>{tsum("objective")}</dt>
           <dd>{indicatorLabel(query.indicator, locale)}</dd>
-          <dt>{tsum("crop")}</dt>
-          <dd>{query.crop_type ?? tsum("anyCrop")}</dd>
+          {query.crop_type ? (
+            <>
+              <dt>{tsum("crop")}</dt>
+              <dd>{query.crop_type}</dd>
+            </>
+          ) : null}
         </dl>
       </section>
 
@@ -155,10 +168,18 @@ export function PrintSheet({
             {data.recommendations.map((item, i) => {
               const ranked = byPractice.get(item.practice);
               const name = practiceName(item.practice, locale);
-              const effect =
-                locale === "en" || !ranked
+              // U9: the same fused headline as the card (D1), in the page language only (D11).
+              const b = bundles.get(item.practice);
+              const head = b?.headline;
+              const noun = indicatorNoun(data.query.indicator, locale);
+              const effect = head
+                ? b?.disagreement && head.range?.length === 2
+                  ? tf("headlineVaries", { lo: head.range[0].display, hi: head.range[1].display, indicator: noun })
+                  : tf("headline", { value: displayText(Math.abs(head.value)), dir: head.value < 0 ? "less" : "more", indicator: noun })
+                : locale === "en" || !ranked
                   ? item.effect
                   : effectSentence(ranked.pct_change, data.query.goal_direction, data.query.indicator, locale);
+              const lead = b ? (b.lead_source === "study" ? tf("sourceStudy", { where: b.match }) : tf("sourceModel")) : null;
               const entry = explain?.evidence_base?.[item.practice];
               const studies = citationsFor(item.practice, "evidence");
               const guidance = citationsFor(item.practice, "guidance");
@@ -166,11 +187,10 @@ export function PrintSheet({
                 <li key={item.practice}>
                   <h3>
                     {i + 1}. {name}
-                    {name !== item.practice ? <span className="print-sheet__muted"> ({item.practice})</span> : null}
                   </h3>
                   <p>
                     <strong>{tp("effect")}:</strong> {effect}
-                    {locale !== "en" ? <span className="print-sheet__muted"> · {item.effect}</span> : null}
+                    {lead ? <span className="print-sheet__muted"> · {lead}</span> : null}
                   </p>
                   <p>
                     <strong>{tcard("confidence")}:</strong> {confidenceLabel(data.details.confidence, locale)}: {confidenceMeaning(data.details.confidence, locale)}
@@ -189,11 +209,11 @@ export function PrintSheet({
                     <div>
                       <strong>{tp("sources")}:</strong>
                       <ul className="print-sheet__sources">
-                        {[...studies, ...guidance].map((c, k) => (
-                          <li key={`${c.ref ?? ""}${c.era_code ?? c.url ?? c.title ?? k}`}>
-                            {c.ref ? `[${c.ref}] ` : ""}
+                        {uniqueSources([...studies, ...guidance]).map((c, k) => (
+                          <li key={sourceKey(c, k)}>
+                            {refOf(c) ? `[${refOf(c)}] ` : ""}
                             {c.tier === "guidance" ? `[${tev("tier.guidance")}] ` : ""}
-                            {[c.era_code, c.title ?? tev("untitledStudy"), c.year != null ? String(c.year) : null].filter(Boolean).join(" · ")}
+                            {c.reference ?? [c.era_code, c.title ?? tev("untitledStudy"), c.year != null ? String(c.year) : null].filter(Boolean).join(" · ")}
                             {c.doi ? ` · doi:${c.doi}` : c.url ? ` · ${c.url}` : ""}
                           </li>
                         ))}
@@ -218,7 +238,6 @@ export function PrintSheet({
               <li key={c.key}>
                 <h3>
                   {i + 1}. {candidateLabel(c, locale)}
-                  {c.component && candidateLabel(c, locale) !== c.component ? <span className="print-sheet__muted"> ({c.component})</span> : null}
                 </h3>
                 <p>
                   <strong>{tdoc("why")}:</strong> {c.rationale_text}
@@ -233,8 +252,8 @@ export function PrintSheet({
                   <div>
                     <strong>{tp("sources")}:</strong>
                     <ul className="print-sheet__sources">
-                      {c.citations.map((cit, k) => (
-                        <li key={`${cit.ref ?? ""}${cit.era_code ?? cit.url ?? cit.title ?? k}`}>
+                      {uniqueSources(c.citations).map((cit, k) => (
+                        <li key={sourceKey(cit, k)}>
                           {cit.ref ? `[${cit.ref}] ` : ""}
                           {cit.tier !== "evidence" ? `[${tierLabel(cit.tier, locale)}] ` : ""}
                           {citationLabel(cit, tev as never)}
@@ -265,9 +284,7 @@ export function PrintSheet({
           </ul>
         ) : null}
         {data ? (
-          <p className="print-sheet__muted" lang="en">
-            {data.details.note}
-          </p>
+          <p className="print-sheet__muted">{t("engineNote")}</p>
         ) : null}
         <p>
           <em>{t("disclaimer")}</em>

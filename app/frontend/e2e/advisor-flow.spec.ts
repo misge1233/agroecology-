@@ -24,6 +24,11 @@ for (const locale of ["en", "am", "om"] as Locale[]) {
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
     await expect(page.getByRole("heading", { level: 2, name: m.advisor.location.title })).toBeVisible();
     await waitForAdvisorReady(page);
+    // The page opens at the top (title and stepper visible), like every page.
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    await expect(page.getByRole("heading", { level: 1, name: m.advisor.title })).toBeInViewport();
+    // Four steps for every challenge: Location, Challenge, Objective, Results.
+    await expect(page.getByText(m.advisor.stepOf.replace("{current}", "1").replace("{total}", "4")).first()).toBeAttached();
 
     // Step 1 — coordinates by keyboard (no map interaction needed).
     const lat = page.getByLabel(m.advisor.location.latitude, { exact: true });
@@ -50,8 +55,8 @@ for (const locale of ["en", "am", "om"] as Locale[]) {
       .click();
     await expect(page).toHaveURL(/indicator=soil\+loss/);
 
-    // Step 4 — crop optional; score.
-    await expect(page.getByRole("heading", { level: 2, name: m.advisor.crop.title })).toBeVisible();
+    // Same step: no crop field outside crop production; an explicit submit scores.
+    await expect(page.getByTestId("crop-field")).toHaveCount(0);
     await page.getByRole("button", { name: m.advisor.getRecommendation }).click();
 
     // Results — context, ranked cards, source badge, honesty copy.
@@ -62,9 +67,10 @@ for (const locale of ["en", "am", "om"] as Locale[]) {
     await expect(cards.first()).toBeVisible();
     await expect(page.getByRole("button", { name: new RegExp(m.advisor.results.source.label) })).toBeVisible();
     await expect(page.getByText(m.advisor.results.disclaimer).first()).toBeVisible();
-    // The effect sentence is the API's own (0b wording) — never recomputed.
-    if (locale === "en") await expect(cards.first()).toContainText(/~\d+% reduction in soil loss/);
-    else await expect(cards.first()).toContainText(/~\d+%/);
+    // U9 (D1): the plain fused headline, a number from the evidence bundle, with its source chip.
+    if (locale === "en") await expect(cards.first()).toContainText(/About \d+% less soil loss/);
+    else await expect(cards.first()).toContainText(/\d+%|%\d+/);
+    await expect(cards.first()).toContainText(m.advisor.results.card.fusion.sourceStudy.split(" · ")[0]);
     // P9: the page asks /advise (which wraps /recommend) in the UI language.
     const adviseCall = calls.find((c) => c.url === "/advise");
     expect(adviseCall?.body).toMatchObject({ lat: 8.38, lon: 39.37, indicator: "soil loss", language: locale });
@@ -145,11 +151,32 @@ test("print sheet carries the honesty copy, the citations and the share link", a
   await expect(sheet).toContainText(en.advisor.results.disclaimer);
   await expect(sheet).toContainText(en.advisor.results.print.footer.slice(0, 40));
   await expect(sheet).toContainText(en.advisor.results.print.shareLink);
-  await expect(sheet).toContainText(/~\d+% reduction in soil loss/);
+  await expect(sheet).toContainText(/About \d+% less soil loss/);
   await expect(sheet).toContainText(en.advisor.results.print.sources);
   await expect(sheet).toContainText("doi:");
   // The interactive view and the app chrome are hidden in print.
   await expect(page.getByRole("banner")).toBeHidden();
   await expect(page.getByRole("button", { name: en.advisor.results.print.savePdf })).toBeHidden();
   await page.screenshot({ path: "test-results/print-preview.png", fullPage: true });
+});
+
+test("crop production offers an optional crop on the objective step; other challenges do not", async ({ page }) => {
+  await mockApi(page);
+  await page.goto("/en/advisor?lat=8.38&lon=39.37&family=Crop+production+and+management");
+  await expect(page.getByRole("heading", { level: 2, name: en.advisor.objective.title })).toBeVisible();
+  const field = page.getByTestId("crop-field");
+  await expect(field).toBeVisible();
+  // The submit waits for an objective; the crop stays optional.
+  const submit = page.getByRole("button", { name: en.advisor.getRecommendation });
+  await expect(submit).toBeDisabled();
+  await page.getByRole("group", { name: en.advisor.objective.title }).getByRole("button").first().click();
+  await expect(submit).toBeEnabled();
+  await field.getByRole("combobox").click();
+  await page.getByRole("option").first().click();
+  await expect(page).toHaveURL(/crop=/);
+  // Switching to another challenge drops the crop and hides the field.
+  await page.getByRole("button", { name: new RegExp(en.advisor.steps.challenge) }).first().click();
+  await page.getByRole("group", { name: en.advisor.challenge.title }).getByRole("button").nth(3).click();
+  await expect(page).not.toHaveURL(/crop=/);
+  await expect(page.getByTestId("crop-field")).toHaveCount(0);
 });

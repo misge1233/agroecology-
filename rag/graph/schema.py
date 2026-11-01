@@ -1,4 +1,4 @@
-"""Node and edge contract for the AgroAdvisor-ET knowledge graph (P6a).
+"""Node and edge contract for the AgroEcoAdvisor knowledge graph (P6a).
 
 The graph is a ``networkx.MultiDiGraph`` serialized as node-link JSON. This
 module is the single statement of what may appear in it; ``build_graph.py``
@@ -12,7 +12,8 @@ Two rules are enforced here rather than left to convention:
 2. **Numbers on edges are aggregates, never generations.** The only numeric
    edge attributes are on ``REPORTS_EFFECT`` and ``REPORTS_IMPACT``;
    ``REPORTS_EFFECT`` holds plain aggregations of dataset rows (the ML
-   model's own evidence base) and ``REPORTS_IMPACT`` holds the rating a
+   model's own evidence base; since U9 the study-level effects that can
+   lead a practice under evidence fusion, always shown with provenance) and ``REPORTS_IMPACT`` holds the rating a
    WOCAT compiler recorded. Neither is produced by a language model
    (CLAUDE.md doctrine 1).
 

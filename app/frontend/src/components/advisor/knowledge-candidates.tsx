@@ -8,6 +8,8 @@ import type { Locale } from "@/i18n/routing";
 import type { KnowledgeCandidate, KnowledgeCitation, KnowledgeSource } from "@/lib/types";
 import { Badge, tierVariant } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { CitationsScope, useCitations } from "@/components/citations";
+import { sourceKey, uniqueSources } from "@/lib/citation-registry";
 
 const SOURCE_ICON: Record<KnowledgeSource, typeof BookOpen> = {
   evidence_other_objectives: BookOpen,
@@ -37,11 +39,13 @@ function Citation({ c }: { c: KnowledgeCitation }) {
   const t = useTranslations("evidence");
   const ta = useTranslations("a11y");
   const locale = useLocale() as Locale;
+  const { label: refOf } = useCitations();
   const label = citationLabel(c, t);
+  const ref = refOf(c);
   const href = c.url ?? (c.doi ? `https://doi.org/${c.doi}` : null);
   const body = (
     <>
-      {c.ref ? <span className="tabular font-semibold">[{c.ref}]</span> : null}
+      {ref ? <span className="tabular font-semibold">[{ref}]</span> : null}
       <Badge variant={tierVariant(c.tier)} className="px-1.5 py-0 text-[10px]">
         {tierLabel(c.tier, locale)}
       </Badge>
@@ -57,39 +61,53 @@ function Citation({ c }: { c: KnowledgeCitation }) {
   const cls = "inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-text";
   return href ? (
     <li className="max-w-full">
-      <a href={href} target="_blank" rel="noopener noreferrer" title={c.snippet ?? undefined} className={`${cls} hover:border-secondary`}>
+      <a href={href} target="_blank" rel="noopener noreferrer" title={c.reference ?? c.snippet ?? undefined} className={`${cls} hover:border-secondary`}>
         {body}
       </a>
     </li>
   ) : (
-    <li className={cls} title={c.snippet ?? undefined}>
+    <li className={cls} title={c.reference ?? c.snippet ?? undefined}>
       {body}
     </li>
   );
 }
 
 const VISIBLE_CITATIONS = 6;
+/** Relevance to the requested objective first (C4): guidance retrieved for it, then records, then studies of other objectives. */
+const TIER_ORDER: Record<string, number> = {
+  guidance: 0,
+  practice: 1,
+  evidence: 2,
+};
+export function sortCitations(citations: KnowledgeCitation[]): KnowledgeCitation[] {
+  return uniqueSources(citations)
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => (TIER_ORDER[a.c.tier] ?? 3) - (TIER_ORDER[b.c.tier] ?? 3) || a.i - b.i)
+    .map(({ c }) => c);
+}
 
 /** The citation chips of one card; long lists fold behind "Show all (n)". */
 function CitationList({ citations }: { citations: KnowledgeCitation[] }) {
   const t = useTranslations("advisor.results.documented");
+  const tf = useTranslations("advisor.results.card.fusion");
   const [open, setOpen] = useState(false);
-  const shown = open ? citations : citations.slice(0, VISIBLE_CITATIONS);
+  const sorted = sortCitations(citations);
+  const shown = open ? sorted : sorted.slice(0, VISIBLE_CITATIONS);
   return (
     <div className="mt-3">
       <ul className="flex flex-wrap gap-1.5" aria-label={t("sources.label")}>
         {shown.map((cit, k) => (
-          <Citation key={`${cit.ref ?? k}-${cit.era_code ?? cit.url ?? cit.title ?? k}`} c={cit} />
+          <Citation key={sourceKey(cit, k)} c={cit} />
         ))}
       </ul>
-      {citations.length > VISIBLE_CITATIONS ? (
+      {sorted.length > VISIBLE_CITATIONS ? (
         <button
           type="button"
           className="mt-1.5 text-xs font-medium text-secondary-text underline-offset-2 hover:underline"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
         >
-          {open ? t("sources.showFewer") : t("sources.showAll", { n: citations.length })}
+          {open ? t("sources.showFewer") : tf("moreSources", { n: sorted.length - VISIBLE_CITATIONS })}
         </button>
       ) : null}
     </div>
@@ -122,74 +140,81 @@ export function KnowledgeCandidates({
     );
   }
   return (
-    <section aria-labelledby="documented-title" data-testid="documented-practices" className="space-y-3">
-      <div>
-        <h3 id="documented-title" className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary-text">
-          {t("title")}
-        </h3>
-        <p className="mt-1 text-sm text-muted">{mode === "hybrid" ? t("introHybrid") : t("introKnowledge")}</p>
-      </div>
-      <ol className={compact ? "space-y-2" : "space-y-3"}>
-        {candidates.map((c, i) => (
-          <li key={c.key}>
-            <Card className="border-secondary/50 p-4" data-testid="documented-card">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline-secondary" className="tabular">
-                  {t("rank", { rank: i + 1 })}
-                </Badge>
-                {c.sources.map((s) => {
-                  const Icon = SOURCE_ICON[s];
-                  return (
-                    <Badge key={s} variant={tierVariant(SOURCE_TIER[s])} className="gap-1">
-                      <Icon className="h-3 w-3" aria-hidden />
-                      {t(`source.${s}`)}
-                    </Badge>
-                  );
-                })}
-              </div>
-              <h4 className="mt-2 text-lg leading-tight">{candidateLabel(c, locale)}</h4>
-              {c.component && candidateLabel(c, locale) !== c.component ? (
-                <p className="text-xs text-muted" lang="en">
-                  {c.component}
-                </p>
-              ) : null}
-              <p className="mt-2 text-sm text-text" data-testid="candidate-rationale">
-                <span className="font-medium">{t("why")}: </span>
-                {c.rationale_text}
-              </p>
-              <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-                <div>
-                  <dt className="inline">{t("support.documents")}: </dt>
-                  <dd className="inline tabular">{c.support.n_documents}</dd>
+    <CitationsScope lists={[candidates.flatMap((c) => c.citations)]}>
+      <section aria-labelledby="documented-title" data-testid="documented-practices" className="space-y-3">
+        <div>
+          <h3 id="documented-title" className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary-text">
+            {t("title")}
+          </h3>
+          <p className="mt-1 text-sm text-muted">{mode === "hybrid" ? t("introHybrid") : t("introKnowledge")}</p>
+        </div>
+        <ol className={compact ? "space-y-2" : "space-y-3"}>
+          {candidates.map((c, i) => (
+            <li key={c.key}>
+              <Card className="border-secondary/50 p-4" data-testid="documented-card">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline-secondary" className="tabular">
+                    {t("rank", { rank: i + 1 })}
+                  </Badge>
+                  {c.sources.map((s) => {
+                    const Icon = SOURCE_ICON[s];
+                    return (
+                      <Badge key={s} variant={tierVariant(SOURCE_TIER[s])} className="gap-1">
+                        <Icon className="h-3 w-3" aria-hidden />
+                        {t(`source.${s}`)}
+                      </Badge>
+                    );
+                  })}
                 </div>
-                {c.support.n_passages > 0 ? (
+                <h4 className="mt-2 text-lg leading-tight">{candidateLabel(c, locale)}</h4>
+                <p className="mt-2 text-sm text-text" data-testid="candidate-rationale">
+                  <span className="font-medium">{t("why")}: </span>
+                  {c.rationale_text}
+                </p>
+                <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
                   <div>
-                    <dt className="inline">{t("support.passages")}: </dt>
-                    <dd className="inline tabular">{c.support.n_passages}</dd>
-                  </div>
-                ) : null}
-                {Object.keys(c.support.other_objectives).length > 0 ? (
-                  <div>
-                    <dt className="inline">{t("support.otherObjectives")}: </dt>
-                    <dd className="inline">
-                      {Object.entries(c.support.other_objectives)
-                        .map(([k, n]) => `${indicatorLabel(k, locale)} (${n})`)
-                        .join(", ")}
+                    <dt className="sr-only">{t("support.documents")}</dt>
+                    <dd className="inline tabular">
+                      {[
+                        c.support.n_studies > 0
+                          ? t("support.fieldStudies", {
+                              n: c.support.n_studies,
+                            })
+                          : null,
+                        c.support.n_guidance_documents > 0
+                          ? t("support.guidanceDocs", {
+                              n: c.support.n_guidance_documents,
+                            })
+                          : null,
+                        c.record ? t("support.records", { n: 1 }) : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </dd>
                   </div>
+                  {Object.keys(c.support.other_objectives).length > 0 ? (
+                    <div>
+                      <dt className="inline">{t("support.otherObjectives")}: </dt>
+                      <dd className="inline">
+                        {Object.entries(c.support.other_objectives)
+                          .map(([k, n]) => `${indicatorLabel(k, locale)} (${n})`)
+                          .join(", ")}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+                {c.practices.length > 0 ? (
+                  <p className="mt-2 text-xs text-muted">
+                    {t("mapsTo")}: {c.practices.map((p) => practiceName(p, locale)).join(" · ")}
+                  </p>
                 ) : null}
-              </dl>
-              {c.practices.length > 0 ? (
-                <p className="mt-2 text-xs text-muted">
-                  {t("mapsTo")}: {c.practices.map((p) => practiceName(p, locale)).join(" · ")}
-                </p>
-              ) : null}
-              {!compact ? <CitationList citations={c.citations} /> : null}
-            </Card>
-          </li>
-        ))}
-      </ol>
-      <p className="text-xs italic text-muted">{t("disclaimer")}</p>
-    </section>
+                {!compact ? <CitationList citations={c.citations} /> : null}
+              </Card>
+            </li>
+          ))}
+        </ol>
+        <p className="text-xs italic text-muted">{t("disclaimer")}</p>
+      </section>
+    </CitationsScope>
   );
 }

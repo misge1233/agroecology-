@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowRight, BookOpen, Database, Globe2, Library, Mail } from "lucide-react";
+import { ArrowRight, BookOpen, Database, FileText, FlaskConical, Globe2, Library, Mail, Mic, Quote, Scale, Split } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { confidenceLabel } from "@/i18n/glossary";
@@ -15,8 +15,24 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title") };
 }
 
-/** Public contact address for the AgroAdvisor-ET team (owner-provided, U8). */
+/** Public contact address for the AgroEcoAdvisor team (owner-provided, U8). */
 const CONTACT_EMAIL = "m.tuse@cgiar.org";
+
+/** How the advisor decides (U9): which evidence leads, and what happens when sources disagree. */
+const DECIDES = [
+  { key: "model", icon: Database, tone: "border-primary text-primary" },
+  { key: "study", icon: FlaskConical, tone: "border-accent text-accent-text" },
+  { key: "documented", icon: FileText, tone: "border-secondary text-secondary-text" },
+  { key: "disagree", icon: Split, tone: "border-warning text-warning-text" },
+] as const;
+
+const LEGAL = [
+  { key: "licences", icon: Scale },
+  { key: "privacy", icon: Mic },
+] as const;
+
+/** Build version, injected by next.config from package.json. */
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "";
 
 const SOURCES = [
   { key: "evidence", icon: Database },
@@ -82,8 +98,31 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         </div>
       </section>
 
+      {/* How the advisor decides */}
+      <section id="decides" aria-labelledby="decides-title" className="scroll-mt-20 border-t border-border bg-surface-2 py-16 sm:py-20">
+        <div className="container-page">
+          <div className="max-w-3xl">
+            <h2 id="decides-title" className="text-3xl">
+              {t("decides.title")}
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-muted">{t("decides.body")}</p>
+          </div>
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {DECIDES.map(({ key, icon: Icon, tone }) => (
+              <li key={key} className="flex flex-col rounded-card border border-border bg-surface p-6 shadow-1">
+                <span className={cn("flex h-11 w-11 items-center justify-center rounded-full border-2", tone)}>
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <h3 className="mt-5 text-base font-semibold">{t(`decides.${key}.title`)}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{t(`decides.${key}.body`)}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* How to read confidence */}
-      <section id="confidence" aria-labelledby="confidence-title" className="scroll-mt-20 border-y border-border bg-surface-2 py-16 sm:py-20">
+      <section id="confidence" aria-labelledby="confidence-title" className="scroll-mt-20 py-16 sm:py-20">
         <div className="container-page">
           <div className="max-w-3xl">
             <h2 id="confidence-title" className="text-3xl">
@@ -108,7 +147,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       </section>
 
       {/* Data sources */}
-      <section id="sources" aria-labelledby="sources-title" className="scroll-mt-20 py-16 sm:py-20">
+      <section id="sources" aria-labelledby="sources-title" className="scroll-mt-20 border-y border-border bg-surface-2 py-16 sm:py-20">
         <div className="container-page">
           <h2 id="sources-title" className="text-3xl">
             {t("sources.title")}
@@ -131,6 +170,42 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Licences, privacy and citation */}
+      <section id="legal" aria-labelledby="legal-title" className="scroll-mt-20 py-16 sm:py-20">
+        <div className="container-page">
+          <h2 id="legal-title" className="text-3xl">
+            {t("legal.title")}
+          </h2>
+          <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            {LEGAL.map(({ key, icon: Icon }) => (
+              <article key={key} className="flex flex-col rounded-card border border-border bg-surface p-6 shadow-1">
+                <span className="flex h-11 w-11 items-center justify-center rounded-control bg-primary-soft text-primary">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <h3 className="mt-5 text-base font-semibold">{t(`legal.${key}.title`)}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{t(`legal.${key}.body`)}</p>
+              </article>
+            ))}
+            <article id="cite" className="flex scroll-mt-20 flex-col rounded-card border border-border bg-surface p-6 shadow-1">
+              <div className="flex items-start justify-between gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-control bg-primary-soft text-primary">
+                  <Quote className="h-5 w-5" aria-hidden />
+                </span>
+                {APP_VERSION ? (
+                  <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted tabular">
+                    {t("legal.version", { version: APP_VERSION })}
+                  </span>
+                ) : null}
+              </div>
+              <h3 className="mt-5 text-base font-semibold">{t("legal.cite.title")}</h3>
+              <p className="mt-2 select-all rounded-control bg-surface-2 p-3 text-sm leading-relaxed text-text">
+                {t("legal.cite.body", { year: new Date().getFullYear(), version: APP_VERSION || "0.1.0" })}
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 

@@ -88,19 +88,17 @@ for (const locale of ["en", "am"] as const) {
   });
 }
 
-test("chat: a hybrid answer names the documented practices under the ranking, without effects", async ({ page }) => {
+test("chat: a hybrid answer is plain conversation; the ranking and documented practices are one link away", async ({ page }) => {
   await mockApi(page);
   await page.goto("/en/chat");
   await page.getByRole("textbox", { name: en.chat.message }).fill("My farm is at 8.38, 39.37 and I want to reduce erosion.");
   await page.getByRole("button", { name: en.chat.ask }).click();
-  const rec = page.getByTestId("chat-recommendation");
-  await expect(rec).toBeVisible();
-  await expect(rec.getByTestId("mode-badge").first()).toHaveAttribute("data-mode", "hybrid");
-  const docs = rec.getByTestId("chat-documented");
-  await expect(docs).toBeVisible();
-  const label = (advisoryEvent("hybrid") as { knowledge_candidates: { label: string }[] }).knowledge_candidates[0].label;
-  await expect(docs).toContainText(label);
-  expect(await docs.innerText()).not.toMatch(NUMBERS);
+  const open = page.getByTestId("chat-open-advisor");
+  await expect(open).toBeVisible();
+  // No card, badge or documented list under the answer (1 Nov 2026).
+  await expect(page.getByTestId("chat-recommendation")).toHaveCount(0);
+  await expect(page.getByTestId("mode-badge")).toHaveCount(0);
+  await expect(open).toHaveAttribute("href", /family=Erosion.*indicator=soil\+loss/);
   expect(await page.locator("body").innerText()).not.toMatch(MOJIBAKE);
 });
 
@@ -118,14 +116,10 @@ test("chat: a knowledge-led answer has no ranking, lists documented practices an
   await page.goto("/en/chat");
   await page.getByRole("textbox", { name: en.chat.message }).fill("My farm is at 8.38, 39.37; erosion control; I want more income.");
   await page.getByRole("button", { name: en.chat.ask }).click();
-  const turn = page.getByTestId("chat-knowledge-led");
-  await expect(turn).toBeVisible();
-  await expect(page.getByTestId("chat-recommendation")).toHaveCount(0);
-  await expect(turn.getByTestId("mode-badge")).toHaveAttribute("data-mode", "knowledge-led");
-  await expect(turn).toContainText(en.chat.advisory.knowledgeLed);
   // The documented practices are in the reply itself (conversational); the Advisor link carries the slots.
   await expect(page.getByRole("log").getByText(/documented practices are listed instead/)).toBeVisible();
-  await expect(turn.getByRole("link", { name: en.chat.openInAdvisor })).toHaveAttribute("href", /indicator=income/);
+  await expect(page.getByTestId("chat-recommendation")).toHaveCount(0);
+  await expect(page.getByTestId("chat-open-advisor")).toHaveAttribute("href", /indicator=income/);
   expect(await page.locator("body").innerText()).not.toMatch(MOJIBAKE);
 });
 

@@ -5,8 +5,10 @@ import dynamic from "next/dynamic";
 import { BookOpen, ChevronDown, HelpCircle, Sparkles, Wrench } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { RankedItem, RecommendResponse, RecommendationItem } from "@/lib/types";
-import { confidenceLabel, confidenceMeaning, effectSentence, practiceName } from "@/i18n/glossary";
+import type { PracticeEvidence, RankedItem, RecommendResponse, RecommendationItem } from "@/lib/types";
+import { confidenceLabel, confidenceMeaning, effectSentence, familyName, indicatorNoun, practiceName } from "@/i18n/glossary";
+import { displayText } from "@/lib/numbers";
+import { EvidenceWhy } from "./evidence-why";
 import type { Locale } from "@/i18n/routing";
 import { Badge, confidenceVariant } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -23,10 +25,12 @@ const PctChangeChart = dynamic(() => import("@/components/pct-chart").then((m) =
 type Panel = "why" | "evidence" | "howto";
 
 /**
- * One ranked practice. Every number is the model's: the effect sentence is
- * the API's own in English, and in the other languages the same pct_change
- * is placed in a translated frame (never re-estimated); the chart plots
- * details.ranked as returned.
+ * One ranked practice (U9, D1). With an evidence bundle the headline is plain
+ * language ("About 84% less soil loss") from the bundle's headline — the
+ * leading evidence (model or field studies) — with one source chip; "Why
+ * this?" shows every labelled value and its source. Without a bundle (chat
+ * before U9, or no graph) the engine's own effect sentence is shown as before.
+ * No number is re-estimated here; display rounding is the shared rule.
  */
 export function ResultCard({
   item,
@@ -34,12 +38,15 @@ export function ResultCard({
   rank,
   data,
   priority,
+  bundle = null,
 }: {
   item: RecommendationItem;
   ranked: RankedItem | undefined;
   rank: number;
   data: RecommendResponse;
   priority?: boolean;
+  /** U9: the evidence bundle of this practice (from /advise). */
+  bundle?: PracticeEvidence | null;
 }) {
   const t = useTranslations("advisor.results.card");
   const locale = useLocale() as Locale;
@@ -47,7 +54,21 @@ export function ResultCard({
   const { load } = useExplain();
   const [open, setOpen] = useState<Panel | null>(null);
   const name = practiceName(item.practice, locale);
+  const tf = useTranslations("advisor.results.card.fusion");
+  const tr = useTranslations("advisor.results");
   const confidence = data.details.confidence;
+  const noun = indicatorNoun(data.query.indicator, locale);
+  const headline = bundle?.headline;
+  const fusedHeadline = headline
+    ? bundle?.disagreement && headline.range && headline.range.length === 2
+      ? tf("headlineVaries", { lo: headline.range[0].display, hi: headline.range[1].display, indicator: noun })
+      : tf("headline", { value: displayText(Math.abs(headline.value)), dir: headline.value < 0 ? "less" : "more", indicator: noun })
+    : null;
+  const sourceChip = bundle
+    ? bundle.lead_source === "study"
+      ? tf("sourceStudy", { where: bundle.match })
+      : tf("sourceModel")
+    : null;
   const effect =
     locale === "en" || !ranked
       ? item.effect
@@ -89,7 +110,13 @@ export function ResultCard({
                 t("rank", { rank })
               )}
             </Badge>
-            <Badge variant={confidenceVariant(confidence)}>{confidenceLabel(confidence, locale)}</Badge>
+            {sourceChip ? (
+              <Badge variant={bundle?.lead_source === "study" ? "outline-accent" : "outline-primary"} title={tf("sourceHint")}>
+                {sourceChip}
+              </Badge>
+            ) : (
+              <Badge variant={confidenceVariant(confidence)}>{confidenceLabel(confidence, locale)}</Badge>
+            )}
             {ranked ? (
               <span className="text-xs text-muted tabular">{t("observations", { n: ranked.n_evidence })}</span>
             ) : null}
@@ -99,17 +126,27 @@ export function ResultCard({
             <h3 id={`practice-${rank}`} className="text-xl leading-tight sm:text-2xl">
               {name}
             </h3>
-            {name !== item.practice ? (
-              <p className="mt-0.5 text-xs text-muted" lang="en">
-                {item.practice}
-              </p>
-            ) : null}
           </div>
 
-          <p className="text-base text-text" title={locale === "en" ? undefined : t("apiEffect", { effect: item.effect })}>
-            {effect}
-          </p>
-          <p className="text-sm text-muted">{confidenceMeaning(confidence, locale)}</p>
+          {fusedHeadline ? (
+            <p className="text-lg font-semibold text-text">{fusedHeadline}</p>
+          ) : (
+            <p className="text-base text-text" title={locale === "en" ? undefined : t("apiEffect", { effect: item.effect })}>
+              {effect}
+            </p>
+          )}
+          {bundle ? (
+            <ul className="space-y-1 text-sm text-muted">
+              {(bundle.matches_constraints ?? []).map((c) => (
+                <li key={c}>{tf("constraint", { constraint: c })}</li>
+              ))}
+              {bundle.constraint_pick ? <li>{tf("constraintPick")}</li> : null}
+              {bundle.replaces_crop && data.query.crop_type ? <li>{tf("replacesCrop", { crop: data.query.crop_type })}</li> : null}
+              {bundle.caution ? <li className="text-warning-text">{tf("caution")}</li> : null}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{confidenceMeaning(confidence, locale)}</p>
+          )}
 
           <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-3">
             {panels
@@ -140,7 +177,11 @@ export function ResultCard({
 
         {/* Opened panels span the full card width below the summary. */}
         <div className={cn("px-5 sm:px-6", open ? "pb-5 sm:pb-6" : null)}>
-          {open === "why" ? (
+          {open === "why" && bundle ? (
+            <div id={`panel-${rank}-why`} className="rounded-card bg-surface-2 p-4">
+              <EvidenceWhy bundle={bundle} indicator={data.query.indicator} />
+            </div>
+          ) : open === "why" ? (
             <div id={`panel-${rank}-why`} className="space-y-3 rounded-card bg-surface-2 p-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{t("confidence")}</p>
@@ -173,14 +214,14 @@ export function ResultCard({
                   ))}
                 </ul>
               </div>
-              {data.details.ranking_scope ? (
-                <p className="text-xs text-muted" lang="en">
-                  {data.details.ranking_scope}
-                </p>
-              ) : null}
-              <p className="text-xs text-muted" lang="en">
-                {data.details.note}
+              {/* U9 (D11): translated notes, never the engine's English strings. */}
+              <p className="text-xs text-muted">
+                {tr("rankedWithin", { family: familyName(data.query.practice_family, locale) })}
+                {data.details.n_grounded != null
+                  ? ` · ${tr("withEvidence", { grounded: data.details.n_grounded, candidates: data.details.n_candidates })}`
+                  : ""}
               </p>
+              <p className="text-xs text-muted">{tr("engineNote")}</p>
             </div>
           ) : null}
           {open === "evidence" ? (

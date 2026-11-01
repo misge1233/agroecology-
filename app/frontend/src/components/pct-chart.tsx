@@ -53,17 +53,17 @@ export function PctChangeChart({
     <div className="h-56 w-full rounded-card border border-border bg-surface p-3" aria-hidden>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-          <XAxis type="number" tick={{ fill: "var(--muted)", fontSize: 11 }} unit="%" />
-          <YAxis type="category" dataKey="name" width={130} tick={{ fill: "var(--text)", fontSize: 11 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--border))" horizontal={false} />
+          <XAxis type="number" tick={{ fill: "rgb(var(--muted))", fontSize: 11 }} unit="%" />
+          <YAxis type="category" dataKey="name" width={130} tick={{ fill: "rgb(var(--text))", fontSize: 11 }} />
           <Tooltip
-            cursor={{ fill: "var(--surface-2)" }}
+            cursor={{ fill: "rgb(var(--surface-2))" }}
             contentStyle={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
+              background: "rgb(var(--surface))",
+              border: "1px solid rgb(var(--border))",
               borderRadius: 8,
               fontSize: 12,
-              color: "var(--text)",
+              color: "rgb(var(--text))",
             }}
             formatter={(value, _n, item) => {
               const v = typeof value === "number" ? value : Number(value);
@@ -81,10 +81,10 @@ export function PctChangeChart({
                 key={d.practice}
                 fill={
                   d.practice === highlight
-                    ? "var(--primary)"
+                    ? "rgb(var(--primary))"
                     : d.good
-                      ? "var(--chart-3)"
-                      : "var(--chart-5)"
+                      ? "rgb(var(--chart-3))"
+                      : "rgb(var(--chart-5))"
                 }
                 fillOpacity={d.n >= 5 ? 1 : d.n >= 1 ? 0.72 : 0.48}
               />

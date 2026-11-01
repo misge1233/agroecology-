@@ -1,13 +1,15 @@
-# AgroAdvisor-ET — AI-Powered Agroecology+ Solutions
+# AgroEcoAdvisor — AI-Powered Agroecology+ Solutions
 
 **Evidence-grounded agroecological practice recommendation for Ethiopia.**
-A user drops a map pin, states a challenge and an objective — AgroAdvisor-ET ranks
+A user drops a map pin, states a challenge and an objective — AgroEcoAdvisor ranks
 agroecological practices (including CSA) by expected effect from 8,664 paired
 with/without field observations, and explains each recommendation with passages
 retrieved from the peer-reviewed studies the model itself was trained on.
 
-> The model owns the numbers. The RAG layer owns the science behind them.
-> The LLM phrases — it never invents.
+> Every number has a source, and the best evidence leads. The field-trial model,
+> study-level field evidence, retrieved passages, guidance and the knowledge graph
+> are fused per practice (`docs/decisions/evidence_fusion.md`); the LLM phrases
+> and cites, it never invents or alters a number.
 
 Evolved from the **AgroGuide** prototype (see `docs/presentations/`).
 Full project plan: `../research_project_plan.md`.

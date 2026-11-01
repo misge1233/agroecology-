@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Query
 
-from app.schemas import GeocodeResponse
-from app.services.geocode import geocode_place
+from app.schemas import GeocodeResponse, NearestPlaceResponse
+from app.services.geocode import geocode_place, nearest_place
 
 router = APIRouter(tags=["geocode"])
 
@@ -23,3 +23,16 @@ def geocode(q: str = Query(..., min_length=2, max_length=120)) -> GeocodeRespons
     return GeocodeResponse(
         query=q, found=True, name=hit.name, lat=hit.lat, lon=hit.lon, source=hit.source
     )
+
+
+@router.get("/geocode/nearest", response_model=NearestPlaceResponse)
+def nearest(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+) -> NearestPlaceResponse:
+    """Name the town a pin is in or near (offline gazetteer; none beyond 40 km)."""
+    hit = nearest_place(lat, lon)
+    if hit is None:
+        return NearestPlaceResponse(found=False)
+    name, km = hit
+    return NearestPlaceResponse(found=True, name=name, distance_km=round(km, 1))

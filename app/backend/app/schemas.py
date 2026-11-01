@@ -217,6 +217,11 @@ class KnowledgeCitation(BaseModel):
     country: str | None = None
     licence: str | None = None
     chunk_id: str | None = None
+    # U9 (C2/C3): full reference for a dataset study, and the original link of a guidance PDF.
+    reference: str | None = None
+    reference_truncated: bool | None = None
+    compilation: bool | None = None
+    source_url: str | None = None
 
 
 class CandidateSupport(BaseModel):
@@ -243,11 +248,93 @@ class KnowledgeCandidate(BaseModel):
     rationale_text: str
 
 
+class NumberValue(BaseModel):
+    """A number on the wire with its provenance (U9, decision §5)."""
+
+    value: float
+    unit: str | None = None
+    source: Literal["model", "study", "passage", "context", "count"]
+    ref: str | None = None
+    #: The value as shown (shared rounding rule, ``app/services/numbers.py``).
+    display: str
+
+
+class Headline(NumberValue):
+    """The headline effect of a practice; a range when model and studies disagree."""
+
+    range: list[NumberValue] | None = None
+
+
+class ModelEvidence(NumberValue):
+    confidence: str
+    n_obs: int
+    n_studies: int
+    n_obs_in_zone: int
+    se_log: float
+
+
+class StudyLead(NumberValue):
+    """The leading study evidence: median of the best-matched studies' effects."""
+
+    refs: list[str]
+    match: str
+    n_studies: int
+    n_obs: int
+    log: float
+    se_log: float
+
+
+class StudyEvidence(BaseModel):
+    """One study's measured effect for this practice and objective (dataset rows, never an LLM)."""
+
+    ref: str
+    study_no: str
+    era_code: str | None = None
+    title: str | None = None
+    year: int | str | None = None
+    doi: str | None = None
+    data_source: str | None = None
+    n_obs: int
+    mean_log_rr: float
+    se_log: float
+    effect: NumberValue
+    share_positive: float | None = None
+    aez_belts: list[str] = Field(default_factory=list)
+    obs_by_belt: dict[str, int] = Field(default_factory=dict)
+    match: str
+
+
+class PracticeEvidence(BaseModel):
+    """The evidence bundle of one shown practice (U9, docs/decisions/evidence_fusion.md)."""
+
+    practice: str
+    lead_source: Literal["model", "study", "documented"]
+    match: str
+    headline: Headline
+    disagreement: bool = False
+    caution: bool = False
+    model: ModelEvidence
+    study: StudyLead | None = None
+    studies: list[StudyEvidence] = Field(default_factory=list)
+    conservative_bound: float
+    matches_constraints: list[str] = Field(default_factory=list)
+    replaces_crop: bool = False
+    constraint_pick: bool = False
+
+
 class AdviseResponse(BaseModel):
     mode: Literal["model-led", "hybrid", "knowledge-led"]
     reasons: list[ModeReason] = Field(default_factory=list)
-    #: The unchanged /recommend payload, or null when the engine cannot rank.
+    #: The engine's /recommend payload — items unchanged, restricted to the shown
+    #: practices in the fused order (U9) — or null when the engine cannot rank.
     model: RecommendResponse | None = None
+    #: U9: one evidence bundle per shown practice, in display order.
+    practices: list[PracticeEvidence] = Field(default_factory=list)
+    #: U9: "conservative" | "model" (ADVISORY_ORDERING) and the fusion knobs.
+    ordering: str = "conservative"
+    fusion: dict[str, Any] = Field(default_factory=dict)
+    #: U9 (A6): soil constraints the request carried ("acidic_soil", ...).
+    constraints: list[str] = Field(default_factory=list)
     knowledge_candidates: list[KnowledgeCandidate] = Field(default_factory=list)
     evidence_sufficiency: EvidenceSufficiency
     #: Resolved context (also when there is no model payload).
@@ -289,6 +376,14 @@ class EvidenceCounts(BaseModel):
     n_crop_types: int
 
 
+class NearestPlaceResponse(BaseModel):
+    """GET /geocode/nearest — the gazetteer town a pin is in or near (U9, D10)."""
+
+    found: bool
+    name: str | None = None
+    distance_km: float | None = None
+
+
 class GeocodeResponse(BaseModel):
     """GET /geocode — an Ethiopian place name resolved by the offline gazetteer (U1)."""
 
@@ -306,6 +401,8 @@ class MetadataResponse(BaseModel):
     indicators_by_family: dict[str, list[str]]
     practices_by_family: dict[str, list[str]]
     crop_types: list[str]
+    # Additive: crop types with field observations per practice family.
+    crop_types_by_family: dict[str, list[str]] = {}
     bounds: BoundsMeta
     model: ModelMeta
     rag_ready: bool
@@ -314,6 +411,8 @@ class MetadataResponse(BaseModel):
     graph_ready: bool = False
     #: True when server-side voice (POST /speech/transcribe, /speech/synthesize) is configured (U6).
     speech_ready: bool = False
+    #: U9: evidence-fusion settings (ordering, k, disagreement and caution thresholds).
+    fusion: dict[str, Any] = Field(default_factory=dict)
     #: UI languages the API can answer in (U1): en, am, om.
     languages: list[str] = Field(default_factory=lambda: ["en", "am", "om"])
     # Additive (U1): headline evidence counts for the UI trust strip.
@@ -339,11 +438,21 @@ class ExplainCitation(BaseModel):
     title: str | None = None
     year: int | None = None
     journal: str | None = None
+    # U9 (C2/C3): full reference for a dataset study, and the original link of a guidance PDF.
+    reference: str | None = None
+    reference_truncated: bool | None = None
+    compilation: bool | None = None
+    source_url: str | None = None
     practice: str | None = None
     snippet: str
-    n_passages: int = Field(default=1, ge=1)
+    #: Retrieved passages from this source; 0 for a study cited for its measured
+    #: effect only (U9 evidence fusion: no passage retrieved).
+    n_passages: int = Field(default=1, ge=0)
     #: P9: the marker this source carries in the explanation — "3", "G1", "W2".
     ref: str | None = None
+    #: U9: dataset study id ("ERA_123", "CSA_18") and data source, for study-effect citations.
+    study_no: str | None = None
+    data_source: str | None = None
 
 
 class EvidenceBaseStudy(BaseModel):
@@ -376,7 +485,16 @@ class EvidenceBaseEntry(BaseModel):
 
 
 class ExplainResponse(BaseModel):
+    #: The evidence register: labelled and cited; every number passed guard v2.
     explanation: str
+    #: The plain register: one plain-language sentence per practice, no markers (U9).
+    summary: str = ""
+    #: Provenance of every number in ``explanation`` (U9).
+    numbers: list[NumberValue] = Field(default_factory=list)
+    #: Sentences guard v2 removed for an unsourced number (U9).
+    removed_sentences: int = 0
+    #: Synthesised implementation steps per practice, each cited [Gn] and guarded (U9, C1).
+    howto: dict[str, list[str]] = Field(default_factory=dict)
     citations: list[ExplainCitation]
     grounded: bool
     llm_used: bool

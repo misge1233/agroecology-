@@ -6,6 +6,9 @@ import { useApiHealth } from "@/lib/health";
 import { BrandMark } from "./site-header";
 import { NAV_ITEMS } from "./nav-items";
 
+/** Build version (next.config), so the footer never depends on the API being up. */
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "";
+
 const linkClass = "text-band-muted transition-colors duration-base hover:text-band-fg";
 
 export function SiteFooter() {
@@ -13,6 +16,7 @@ export function SiteFooter() {
   const tn = useTranslations("nav");
   const health = useApiHealth();
   const pathname = usePathname();
+  const version = APP_VERSION || health.version || "";
   // The chat is a full-height app view; a footer under it would only scroll into view by accident.
   if (pathname === "/chat") return null;
 
@@ -41,7 +45,8 @@ export function SiteFooter() {
           <h2 className="text-sm font-semibold text-band-fg">{t("resources")}</h2>
           <ul className="mt-4 space-y-3 text-sm">
             <li><Link href="/about#sources" className={linkClass}>{t("sources")}</Link></li>
-            <li><Link href="/about#confidence" className={linkClass}>{t("method")}</Link></li>
+            <li><Link href="/about#decides" className={linkClass}>{t("method")}</Link></li>
+            <li><Link href="/about#cite" className={linkClass}>{t("cite")}</Link></li>
             <li><Link href="/about#contact" className={linkClass}>{t("contact")}</Link></li>
           </ul>
         </div>
@@ -53,7 +58,7 @@ export function SiteFooter() {
           <p className="shrink-0 tabular">
             {t("rights", { year: new Date().getFullYear() })}
             <span className="mx-2" aria-hidden>·</span>
-            {health.version ? t("version", { version: health.version }) : t("versionUnknown")}
+            {version ? t("version", { version }) : t("versionUnknown")}
           </p>
         </div>
       </div>

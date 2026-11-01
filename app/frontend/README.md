@@ -1,8 +1,11 @@
-# Frontend — AgroAdvisor-ET (Next.js)
+# Frontend — AgroEcoAdvisor (Next.js)
 
 The trilingual (English · አማርኛ · Afaan Oromoo) web UI over the FastAPI recommender.
-Every number on screen comes from the field-trial model; the UI translates names,
-never figures (see `../../CLAUDE.md`, doctrine 1).
+Every number on screen has a source: the field-trial model's estimate, a study-level
+effect computed from the dataset, a figure quoted from a cited passage, the user's
+context layers or a count. The UI translates names, never figures, and shows each
+number's source one click away (see `../../CLAUDE.md`, doctrine 1, and
+`docs/decisions/evidence_fusion.md`).
 
 ## Screens
 

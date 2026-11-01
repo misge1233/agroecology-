@@ -20,7 +20,7 @@ export function StepHeader({ title, help, step }: { title: string; help?: string
   return (
     <div className="mb-6 sm:mb-8">
       {step ? <p className="eyebrow">{step}</p> : null}
-      <h2 id="advisor-step-title" className={cn("text-2xl", step ? "mt-2" : null)}>
+      <h2 id="advisor-step-title" tabIndex={-1} className={cn("scroll-mt-24 text-2xl outline-none", step ? "mt-2" : null)}>
         {title}
       </h2>
       {help ? <p className="mt-2 max-w-2xl text-base text-muted">{help}</p> : null}

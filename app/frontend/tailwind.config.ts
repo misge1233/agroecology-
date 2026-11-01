@@ -3,8 +3,10 @@ import type { Config } from "tailwindcss";
 /**
  * Design tokens — "Ethiopian highland" palette (U1).
  * Every colour is a CSS variable set in globals.css for light and dark, so
- * components never hard-code a hex. See docs/design/design_system.md for the
- * measured WCAG contrast of every text/background pair.
+ * components never hard-code a hex. The variables hold RGB channels, consumed
+ * as rgb(var(--x) / <alpha-value>) so opacity modifiers (bg-surface/90) work.
+ * See docs/design/design_system.md for the measured WCAG contrast of every
+ * text/background pair.
  */
 const config: Config = {
   darkMode: "class",
@@ -14,52 +16,52 @@ const config: Config = {
     container: { center: true, padding: "1rem" },
     extend: {
       colors: {
-        background: "var(--background)",
-        surface: "var(--surface)",
-        "surface-2": "var(--surface-2)",
-        foreground: "var(--text)",
-        text: "var(--text)",
-        muted: "var(--muted)",
-        border: "var(--border)",
-        ring: "var(--ring)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        "surface-2": "rgb(var(--surface-2) / <alpha-value>)",
+        foreground: "rgb(var(--text) / <alpha-value>)",
+        text: "rgb(var(--text) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
+        ring: "rgb(var(--ring) / <alpha-value>)",
         primary: {
-          DEFAULT: "var(--primary)",
-          hover: "var(--primary-hover)",
-          fg: "var(--primary-fg)",
-          soft: "var(--primary-soft)",
+          DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+          hover: "rgb(var(--primary-hover) / <alpha-value>)",
+          fg: "rgb(var(--primary-fg) / <alpha-value>)",
+          soft: "rgb(var(--primary-soft) / <alpha-value>)",
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          fg: "var(--secondary-fg)",
-          text: "var(--secondary-text)",
-          soft: "var(--secondary-soft)",
+          DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
+          fg: "rgb(var(--secondary-fg) / <alpha-value>)",
+          text: "rgb(var(--secondary-text) / <alpha-value>)",
+          soft: "rgb(var(--secondary-soft) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "var(--accent)",
-          fg: "var(--accent-fg)",
-          text: "var(--accent-text)",
-          soft: "var(--accent-soft)",
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          fg: "rgb(var(--accent-fg) / <alpha-value>)",
+          text: "rgb(var(--accent-text) / <alpha-value>)",
+          soft: "rgb(var(--accent-soft) / <alpha-value>)",
         },
         success: {
-          DEFAULT: "var(--success)",
-          text: "var(--success-text)",
-          soft: "var(--success-soft)",
+          DEFAULT: "rgb(var(--success) / <alpha-value>)",
+          text: "rgb(var(--success-text) / <alpha-value>)",
+          soft: "rgb(var(--success-soft) / <alpha-value>)",
         },
         warning: {
-          DEFAULT: "var(--warning)",
-          text: "var(--warning-text)",
-          soft: "var(--warning-soft)",
+          DEFAULT: "rgb(var(--warning) / <alpha-value>)",
+          text: "rgb(var(--warning-text) / <alpha-value>)",
+          soft: "rgb(var(--warning-soft) / <alpha-value>)",
         },
         danger: {
-          DEFAULT: "var(--danger)",
-          text: "var(--danger-text)",
-          soft: "var(--danger-soft)",
+          DEFAULT: "rgb(var(--danger) / <alpha-value>)",
+          text: "rgb(var(--danger-text) / <alpha-value>)",
+          soft: "rgb(var(--danger-soft) / <alpha-value>)",
         },
         // Footer / CTA band: theme-aware deep green.
         band: {
-          DEFAULT: "var(--brand-band)",
-          fg: "var(--brand-band-fg)",
-          muted: "var(--brand-band-muted)",
+          DEFAULT: "rgb(var(--brand-band) / <alpha-value>)",
+          fg: "rgb(var(--brand-band-fg) / <alpha-value>)",
+          muted: "rgb(var(--brand-band-muted) / <alpha-value>)",
         },
         // Fixed (theme-independent) forest scale for text and scrims laid over
         // photography, where the page theme does not apply (U3 hero).
@@ -71,12 +73,12 @@ const config: Config = {
           950: "#082518",
         },
         chart: {
-          1: "var(--chart-1)",
-          2: "var(--chart-2)",
-          3: "var(--chart-3)",
-          4: "var(--chart-4)",
-          5: "var(--chart-5)",
-          6: "var(--chart-6)",
+          1: "rgb(var(--chart-1) / <alpha-value>)",
+          2: "rgb(var(--chart-2) / <alpha-value>)",
+          3: "rgb(var(--chart-3) / <alpha-value>)",
+          4: "rgb(var(--chart-4) / <alpha-value>)",
+          5: "rgb(var(--chart-5) / <alpha-value>)",
+          6: "rgb(var(--chart-6) / <alpha-value>)",
         },
       },
       fontFamily: {

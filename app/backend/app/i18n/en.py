@@ -123,14 +123,8 @@ STRINGS: dict[str, str] = {
     "mode.model_led": "Field-trial model",
     "mode.hybrid": "Hybrid",
     "mode.knowledge_led": "Documented practice",
-    "mode.reason.strong_evidence": (
-        "{practice} has {n_studies} studies and {n_obs} field observations for this objective."
-    ),
-    "mode.reason.thin_evidence": (
-        "The best-evidenced practice, {practice}, has only {n_studies} studies and {n_obs} field "
-        "observations for this objective (the model-led threshold is {min_studies} studies and "
-        "{min_obs} observations)."
-    ),
+    "mode.reason.strong_evidence": "{practice} has {n_studies} {studies_word} and {n_obs} field {obs_word} for this objective.",
+    "mode.reason.thin_evidence": "Among the top-ranked practices, {practice} has the most evidence: only {n_studies} {studies_word} and {n_obs} field {obs_word} for this objective (the model-led threshold is {min_studies} studies and {min_obs} observations).",
     "mode.reason.in_zone": "{practice} has {n_obs_in_zone} observations measured in your moisture zone ({zone}).",
     "mode.reason.other_zones_only": "None of the top-ranked practices was measured in your moisture zone ({zone}).",
     "mode.reason.zone_unknown": "Your agro-ecological belt could not be resolved, so zone coverage is unknown.",
@@ -171,4 +165,27 @@ STRINGS: dict[str, str] = {
     "kc.documents": "documents",
     "kc.study": "study",
     "kc.studies": "studies",
+    "fusion.dir.less": "less",
+    "fusion.dir.more": "more",
+    "fusion.where.zone": "your zone",
+    "fusion.where.belt_group": "similar areas",
+    "fusion.where.moisture": "areas with similar rainfall",
+    "fusion.where.other": "other areas",
+    "fusion.summary.model": "{practice}: about {value}% {dir} {indicator} expected in your area.",
+    "fusion.summary.study": "{practice}: field studies in {where} found about {value}% {dir} {indicator}.",
+    "fusion.summary.varies": "{practice}: the evidence varies, between about {lo}% and {hi}% change in {indicator}.",
+    "fusion.caution": " Gains this large are uncommon; check them against local conditions.",
+    "fusion.label.model": "Model estimate for your area: about {value}% {dir} {indicator} ({confidence}; {n_studies} {studies_word}, {n_obs} field {obs_word}).",
+    "fusion.label.study": "Reported in study [{ref}]{about}: about {value}% {dir} {indicator} ({n_obs} {obs_word}).",
+    "fusion.label.disagree": "The field-trial model and the field studies disagree here, so the evidence varies.",
+    "fusion.evidence.intro": "Here is the evidence behind this answer:",
+    "fusion.evidence.none": "I do not have scored evidence for this request yet; ask for a recommendation first.",
+    "fusion.confidence.high": "high confidence",
+    "fusion.confidence.medium": "medium confidence",
+    "fusion.confidence.low": "thin evidence",
+    "fusion.note.acidic_soil": " It targets acidic soil directly.",
+    "fusion.note.constraint_pick": " Added because it addresses the soil problem you described.",
+    "fusion.note.replaces_crop": " Note: this means growing a different crop instead of {crop}.",
+    "fusion.evidence.sources": "Sources:",
+    "fusion.intro": "For your **{zone}** area{facts}{crop}:",
 }

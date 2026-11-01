@@ -5,12 +5,12 @@ is thin or absent, PROPOSES documented practices from knowledge sources —
 graph relations, Tier-2 guidance documents and (from P6b-ii) WOCAT practice
 records — each with provenance and a deterministic rationale.
 
-Doctrine (CLAUDE.md as amended in P9):
+Doctrine (CLAUDE.md as amended in P9 and on 1 Nov 2026, evidence fusion):
 
-* The ML model owns every effect number. Nothing here computes, copies or
-  implies an effect size: the only numbers are counts of studies,
-  observations, passages and documents, read from the knowledge graph and
-  the retrieval results.
+* Every number has a source. Documented practices never carry an effect
+  size: the only numbers here are counts of studies, observations, passages
+  and documents, read from the knowledge graph and the retrieval results.
+  Effects, where they exist, come from ``fusion_service`` with provenance.
 * Cite or stay silent: a candidate without at least one citation is dropped.
 * Wrap, never fork: the candidate pool is the engine's own
   (``recommender_service.practices_by_family``), retrieval reuses
@@ -280,10 +280,16 @@ class _Candidate:
 
     def add_citation(self, citation: dict[str, Any]) -> None:
         """Keep one row per distinct source; refuse a row nothing can cite (doctrine 2)."""
-        key = citation_identity(citation)
+        from app.services.source_meta import enrich_citation
+
+        # C2/C3: real titles, handle pages and dataset-study references. Enrich
+        # BEFORE de-duplicating: several PDFs can belong to one CGSpace item and
+        # then share its handle page, i.e. they are one source.
+        enriched = enrich_citation(citation)
+        key = citation_identity(enriched)
         if key is None or any(citation_identity(c) == key for c in self.citations):
             return
-        self.citations.append(citation)
+        self.citations.append(enriched)
 
     def support_key(self) -> tuple[int, int, int, int, str]:
         return (
@@ -305,13 +311,19 @@ def _practices_with_component(pool: Iterable[str]) -> dict[str, list[str]]:
 
 def graph_other_objective_candidates(
     graph_query: Any, pool: list[str], indicator: str, indicators: Iterable[str], seeds: list[str] | None = None,
+    exclude_practices: set[str] | None = None,
 ) -> dict[str, _Candidate]:
-    """Source 1 — practices of the family with evidence for OTHER indicators."""
+    """Source 1 — practices of the family with evidence for OTHER indicators ONLY.
+
+    U9 (B5): a practice with field evidence for the requested indicator is
+    rankable, so it is never offered here as "evidence for other objectives".
+    """
     out: dict[str, _Candidate] = {}
     if graph_query is None:
         return out
-    pool_set = set(pool)
-    practices = list(pool)
+    excluded = set(exclude_practices or ())
+    pool_set = set(pool) - excluded
+    practices = [p for p in pool if p not in excluded]
     for seed in seeds or []:
         try:
             for rel in graph_query.related_practices(seed, k=10):
@@ -371,7 +383,11 @@ def guidance_candidates(
         if not mentions:
             continue
         funnel["with_component"] += 1
-        doc_key = chunk.get("url") or chunk.get("doi") or chunk.get("title") or chunk.get("chunk_id")
+        # One document per CGSpace item (its handle page), not per PDF of it.
+        from app.services.source_meta import guidance_meta
+
+        item = guidance_meta(chunk) or {}
+        doc_key = item.get("handle_url") or chunk.get("url") or chunk.get("doi") or chunk.get("title") or chunk.get("chunk_id")
         for component in mentions:
             cand = out.setdefault(component, _Candidate(component, component, component))
             cand.sources.add(SOURCE_GUIDANCE)
@@ -523,6 +539,8 @@ def knowledge_candidates(
     crop_type: str | None = None,
     language: str = "en",
     settings: Any = None,
+    exclude_practices: set[str] | None = None,
+    shown_practices: set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Up to N knowledge candidates for one request, ranked by support.
 
@@ -537,8 +555,18 @@ def knowledge_candidates(
     allowed = set(by_component)
     funnel: dict[str, Any] = {"graph": 0, "guidance": {"retrieved": 0, "kept": 0, "with_component": 0}, "records": 0}
 
-    graph_group = graph_other_objective_candidates(graph_query, pool, indicator, indicators, seeds)
+    graph_group = graph_other_objective_candidates(
+        graph_query, pool, indicator, indicators, seeds, exclude_practices=exclude_practices,
+    )
     funnel["graph"] = len(graph_group)
+    shown = set(shown_practices or ())
+    # A candidate that IS a ranked practice (single-component practice shown
+    # in the ranking) would list the same thing twice (U9, B5).
+    shown_components: set[str] = set()
+    for practice in shown:
+        parts = _decompose(practice)
+        if len(parts) == 1:
+            shown_components.add(parts[0])
 
     guidance_group: dict[str, _Candidate] = {}
     if guidance_retriever is not None:
@@ -560,6 +588,8 @@ def knowledge_candidates(
     for cand in ranked:
         if not cand.citations:
             continue  # cite or stay silent
+        if cand.component and cand.component in shown_components:
+            continue  # already in the ranking (documented ∩ ranked = ∅)
         n_guidance_docs = sum(1 for d in cand.documents if d.startswith("doc:"))
         n_studies_docs = sum(1 for d in cand.documents if d.startswith("study:"))
         item = {
@@ -568,7 +598,7 @@ def knowledge_candidates(
             "label": cand.label,
             # Every frozen practice of the family that contains the component,
             # not only the ones that supplied evidence.
-            "practices": sorted(set(cand.practices) | set(by_component.get(cand.component or "", []))),
+            "practices": sorted((set(cand.practices) | set(by_component.get(cand.component or "", []))) - shown),
             "sources": sorted(cand.sources, key=lambda x: SOURCE_ORDER.get(x, 9)),
             "support": {
                 "n_sources": len(cand.sources),

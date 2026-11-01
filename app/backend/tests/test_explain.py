@@ -302,7 +302,7 @@ def test_explain_llm_text_passing_guardrail_is_returned(monkeypatch: pytest.Monk
     settings = make_settings(openai_api_key="sk-test")
     monkeypatch.setattr(es, "get_settings", lambda: settings)
     llm_text = "Mulching reduces soil loss (~42%) on this 8% slope [1]."
-    monkeypatch.setattr(es, "_call_llm", lambda messages: llm_text)
+    monkeypatch.setattr(es, "_call_llm", lambda messages, json_mode=False: "{}" if json_mode else llm_text)
     result = es.explain(make_recommendation(), retriever=FakeRetriever(make_chunks()))
     assert result["llm_used"] is True
     assert result["grounded"] is True
@@ -466,7 +466,7 @@ def test_explain_llm_path_appends_guidance_citations(monkeypatch: pytest.MonkeyP
     settings = make_settings(openai_api_key="sk-test")
     monkeypatch.setattr(es, "get_settings", lambda: settings)
     llm_text = "Mulching helps [1]; space bunds 15 m apart [G1]."
-    monkeypatch.setattr(es, "_call_llm", lambda messages: llm_text)
+    monkeypatch.setattr(es, "_call_llm", lambda messages, json_mode=False: "{}" if json_mode else llm_text)
     result = es.explain(
         make_recommendation(),
         retriever=FakeRetriever(make_chunks()),

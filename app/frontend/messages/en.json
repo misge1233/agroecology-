@@ -1,7 +1,7 @@
 {
   "common": {
-    "appName": "AgroAdvisor-ET",
-    "tagline": "Agroecology+ decision support",
+    "appName": "AgroEcoAdvisor",
+    "tagline": "AI-Powered Agroecology+ Solutions",
     "loading": "Loading…",
     "retry": "Try again",
     "close": "Close",
@@ -35,16 +35,17 @@
   },
   "footer": {
     "attribution": "Developed by the Alliance of Bioversity International and CIAT, Addis Ababa and Accra.",
-    "disclaimer": "Evidence-ranked, not a forecast. Practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence.",
+    "disclaimer": "Evidence-ranked, not a forecast. Each percentage comes from the field-trial model or from published field studies, and its source is shown with it.",
     "sources": "Data sources",
-    "method": "How it works",
+    "method": "How the advisor decides",
     "version": "Version {version}",
     "versionUnknown": "Version unavailable",
     "licence": "Licence and data",
     "explore": "Explore",
     "resources": "Resources",
-    "rights": "© {year} AgroAdvisor-ET",
-    "contact": "Contact"
+    "rights": "© {year} AgroEcoAdvisor · Alliance of Bioversity International and CIAT",
+    "contact": "Contact",
+    "cite": "How to cite"
   },
   "status": {
     "apiUnreachable": "The advisory service is unreachable. Recommendations are unavailable until it returns.",
@@ -57,7 +58,7 @@
     "hero": {
       "eyebrow": "Field evidence · Geospatial context · Transparent ranking",
       "title": "Practice advice for Ethiopian farms, ranked by field evidence.",
-      "subtitle": "Drop a pin, name the challenge and the goal. AgroAdvisor-ET ranks agroecological practices by their measured effect in contexts like yours and shows the studies behind each one.",
+      "subtitle": "Drop a pin, name the challenge and the goal. AgroEcoAdvisor ranks agroecological practices by their measured effect in contexts like yours and shows the studies behind each one.",
       "ctaAdvisor": "Get a recommendation",
       "ctaChat": "Ask the advisor"
     },
@@ -75,14 +76,14 @@
         },
         "results": {
           "title": "Review the ranked practices",
-          "body": "Practices are ordered by expected effect from paired field trials, each with its confidence, the studies behind it and a cited explanation."
+          "body": "Practices are ordered by the strongest evidence for your area, from the field-trial model or published field studies, each with its source, the studies behind it and a cited explanation."
         }
       }
     },
     "architecture": {
       "eyebrow": "Under the hood",
-      "title": "Machine learning ranks. Retrieval explains. Every claim is cited.",
-      "subtitle": "Four layers turn a map pin into advice you can check. Each layer has one job, and only the model produces numbers.",
+      "title": "Models and studies rank. Retrieval explains. Every number has a source.",
+      "subtitle": "Four layers turn a map pin into advice you can check. Each number comes from the field-trial model or a published study, never from the AI writer.",
       "layer": "Layer {n}",
       "layers": {
         "geo": {
@@ -92,23 +93,23 @@
         },
         "model": {
           "title": "Machine-learning ranking",
-          "body": "A model trained on paired with/without field trials predicts each practice's effect in that context and ranks the practices with a confidence level. It is the only source of effect sizes and percentages.",
+          "body": "A model trained on paired with/without field trials predicts each practice's effect in that context, with a confidence level. Where it has few trials from your area, effects measured in field studies from similar areas lead instead.",
           "tag": "Source: ERA paired field trials, Ethiopia"
         },
         "rag": {
           "title": "Retrieval-augmented explanation (RAG)",
-          "body": "Hybrid semantic and keyword search retrieves passages from the studies the model learned from and from CGIAR implementation guidance. A language model explains the ranking and gives how-to steps, citing every source.",
+          "body": "Hybrid semantic and keyword search retrieves passages from the studies behind the evidence and from CGIAR implementation guidance. A language model explains the ranking in plain words and gives how-to steps, citing every source. It never writes a number of its own.",
           "tag": "Sources: study passages, GARDIAN / CGSpace guidance"
         },
         "graph": {
           "title": "Knowledge graph",
-          "body": "Links practices, studies, outcomes, zones and practice records, each with its provenance. It measures how deep the evidence is and sets the advisory tier: model-led, hybrid or knowledge-led.",
+          "body": "Links practices, studies, outcomes, zones and practice records, each with its provenance. It holds the effect measured in each study, shows how deep the evidence is and sets the advisory tier: model-led, hybrid or knowledge-led.",
           "tag": "Links: practices, studies, outcomes, zones, records"
         }
       },
       "guardrail": {
-        "title": "The model owns every number",
-        "body": "Retrieved knowledge explains and instructs, but never invents or changes an effect size, a ranking or a study count. A statement without a citation is not shown, and if grounding fails the advisor falls back to a plain template."
+        "title": "Every number has a source",
+        "body": "Recommendations combine field-trial models, published studies, guidance and a knowledge graph. Each number comes from one of them, never from the AI writer, and its source is one click away. A statement without a citation is not shown."
       },
       "roadmap": {
         "title": "What comes next",
@@ -147,12 +148,11 @@
   },
   "advisor": {
     "title": "Advisor",
-    "subtitle": "A guided request in four steps. Every number shown comes from the field-trial model.",
+    "subtitle": "A short guided request. Every number comes from field trials or published studies, with its source one click away.",
     "steps": {
       "location": "Location",
       "challenge": "Challenge",
       "objective": "Objective",
-      "crop": "Crop",
       "results": "Results"
     },
     "stepOf": "Step {current} of {total}",
@@ -257,8 +257,12 @@
           "m": "m",
           "percent": "%",
           "days": "days",
-          "celsius": "°C"
-        }
+          "celsius": "°C",
+          "gkg": "g/kg"
+        },
+        "placeExact": "{name} ({lat}, {lon})",
+        "placeNear": "Near {name} ({lat}, {lon})",
+        "place": "Location"
       },
       "card": {
         "rank": "#{rank}",
@@ -275,11 +279,34 @@
         "image": "Illustration of {practice}",
         "imageMissing": "No illustration yet",
         "apiEffect": "Model sentence: {effect}",
-        "imageLoading": "Loading illustration…"
+        "imageLoading": "Loading illustration…",
+        "fusion": {
+          "headline": "About {value}% {dir, select, less {less} other {more}} {indicator}",
+          "headlineVaries": "Evidence varies: about {lo}% to {hi}% change in {indicator}",
+          "sourceModel": "Field-trial model",
+          "sourceStudy": "Field study · {where, select, zone {your zone} belt_group {similar area} moisture {similar rainfall} other {other areas}}",
+          "sourceGuidance": "Guidance",
+          "sourceHint": "Where the headline number comes from. Open “Why this?” for every value and its source.",
+          "labelModel": "Model estimate for your area: about {value}% {dir, select, less {less} other {more}} {indicator} ({confidence}; {studies}, {observations})",
+          "labelStudy": "Reported in study [{ref}]{about}: about {value}% {dir, select, less {less} other {more}} {indicator} ({observations})",
+          "leads": "Leads",
+          "supports": "Supports",
+          "disagree": "The field-trial model and the field studies disagree here, so the evidence varies.",
+          "caution": "Gains this large are uncommon; check them against local conditions.",
+          "constraint": "Targets the soil problem you described ({constraint, select, acidic_soil {acidic soil} salinity {salinity} waterlogging {waterlogging} other {soil constraint}}).",
+          "constraintPick": "Added because it addresses the soil problem you described.",
+          "replacesCrop": "Means growing a different crop instead of {crop}.",
+          "moreSources": "and {n} more",
+          "fewerSources": "Show fewer",
+          "showSource": "Show source text",
+          "hideSource": "Hide source text",
+          "steps": "Steps",
+          "studyChart": "Each study's measured effect and the model estimate, with 0 marked"
+        }
       },
       "empty": {
         "title": "No practices to show yet",
-        "body": "Complete the four steps and the ranked practices will appear here."
+        "body": "Complete the steps above and the ranked practices will appear here."
       },
       "noEvidence": {
         "title": "No field evidence for this combination",
@@ -306,7 +333,7 @@
         "sources": "Sources",
         "evidencePending": "Evidence details were not loaded before printing; open \"Evidence\" on a practice and print again to include them.",
         "preparing": "Preparing the evidence for printing…",
-        "footer": "Printed from AgroAdvisor-ET (Alliance of Bioversity International and CIAT). Evidence-ranked, not a forecast: practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence."
+        "footer": "Printed from AgroEcoAdvisor (Alliance of Bioversity International and CIAT). Evidence-ranked, not a forecast: practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence."
       },
       "mode": {
         "explain": {
@@ -315,9 +342,9 @@
           "documented": "Why only documented practices are shown"
         },
         "reason": {
-          "strong_evidence": "{practice} has {n_studies} studies and {n_obs} field observations for this objective.",
-          "thin_evidence": "The best-evidenced practice, {practice}, has only {n_studies} studies and {n_obs} field observations for this objective (model-led needs {min_studies} studies and {min_obs} observations).",
-          "in_zone": "{practice} has {n_obs_in_zone} observations measured in your moisture zone ({zone}).",
+          "strong_evidence": "{practice} has {n_studies, plural, one {# study} other {# studies}} and {n_obs, plural, one {# field observation} other {# field observations}} for this objective.",
+          "thin_evidence": "Among the top-ranked practices, {practice} has the most evidence: only {n_studies, plural, one {# study} other {# studies}} and {n_obs, plural, one {# field observation} other {# field observations}} for this objective (model-led needs {min_studies} studies and {min_obs} observations).",
+          "in_zone": "{practice} has {n_obs_in_zone, plural, one {# observation} other {# observations}} measured in your moisture zone ({zone}).",
           "other_zones_only": "None of the top-ranked practices was measured in your moisture zone ({zone}).",
           "zone_unknown": "Your agro-ecological belt could not be resolved, so zone coverage is unknown.",
           "engine_no_evidence": "The field-trial dataset has no observations for this challenge and objective.",
@@ -338,7 +365,10 @@
         "support": {
           "documents": "Sources",
           "passages": "Passages",
-          "otherObjectives": "Field evidence for other objectives (studies)"
+          "otherObjectives": "Field evidence for other objectives (studies)",
+          "fieldStudies": "{n, plural, one {# field study} other {# field studies}}",
+          "guidanceDocs": "{n, plural, one {# guidance document} other {# guidance documents}}",
+          "records": "{n, plural, one {# practice record} other {# practice records}}"
         },
         "sources": {
           "label": "Sources behind this practice",
@@ -356,7 +386,8 @@
         "title": "No field-trial evidence for this request",
         "body": "The model cannot rank practices or estimate effects here. Documented practices from comparable settings are shown instead, each with its sources."
       },
-      "liveDocumented": "{n, plural, one {# documented practice suggested} other {# documented practices suggested}}"
+      "liveDocumented": "{n, plural, one {# documented practice suggested} other {# documented practices suggested}}",
+      "engineNote": "Model estimates are with/without response ratios learned from paired field trials; study effects are computed from the same trials. Confidence reflects how reliable the model was for this objective in cross-validation."
     }
   },
   "evidence": {
@@ -474,10 +505,6 @@
     "openInAdvisor": "Open in Advisor",
     "newChat": "New conversation",
     "contextTitle": "Context used for this ranking",
-    "advisory": {
-      "hybrid": "Thin field-trial evidence: documented practices are listed below the ranking.",
-      "knowledgeLed": "No field-trial evidence for this request. Documented practices only."
-    },
     "voice": {
       "mic": "Speak your question",
       "stop": "Done speaking",
@@ -499,31 +526,26 @@
       "autoSend": "Pause when you finish and it sends itself."
     },
     "footnote": "Rankings come from field-trial evidence for your zone. Check local conditions before you act.",
-    "evidence": {
-      "title": "Evidence behind this answer",
-      "observations": "{n, plural, =0 {no field observations} one {# field observation} other {# field observations}}",
-      "alsoDocumented": "Also documented in guidance, without an effect estimate: {names}"
-    },
     "copy": "Copy",
     "copied": "Copied"
   },
   "about": {
-    "title": "About AgroAdvisor-ET",
+    "title": "About AgroEcoAdvisor",
     "lead": "An evidence-grounded advisor that ranks agroecological practices for a specific place in Ethiopia and shows the field studies behind every recommendation.",
     "what": {
       "title": "What it is",
-      "body": "AgroAdvisor-ET reads the agro-ecological context under a map pin (rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack) and ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials. The retrieval layer then explains each recommendation with passages from the very studies the model learned from."
+      "body": "AgroEcoAdvisor reads the agro-ecological context under a map pin (rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack). It ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials, and checks each one against the effects measured in published studies from similar areas. The retrieval layer then explains each recommendation with passages from those studies."
     },
     "confidence": {
       "title": "How to read confidence",
-      "body": "This is a ranking tool, not a yield forecaster. Honest cross-validated skill is modest, so trust the order of practices more than the exact percentages.",
+      "body": "This is a ranking tool, not a yield forecaster. Each result shows how strong its evidence is, so trust the order of practices more than the exact percentages.",
       "high": "well supported by field trials in settings like yours",
       "medium": "reasonable evidence; treat the order as the signal",
-      "low": "thin evidence: a starting point, not a forecast. The advisor says so instead of bluffing."
+      "low": "a starting point, not a forecast; the advisor says so plainly"
     },
     "sources": {
       "title": "Data sources",
-      "evidence": "Evidence for Resilient Agriculture (ERA): the Ethiopia subset of paired field observations, with the Adimassu et al. climate-smart agriculture studies.",
+      "evidence": "Evidence for Resilient Agriculture (ERA): the Ethiopia subset of paired field observations, with the Adimassu et al. climate-smart agriculture studies. The effect of each study is computed from the same dataset.",
       "geo": "WorldClim climate, SoilGrids soil, Copernicus elevation and slope, ESA WorldCover land cover, FAO growing-period data, and the Ethiopian agro-ecological belts.",
       "guidance": "GARDIAN / CGSpace implementation guidance (CGIAR knowledge products) for the how-to layer.",
       "practice": "WOCAT Global SLM Database practice records (CC BY-NC-SA 4.0), for cross-country context in a later release.",
@@ -537,8 +559,44 @@
     "cta": "Open the Advisor",
     "contact": {
       "title": "Contact us",
-      "body": "Questions, feedback or ideas for collaboration? Write to the team behind AgroAdvisor-ET and we will get back to you.",
+      "body": "Questions, feedback or ideas for collaboration? Write to the team behind AgroEcoAdvisor and we will get back to you.",
       "cta": "Send an email"
+    },
+    "decides": {
+      "title": "How the advisor decides",
+      "body": "For each practice, the strongest evidence for your location leads and the other sources support it. The label on each result tells you which one leads.",
+      "model": {
+        "title": "Model-led",
+        "body": "The field-trial model leads when its confidence is medium or high and it has trials from your zone. The headline is the model estimate for your area."
+      },
+      "study": {
+        "title": "Study-led",
+        "body": "Where the model has little local data, the effect measured in published field studies leads, taken from the closest match: your zone, a similar area or similar rainfall."
+      },
+      "documented": {
+        "title": "Documented",
+        "body": "Practices described in guidance or practice records, without a measured effect for your objective, are listed with their sources and never with a number."
+      },
+      "disagree": {
+        "title": "When sources disagree",
+        "body": "If the model and the studies point in opposite directions or differ widely, the advisor shows the range instead of one number and says so."
+      }
+    },
+    "legal": {
+      "title": "Licences, privacy and citation",
+      "licences": {
+        "title": "Data licences and attribution",
+        "body": "ERA field data, SoilGrids and ESA WorldCover are used under CC BY 4.0. WorldClim is used for non-commercial research with attribution. Copernicus DEM: © DLR and Airbus, provided under COPERNICUS by the European Union and ESA. WOCAT records are CC BY-NC-SA 4.0. Guidance documents keep the licence stated on each one. Map data © OpenStreetMap contributors."
+      },
+      "privacy": {
+        "title": "Voice and privacy",
+        "body": "Recordings are transcribed in memory and are not stored; only their size is logged. Amharic and Afaan Oromoo voice runs on the AgroEcoAdvisor server. Where server speech is not available, your browser's speech service is used, and it may send audio to the browser vendor."
+      },
+      "cite": {
+        "title": "How to cite",
+        "body": "Alliance of Bioversity International and CIAT ({year}). AgroEcoAdvisor: AI-Powered Agroecology+ Solutions, version {version}."
+      },
+      "version": "Version {version}"
     }
   },
   "errors": {

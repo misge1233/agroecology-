@@ -14,10 +14,10 @@ test("chat happy path: streamed answer, compact evidence, Open in Advisor", asyn
   await expect(page.getByTestId("chat-status")).toBeVisible();
   const log = page.getByRole("log", { name: en.a11y.chatLog });
   await expect(log.getByText(en.chat.roles.user + " ·")).toBeVisible();
-  const evidence = page.getByTestId("chat-recommendation");
-  await expect(evidence).toBeVisible();
-  await expect(evidence).toContainText(en.chat.evidence.title);
   await expect(log.getByText(/Mulch-Water Harvesting/).first()).toBeVisible();
+  // A natural conversation: no evidence card or menu under the answer (1 Nov 2026).
+  await expect(page.getByTestId("chat-recommendation")).toHaveCount(0);
+  await expect(log.getByRole("listitem").last().getByRole("list")).toHaveCount(0);
   await expect(page.getByTestId("chat-status")).toBeHidden();
   await expect(log.getByText(en.chat.roles.assistant + " ·")).toBeVisible();
 
@@ -25,8 +25,9 @@ test("chat happy path: streamed answer, compact evidence, Open in Advisor", asyn
   const chatCall = calls.find((c) => c.url === "/chat");
   expect(chatCall?.body).toMatchObject({ language: "en", stream: true, hint: null, top_n: 3 });
 
-  // Deep link to the Advisor carries the scored query.
-  const open = evidence.getByRole("link", { name: en.chat.openInAdvisor });
+  // Deep link to the Advisor (a quiet action under the answer) carries the scored query.
+  const open = page.getByTestId("chat-open-advisor");
+  await expect(open).toHaveText(en.chat.openInAdvisor);
   await expect(open).toHaveAttribute("href", /\/en\/advisor\?.*lat=8\.38.*indicator=soil\+loss/);
 });
 
@@ -75,7 +76,7 @@ test("a failed stream shows an error state with a working retry", async ({ page 
   await page.getByRole("button", { name: en.chat.ask }).click();
   await expect(page.getByText(en.chat.errorTitle)).toBeVisible();
   await page.getByRole("button", { name: en.chat.retrySend }).click();
-  await expect(page.getByTestId("chat-recommendation")).toBeVisible();
+  await expect(page.getByTestId("chat-open-advisor")).toBeVisible();
   expect(attempt).toBe(2);
 });
 
@@ -134,7 +135,7 @@ test("voice is hands-free: a spoken question is sent on a pause and its answer i
   expect(await page.evaluate(() => (window as unknown as { __recLang: string }).__recLang)).toBe("en-US");
 
   // The finished answer is handed to the speaker, figures intact.
-  await expect(page.getByTestId("chat-recommendation")).toBeVisible();
+  await expect(page.getByTestId("chat-open-advisor")).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { __spoken: { lang: string; text: string }[] }).__spoken.length))
     .toBeGreaterThan(0);

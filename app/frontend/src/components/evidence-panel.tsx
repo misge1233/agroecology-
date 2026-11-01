@@ -1,29 +1,42 @@
 "use client";
 
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { postExplain } from "@/lib/api";
 import type { ExplainCitation, ExplainResponse, RecommendResponse } from "@/lib/types";
 import { evidenceBaseSentence, studiesTooltip, type StudyLabels } from "@/lib/evidence-base";
 import { aezName, practiceName, tierLabel } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
+import { AssistantMarkdown } from "@/components/assistant-markdown";
+import { useCitations } from "@/components/citations";
+import { sourceKey, uniqueSources } from "@/lib/citation-registry";
 import { Badge, tierVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
-/** Evidence-on-demand for a recommendation (P2c; two-tier P5a; evidence base P6b-i).
+/** Evidence-on-demand for a recommendation (P2c; two tiers P5a; evidence base P6b-i; fusion U9).
  *
- * U1 lifts the single POST /explain behind a context so every card of one
- * recommendation shares it (the Evidence and How-to panels both read it) and
- * localises every label; the explanation itself is written by the backend in
- * the UI language (`language` on the request). Counts and provenance only —
- * effect magnitudes belong to the model and are never shown here.
+ * One POST /explain per recommendation, shared by every card's Evidence and
+ * How-to panels and the print sheet. U9: the answer is cached per request
+ * (pin, challenge, objective, shown practices, language) for the session, the
+ * explanation renders as Markdown with its markers relabelled to the page's
+ * one citation registry, and How-to shows synthesised, cited steps.
  */
 
 type FetchState =
   | { status: "idle" | "loading" }
   | { status: "ready"; result: ExplainResponse }
   | { status: "error"; message: string };
+
+/** Session cache: one /explain per (pin, family, objective, practices, language) — D2. */
+const EXPLAIN_CACHE = new Map<string, ExplainResponse>();
+const MAX_CACHE = 30;
+
+function cacheKey(data: RecommendResponse, locale: string): string {
+  const q = data.query;
+  return [locale, q.lat, q.lon, q.practice_family, q.indicator, q.crop_type ?? "", data.recommendations.map((r) => r.practice).join("+")].join("|");
+}
 
 const ExplainContext = createContext<{
   data: RecommendResponse;
@@ -46,16 +59,22 @@ export function ExplainProvider({
   children: ReactNode;
 }) {
   const locale = useLocale() as Locale;
-  const [state, setState] = useState<FetchState>({ status: "idle" });
+  const key = cacheKey(data, locale);
+  const cached = EXPLAIN_CACHE.get(key);
+  const [state, setState] = useState<FetchState>(cached ? { status: "ready", result: cached } : { status: "idle" });
   const inflight = useRef<Promise<ExplainResponse | null> | null>(null);
-  const settled = useRef<ExplainResponse | null>(null);
   const load = useCallback(() => {
-    if (settled.current) return Promise.resolve(settled.current);
+    const hit = EXPLAIN_CACHE.get(key);
+    if (hit) {
+      setState((s) => (s.status === "ready" ? s : { status: "ready", result: hit }));
+      return Promise.resolve(hit);
+    }
     if (inflight.current) return inflight.current;
     setState({ status: "loading" });
     inflight.current = postExplain(data, { language: locale })
       .then((result) => {
-        settled.current = result;
+        EXPLAIN_CACHE.set(key, result);
+        if (EXPLAIN_CACHE.size > MAX_CACHE) EXPLAIN_CACHE.delete(EXPLAIN_CACHE.keys().next().value as string);
         setState({ status: "ready", result });
         return result;
       })
@@ -67,7 +86,7 @@ export function ExplainProvider({
         inflight.current = null;
       });
     return inflight.current;
-  }, [data, locale]);
+  }, [data, locale, key]);
   return (
     <ExplainContext.Provider value={{ data, state, load, ragReady, graphReady }}>
       {children}
@@ -90,14 +109,13 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
   const t = useTranslations("evidence");
   const ta = useTranslations("a11y");
   const locale = useLocale() as Locale;
+  const { label: labelOf } = useCitations();
   const isGuidance = citation.tier === "guidance";
-  const label = [
-    citation.era_code,
-    citation.title || (isGuidance ? t("untitledDocument") : t("untitledStudy")),
-    citation.year != null ? String(citation.year) : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const ref = labelOf(citation);
+  const title =
+    citation.title ||
+    (citation.study_no ? t("datasetStudy", { n: citation.study_no }) : isGuidance ? t("untitledDocument") : t("untitledStudy"));
+  const label = [citation.era_code, title, citation.year != null ? String(citation.year) : null].filter(Boolean).join(" · ");
   const href = isGuidance
     ? (citation.url ?? (citation.doi ? `https://doi.org/${citation.doi}` : null))
     : citation.doi
@@ -106,7 +124,7 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
   const tier = citation.tier === "practice" ? "practice" : isGuidance ? "guidance" : "evidence";
   const body = (
     <>
-      {citation.ref ? <span className="tabular font-semibold">[{citation.ref}]</span> : null}
+      {ref ? <span className="tabular font-semibold">[{ref}]</span> : null}
       <Badge variant={tierVariant(tier)} className="px-1.5 py-0 text-[10px]">
         {tierLabel(tier, locale)}
       </Badge>
@@ -126,7 +144,7 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
     "inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-text";
   if (!href) {
     return (
-      <li className={className} title={citation.snippet}>
+      <li className={className} title={citation.reference || citation.snippet || undefined}>
         {body}
       </li>
     );
@@ -137,7 +155,7 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        title={citation.snippet}
+        title={citation.reference || citation.snippet || undefined}
         className={`${className} transition-colors duration-base hover:border-primary/60`}
       >
         {body}
@@ -146,22 +164,57 @@ function StudyChip({ citation }: { citation: ExplainCitation }) {
   );
 }
 
-function citationsFor(result: ExplainResponse, practice: string, tier: "evidence" | "guidance") {
-  const all = result.citations.filter((c) => (tier === "guidance") === (c.tier === "guidance"));
-  const mine = all.filter((c) => c.practice === practice);
-  return mine.length > 0 ? mine : all;
+/**
+ * Sources for one practice, most relevant first (C4): those retrieved for this
+ * practice, then those with passages, then the rest; within each, retrieval order.
+ */
+export function citationsFor(result: ExplainResponse, practice: string, tier: "evidence" | "guidance"): ExplainCitation[] {
+  const all = uniqueSources(result.citations.filter((c) => (tier === "guidance") === (c.tier === "guidance")));
+  const score = (c: ExplainCitation) => (c.practice === practice ? 0 : 2) + (c.n_passages > 0 ? 0 : 1);
+  return all
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => score(a.c) - score(b.c) || a.i - b.i)
+    .map(({ c }) => c);
 }
 
-/** Shared loading/error chrome for the two panels. */
+const SHOWN_SOURCES = 6;
+
+function SourceList({ items }: { items: ExplainCitation[] }) {
+  const tf = useTranslations("advisor.results.card.fusion");
+  const [all, setAll] = useState(false);
+  const shown = all ? items : items.slice(0, SHOWN_SOURCES);
+  return (
+    <>
+      <ul className="flex flex-wrap gap-1.5">
+        {shown.map((c, i) => (
+          <StudyChip key={sourceKey(c, i)} citation={c} />
+        ))}
+      </ul>
+      {items.length > SHOWN_SOURCES ? (
+        <button type="button" className="mt-1.5 text-xs font-medium text-accent-text hover:underline" onClick={() => setAll((v) => !v)}>
+          {all ? tf("fewerSources") : tf("moreSources", { n: items.length - SHOWN_SOURCES })}
+        </button>
+      ) : null}
+    </>
+  );
+}
+
+/** Loading (skeleton lines, D2) and error chrome shared by the two panels. */
 function Pending({ state, load }: { state: FetchState; load: () => void }) {
   const t = useTranslations("evidence");
   const tc = useTranslations("common");
   if (state.status === "loading" || state.status === "idle") {
     return (
-      <p className="flex items-center gap-2 text-sm text-muted" role="status">
-        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-        {t("loading")}
-      </p>
+      <div className="space-y-2" role="status" aria-busy>
+        <span className="sr-only">{t("loading")}</span>
+        <Skeleton className="h-4 w-11/12" />
+        <Skeleton className="h-4 w-10/12" />
+        <Skeleton className="h-4 w-7/12" />
+        <div className="flex gap-1.5 pt-1">
+          <Skeleton className="h-6 w-24 rounded-full" />
+          <Skeleton className="h-6 w-32 rounded-full" />
+        </div>
+      </div>
     );
   }
   if (state.status === "error") {
@@ -177,12 +230,13 @@ function Pending({ state, load }: { state: FetchState; load: () => void }) {
   return null;
 }
 
-/** The Evidence panel body for one practice. */
+/** The Evidence panel body for one practice: the cited explanation and its sources. */
 export function EvidenceBody({ practice }: { practice: string }) {
   const t = useTranslations("evidence");
   const tb = useTranslations("evidence.evidenceBase");
   const locale = useLocale() as Locale;
   const { state, load, graphReady } = useExplain();
+  const { relabel } = useCitations();
   if (state.status !== "ready") return <Pending state={state} load={load} />;
   const { result } = state;
   const entry = result.evidence_base?.[practice];
@@ -202,7 +256,9 @@ export function EvidenceBody({ practice }: { practice: string }) {
         </Badge>
         <Badge variant="outline-neutral">{result.llm_used ? t("aiSummary") : t("deterministic")}</Badge>
       </div>
-      <p className="whitespace-pre-line text-sm leading-relaxed text-text">{result.explanation}</p>
+      <div data-testid="evidence-text">
+        <AssistantMarkdown content={relabel(result.explanation, result.citations)} />
+      </div>
 
       {graphReady && entry ? (
         <div>
@@ -221,11 +277,7 @@ export function EvidenceBody({ practice }: { practice: string }) {
           <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
             {t("sourceStudies", { n: evidence.length })}
           </p>
-          <ul className="flex flex-wrap gap-1.5">
-            {evidence.map((c, i) => (
-              <StudyChip key={c.era_code ?? c.doi ?? c.title ?? i} citation={c} />
-            ))}
-          </ul>
+          <SourceList items={evidence} />
         </div>
       ) : null}
       {guidance.length > 0 ? (
@@ -233,34 +285,58 @@ export function EvidenceBody({ practice }: { practice: string }) {
           <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
             {t("guidance", { n: guidance.length })}
           </p>
-          <ul className="flex flex-wrap gap-1.5">
-            {guidance.map((c, i) => (
-              <StudyChip key={c.url ?? c.doi ?? c.title ?? i} citation={c} />
-            ))}
-          </ul>
+          <SourceList items={guidance} />
         </div>
       ) : null}
     </div>
   );
 }
 
-/** "How to implement": the guidance documents (GARDIAN) behind one practice. */
+/** "How to implement": synthesised, cited steps (C1) with the source text one click away. */
 export function HowToBody({ practice }: { practice: string }) {
   const t = useTranslations("advisor.results.card");
+  const tf = useTranslations("advisor.results.card.fusion");
   const { state, load } = useExplain();
+  const { relabel } = useCitations();
+  const [showSource, setShowSource] = useState(false);
   if (state.status !== "ready") return <Pending state={state} load={load} />;
   const guidance = citationsFor(state.result, practice, "guidance");
-  if (guidance.length === 0) return <p className="text-sm text-muted">{t("howToEmpty")}</p>;
+  const steps = state.result.howto?.[practice] ?? [];
+  if (guidance.length === 0 && steps.length === 0) return <p className="text-sm text-muted">{t("howToEmpty")}</p>;
   return (
-    <ul className="space-y-2">
-      {guidance.map((c, i) => (
-        <li key={c.url ?? c.doi ?? c.title ?? i} className="rounded-control border border-border bg-surface p-3">
-          <ul className="flex flex-wrap gap-1.5">
-            <StudyChip citation={c} />
-          </ul>
-          <p className="mt-2 text-sm text-muted">{c.snippet}</p>
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-3">
+      {steps.length > 0 ? (
+        <div>
+          <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted">{tf("steps")}</p>
+          <ol className="list-decimal space-y-1.5 pl-5 text-sm text-text">
+            {steps.map((s, i) => (
+              <li key={i}>{relabel(s, state.result.citations)}</li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+      {guidance.length > 0 ? <SourceList items={guidance} /> : null}
+      {guidance.length > 0 ? (
+        <div>
+          <button
+            type="button"
+            className="text-xs font-medium text-accent-text hover:underline"
+            aria-expanded={showSource}
+            onClick={() => setShowSource((v) => !v)}
+          >
+            {showSource ? tf("hideSource") : tf("showSource")}
+          </button>
+          {showSource ? (
+            <ul className="mt-2 space-y-2">
+              {guidance.map((c, i) => (
+                <li key={`${sourceKey(c, i)}-${i}`} className="rounded-control border border-border bg-surface p-3 text-sm text-muted">
+                  {c.snippet}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
   );
 }

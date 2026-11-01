@@ -25,7 +25,7 @@ for (const [locale, theme, width, height] of [
     const m = CATALOGS[locale];
     await page.getByRole("textbox", { name: m.chat.message }).fill(MESSAGE);
     await page.getByRole("button", { name: m.chat.ask }).click();
-    await page.getByTestId("chat-recommendation").waitFor();
+    await page.getByTestId("chat-open-advisor").waitFor();
     await page.waitForTimeout(400);
     await page.screenshot({ path: `test-results/shots/chat-${locale}-${theme}-${width}.png`, fullPage: width > 500 });
     await page.evaluate(() => window.scrollTo(0, 0));

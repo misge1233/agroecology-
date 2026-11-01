@@ -6,7 +6,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { postAdvise } from "@/lib/api";
-import type { AdviseResponse } from "@/lib/types";
+import type { AdviseResponse, KnowledgeCandidate, PracticeEvidence } from "@/lib/types";
+import type { Citable } from "@/lib/citation-registry";
+import { CitationsProvider } from "@/components/citations";
 import { useApiHealth } from "@/lib/health";
 import { useMetadata } from "@/components/metadata-provider";
 import { ExplainProvider, useExplainOptional } from "@/components/evidence-panel";
@@ -22,6 +24,34 @@ import { KnowledgeCandidates } from "./knowledge-candidates";
 import { ModeBadge, ModeReasons } from "./mode-badge";
 import { PrintSheet } from "./print-sheet";
 import { RecommendationPanel } from "./recommendation-panel";
+
+/**
+ * One citation registry for the results page (U9, B4): the cards' study
+ * effects first, then the documented practices, then the explanation's
+ * sources — and the top card's explanation is fetched straight away (D2).
+ */
+function ResultsCitations({
+  practices,
+  candidates,
+  children,
+}: {
+  practices: PracticeEvidence[];
+  candidates: KnowledgeCandidate[];
+  children: React.ReactNode;
+}) {
+  const explain = useExplainOptional();
+  const load = explain?.load;
+  const ragReady = !!explain?.ragReady;
+  useEffect(() => {
+    if (ragReady && load) void load();
+  }, [ragReady, load]);
+  const studies: Citable[] = practices.flatMap((b) =>
+    b.studies.map((s) => ({ tier: "evidence", era_code: s.era_code, study_no: s.study_no, title: s.title }))
+  );
+  const documented: Citable[] = candidates.flatMap((c) => c.citations);
+  const explained: Citable[] = explain?.state.status === "ready" ? explain.state.result.citations : [];
+  return <CitationsProvider lists={[studies, documented, explained]}>{children}</CitationsProvider>;
+}
 
 /** "Save as PDF": make sure the evidence is loaded, then hand over to the browser. */
 function SavePdfButton() {
@@ -138,7 +168,7 @@ export function Results({
   const body = (
     <section aria-labelledby="advisor-step-title" aria-busy={loading} className="space-y-5">
       <div className="no-print flex flex-wrap items-end justify-between gap-3">
-        <h2 id="advisor-step-title" className="text-xl sm:text-2xl">
+        <h2 id="advisor-step-title" tabIndex={-1} className="scroll-mt-24 text-xl outline-none sm:text-2xl">
           {t("title")}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -213,7 +243,7 @@ export function Results({
           <div className="no-print space-y-5">
             <ContextCard data={result} />
             {mode !== "model-led" ? <ModeReasons mode={mode} reasons={advisory.reasons} /> : null}
-            <RecommendationPanel data={result} withProvider={false} mode={mode} reasons={advisory.reasons} />
+            <RecommendationPanel data={result} withProvider={false} mode={mode} reasons={advisory.reasons} practices={advisory.practices ?? []} />
             {mode === "hybrid" ? <KnowledgeCandidates candidates={advisory.knowledge_candidates} mode="hybrid" /> : null}
             {explainQuery ? (
               <Button variant="secondary" asChild>
@@ -254,10 +284,20 @@ export function Results({
     </section>
   );
   // One /explain per result, shared by the cards' Evidence/How-to panels and the print sheet.
-  if (!result) return body;
+  const practices = advisory?.practices ?? [];
+  const candidates = advisory?.knowledge_candidates ?? [];
+  if (!result) {
+    return (
+      <ResultsCitations practices={practices} candidates={candidates}>
+        {body}
+      </ResultsCitations>
+    );
+  }
   return (
     <ExplainProvider data={result} ragReady={!!meta?.rag_ready} graphReady={!!meta?.graph_ready}>
-      {body}
+      <ResultsCitations practices={practices} candidates={candidates}>
+        {body}
+      </ResultsCitations>
     </ExplainProvider>
   );
 }

@@ -1,0 +1,3 @@
+# data/processed
+
+- `csa_study_references.json` — `Study_No_` (`CSA_<n>`) → bibliographic reference for dataset rows with `source == "CSA"`. Provenance: the `Reference` column of `data/raw/CSA_practices_by_Agroecology.xlsx` (Adimassu et al. CSA compilation), built by `pipelines/dataset/build_csa_references.py`; `_compilation` holds the compilation citation used as the fallback: Adimassu et al. 2024, Farming System 2(4) 100110, doi:10.1016/j.farsys.2024.100110 (the meta-analysis these with/without studies feed; the two companion framework papers are listed under `related`). Caveats (255-char truncation, ambiguous study numbers, short-form references) are flagged per entry and summarised under `_about`.

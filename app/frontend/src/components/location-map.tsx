@@ -1,7 +1,7 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import type { Bounds } from "@/lib/types";
@@ -12,14 +12,47 @@ const pinIcon = L.divIcon({
   className: "agro-pin",
   html: `<svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.7 23.3 0 15 0z"
-      fill="var(--primary)" stroke="var(--surface)" stroke-width="2"/>
-    <circle cx="15" cy="15" r="5.5" fill="var(--surface)"/>
+      fill="rgb(var(--primary))" stroke="rgb(var(--surface))" stroke-width="2"/>
+    <circle cx="15" cy="15" r="5.5" fill="rgb(var(--surface))"/>
   </svg>`,
   iconSize: [30, 40],
   iconAnchor: [15, 40],
 });
 
 const ETHIOPIA_CENTER: [number, number] = [9.15, 40.5];
+
+/**
+ * Tile provider (U9, D7). OpenStreetMap's public tiles are fine for
+ * development and light use; production sets a keyed provider (for example
+ * MapTiler or Stadia) through these two variables, without a code change.
+ */
+const TILE_URL = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION =
+  process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION ||
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+/**
+ * Frame the country once the container has its real size (D7): the map is
+ * created inside a panel that is still laying out, so Leaflet's first fit can
+ * land on the Red Sea. Re-measure, then fit, and again whenever the panel resizes.
+ */
+function FitCountry({ frame }: { frame: L.LatLngBoundsExpression }) {
+  const map = useMap();
+  useEffect(() => {
+    const fit = () => {
+      map.invalidateSize();
+      map.fitBounds(frame, { padding: [12, 12], animate: false });
+    };
+    const id = requestAnimationFrame(fit);
+    const ro = new ResizeObserver(() => fit());
+    ro.observe(map.getContainer());
+    return () => {
+      cancelAnimationFrame(id);
+      ro.disconnect();
+    };
+  }, [map, frame]);
+  return null;
+}
 
 function ClickHandler({ onPick }: { onPick: (lat: number, lon: number) => void }) {
   useMapEvents({
@@ -33,6 +66,7 @@ function ClickHandler({ onPick }: { onPick: (lat: number, lon: number) => void }
 function Recenter({ lat, lon }: { lat: number; lon: number }) {
   const map = useMap();
   useEffect(() => {
+    map.invalidateSize();
     map.setView([lat, lon], Math.max(map.getZoom(), 8), { animate: true });
   }, [map, lat, lon]);
   return null;
@@ -59,8 +93,11 @@ export default function LocationMap({
   const hasPoint = lat != null && lon != null;
   const center: [number, number] = hasPoint ? [lat as number, lon as number] : ETHIOPIA_CENTER;
   // No pin yet: fit the whole country (Leaflet picks the zoom for the panel size).
-  const frame: L.LatLngBoundsExpression | undefined =
-    !hasPoint && bounds ? [[bounds.lat[0], bounds.lon[0]], [bounds.lat[1], bounds.lon[1]]] : undefined;
+  const b0 = bounds?.lat[0], b1 = bounds?.lon[0], b2 = bounds?.lat[1], b3 = bounds?.lon[1];
+  const frame = useMemo<L.LatLngBoundsExpression | undefined>(
+    () => (!hasPoint && b0 != null && b1 != null && b2 != null && b3 != null ? [[b0, b1], [b2, b3]] : undefined),
+    [hasPoint, b0, b1, b2, b3]
+  );
   const tileStats = useRef({ ok: 0, failed: 0 });
 
   return (
@@ -69,12 +106,14 @@ export default function LocationMap({
       scrollWheelZoom
       // Quarter-step zoom so the country fits the panel snugly instead of snapping out a whole level.
       zoomSnap={0.25}
-      className="h-full w-full"
-      style={{ background: "var(--surface-2)" }}
+      // isolation: Leaflet's panes and controls (z-index 400 to 1000) stay inside the map
+      // and never paint over the sticky header (D7).
+      className="isolate h-full w-full"
+      style={{ background: "rgb(var(--surface-2))" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution={TILE_ATTRIBUTION}
+        url={TILE_URL}
         // Only the visible tiles on slow links: no off-screen buffer, load after pan/zoom settles.
         keepBuffer={0}
         updateWhenIdle
@@ -90,6 +129,7 @@ export default function LocationMap({
         }}
       />
       <ClickHandler onPick={onPick} />
+      {frame ? <FitCountry frame={frame} /> : null}
       {hasPoint && (
         <>
           <Marker

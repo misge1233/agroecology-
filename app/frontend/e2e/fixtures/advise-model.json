@@ -4,9 +4,9 @@
     {
       "key": "mode.reason.strong_evidence",
       "params": {
-        "practice": "drip irrigation",
-        "n_studies": 8,
-        "n_obs": 28
+        "practice": "furrow irrigation",
+        "n_studies": 3,
+        "n_obs": 19
       }
     },
     {
@@ -29,16 +29,16 @@
     },
     "recommendations": [
       {
-        "practice": "drip irrigation",
-        "effect": "~36% increase in water use efficiency"
-      },
-      {
-        "practice": "In-situ water harvesting",
-        "effect": "~36% increase in water use efficiency"
-      },
-      {
         "practice": "furrow irrigation",
         "effect": "~35% increase in water use efficiency"
+      },
+      {
+        "practice": "Water Harvesting",
+        "effect": "~34% increase in water use efficiency"
+      },
+      {
+        "practice": "Mulch-Reduced Tillage",
+        "effect": "~14% increase in water use efficiency"
       }
     ],
     "details": {
@@ -59,22 +59,22 @@
       "confidence": "low",
       "ranked": [
         {
-          "practice": "drip irrigation",
-          "pct_change": 36.5,
-          "log_ratio": 0.3111,
-          "n_evidence": 28
-        },
-        {
-          "practice": "In-situ water harvesting",
-          "pct_change": 35.5,
-          "log_ratio": 0.3038,
-          "n_evidence": 2
-        },
-        {
           "practice": "furrow irrigation",
           "pct_change": 35.4,
           "log_ratio": 0.303,
           "n_evidence": 19
+        },
+        {
+          "practice": "Water Harvesting",
+          "pct_change": 34.4,
+          "log_ratio": 0.2958,
+          "n_evidence": 13
+        },
+        {
+          "practice": "Mulch-Reduced Tillage",
+          "pct_change": 13.9,
+          "log_ratio": 0.1303,
+          "n_evidence": 2
         }
       ],
       "n_candidates": 23,
@@ -83,6 +83,351 @@
       "note": "Effects are model estimates of the with/without response ratio from meta-analysis evidence; confidence reflects out-of-fold reliability for this indicator."
     }
   },
+  "practices": [
+    {
+      "practice": "furrow irrigation",
+      "lead_source": "study",
+      "match": "zone",
+      "headline": {
+        "value": 48.24112722287441,
+        "unit": "%",
+        "source": "study",
+        "ref": "study:CSA_187,study:CSA_189",
+        "display": "48",
+        "range": null
+      },
+      "disagreement": false,
+      "caution": false,
+      "model": {
+        "value": 35.4,
+        "unit": "%",
+        "source": "model",
+        "ref": "model",
+        "display": "35",
+        "confidence": "low",
+        "n_obs": 19,
+        "n_studies": 3,
+        "n_obs_in_zone": 11,
+        "se_log": 0.6059271021191046
+      },
+      "study": {
+        "value": 48.24112722287441,
+        "unit": "%",
+        "source": "study",
+        "ref": "study:CSA_187,study:CSA_189",
+        "display": "48",
+        "refs": [
+          "study:CSA_187",
+          "study:CSA_189"
+        ],
+        "match": "zone",
+        "n_studies": 2,
+        "n_obs": 11,
+        "log": 0.39366999999999996,
+        "se_log": 0.060761517324606246
+      },
+      "studies": [
+        {
+          "ref": "study:CSA_187",
+          "study_no": "CSA_187",
+          "era_code": null,
+          "title": null,
+          "year": null,
+          "doi": null,
+          "data_source": "CSA",
+          "n_obs": 7,
+          "mean_log_rr": 0.501157,
+          "se_log": 0.07511771564416525,
+          "effect": {
+            "value": 65.06299451655859,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:CSA_187",
+            "display": "65"
+          },
+          "share_positive": 1.0,
+          "aez_belts": [
+            "Dry Kolla"
+          ],
+          "obs_by_belt": {
+            "Dry Kolla": 7
+          },
+          "match": "zone"
+        },
+        {
+          "ref": "study:CSA_189",
+          "study_no": "CSA_189",
+          "era_code": null,
+          "title": null,
+          "year": null,
+          "doi": null,
+          "data_source": "CSA",
+          "n_obs": 4,
+          "mean_log_rr": 0.286183,
+          "se_log": 0.09552579100303767,
+          "effect": {
+            "value": 33.133606746144025,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:CSA_189",
+            "display": "33"
+          },
+          "share_positive": 1.0,
+          "aez_belts": [
+            "Dry Kolla"
+          ],
+          "obs_by_belt": {
+            "Dry Kolla": 4
+          },
+          "match": "zone"
+        },
+        {
+          "ref": "study:CSA_188",
+          "study_no": "CSA_188",
+          "era_code": null,
+          "title": null,
+          "year": null,
+          "doi": null,
+          "data_source": "CSA",
+          "n_obs": 8,
+          "mean_log_rr": 0.443262,
+          "se_log": 0.043326475603517184,
+          "effect": {
+            "value": 55.77804193501785,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:CSA_188",
+            "display": "56"
+          },
+          "share_positive": 1.0,
+          "aez_belts": [
+            "Moist Weyna Dega"
+          ],
+          "obs_by_belt": {
+            "Moist Weyna Dega": 8
+          },
+          "match": "other"
+        }
+      ],
+      "conservative_bound": 0.33290848267539375,
+      "matches_constraints": [],
+      "replaces_crop": false,
+      "constraint_pick": false
+    },
+    {
+      "practice": "Water Harvesting",
+      "lead_source": "study",
+      "match": "moisture",
+      "headline": {
+        "value": 45.024716423607835,
+        "unit": "%",
+        "source": "study",
+        "ref": "study:ERA_JS0246",
+        "display": "45",
+        "range": null
+      },
+      "disagreement": false,
+      "caution": false,
+      "model": {
+        "value": 34.4,
+        "unit": "%",
+        "source": "model",
+        "ref": "model",
+        "display": "34",
+        "confidence": "low",
+        "n_obs": 13,
+        "n_studies": 3,
+        "n_obs_in_zone": 0,
+        "se_log": 0.6059271021191046
+      },
+      "study": {
+        "value": 45.024716423607835,
+        "unit": "%",
+        "source": "study",
+        "ref": "study:ERA_JS0246",
+        "display": "45",
+        "refs": [
+          "study:ERA_JS0246"
+        ],
+        "match": "moisture",
+        "n_studies": 1,
+        "n_obs": 4,
+        "log": 0.371734,
+        "se_log": 0.2440040741615521
+      },
+      "studies": [
+        {
+          "ref": "study:ERA_JS0246",
+          "study_no": "ERA_JS0246",
+          "era_code": "JS0246",
+          "title": "Effects of tied ridges and mulch on barley (Hordeum vulgare) rainwater use efficiency and production in Northern Ethiopia",
+          "year": 2010,
+          "doi": "10.1016/j.agwat.2010.01.012",
+          "data_source": "ERA",
+          "n_obs": 4,
+          "mean_log_rr": 0.371734,
+          "se_log": 0.2440040741615521,
+          "effect": {
+            "value": 45.024716423607835,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:ERA_JS0246",
+            "display": "45"
+          },
+          "share_positive": 0.5,
+          "aez_belts": [
+            "Dry Weyna Dega"
+          ],
+          "obs_by_belt": {
+            "Dry Weyna Dega": 4
+          },
+          "match": "moisture"
+        },
+        {
+          "ref": "study:ERA_JS0241",
+          "study_no": "ERA_JS0241",
+          "era_code": "JS0241",
+          "title": "Impacts of long-term soil and water conservation on agricultural productivity: The case of Anjenie watershed, Ethiopia",
+          "year": 2013,
+          "doi": "10.1016/j.agwat.2012.10.026",
+          "data_source": "ERA",
+          "n_obs": 6,
+          "mean_log_rr": 0.633798,
+          "se_log": 0.05679227481352192,
+          "effect": {
+            "value": 88.47553034872533,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:ERA_JS0241",
+            "display": "88"
+          },
+          "share_positive": 1.0,
+          "aez_belts": [
+            "Wet Weyna Dega"
+          ],
+          "obs_by_belt": {
+            "Wet Weyna Dega": 6
+          },
+          "match": "other"
+        },
+        {
+          "ref": "study:ERA_JS0245",
+          "study_no": "ERA_JS0245",
+          "era_code": "JS0245",
+          "title": "ZAI IMPROVES NUTRIENT AND WATER PRODUCTIVITY IN THE ETHIOPIAN HIGHLANDS",
+          "year": 2011,
+          "doi": "10.1017/s0014479710000803",
+          "data_source": "ERA",
+          "n_obs": 3,
+          "mean_log_rr": 1.493719,
+          "se_log": 0.12164582232708016,
+          "effect": {
+            "value": 345.3627799960505,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:ERA_JS0245",
+            "display": "345"
+          },
+          "share_positive": 1.0,
+          "aez_belts": [
+            "Moist Weyna Dega"
+          ],
+          "obs_by_belt": {
+            "Moist Weyna Dega": 3
+          },
+          "match": "other"
+        }
+      ],
+      "conservative_bound": 0.12772992583844792,
+      "matches_constraints": [],
+      "replaces_crop": false,
+      "constraint_pick": false
+    },
+    {
+      "practice": "Mulch-Reduced Tillage",
+      "lead_source": "study",
+      "match": "moisture",
+      "headline": {
+        "value": 6.458175104241892,
+        "unit": "%",
+        "source": "study",
+        "ref": "study:ERA_JS0248",
+        "display": "6.5",
+        "range": null
+      },
+      "disagreement": false,
+      "caution": false,
+      "model": {
+        "value": 13.9,
+        "unit": "%",
+        "source": "model",
+        "ref": "model",
+        "display": "14",
+        "confidence": "low",
+        "n_obs": 2,
+        "n_studies": 1,
+        "n_obs_in_zone": 0,
+        "se_log": 0.6059271021191046
+      },
+      "study": {
+        "value": 6.458175104241892,
+        "unit": "%",
+        "source": "study",
+        "ref": "study:ERA_JS0248",
+        "display": "6.5",
+        "refs": [
+          "study:ERA_JS0248"
+        ],
+        "match": "moisture",
+        "n_studies": 1,
+        "n_obs": 2,
+        "log": 0.062582,
+        "se_log": 0.062581571477003
+      },
+      "studies": [
+        {
+          "ref": "study:ERA_JS0248",
+          "study_no": "ERA_JS0248",
+          "era_code": "JS0248",
+          "title": "Medium-term effects of conservation agriculture based cropping systems for sustainable soil and water management and crop productivity in the Ethiopian highlands",
+          "year": 2012,
+          "doi": "10.1016/j.fcr.2011.12.009",
+          "data_source": "ERA",
+          "n_obs": 2,
+          "mean_log_rr": 0.062582,
+          "se_log": 0.062581571477003,
+          "effect": {
+            "value": 6.458175104241892,
+            "unit": "%",
+            "source": "study",
+            "ref": "study:ERA_JS0248",
+            "display": "6.5"
+          },
+          "share_positive": 0.5,
+          "aez_belts": [
+            "Dry Dega"
+          ],
+          "obs_by_belt": {
+            "Dry Dega": 2
+          },
+          "match": "moisture"
+        }
+      ],
+      "conservative_bound": 4.2852299700357754e-07,
+      "matches_constraints": [],
+      "replaces_crop": false,
+      "constraint_pick": false
+    }
+  ],
+  "ordering": "conservative",
+  "fusion": {
+    "ordering": "conservative",
+    "confidence_k_sd": 1.0,
+    "disagree_pct": 25.0,
+    "caution_pct": 80.0,
+    "min_obs_in_zone": 1
+  },
+  "constraints": [],
   "knowledge_candidates": [],
   "evidence_sufficiency": {
     "user_belt": "Dry Kolla",
@@ -93,44 +438,6 @@
       "min_obs_in_zone": 1
     },
     "candidates": [
-      {
-        "practice": "drip irrigation",
-        "n_studies": 8,
-        "n_obs": 28,
-        "n_obs_in_belt": 5,
-        "n_obs_in_zone": 5,
-        "aez_belts": [
-          "Dry Kolla",
-          "Dry Weyna Dega",
-          "Moist High Dega",
-          "Moist Weyna Dega",
-          "Wet Weyna Dega"
-        ],
-        "corpus_status": {
-          "full_text": 0,
-          "abstract": 0,
-          "none": 8
-        },
-        "belt_counts_exact": true,
-        "in_top3": true
-      },
-      {
-        "practice": "In-situ water harvesting",
-        "n_studies": 2,
-        "n_obs": 2,
-        "n_obs_in_belt": 0,
-        "n_obs_in_zone": 0,
-        "aez_belts": [
-          "Moist Weyna Dega"
-        ],
-        "corpus_status": {
-          "full_text": 0,
-          "abstract": 0,
-          "none": 2
-        },
-        "belt_counts_exact": true,
-        "in_top3": true
-      },
       {
         "practice": "furrow irrigation",
         "n_studies": 3,
@@ -145,6 +452,42 @@
           "full_text": 0,
           "abstract": 0,
           "none": 3
+        },
+        "belt_counts_exact": true,
+        "in_top3": true
+      },
+      {
+        "practice": "Water Harvesting",
+        "n_studies": 3,
+        "n_obs": 13,
+        "n_obs_in_belt": 0,
+        "n_obs_in_zone": 0,
+        "aez_belts": [
+          "Dry Weyna Dega",
+          "Moist Weyna Dega",
+          "Wet Weyna Dega"
+        ],
+        "corpus_status": {
+          "full_text": 0,
+          "abstract": 1,
+          "none": 2
+        },
+        "belt_counts_exact": true,
+        "in_top3": true
+      },
+      {
+        "practice": "Mulch-Reduced Tillage",
+        "n_studies": 1,
+        "n_obs": 2,
+        "n_obs_in_belt": 0,
+        "n_obs_in_zone": 0,
+        "aez_belts": [
+          "Dry Dega"
+        ],
+        "corpus_status": {
+          "full_text": 0,
+          "abstract": 1,
+          "none": 0
         },
         "belt_counts_exact": true,
         "in_top3": true

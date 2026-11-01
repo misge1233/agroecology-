@@ -94,6 +94,22 @@ def crop_types() -> list[str]:
     return sorted(vals, key=str.lower)
 
 
+def crop_types_by_family() -> dict[str, list[str]]:
+    """Crop types with field observations in each practice family (sorted).
+
+    The Advisor offers the crop filter only for crop production (owner, 1 Nov
+    2026); this list keeps that picker to crops actually measured in the
+    family, without the livestock and land-cover labels of the global list.
+    """
+    _engine._load()
+    df = _engine._DF
+    out: dict[str, list[str]] = {}
+    for fam in PRACTICE_FAMILIES:
+        vals = {str(v).strip() for v in df.loc[df["practice_family"] == fam, "crop_type"].dropna().unique() if str(v).strip()}
+        out[fam] = sorted(vals, key=str.lower)
+    return out
+
+
 def indicators_by_family(min_observations: int = 1) -> dict[str, list[str]]:
     """Indicator keys per practice family, ordered by field-evidence count (desc).
 
@@ -165,11 +181,18 @@ def practices_by_family() -> dict[str, list[str]]:
     return out
 
 
+def dataset_frame() -> Any:
+    """The engine's own training table (read-only use; U9 study statistics)."""
+    _engine._load()
+    return _engine._DF
+
+
 def evidence_counts() -> dict[str, int]:
     """Headline size of the field-evidence base behind the model (U1 trust strip).
 
     Counts only, read straight from the canonical training table so the UI
-    never hard-codes a figure. No effect sizes (doctrine 1).
+    never hard-codes a figure. Counts only, no effect sizes (doctrine 1: every
+    number has a source).
     """
     _engine._load()
     df = _engine._DF

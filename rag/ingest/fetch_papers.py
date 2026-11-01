@@ -66,7 +66,7 @@ EUROPEPMC_XML_URL = (
 )
 TIMEOUT = 30
 DOWNLOAD_TIMEOUT = 60
-UA = "AgroAdvisor-ET corpus builder (research use; mailto:{email})"
+UA = "AgroEcoAdvisor corpus builder (research use; mailto:{email})"
 
 _TAG_RE = re.compile(r"<[^>]+>")
 _WS_RE = re.compile(r"\s+")

@@ -7,7 +7,12 @@ call ``advisory_service.advise()`` and tabulate:
 
 * the mode distribution per cell and overall (model-led / hybrid / knowledge-led),
 * knowledge-candidate counts per source,
-* a guard: no candidate rationale contains a number other than its counts.
+* a guard: no candidate rationale contains a number other than its counts;
+* U9 evidence fusion: the lead source of every shown practice (model / study),
+  disagreements, the evidence depth of the top 3 (studies per practice), how
+  often the family's best-studied practice for the objective reaches the top 3,
+  and each advisory's top 3 (``--ordering conservative|model``; run both and
+  compare with ``rag/eval/compare_orderings.py``).
 
 Needs the raster stack and the model artefacts (it runs the real engine) and
 the knowledge graph store. Tier-2 guidance retrieval needs chromadb + an
@@ -58,6 +63,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--max-pins", type=int, default=None)
     ap.add_argument("--guidance", action="store_true", help="retrieve Tier-2 candidates (needs chromadb + key)")
     ap.add_argument("--out-name", default="mode_report", help="basename of the .json/.md written to --out-dir")
+    ap.add_argument("--ordering", choices=("conservative", "model"), default=None,
+                    help="ADVISORY_ORDERING for this run (default: the configured setting)")
     args = ap.parse_args(argv)
 
     from app.services import advisory_service as adv
@@ -74,6 +81,28 @@ def main(argv: list[str] | None = None) -> int:
     class _NoGuidance:
         def retrieve(self, query, k=8):
             return []
+
+    from app.config import Settings
+
+    settings = Settings(**({"advisory_ordering": args.ordering} if args.ordering else {}))
+    lead_sources: Counter = Counter()
+    disagreements = 0
+    depth: list[float] = []
+    best_hits: list[int] = []
+    advisories: list[dict] = []
+    best_studied: dict[tuple[str, str], str | None] = {}
+
+    def best_studied_practice(family: str, indicator: str) -> str | None:
+        """The family's practice with the most studies for the objective (ties: most observations)."""
+        key = (family, indicator)
+        if key not in best_studied:
+            rows = []
+            for practice in svc.practices_by_family().get(family, []):
+                s = gq.evidence_summary(practice, indicator)
+                if s.get("n_studies"):
+                    rows.append((int(s["n_studies"]), int(s.get("n_obs") or 0), practice))
+            best_studied[key] = max(rows)[2] if rows else None
+        return best_studied[key]
 
     pins = load_pins(args.queries, args.max_pins)
     cells = [(f, i) for f in svc.PRACTICE_FAMILIES for i in svc.INDICATORS]
@@ -95,11 +124,22 @@ def main(argv: list[str] | None = None) -> int:
         for lat, lon in pins:
             try:
                 out = adv.advise(lat, lon, family, indicator, top_n=3, language="en",
-                                 graph_query=gq, guidance_retriever=guidance or _NoGuidance())
+                                 graph_query=gq, guidance_retriever=guidance or _NoGuidance(), settings=settings)
             except Exception as exc:  # should not happen: rank-impossible pairs are knowledge-led
                 errors.append({"family": family, "indicator": indicator, "lat": lat, "lon": lon, "error": str(exc)[:200]})
                 continue
             mode = out["mode"]
+            shown = out.get("practices") or []
+            for b in shown:
+                lead_sources[b["lead_source"]] += 1
+                disagreements += bool(b.get("disagreement"))
+            if shown:
+                depth.append(sum(len(b.get("studies") or []) for b in shown) / len(shown))
+                best = best_studied_practice(family, indicator)
+                if best is not None:
+                    best_hits.append(int(best in {b["practice"] for b in shown}))
+            advisories.append({"f": family, "i": indicator, "lat": lat, "lon": lon,
+                               "top": [b["practice"] for b in shown], "lead": [b["lead_source"] for b in shown]})
             per_cell[(family, indicator)][mode] += 1
             overall[mode] += 1
             for r in out["reasons"]:
@@ -151,13 +191,19 @@ def main(argv: list[str] | None = None) -> int:
         "reasons_overall": dict(sum((per_cell_reasons[c] for c in cells), Counter())),
         "errors": errors[:20], "n_errors": len(errors),
         "elapsed_s": round(elapsed, 1),
+        "ordering": settings.advisory_ordering,
+        "fusion": {"lead_sources": dict(lead_sources), "disagreements": disagreements,
+                   "top3_mean_studies_per_practice": round(sum(depth) / max(1, len(depth)), 2),
+                   "best_studied_in_top3_rate": round(sum(best_hits) / max(1, len(best_hits)), 3),
+                   "n_with_best_studied": len(best_hits)},
         "cells": table,
+        "advisories": advisories,
     }
     args.out_dir.mkdir(parents=True, exist_ok=True)
     (args.out_dir / f"{args.out_name}.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     md = [
-        "# Advisory mode report (P9)", "",
+        "# Advisory mode report (P9 modes, U9 evidence fusion)", "",
         f"Generated {report['generated']} · {report['n_cells']} cells × {report['n_pins']} pins = "
         f"{report['n_advisories']} advisories · thresholds {report['thresholds']} · "
         f"guidance retrieval {'on' if report['guidance_retrieval'] else 'off'} · {report['elapsed_s']} s", "",
@@ -166,6 +212,11 @@ def main(argv: list[str] | None = None) -> int:
         f"**Knowledge candidates:** mean {report['candidates']['mean_per_advisory']} per advisory; by source "
         f"{report['candidates']['by_source']} · rationale-number guard: {report['rationale_number_guard']['failures']} "
         f"failures in {report['rationale_number_guard']['checked']} candidates", "",
+        f"**Evidence fusion (ordering = {report['ordering']}):** lead sources of shown practices "
+        f"{report['fusion']['lead_sources']} · disagreements {report['fusion']['disagreements']} · "
+        f"top-3 studies per practice (mean) {report['fusion']['top3_mean_studies_per_practice']} · "
+        f"best-studied practice in the top 3: {report['fusion']['best_studied_in_top3_rate']:.1%} of "
+        f"{report['fusion']['n_with_best_studied']} advisories", "",
         f"**Reasons over all advisories (pins carrying each key):** {report['reasons_overall']}"
         + (f" · guidance funnel {report['guidance_funnel']}" if funnel else ""), "",
         "| challenge | objective | pins | model-led | hybrid | knowledge-led | dominant | reasons (pins) | candidates by source |",

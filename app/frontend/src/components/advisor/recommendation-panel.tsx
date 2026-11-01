@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { familyShort } from "@/i18n/glossary";
 import type { Locale } from "@/i18n/routing";
-import type { AdvisoryMode, ModeReason, RecommendResponse } from "@/lib/types";
+import type { AdvisoryMode, ModeReason, PracticeEvidence, RecommendResponse } from "@/lib/types";
 import { useMetadata } from "@/components/metadata-provider";
 import { ExplainProvider } from "@/components/evidence-panel";
 import { ModeBadge } from "./mode-badge";
@@ -18,6 +18,7 @@ export function RecommendationPanel({
   withProvider = true,
   mode = "model-led",
   reasons = [],
+  practices = [],
 }: {
   data: RecommendResponse;
   children?: React.ReactNode;
@@ -25,11 +26,14 @@ export function RecommendationPanel({
   /** P9: the advisory mode behind this ranking (drives the source badge). */
   mode?: AdvisoryMode;
   reasons?: ModeReason[];
+  /** U9: the evidence bundles of the shown practices (headline, source chip, Why this?). */
+  practices?: PracticeEvidence[];
 }) {
   const t = useTranslations("advisor.results");
   const locale = useLocale() as Locale;
   const { meta } = useMetadata();
   const byPractice = new Map(data.details.ranked.map((r) => [r.practice, r]));
+  const bundles = new Map(practices.map((b) => [b.practice, b]));
   const body = (
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -48,7 +52,7 @@ export function RecommendationPanel({
         <ol className="space-y-4">
           {data.recommendations.map((item, i) => (
             <li key={item.practice}>
-              <ResultCard item={item} ranked={byPractice.get(item.practice)} rank={i + 1} data={data} priority={i === 0} />
+              <ResultCard item={item} ranked={byPractice.get(item.practice)} rank={i + 1} data={data} priority={i === 0} bundle={bundles.get(item.practice)} />
             </li>
           ))}
         </ol>

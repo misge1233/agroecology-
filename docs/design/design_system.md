@@ -1,8 +1,18 @@
-# AgroAdvisor-ET design system (U1, 26 Oct 2026)
+# AgroEcoAdvisor design system (U1, 26 Oct 2026)
 
 Binding tokens for the production UI. Implemented as CSS variables in
 `app/frontend/src/app/globals.css` and exposed to Tailwind in
 `app/frontend/tailwind.config.ts`. Components never hard-code a colour.
+
+**Token format (U9 B2, 1 Nov 2026).** Every colour variable holds
+space-separated RGB **channels**, not a hex (`--surface: 255 255 255; /*
+#ffffff */`; the hex in the tables below stays the reference value).
+Tailwind consumes each as `rgb(var(--x) / <alpha-value>)`, so opacity
+modifiers (`bg-surface/90`, `border-primary/40`) work — with bare hex
+variables Tailwind 3 silently dropped them, which left the sticky header
+transparent. Any direct read in CSS or JS must wrap the variable:
+`rgb(var(--primary))` or `rgb(var(--primary) / 0.22)`, never `var(--primary)`.
+Shadows (`--shadow-1/2`) are not colour tokens and keep their full values.
 
 ## 1. Palette — "Ethiopian highland"
 

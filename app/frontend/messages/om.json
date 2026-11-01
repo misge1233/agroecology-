@@ -1,7 +1,7 @@
 {
   "common": {
-    "appName": "AgroAdvisor-ET",
-    "tagline": "Deeggarsa murtii Agro-ekoloojii+",
+    "appName": "AgroEcoAdvisor",
+    "tagline": "Furmaata Agroecology+ AI irratti hundaa'an",
     "loading": "Fe'aa jira…",
     "retry": "Irra deebi'ii yaali",
     "close": "Cufi",
@@ -35,16 +35,17 @@
   },
   "footer": {
     "attribution": "Alliance of Bioversity International fi CIAT, Finfinnee fi Akraatiin kan hojjetame.",
-    "disclaimer": "Ragaadhaan sadarkeeffame malee raaga miti. Gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbeentaan tilmaama moodeelaa amantaa ibsame waliin.",
+    "disclaimer": "Ragaadhaan kan tartiibeffame malee tilmaama miti. Dhibbeentaan hundi moodela qorannoo dirree ykn qorannoowwan dirree maxxanfaman irraa dhufa; maddi isaas waliin agarsiifama.",
     "sources": "Maddawwan daataa",
-    "method": "Akkamitti akka hojjetu",
+    "method": "Gorsaan akkamitti akka murteessu",
     "version": "Gosa {version}",
     "versionUnknown": "Gosni hin argamu",
     "licence": "Hayyama fi daataa",
     "explore": "Daawwadhu",
     "resources": "Qabeenyota",
-    "rights": "© {year} AgroAdvisor-ET",
-    "contact": "Quunnamtii"
+    "rights": "© {year} AgroEcoAdvisor · Alliance of Bioversity International and CIAT",
+    "contact": "Quunnamtii",
+    "cite": "Akkamitti wabeeffamuu danda'a"
   },
   "status": {
     "apiUnreachable": "Tajaajilli gorsaa hin argamu. Hanga deebi'utti gorsi hin jiru.",
@@ -57,7 +58,7 @@
     "hero": {
       "eyebrow": "Ragaa dirree · Haala jiyoo-ispaashaalii · Sadarkeessuu iftoomina qabu",
       "title": "Gorsa gochaa qonnaan bultoota Itoophiyaatiif, ragaa dirreetiin sadarkeeffame.",
-      "subtitle": "Mallattoo kaa'aa, rakkoo fi kaayyoo himaa. AgroAdvisor-ET gochaalee agro-ekoloojii bu'aa isaanii haalawwan akka keessanii keessatti safarameen sadarkeessa, qorannoowwan tokkoon tokkoon isaanii duuba jiranis ni agarsiisa.",
+      "subtitle": "Mallattoo kaa'aa, rakkoo fi kaayyoo himaa. AgroEcoAdvisor gochaalee agro-ekoloojii bu'aa isaanii haalawwan akka keessanii keessatti safarameen sadarkeessa, qorannoowwan tokkoon tokkoon isaanii duuba jiranis ni agarsiisa.",
       "ctaAdvisor": "Gorsa argadhu",
       "ctaChat": "Gorsaa gaafadhu"
     },
@@ -75,14 +76,14 @@
         },
         "results": {
           "title": "Gochaalee sadarkeeffaman gamaaggami",
-          "body": "Gochaaleen bu'aa yaaliiwwan dirree cimdii irraa eegamuun tartiibeffaman, tokkoon tokkoon amantaa isaa, qorannoowwan duuba jiranii fi ibsa madda qabu waliin."
+          "body": "Gochaaleen ragaa naannoo keessaniif cimaa ta'een tartiibeffamu; ragaan moodela qorannoo dirree ykn qorannoowwan dirree maxxanfaman irraa kan dhufu yoo ta'u, madda isaa, qorannoowwan duuba jiranii fi ibsa wabii qabu waliin dhiyaata."
         }
       }
     },
     "architecture": {
       "eyebrow": "Akkaataa keessaan itti hojjetu",
-      "title": "Moodeelli barnoota maashinii sadarkeessa. Barbaachi ibsa. Ibsi hundi madda qaba.",
-      "subtitle": "Sadarkaaleen afur mallattoo kaartaa gara gorsa isin mirkaneessuu dandeessanitti jijjiiru. Sadarkaan tokkoon tokkoon hojii tokko qaba; lakkoofsa kan uumu moodeela qofa.",
+      "title": "Moodelootaa fi qorannoowwan tartiibessu. Barbaachi ibsa. Lakkoofsi hundi madda qaba.",
+      "subtitle": "Sadarkaaleen afur mallattoo kaartaa gara gorsa mirkaneeffamuu danda'uutti jijjiiru. Lakkoofsi hundi moodela qorannoo dirree ykn qorannoo maxxanfame irraa dhufa; barreessaa AI irraa gonkumaa hin dhufu.",
       "layer": "Sadarkaa {n}",
       "layers": {
         "geo": {
@@ -92,23 +93,23 @@
         },
         "model": {
           "title": "Sadarkeessuu barnoota maashinii",
-          "body": "Moodeelli yaaliiwwan dirree cimdii (gochaa waliin fi malee) irratti leenji'e bu'aa gochaa tokkoon tokkoon haala sana keessatti tilmaama, sadarkaa amantaa waliinis sadarkeessa. Madda qofa hammaa bu'aa fi dhibbeentaa ti.",
+          "body": "Moodelli qorannoowwan dirree wal-qabsiifaman (gochaa waliin fi malee) irratti leenji'e, haala sana keessatti bu'aa gochaa tokkoon tokkoo sadarkaa amanamummaa waliin tilmaama. Naannoo keessan irraa qorannoon xiqqoo yoo jiraate, bu'aan qorannoowwan dirree naannoowwan walfakkaatan keessatti safarame dursa.",
           "tag": "Madda: yaaliiwwan dirree cimdii ERA, Itoophiyaa"
         },
         "rag": {
           "title": "Ibsa barbaacha irratti hundaa'e (RAG)",
-          "body": "Barbaachi makaa hiikaa fi jecha furtuu qorannoowwan moodeelli irraa barate fi qajeelfama hojiirra oolmaa CGIAR irraa kutaalee baasa. Moodeelli afaanii sadarkeessa sana ibsa, tarkaanfii hojii kenna, madda hundas ni wabeeffata.",
+          "body": "Barbaachi hiikaa fi jecha furtuu qorannoowwan ragaa duuba jiran irraa fi qajeelfamoota hojiirra oolmaa CGIAR irraa kutaalee fida. Moodelli afaanii tartiiba jechoota salphaadhaan ibsa, tarkaanfiiwwan hojiirra oolmaa kenna, madda hunda wabeeffata. Lakkoofsa mataa isaa gonkumaa hin barreessu.",
           "tag": "Maddawwan: kutaalee qorannoo, qajeelfama GARDIAN / CGSpace"
         },
         "graph": {
           "title": "Giraafii beekumsaa",
-          "body": "Gochaalee, qorannoo, bu'aalee, godinaalee fi galmeewwan gochaa madda isaanii waliin walqunnamsiisa. Gadi fageenya ragaa safara, sadarkaa gorsaas murteessa: moodeelaan kan geggeeffamu, makaa ykn beekumsaan kan geggeeffamu.",
+          "body": "Gochaalee, qorannoowwan, bu'aalee, godinaalee fi galmeewwan gochaa madda isaanii waliin walitti hidha. Bu'aa qorannoo tokkoon tokkoo keessatti safarame qabata, gadi fageenya ragaa agarsiisa, sadarkaa gorsaas murteessa: moodelaan kan geggeeffamu, makaa ykn beekumsaan kan geggeeffamu.",
           "tag": "Walqunnamtii: gochaalee, qorannoo, bu'aalee, godinaalee, galmeewwan"
         }
       },
       "guardrail": {
-        "title": "Lakkoofsi hundi kan moodeelaa ti",
-        "body": "Beekumsi argame ni ibsa, ni barsiisa; garuu hamma bu'aa, sadarkaa ykn baay'ina qorannoo gonkumaa hin uumu, hin jijjiiru. Ibsi madda hin qabne hin agarsiifamu; ragaan walqabsiisuun yoo hin milkoofne, gorsaan gara unka salphaatti deebi'a."
+        "title": "Lakkoofsi hundi madda qaba",
+        "body": "Gorsi moodeloota qorannoo dirree, qorannoowwan maxxanfaman, qajeelfamootaa fi giraafii beekumsaa walitti fida. Lakkoofsi hundi isaan keessaa tokko irraa dhufa, barreessaa AI irraa gonkumaa hin dhufu; maddi isaas cuqaasa tokkoon argama. Ibsi wabii hin qabne hin agarsiifamu."
       },
       "roadmap": {
         "title": "Karoora itti aanu",
@@ -147,12 +148,11 @@
   },
   "advisor": {
     "title": "Gorsaa",
-    "subtitle": "Gaaffii tarkaanfii afuriin qajeelfame. Lakkoofsi agarsiifamu hundi moodeela yaalii dirree irraa dhufa.",
+    "subtitle": "Gaaffii qajeelfamaa gabaabaa. Lakkoofsi hundi qorannoowwan dirree ykn qorannoowwan maxxanfaman irraa dhufa; maddi isaas cuqaasa tokkoon argama.",
     "steps": {
       "location": "Bakka",
       "challenge": "Rakkoo",
       "objective": "Kaayyoo",
-      "crop": "Midhaan",
       "results": "Bu'aawwan"
     },
     "stepOf": "Tarkaanfii {current} kan {total}",
@@ -257,8 +257,12 @@
           "m": "m",
           "percent": "%",
           "days": "guyyoota",
-          "celsius": "°C"
-        }
+          "celsius": "°C",
+          "gkg": "g/kg"
+        },
+        "placeExact": "{name} ({lat}, {lon})",
+        "placeNear": "{name} bira ({lat}, {lon})",
+        "place": "Bakka"
       },
       "card": {
         "rank": "#{rank}",
@@ -275,11 +279,34 @@
         "image": "Fakkii {practice}",
         "imageMissing": "Ammatti fakkiin hin jiru",
         "apiEffect": "Hima moodeelaa: {effect}",
-        "imageLoading": "Fakkii fe'aa jira…"
+        "imageLoading": "Fakkii fe'aa jira…",
+        "fusion": {
+          "headline": "{indicator} irratti {dir, select, less {hir'ina} other {dabala}} %{value} naannoo",
+          "headlineVaries": "Ragaan garaagarummaa qaba: {indicator} irratti jijjiirama %{lo} hanga %{hi} naannoo",
+          "sourceModel": "Moodeela yaalii dirree",
+          "sourceStudy": "Qorannoo dirree · {where, select, zone {godina keessan} belt_group {naannoo walfakkaataa} moisture {rooba walfakkaataa} other {naannoowwan biroo}}",
+          "sourceGuidance": "Qajeelfama",
+          "sourceHint": "Lakkoofsi ijoon eessaa akka dhufe. Gatii hundaa fi madda isaa arguuf “Maaliif kana?” banaa.",
+          "labelModel": "Tilmaama moodeelaa naannoo keessaniif: {indicator} irratti {dir, select, less {hir'ina} other {dabala}} %{value} naannoo ({confidence}; {studies}, {observations})",
+          "labelStudy": "Qorannoo [{ref}]{about} keessatti gabaafame: {indicator} irratti {dir, select, less {hir'ina} other {dabala}} %{value} naannoo ({observations})",
+          "leads": "Ni geggeessa",
+          "supports": "Ni deeggara",
+          "disagree": "Moodeelli yaalii dirree fi qorannoowwan dirree asitti walii hin galan; kanaaf ragaan garaagarummaa qaba.",
+          "caution": "Dabalinsi akkasii guddaan kan baramaa miti; haala naannoo waliin mirkaneessaa.",
+          "constraint": "Rakkoo biyyee isin ibsitan irratti xiyyeeffata ({constraint, select, acidic_soil {biyyee asiidii} salinity {soogiddummaa} waterlogging {bishaan kuufamuu} other {rakkoo biyyee}}).",
+          "constraintPick": "Rakkoo biyyee isin ibsitan waan furuuf dabalame.",
+          "replacesCrop": "{crop} bakka midhaan biraa facaasuu jechuudha.",
+          "moreSources": "fi {n} biroo",
+          "fewerSources": "Muraasa agarsiisi",
+          "showSource": "Barreeffama madda agarsiisi",
+          "hideSource": "Barreeffama madda dhoksi",
+          "steps": "Tarkaanfiiwwan",
+          "studyChart": "Bu'aa qorannoo tokkoon tokkoon safarame fi tilmaama moodeelaa, 0 mallatteeffamee"
+        }
       },
       "empty": {
         "title": "Ammatti gochaan agarsiifamu hin jiru",
-        "body": "Tarkaanfiiwwan afran xumuraa, gochaaleen sadarkeeffaman asitti mul'atu."
+        "body": "Tarkaanfiiwwan armaan olii xumuraa; gochaaleen tartiibeffaman asitti mul'atu."
       },
       "noEvidence": {
         "title": "Walitti dhufeenya kanaaf ragaan dirree hin jiru",
@@ -306,7 +333,7 @@
         "sources": "Maddoota",
         "evidencePending": "Osoo hin maxxanfamin dura bal'inni ragaa hin fe'amne; isaan dabaluuf gocha irratti \"Ragaa\" bani ergasii irra deebi'ii maxxansi.",
         "preparing": "Ragaa maxxansaaf qopheessaa jira…",
-        "footer": "AgroAdvisor-ET (Alliance of Bioversity International fi CIAT) irraa maxxanfame. Ragaadhaan sadarkeeffame malee raaga miti: gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbantaawwan tilmaama moodeelaa amantaa ibsameen."
+        "footer": "AgroEcoAdvisor (Alliance of Bioversity International fi CIAT) irraa maxxanfame. Ragaadhaan sadarkeeffame malee raaga miti: gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbantaawwan tilmaama moodeelaa amantaa ibsameen."
       },
       "mode": {
         "explain": {
@@ -338,7 +365,10 @@
         "support": {
           "documents": "Maddoota",
           "passages": "Kutaalee",
-          "otherObjectives": "Kaayyoowwan biroof ragaa dirree (qorannoowwan)"
+          "otherObjectives": "Kaayyoowwan biroof ragaa dirree (qorannoowwan)",
+          "fieldStudies": "{n, plural, one {qorannoo dirree #} other {qorannoowwan dirree #}}",
+          "guidanceDocs": "{n, plural, one {sanada qajeelfamaa #} other {sanadoota qajeelfamaa #}}",
+          "records": "{n, plural, one {galmee gochaa #} other {galmeewwan gochaa #}}"
         },
         "sources": {
           "label": "Maddoota gocha kana duuba jiran",
@@ -356,7 +386,8 @@
         "title": "Gaaffii kanaaf ragaan yaalii dirree hin jiru",
         "body": "Moodeelli asitti gochaalee sadarkeessuu yookiin bu'aa tilmaamuu hin danda'u. Bakka isaa gochaaleen galmaa'an haalawwan walfakkaatan irraa, tokkoon tokkoon isaanii maddoota isaanii waliin agarsiifamu."
       },
-      "liveDocumented": "{n, plural, one {gocha galmaa'e # yaadameera} other {gochaalee galmaa'an # yaadamaniiru}}"
+      "liveDocumented": "{n, plural, one {gocha galmaa'e # yaadameera} other {gochaalee galmaa'an # yaadamaniiru}}",
+      "engineNote": "Tilmaamni moodelaa reeshoo deebii gochaa waliin fi malee qorannoowwan dirree wal-qabsiifaman irraa barame dha; bu'aan qorannoo qorannoowwan kanuma irraa shallagama. Amanamummaan moodelli kaayyoo kanaaf mirkaneessa qaxxaamuraa keessatti hammam amanamaa akka ture agarsiisa."
     }
   },
   "evidence": {
@@ -474,10 +505,6 @@
     "openInAdvisor": "Gorsaa keessatti bani",
     "newChat": "Marii haaraa",
     "contextTitle": "Haala sadarkeessuu kanaaf fayyadame",
-    "advisory": {
-      "hybrid": "Ragaa yaalii dirree qal'aa: gochaaleen galmaa'an sadarkaa jalatti tarreeffamaniiru.",
-      "knowledgeLed": "Gaaffii kanaaf ragaan yaalii dirree hin jiru; gochaalee galmaa'an qofa."
-    },
     "voice": {
       "mic": "Gaaffii kee sagaleedhaan dubbadhu",
       "stop": "Xumureera",
@@ -499,31 +526,26 @@
       "autoSend": "Yeroo xumurtu xiqqoo turi; ofumaan ni ergama."
     },
     "footnote": "Sadarkaaleen ragaa yaalii dirree godina keetiif irraa dhufan. Osoo hin hojiirra oolchin dura haala naannoo mirkaneessi.",
-    "evidence": {
-      "title": "Ragaa deebii kana duuba jiru",
-      "observations": "{n, plural, =0 {daawwannaa dirree hin jiru} one {daawwannaa dirree #} other {daawwannaawwan dirree #}}",
-      "alsoDocumented": "Qajeelfama keessatti kan galmaa'an, tilmaama bu'aa malee: {names}"
-    },
     "copy": "Garagalchi",
     "copied": "Garagalfameera"
   },
   "about": {
-    "title": "Waa'ee AgroAdvisor-ET",
+    "title": "Waa'ee AgroEcoAdvisor",
     "lead": "Gorsaa ragaa irratti hundaa'e kan gochaalee agro-ekoloojii bakka murtaa'aa Itoophiyaa keessaatiif sadarkeessu fi qorannoowwan dirree gorsa hunda duuba jiran agarsiisu.",
     "what": {
       "title": "Maal akka ta'e",
-      "body": "AgroAdvisor-ET haala agro-ekoloojii mallattoo kaartaa jala jiru (rooba, ho'a, ol ka'iinsa, gadee lafaa, biyyee fi yeroo guddinaa kuusaa jiyoo-ispaashaalii 250 m irraa) dubbisa, gochaalees moodeela daawwannaawwan dirree cimdii kumaatamaan lakkaa'aman waliin/malee yaaliiwwan Itoophiyaa irraa leenji'een sadarkeessa. Achiis tarreen baasuu gorsa hunda kutaalee qorannoowwan moodeelichi irraa barate irraa fudhatamaniin ibsa."
+      "body": "AgroEcoAdvisor haala agro-ikoloojii mallattoo kaartaa jala jiru (rooba, ho'a, ol-ka'iinsa, gaarummaa lafaa, biyyee fi yeroo guddinaa sadarkaalee jiyoospaashaalaa 250 m irraa) dubbisa. Moodela daawwannaawwan dirree wal-qabsiifaman kumaatama qorannoowwan Itoophiyaa irraa irratti leenji'een gochaalee tartiibessa, tokkoon tokkoo isaanii bu'aa qorannoowwan maxxanfaman naannoowwan walfakkaatan keessatti safarame waliin wal-bira qaba. Sadarkaan barbaachaa qorannoowwan sana irraa kutaalee fudhachuun gorsa hunda ibsa."
     },
     "confidence": {
       "title": "Amantaa akkamitti dubbisuu",
-      "body": "Kun meeshaa sadarkeessuu malee raaga oomishaa miti. Dandeettiin mirkaneeffannaa qaxxaamuraa amanamaan giddugaleessa, kanaaf dhibbeentaa sirrii caalaa tartiiba gochaalee amanaa.",
+      "body": "Kun meeshaa tartiibessaa malee tilmaama oomishaa miti. Bu'aan hundi ragaan isaa hammam cimaa akka ta'e agarsiisa; kanaaf dhibbeentaa sirrii caalaa tartiiba gochaalee amanaa.",
       "high": "haalawwan akka keessanii keessatti yaaliiwwan dirreetiin sirriitti deeggarame",
       "medium": "ragaa gahaa; tartiiba akka mallattootti fudhadhaa",
-      "low": "ragaa qal'aa; qabxii jalqabaa malee raaga miti. Gorsaan kijibuu mannaa kana jedha."
+      "low": "jalqaba malee tilmaama miti; gorsaan kana ifatti ni hima"
     },
     "sources": {
       "title": "Maddawwan daataa",
-      "evidence": "Evidence for Resilient Agriculture (ERA); kutaa Itoophiyaa daawwannaawwan dirree cimdii, qorannoowwan qonna haala qilleensaatiin ogummaa qabu Adimaasuu fi kkf waliin.",
+      "evidence": "Evidence for Resilient Agriculture (ERA): kutaa Itoophiyaa daawwannaawwan dirree wal-qabsiifamanii, qorannoowwan qonna qilleensaaf mijatu Adimassu et al. waliin. Bu'aan qorannoo tokkoon tokkoo odeeffannoo kanuma irraa shallagama.",
       "geo": "Haala qilleensaa WorldClim, biyyee SoilGrids, ol ka'iinsa fi gadee Copernicus, uwwisa lafaa ESA WorldCover, daataa yeroo guddinaa FAO, fi godinaalee agro-ekoloojii Itoophiyaa.",
       "guidance": "Qajeelfama hojiirra oolmaa GARDIAN / CGSpace (oomishaalee beekumsaa CGIAR) tarree akkamitti-gochuutiif.",
       "practice": "Galmeewwan gochaa WOCAT Global SLM Database (CC BY-NC-SA 4.0), haala biyyoota gidduu gad-lakkiisa booda dhufuuf.",
@@ -537,8 +559,44 @@
     "cta": "Gorsaa bani",
     "contact": {
       "title": "Nu quunnamaa",
-      "body": "Gaaffii, yaada ykn yaada hojii waliinii qabduu? Garee AgroAdvisor-ET tiif barreessaa; deebii isiniif ni kennina.",
+      "body": "Gaaffii, yaada ykn yaada hojii waliinii qabduu? Garee AgroEcoAdvisor tiif barreessaa; deebii isiniif ni kennina.",
       "cta": "Imeelii ergaa"
+    },
+    "decides": {
+      "title": "Gorsaan akkamitti akka murteessu",
+      "body": "Gochaa tokkoon tokkoof ragaan naannoo keessaniif cimaan dursa, maddi kaan immoo deeggara. Mallattoon bu'aa hunda irra jiru kamtu akka dursu isinitti hima.",
+      "model": {
+        "title": "Moodelaan kan geggeeffamu",
+        "body": "Amanamummaan moodelaa giddugaleessa ykn ol'aanaa yoo ta'ee fi godina keessan irraa qorannoo yoo qabaate, moodelli qorannoo dirree dursa. Lakkoofsi ijoon tilmaama moodelaa naannoo keessaniif ti."
+      },
+      "study": {
+        "title": "Qorannoon kan geggeeffamu",
+        "body": "Moodelli odeeffannoo naannoo xiqqoo yoo qabaate, bu'aan qorannoowwan dirree maxxanfaman keessatti safarame dursa; isa walsimu dhiyoo irraa fudhatama: godina keessan, naannoo walfakkaataa ykn rooba walfakkaataa."
+      },
+      "documented": {
+        "title": "Kan galmeeffame",
+        "body": "Gochaaleen qajeelfamoota ykn galmeewwan gochaa keessatti ibsaman, garuu kaayyoo keessaniif bu'aa safarame hin qabne, madda isaanii waliin tarreeffamu; lakkoofsa garuu gonkumaa hin qabatan."
+      },
+      "disagree": {
+        "title": "Yeroo maddi hin walsimne",
+        "body": "Moodelii fi qorannoowwan kallattii faallaa yoo agarsiisan ykn baay'ee yoo wal-dhaban, gorsaan lakkoofsa tokko qofa osoo hin taane hangii agarsiisa, kanas ni ibsa."
+      }
+    },
+    "legal": {
+      "title": "Hayyama, dhuunfaa fi wabeeffannaa",
+      "licences": {
+        "title": "Hayyama odeeffannoo fi beekamtii",
+        "body": "Odeeffannoon dirree ERA, SoilGrids fi ESA WorldCover hayyama CC BY 4.0 jalatti fayyadamaniiru. WorldClim madda isaa wabeeffachuun qorannoo daldalaa hin taaneef fayyadameera. Copernicus DEM: © DLR fi Airbus, COPERNICUS jalatti Gamtaa Awurooppaa fi ESA'n kan dhiyaate. Galmeewwan WOCAT CC BY-NC-SA 4.0 dha. Sanadoonni qajeelfamaa hayyama tokkoon tokkoo isaanii irratti ibsame qabatu. Odeeffannoo kaartaa © gumaachitoota OpenStreetMap."
+      },
+      "privacy": {
+        "title": "Sagalee fi dhuunfaa",
+        "body": "Waraabbiiwwan yaadannoo keessatti gara barreeffamaatti jijjiiramu malee hin kuufaman; guddinni isaanii qofti galmaa'a. Sagaleen Amaariffaa fi Afaan Oromoo sarvarii AgroEcoAdvisor irratti hojjeta. Sagaleen sarvarii yoo hin argamne, tajaajilli sagalee barbaadduu keessanii fayyadama; innis sagalee gara dhiyeessaa barbaadduutti erguu danda'a."
+      },
+      "cite": {
+        "title": "Akkamitti wabeeffamuu danda'a",
+        "body": "Alliance of Bioversity International and CIAT ({year}). AgroEcoAdvisor: AI-Powered Agroecology+ Solutions, version {version}."
+      },
+      "version": "Gosa {version}"
     }
   },
   "errors": {

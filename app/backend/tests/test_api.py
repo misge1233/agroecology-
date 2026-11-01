@@ -58,6 +58,11 @@ def test_metadata_shape(client):
         assert ind["direction"] in ("increase", "reduce")
     assert body["indicators"][-1]["key"] == "runoff"  # order preserved
     assert len(body["crop_types"]) > 10
+    # Crop picker (1 Nov 2026): crops measured per family, a subset of the global list.
+    by_family = body["crop_types_by_family"]
+    crops = by_family["Crop production and management"]
+    assert len(crops) > 10 and set(crops) <= set(body["crop_types"])
+    assert "Cattle" not in crops
     assert body["bounds"]["lat"] == [3.3, 14.9]
     assert body["bounds"]["lon"] == [32.9, 48.2]
     assert body["model"]["name"]
@@ -220,7 +225,10 @@ def test_chat_place_name_soil_loss_debre_birhan(client, monkeypatch):
     assert len(rec["recommendations"]) >= 1
     # Narrative must mention a scored practice, not free-hallucinated advice only.
     top = rec["recommendations"][0]["practice"]
-    assert top.lower() in (body["reply"] or "").lower()
+    # U9 (D10): the reply names practices by their display name, not the frozen label.
+    from app.services.practice_names import practice_name
+
+    assert practice_name(top, "en").lower() in (body["reply"] or "").lower()
     slots = body.get("slots") or {}
     assert slots.get("is_complete") is True
     assert "contour farming" not in (body["reply"] or "").lower() or top.lower() in (
@@ -369,13 +377,25 @@ def test_geocode_gazetteer_hit_and_miss(client):
 
 
 # ------------------------------------------------------------- advisory (P9)
-def test_advise_model_led_returns_the_recommend_payload_unchanged(client):
+def test_advise_returns_the_engine_items_in_the_fused_order(client, monkeypatch):
     rec = client.post("/recommend", json=DEMO).json()
+    # ADVISORY_ORDERING=model: byte-for-byte the /recommend payload (P9 contract).
+    monkeypatch.setattr(get_settings(), "advisory_ordering", "model")
+    assert client.post("/advise", json={**DEMO, "language": "en"}).json()["model"] == rec
+    # Default (conservative): the engine's own items, unchanged, in the fused order (U9).
+    monkeypatch.setattr(get_settings(), "advisory_ordering", "conservative")
     r = client.post("/advise", json={**DEMO, "language": "en"})
     assert r.status_code == 200
     body = r.json()
     assert body["mode"] in ("model-led", "hybrid")
-    assert body["model"] == rec  # byte-for-byte the /recommend payload
+    from app.services import recommender_service as svc
+
+    full = svc.recommend(DEMO["lat"], DEMO["lon"], DEMO["practice_family"], DEMO["indicator"], top_n=1000)
+    every = {i["practice"]: i for i in full["details"]["ranked"]}
+    assert all(item == every[item["practice"]] for item in body["model"]["details"]["ranked"])
+    assert [b["practice"] for b in body["practices"]] == [i["practice"] for i in body["model"]["details"]["ranked"]]
+    assert all(b["lead_source"] in ("model", "study") and b["headline"]["source"] in ("model", "study")
+               for b in body["practices"])
     assert body["evidence_sufficiency"]["user_belt"] == rec["details"]["context"]["aez_belt"]
     assert body["evidence_sufficiency"]["thresholds"] == {"min_studies": 3, "min_obs": 10, "min_obs_in_zone": 1}
     assert all(set(c) >= {"n_studies", "n_obs", "n_obs_in_belt", "n_obs_in_zone"} for c in body["evidence_sufficiency"]["candidates"])

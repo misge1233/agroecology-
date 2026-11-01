@@ -1,0 +1,502 @@
+{
+  "Agroforestry Fallow": {
+    "en": "Agroforestry fallow",
+    "am": "የአግሮ-ፎረስትሪ ጦም መሬት",
+    "om": "Lafa boqonnaa agroo-forestrii"
+  },
+  "Agroforestry Pruning": {
+    "en": "Agroforestry pruning",
+    "am": "የአግሮ-ፎረስትሪ መግረዝ",
+    "om": "Muruu agroo-forestrii"
+  },
+  "Agroforestry Pruning-Inorganic Fertilizer": {
+    "en": "Agroforestry pruning + Inorganic fertilizer",
+    "am": "የአግሮ-ፎረስትሪ መግረዝ + ኬሚካል ማዳበሪያ",
+    "om": "Muruu agroo-forestrii + Xaa'oo keemikaalaa"
+  },
+  "Agroforestry Pruning-Inorganic Fertilizer Reduction": {
+    "en": "Agroforestry pruning + Reduced inorganic fertilizer",
+    "am": "የአግሮ-ፎረስትሪ መግረዝ + የተቀነሰ ኬሚካል ማዳበሪያ",
+    "om": "Muruu agroo-forestrii + Xaa'oo keemikaalaa hir'ifame"
+  },
+  "Alleycropping": {
+    "en": "Alley cropping",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ)",
+    "om": "Qonna daandii gidduu (alley cropping)"
+  },
+  "Alleycropping-Crop Rotation": {
+    "en": "Alley cropping + Crop rotation",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + የሰብል ፈረቃ",
+    "om": "Qonna daandii gidduu (alley cropping) + Jijjiirraa midhaanii"
+  },
+  "Alleycropping-Crop Rotation-Improved Varieties": {
+    "en": "Alley cropping + Crop rotation + Improved varieties",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + የሰብል ፈረቃ + የተሻሻሉ ዝርያዎች",
+    "om": "Qonna daandii gidduu (alley cropping) + Jijjiirraa midhaanii + Sanyiiwwan fooyya'an"
+  },
+  "Alleycropping-Crop Rotation-Improved Varieties-Inorganic Fertilizer": {
+    "en": "Alley cropping + Crop rotation + Improved varieties + Inorganic fertilizer",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + የሰብል ፈረቃ + የተሻሻሉ ዝርያዎች + ኬሚካል ማዳበሪያ",
+    "om": "Qonna daandii gidduu (alley cropping) + Jijjiirraa midhaanii + Sanyiiwwan fooyya'an + Xaa'oo keemikaalaa"
+  },
+  "Alleycropping-Improved Varieties-Inorganic Fertilizer-Intercropping": {
+    "en": "Alley cropping + Improved varieties + Inorganic fertilizer + Intercropping",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + የተሻሻሉ ዝርያዎች + ኬሚካል ማዳበሪያ + ድብልቅ ሰብል",
+    "om": "Qonna daandii gidduu (alley cropping) + Sanyiiwwan fooyya'an + Xaa'oo keemikaalaa + Qonna makaa"
+  },
+  "Alleycropping-Improved Varieties-Intercropping": {
+    "en": "Alley cropping + Improved varieties + Intercropping",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + የተሻሻሉ ዝርያዎች + ድብልቅ ሰብል",
+    "om": "Qonna daandii gidduu (alley cropping) + Sanyiiwwan fooyya'an + Qonna makaa"
+  },
+  "Alleycropping-Inorganic Fertilizer": {
+    "en": "Alley cropping + Inorganic fertilizer",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + ኬሚካል ማዳበሪያ",
+    "om": "Qonna daandii gidduu (alley cropping) + Xaa'oo keemikaalaa"
+  },
+  "Alleycropping-Inorganic Fertilizer-Intercropping": {
+    "en": "Alley cropping + Inorganic fertilizer + Intercropping",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + ኬሚካል ማዳበሪያ + ድብልቅ ሰብል",
+    "om": "Qonna daandii gidduu (alley cropping) + Xaa'oo keemikaalaa + Qonna makaa"
+  },
+  "Alleycropping-Intercropping": {
+    "en": "Alley cropping + Intercropping",
+    "am": "የመስመር ሰብል (አሊ ክሮፒንግ) + ድብልቅ ሰብል",
+    "om": "Qonna daandii gidduu (alley cropping) + Qonna makaa"
+  },
+  "Animal feed management": {
+    "en": "Animal feed management",
+    "am": "የእንስሳት መኖ አያያዝ",
+    "om": "Bulchiinsa nyaata horii"
+  },
+  "Biochar": {
+    "en": "Biochar",
+    "am": "ባዮቻር",
+    "om": "Baayoochaarii"
+  },
+  "Biochar-Inorganic Fertilizer": {
+    "en": "Biochar + Inorganic fertilizer",
+    "am": "ባዮቻር + ኬሚካል ማዳበሪያ",
+    "om": "Baayoochaarii + Xaa'oo keemikaalaa"
+  },
+  "Biochar-Inorganic Fertilizer-Organic Fertilizer": {
+    "en": "Biochar + Inorganic fertilizer + Organic fertilizer",
+    "am": "ባዮቻር + ኬሚካል ማዳበሪያ + ኦርጋኒክ ማዳበሪያ",
+    "om": "Baayoochaarii + Xaa'oo keemikaalaa + Xaa'oo orgaanikii"
+  },
+  "Biochar-Organic Fertilizer": {
+    "en": "Biochar + Organic fertilizer",
+    "am": "ባዮቻር + ኦርጋኒክ ማዳበሪያ",
+    "om": "Baayoochaarii + Xaa'oo orgaanikii"
+  },
+  "Biological SWC practices": {
+    "en": "Biological soil & water conservation",
+    "am": "ባዮሎጂያዊ የአፈርና ውሃ ጥበቃ",
+    "om": "Eegumsa biyyee fi bishaanii baayoloojii"
+  },
+  "Conservation tillage": {
+    "en": "Conservation tillage",
+    "am": "ጥበቃዊ እርሻ",
+    "om": "Qotiinsa eegumsaa"
+  },
+  "Crop Residue Incorporation": {
+    "en": "Crop residue incorporation",
+    "am": "የሰብል ተረፈ ምርት ማካተት",
+    "om": "Haftee midhaanii biyyee keessa galchuu"
+  },
+  "Crop Residue Incorporation-Crop Rotation": {
+    "en": "Crop residue incorporation + Crop rotation",
+    "am": "የሰብል ተረፈ ምርት ማካተት + የሰብል ፈረቃ",
+    "om": "Haftee midhaanii biyyee keessa galchuu + Jijjiirraa midhaanii"
+  },
+  "Crop Residue Incorporation-Inorganic Fertilizer": {
+    "en": "Crop residue incorporation + Inorganic fertilizer",
+    "am": "የሰብል ተረፈ ምርት ማካተት + ኬሚካል ማዳበሪያ",
+    "om": "Haftee midhaanii biyyee keessa galchuu + Xaa'oo keemikaalaa"
+  },
+  "Crop Residue Incorporation-Mulch-Reduced Tillage": {
+    "en": "Crop residue incorporation + Mulch + Reduced tillage",
+    "am": "የሰብል ተረፈ ምርት ማካተት + ገለባ ሽፋን (ማልች) + የተቀነሰ እርሻ",
+    "om": "Haftee midhaanii biyyee keessa galchuu + Haftee uwwisuu (malchii) + Qotiinsa hir'ataa"
+  },
+  "Crop Rotation": {
+    "en": "Crop rotation",
+    "am": "የሰብል ፈረቃ",
+    "om": "Jijjiirraa midhaanii"
+  },
+  "Crop Rotation-Inorganic Fertilizer": {
+    "en": "Crop rotation + Inorganic fertilizer",
+    "am": "የሰብል ፈረቃ + ኬሚካል ማዳበሪያ",
+    "om": "Jijjiirraa midhaanii + Xaa'oo keemikaalaa"
+  },
+  "Crop Rotation-Inorganic Fertilizer-Organic Fertilizer": {
+    "en": "Crop rotation + Inorganic fertilizer + Organic fertilizer",
+    "am": "የሰብል ፈረቃ + ኬሚካል ማዳበሪያ + ኦርጋኒክ ማዳበሪያ",
+    "om": "Jijjiirraa midhaanii + Xaa'oo keemikaalaa + Xaa'oo orgaanikii"
+  },
+  "Deficit Irrigation": {
+    "en": "Deficit irrigation",
+    "am": "የተቀነሰ መስኖ",
+    "om": "Jallisii hir'ataa"
+  },
+  "Deficit irrigation": {
+    "en": "Deficit irrigation",
+    "am": "የተቀነሰ መስኖ",
+    "om": "Jallisii hir'ataa"
+  },
+  "Drought tolerrant crops": {
+    "en": "Drought-tolerant crops",
+    "am": "ድርቅን የሚቋቋሙ ሰብሎች",
+    "om": "Midhaan hongee dandamatu"
+  },
+  "Exclosure": {
+    "en": "Area exclosure",
+    "am": "ክልል ማድረግ (ከግጦሽ መከልከል)",
+    "om": "Lafa daangeffame (kutaa eegumsaa)"
+  },
+  "Feed Addition-Feed Processing": {
+    "en": "Feed addition + Feed processing",
+    "am": "መኖ መጨመር + መኖ ማዘጋጀት",
+    "om": "Nyaata horii dabaluu + Qophii nyaata horii"
+  },
+  "Feed Substitution": {
+    "en": "Feed substitution",
+    "am": "መኖ መተካት",
+    "om": "Bakka buusuu nyaata horii"
+  },
+  "ISFM": {
+    "en": "Integrated soil fertility management",
+    "am": "የተቀናጀ የአፈር ለምነት አያያዝ",
+    "om": "Bulchiinsa gabbina biyyee walitti hidhame"
+  },
+  "IWM": {
+    "en": "Integrated watershed management",
+    "am": "የተቀናጀ የተፋሰስ አያያዝ",
+    "om": "Bulchiinsa sulula bishaanii walitti hidhame"
+  },
+  "Improved Fallow": {
+    "en": "Improved fallow",
+    "am": "የተሻሻለ ጦም መሬት",
+    "om": "Lafa boqonnaa fooyya'e"
+  },
+  "Improved Varieties": {
+    "en": "Improved varieties",
+    "am": "የተሻሻሉ ዝርያዎች",
+    "om": "Sanyiiwwan fooyya'an"
+  },
+  "Improved Varieties-Inorganic Fertilizer": {
+    "en": "Improved varieties + Inorganic fertilizer",
+    "am": "የተሻሻሉ ዝርያዎች + ኬሚካል ማዳበሪያ",
+    "om": "Sanyiiwwan fooyya'an + Xaa'oo keemikaalaa"
+  },
+  "Improved Varieties-Inorganic Fertilizer-Intercropping or Rotation": {
+    "en": "Improved varieties + Inorganic fertilizer + Intercropping or rotation",
+    "am": "የተሻሻሉ ዝርያዎች + ኬሚካል ማዳበሪያ + ድብልቅ ሰብል ወይም ፈረቃ",
+    "om": "Sanyiiwwan fooyya'an + Xaa'oo keemikaalaa + Qonna makaa ykn jijjiirraa"
+  },
+  "Improved Varieties-Inorganic Fertilizer-Mulch": {
+    "en": "Improved varieties + Inorganic fertilizer + Mulch",
+    "am": "የተሻሻሉ ዝርያዎች + ኬሚካል ማዳበሪያ + ገለባ ሽፋን (ማልች)",
+    "om": "Sanyiiwwan fooyya'an + Xaa'oo keemikaalaa + Haftee uwwisuu (malchii)"
+  },
+  "Improved Varieties-Inorganic Fertilizer-Reduced Tillage": {
+    "en": "Improved varieties + Inorganic fertilizer + Reduced tillage",
+    "am": "የተሻሻሉ ዝርያዎች + ኬሚካል ማዳበሪያ + የተቀነሰ እርሻ",
+    "om": "Sanyiiwwan fooyya'an + Xaa'oo keemikaalaa + Qotiinsa hir'ataa"
+  },
+  "Improved Varieties-Intercropping": {
+    "en": "Improved varieties + Intercropping",
+    "am": "የተሻሻሉ ዝርያዎች + ድብልቅ ሰብል",
+    "om": "Sanyiiwwan fooyya'an + Qonna makaa"
+  },
+  "Improved Varieties-Intercropping or Rotation": {
+    "en": "Improved varieties + Intercropping or rotation",
+    "am": "የተሻሻሉ ዝርያዎች + ድብልቅ ሰብል ወይም ፈረቃ",
+    "om": "Sanyiiwwan fooyya'an + Qonna makaa ykn jijjiirraa"
+  },
+  "Improved Varieties-Mulch": {
+    "en": "Improved varieties + Mulch",
+    "am": "የተሻሻሉ ዝርያዎች + ገለባ ሽፋን (ማልች)",
+    "om": "Sanyiiwwan fooyya'an + Haftee uwwisuu (malchii)"
+  },
+  "Improved Varieties-Supplemental Irrigation": {
+    "en": "Improved varieties + Supplemental irrigation",
+    "am": "የተሻሻሉ ዝርያዎች + ተጨማሪ መስኖ",
+    "om": "Sanyiiwwan fooyya'an + Jallisii dabalataa"
+  },
+  "Improved Varieties-Water Harvesting": {
+    "en": "Improved varieties + Water harvesting",
+    "am": "የተሻሻሉ ዝርያዎች + ውሃ ማሰባሰብ",
+    "om": "Sanyiiwwan fooyya'an + Bishaan walitti qabuu"
+  },
+  "In-situ water harvesting": {
+    "en": "In-field water harvesting",
+    "am": "በማሳ ውስጥ ውሃ ማሰባሰብ",
+    "om": "Bishaan dirree keessatti walitti qabuu"
+  },
+  "Inorganic Fertilizer": {
+    "en": "Inorganic fertilizer",
+    "am": "ኬሚካል ማዳበሪያ",
+    "om": "Xaa'oo keemikaalaa"
+  },
+  "Inorganic Fertilizer Reduction": {
+    "en": "Reduced inorganic fertilizer",
+    "am": "የተቀነሰ ኬሚካል ማዳበሪያ",
+    "om": "Xaa'oo keemikaalaa hir'ifame"
+  },
+  "Inorganic Fertilizer-Intercropping": {
+    "en": "Inorganic fertilizer + Intercropping",
+    "am": "ኬሚካል ማዳበሪያ + ድብልቅ ሰብል",
+    "om": "Xaa'oo keemikaalaa + Qonna makaa"
+  },
+  "Inorganic Fertilizer-Intercropping or Rotation": {
+    "en": "Inorganic fertilizer + Intercropping or rotation",
+    "am": "ኬሚካል ማዳበሪያ + ድብልቅ ሰብል ወይም ፈረቃ",
+    "om": "Xaa'oo keemikaalaa + Qonna makaa ykn jijjiirraa"
+  },
+  "Inorganic Fertilizer-Intercropping-Water Harvesting": {
+    "en": "Inorganic fertilizer + Intercropping + Water harvesting",
+    "am": "ኬሚካል ማዳበሪያ + ድብልቅ ሰብል + ውሃ ማሰባሰብ",
+    "om": "Xaa'oo keemikaalaa + Qonna makaa + Bishaan walitti qabuu"
+  },
+  "Inorganic Fertilizer-Mulch": {
+    "en": "Inorganic fertilizer + Mulch",
+    "am": "ኬሚካል ማዳበሪያ + ገለባ ሽፋን (ማልች)",
+    "om": "Xaa'oo keemikaalaa + Haftee uwwisuu (malchii)"
+  },
+  "Inorganic Fertilizer-Mulch-Organic Fertilizer-Reduced Tillage": {
+    "en": "Inorganic fertilizer + Mulch + Organic fertilizer + Reduced tillage",
+    "am": "ኬሚካል ማዳበሪያ + ገለባ ሽፋን (ማልች) + ኦርጋኒክ ማዳበሪያ + የተቀነሰ እርሻ",
+    "om": "Xaa'oo keemikaalaa + Haftee uwwisuu (malchii) + Xaa'oo orgaanikii + Qotiinsa hir'ataa"
+  },
+  "Inorganic Fertilizer-Mulch-Reduced Tillage": {
+    "en": "Inorganic fertilizer + Mulch + Reduced tillage",
+    "am": "ኬሚካል ማዳበሪያ + ገለባ ሽፋን (ማልች) + የተቀነሰ እርሻ",
+    "om": "Xaa'oo keemikaalaa + Haftee uwwisuu (malchii) + Qotiinsa hir'ataa"
+  },
+  "Inorganic Fertilizer-Organic Fertilizer": {
+    "en": "Inorganic fertilizer + Organic fertilizer",
+    "am": "ኬሚካል ማዳበሪያ + ኦርጋኒክ ማዳበሪያ",
+    "om": "Xaa'oo keemikaalaa + Xaa'oo orgaanikii"
+  },
+  "Inorganic Fertilizer-Organic Fertilizer-Water Harvesting": {
+    "en": "Inorganic fertilizer + Organic fertilizer + Water harvesting",
+    "am": "ኬሚካል ማዳበሪያ + ኦርጋኒክ ማዳበሪያ + ውሃ ማሰባሰብ",
+    "om": "Xaa'oo keemikaalaa + Xaa'oo orgaanikii + Bishaan walitti qabuu"
+  },
+  "Inorganic Fertilizer-Organic Fertilizer-pH Control": {
+    "en": "Inorganic fertilizer + Organic fertilizer + Soil pH control (liming)",
+    "am": "ኬሚካል ማዳበሪያ + ኦርጋኒክ ማዳበሪያ + የአፈር ፒኤች ቁጥጥር (ኖራ)",
+    "om": "Xaa'oo keemikaalaa + Xaa'oo orgaanikii + To'annoo pH biyyee (noora)"
+  },
+  "Inorganic Fertilizer-Other Agroforestry": {
+    "en": "Inorganic fertilizer + Other agroforestry",
+    "am": "ኬሚካል ማዳበሪያ + ሌላ አግሮ-ፎረስትሪ",
+    "om": "Xaa'oo keemikaalaa + Agroo-forestrii biroo"
+  },
+  "Inorganic Fertilizer-Parklands": {
+    "en": "Inorganic fertilizer + Parkland trees",
+    "am": "ኬሚካል ማዳበሪያ + የፓርክላንድ ዛፎች",
+    "om": "Xaa'oo keemikaalaa + Mukkeen paarkilaandii"
+  },
+  "Inorganic Fertilizer-Reduced Tillage": {
+    "en": "Inorganic fertilizer + Reduced tillage",
+    "am": "ኬሚካል ማዳበሪያ + የተቀነሰ እርሻ",
+    "om": "Xaa'oo keemikaalaa + Qotiinsa hir'ataa"
+  },
+  "Inorganic Fertilizer-Reduced Tillage-Water Harvesting": {
+    "en": "Inorganic fertilizer + Reduced tillage + Water harvesting",
+    "am": "ኬሚካል ማዳበሪያ + የተቀነሰ እርሻ + ውሃ ማሰባሰብ",
+    "om": "Xaa'oo keemikaalaa + Qotiinsa hir'ataa + Bishaan walitti qabuu"
+  },
+  "Inorganic Fertilizer-Supplemental Irrigation": {
+    "en": "Inorganic fertilizer + Supplemental irrigation",
+    "am": "ኬሚካል ማዳበሪያ + ተጨማሪ መስኖ",
+    "om": "Xaa'oo keemikaalaa + Jallisii dabalataa"
+  },
+  "Inorganic Fertilizer-Water Harvesting": {
+    "en": "Inorganic fertilizer + Water harvesting",
+    "am": "ኬሚካል ማዳበሪያ + ውሃ ማሰባሰብ",
+    "om": "Xaa'oo keemikaalaa + Bishaan walitti qabuu"
+  },
+  "Inorganic Fertilizer-pH Control": {
+    "en": "Inorganic fertilizer + Soil pH control (liming)",
+    "am": "ኬሚካል ማዳበሪያ + የአፈር ፒኤች ቁጥጥር (ኖራ)",
+    "om": "Xaa'oo keemikaalaa + To'annoo pH biyyee (noora)"
+  },
+  "Intercropping": {
+    "en": "Intercropping",
+    "am": "ድብልቅ ሰብል",
+    "om": "Qonna makaa"
+  },
+  "Intercropping or Rotation": {
+    "en": "Intercropping or rotation",
+    "am": "ድብልቅ ሰብል ወይም ፈረቃ",
+    "om": "Qonna makaa ykn jijjiirraa"
+  },
+  "Intercropping-Mulch": {
+    "en": "Intercropping + Mulch",
+    "am": "ድብልቅ ሰብል + ገለባ ሽፋን (ማልች)",
+    "om": "Qonna makaa + Haftee uwwisuu (malchii)"
+  },
+  "Intercropping-Reduced Tillage": {
+    "en": "Intercropping + Reduced tillage",
+    "am": "ድብልቅ ሰብል + የተቀነሰ እርሻ",
+    "om": "Qonna makaa + Qotiinsa hir'ataa"
+  },
+  "Intercropping-Water Harvesting": {
+    "en": "Intercropping + Water harvesting",
+    "am": "ድብልቅ ሰብል + ውሃ ማሰባሰብ",
+    "om": "Qonna makaa + Bishaan walitti qabuu"
+  },
+  "Mulch": {
+    "en": "Mulch",
+    "am": "ገለባ ሽፋን (ማልች)",
+    "om": "Haftee uwwisuu (malchii)"
+  },
+  "Mulch-Organic Fertilizer": {
+    "en": "Mulch + Organic fertilizer",
+    "am": "ገለባ ሽፋን (ማልች) + ኦርጋኒክ ማዳበሪያ",
+    "om": "Haftee uwwisuu (malchii) + Xaa'oo orgaanikii"
+  },
+  "Mulch-Organic Fertilizer-Reduced Tillage": {
+    "en": "Mulch + Organic fertilizer + Reduced tillage",
+    "am": "ገለባ ሽፋን (ማልች) + ኦርጋኒክ ማዳበሪያ + የተቀነሰ እርሻ",
+    "om": "Haftee uwwisuu (malchii) + Xaa'oo orgaanikii + Qotiinsa hir'ataa"
+  },
+  "Mulch-Other Agroforestry-Reduced Tillage": {
+    "en": "Mulch + Other agroforestry + Reduced tillage",
+    "am": "ገለባ ሽፋን (ማልች) + ሌላ አግሮ-ፎረስትሪ + የተቀነሰ እርሻ",
+    "om": "Haftee uwwisuu (malchii) + Agroo-forestrii biroo + Qotiinsa hir'ataa"
+  },
+  "Mulch-Reduced Tillage": {
+    "en": "Mulch + Reduced tillage",
+    "am": "ገለባ ሽፋን (ማልች) + የተቀነሰ እርሻ",
+    "om": "Haftee uwwisuu (malchii) + Qotiinsa hir'ataa"
+  },
+  "Mulch-Water Harvesting": {
+    "en": "Mulch + Water harvesting",
+    "am": "ገለባ ሽፋን (ማልች) + ውሃ ማሰባሰብ",
+    "om": "Haftee uwwisuu (malchii) + Bishaan walitti qabuu"
+  },
+  "Multistrata Agroforestry": {
+    "en": "Multi-storey agroforestry",
+    "am": "ባለ ብዙ ደረጃ አግሮ-ፎረስትሪ",
+    "om": "Agroo-forestrii sadarkaa baay'ee"
+  },
+  "Organic Fertilizer": {
+    "en": "Organic fertilizer",
+    "am": "ኦርጋኒክ ማዳበሪያ",
+    "om": "Xaa'oo orgaanikii"
+  },
+  "Organic Fertilizer-Water Harvesting": {
+    "en": "Organic fertilizer + Water harvesting",
+    "am": "ኦርጋኒክ ማዳበሪያ + ውሃ ማሰባሰብ",
+    "om": "Xaa'oo orgaanikii + Bishaan walitti qabuu"
+  },
+  "Organic Fertilizer-pH Control": {
+    "en": "Organic fertilizer + Soil pH control (liming)",
+    "am": "ኦርጋኒክ ማዳበሪያ + የአፈር ፒኤች ቁጥጥር (ኖራ)",
+    "om": "Xaa'oo orgaanikii + To'annoo pH biyyee (noora)"
+  },
+  "Other Agroforestry": {
+    "en": "Other agroforestry",
+    "am": "ሌላ አግሮ-ፎረስትሪ",
+    "om": "Agroo-forestrii biroo"
+  },
+  "Other Agroforestry-Reduced Tillage": {
+    "en": "Other agroforestry + Reduced tillage",
+    "am": "ሌላ አግሮ-ፎረስትሪ + የተቀነሰ እርሻ",
+    "om": "Agroo-forestrii biroo + Qotiinsa hir'ataa"
+  },
+  "Parklands": {
+    "en": "Parkland trees",
+    "am": "የፓርክላንድ ዛፎች",
+    "om": "Mukkeen paarkilaandii"
+  },
+  "Pasture Management": {
+    "en": "Pasture management",
+    "am": "የግጦሽ መሬት አያያዝ",
+    "om": "Bulchiinsa lafa margaa"
+  },
+  "Physical + biological SWC practices": {
+    "en": "Physical + biological soil & water conservation",
+    "am": "አካላዊ + ባዮሎጂያዊ የአፈርና ውሃ ጥበቃ",
+    "om": "Eegumsa biyyee fi bishaanii fiizikaalaa + baayoloojii"
+  },
+  "Physical SWC measures": {
+    "en": "Physical soil & water conservation",
+    "am": "አካላዊ የአፈርና ውሃ ጥበቃ",
+    "om": "Eegumsa biyyee fi bishaanii fiizikaalaa"
+  },
+  "Reduced Tillage": {
+    "en": "Reduced tillage",
+    "am": "የተቀነሰ እርሻ",
+    "om": "Qotiinsa hir'ataa"
+  },
+  "Reduced Tillage-Water Harvesting": {
+    "en": "Reduced tillage + Water harvesting",
+    "am": "የተቀነሰ እርሻ + ውሃ ማሰባሰብ",
+    "om": "Qotiinsa hir'ataa + Bishaan walitti qabuu"
+  },
+  "Supplemental Irrigation": {
+    "en": "Supplemental irrigation",
+    "am": "ተጨማሪ መስኖ",
+    "om": "Jallisii dabalataa"
+  },
+  "Water Harvesting": {
+    "en": "Water harvesting",
+    "am": "ውሃ ማሰባሰብ",
+    "om": "Bishaan walitti qabuu"
+  },
+  "agronomic/biological SWCP": {
+    "en": "Agronomic / biological soil & water conservation",
+    "am": "አግሮኖሚያዊ / ባዮሎጂያዊ የአፈርና ውሃ ጥበቃ",
+    "om": "Eegumsa biyyee fi bishaanii agronomii / baayoloojii"
+  },
+  "drip irrigation": {
+    "en": "Drip irrigation",
+    "am": "የጠብታ መስኖ",
+    "om": "Jallisii copha"
+  },
+  "furrow irrigation": {
+    "en": "Furrow irrigation",
+    "am": "የቦይ መስኖ",
+    "om": "Jallisii boo'oo"
+  },
+  "furrow irrigation_alternate": {
+    "en": "Alternate-furrow irrigation",
+    "am": "ተለዋጭ የቦይ መስኖ",
+    "om": "Jallisii boo'oo wal-jijjiiraa"
+  },
+  "grazing management": {
+    "en": "Grazing management",
+    "am": "የግጦሽ አያያዝ",
+    "om": "Bulchiinsa dheedaa"
+  },
+  "organic amedements": {
+    "en": "Organic amendments",
+    "am": "ኦርጋኒክ ማሻሻያዎች",
+    "om": "Fooyya'iinsa orgaanikii"
+  },
+  "overhead irrigation with mulching": {
+    "en": "Overhead irrigation with mulching",
+    "am": "ከላይ የሚረጭ መስኖ ከገለባ ሽፋን ጋር",
+    "om": "Jallisii gubbaa haftee uwwisuu waliin"
+  },
+  "pH Control": {
+    "en": "Soil pH control (liming)",
+    "am": "የአፈር ፒኤች ቁጥጥር (ኖራ)",
+    "om": "To'annoo pH biyyee (noora)"
+  },
+  "pH Control-Water Harvesting": {
+    "en": "Soil pH control (liming) + Water harvesting",
+    "am": "የአፈር ፒኤች ቁጥጥር (ኖራ) + ውሃ ማሰባሰብ",
+    "om": "To'annoo pH biyyee (noora) + Bishaan walitti qabuu"
+  },
+  "weeding": {
+    "en": "Weeding",
+    "am": "አረም ማረም",
+    "om": "Aramaa"
+  }
+}

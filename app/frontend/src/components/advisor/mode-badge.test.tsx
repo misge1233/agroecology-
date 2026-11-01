@@ -36,7 +36,7 @@ describe("ModeBadge", () => {
     expect(badge).toHaveAttribute("data-mode", "hybrid");
     expect(badge).toHaveTextContent(sourceModeLabel("hybrid", "en"));
     fireEvent.focus(badge);
-    expect(await screen.findByText(/Mulch, has only 2 studies and 6 field observations/)).toBeInTheDocument();
+    expect(await screen.findByText(/Mulch has the most evidence: only 2 studies and 6 field observations/)).toBeInTheDocument();
     expect(screen.getByText(/was measured in your moisture zone \(Dry-lowland\)/)).toBeInTheDocument();
   });
 

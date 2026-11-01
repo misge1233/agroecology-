@@ -1,4 +1,4 @@
-"""Knowledge-graph layer for AgroAdvisor-ET (Phase P6a).
+"""Knowledge-graph layer for AgroEcoAdvisor (Phase P6a).
 
 Pure-Python package built on ``networkx``. It joins three things that were
 previously only implicitly related:

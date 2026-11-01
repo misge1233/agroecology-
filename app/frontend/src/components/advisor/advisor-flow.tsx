@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Compass, RotateCcw } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ import { Stepper, type StepperStep } from "@/components/ui/stepper";
 import {
   STEP_ORDER,
   autoStep,
+  familyTakesCrop,
   isComplete,
   parseParams,
   toSearch,
@@ -23,7 +24,6 @@ import {
   type StepKey,
 } from "./advisor-state";
 import { ChallengeStep } from "./challenge-step";
-import { CropStep } from "./crop-step";
 import { LocationStep } from "./location-step";
 import { ObjectiveStep } from "./objective-step";
 import { Results } from "./results";
@@ -66,7 +66,8 @@ function StepSkeleton() {
 }
 
 /**
- * The four-step Advisor. The URL is the single source of truth for the
+ * The four-step Advisor (location, challenge, objective, results; the
+ * optional crop is part of the objective step for crop production only). The URL is the single source of truth for the
  * request (`?lat&lon&family&indicator&crop&top`), so a result can be shared
  * and survives reload; only "which step is open" lives in React state.
  * U5: one white header band (title, start over, stepper with the chosen
@@ -88,12 +89,37 @@ export function AdvisorFlow() {
   const step: StepKey = stepOverride ?? autoStep(params);
   const zone = useZone(params.lat, params.lon, meta?.bounds ?? null);
 
+  // D8: when the user moves to another step, focus its heading (keyboard and
+  // screen-reader users land on it) and scroll only if it is off screen. The
+  // page load itself is not a step change: it opens at the top like every
+  // page. Comparing with the previous step (not a "first render" flag) keeps
+  // this true under React Strict Mode, which runs effects twice on mount.
+  const prevStep = useRef(step);
+  useEffect(() => {
+    if (prevStep.current === step) return;
+    prevStep.current = step;
+    const id = requestAnimationFrame(() => {
+      const h = document.getElementById("advisor-step-title");
+      if (!h) return;
+      h.focus({ preventScroll: true });
+      const top = h.getBoundingClientRect().top;
+      const headerPx = document.querySelector("header")?.getBoundingClientRect().bottom ?? 64;
+      if (top < headerPx || top > window.innerHeight * 0.6) {
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        h.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [step]);
+
   function update(patch: Partial<AdvisorParams>, nextStep?: StepKey) {
     const next: AdvisorParams = { ...params, ...patch };
     if (meta && next.family && next.indicator) {
       next.indicator = sanitizeIndicatorForFamily(meta, next.family, next.indicator) || null;
     }
     if (!next.family) next.indicator = null;
+    // The crop belongs to crop production: choosing another challenge drops it.
+    if (patch.family !== undefined && patch.family !== params.family && !familyTakesCrop(next.family)) next.crop = null;
     const qs = toSearch(next);
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     // Stay on the current step unless the caller moves on explicitly: a pin
@@ -123,8 +149,11 @@ export function AdvisorFlow() {
         ? `${coords(params.lat as number)}, ${coords(params.lon as number)}`
         : null,
     challenge: params.family ? familyShort(params.family, locale) : null,
-    objective: params.indicator ? indicatorLabel(params.indicator, locale) : null,
-    crop: params.crop ? params.crop : step === "results" ? tsum("anyCrop") : null,
+    objective: params.indicator
+      ? params.crop
+        ? `${indicatorLabel(params.indicator, locale)} · ${params.crop}`
+        : indicatorLabel(params.indicator, locale)
+      : null,
     results: null,
   };
   const steps: StepperStep[] = STEP_ORDER.map((key) => ({
@@ -135,13 +164,11 @@ export function AdvisorFlow() {
       key === "location" ||
       (key === "challenge" && hasLocation) ||
       (key === "objective" && !!params.family) ||
-      (key === "crop" && !!params.indicator) ||
       (key === "results" && isComplete(params)),
     complete:
       (key === "location" && hasLocation) ||
       (key === "challenge" && !!params.family) ||
-      (key === "objective" && !!params.indicator) ||
-      (key === "crop" && step === "results"),
+      (key === "objective" && !!params.indicator && step === "results"),
   }));
   const stepIndex = STEP_ORDER.indexOf(step);
   const stepLabel = t("stepOf", { current: stepIndex + 1, total: STEP_ORDER.length });
@@ -203,7 +230,7 @@ export function AdvisorFlow() {
               zone={zone}
               stepLabel={stepLabel}
               onChange={(lat, lon) => update({ lat, lon })}
-              onNext={() => setStepOverride(params.family ? (params.indicator ? "crop" : "objective") : "challenge")}
+              onNext={() => setStepOverride(params.family ? "objective" : "challenge")}
             />
           ) : step === "challenge" && meta ? (
             <ChallengeStep
@@ -220,15 +247,9 @@ export function AdvisorFlow() {
               selected={params.indicator}
               stepLabel={stepLabel}
               onBack={back}
-              onSelect={(indicator) => update({ indicator }, "crop")}
-            />
-          ) : step === "crop" && meta ? (
-            <CropStep
-              cropTypes={meta.crop_types}
-              value={params.crop}
-              stepLabel={stepLabel}
-              onBack={back}
-              onChange={(crop) => update({ crop })}
+              onSelect={(indicator) => update({ indicator })}
+              crop={params.crop}
+              onCrop={(crop) => update({ crop })}
               onSubmit={() => setStepOverride("results")}
             />
           ) : step === "results" ? (

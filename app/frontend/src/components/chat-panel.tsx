@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Check, Copy, Leaf, Loader2, MapPin, Mic, Mountain, Send, Sparkles, Square, SquarePen, Volume2, VolumeX, Wheat, X } from "lucide-react";
+import { ArrowRight, Check, Copy, Leaf, Loader2, MapPin, Mic, Mountain, Send, Sparkles, Square, SquarePen, Volume2, VolumeX, Wheat, X } from "lucide-react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { streamChat } from "@/lib/api";
 import type { AdvisoryEvent, ChatMessage, RecommendQuery, RecommendResponse } from "@/lib/types";
@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils";
 import { useSpeaker, useSpeechCapabilities, useVoiceInput, type VoiceError } from "@/lib/speech";
 import { useMetadata } from "./metadata-provider";
 import { AssistantMarkdown } from "./assistant-markdown";
-import { ChatEvidence } from "./chat/chat-evidence";
+import { Link } from "@/i18n/navigation";
+import { advisorQuery } from "@/lib/chat-protocol";
 import { Alert } from "./ui/alert";
 import { Button } from "./ui/button";
 
@@ -50,6 +51,9 @@ const stamp = () => Date.now();
  * its answer is read aloud when ready. A seed message (Advisor "Explain in
  * chat") only pre-fills the composer; nothing is sent on mount.
  */
+/** Practices shown when a chat answer is opened in the Advisor. */
+const ADVISOR_TOP_N = 3;
+
 export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   const t = useTranslations("chat");
   const tc = useTranslations("common");
@@ -57,6 +61,15 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   const locale = useLocale() as Locale;
   const format = useFormatter();
   const { loading: metaLoading, error: metaError } = useMetadata();
+
+  // D9: the chat is a full-height app view. Pin the page to one viewport so
+  // the conversation is the only scroller (the API banner no longer adds a
+  // second page scrollbar).
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("chat-route");
+    return () => root.classList.remove("chat-route");
+  }, []);
   const [input, setInput] = useState(seedMessage ?? "");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [busy, setBusy] = useState(false);
@@ -198,21 +211,21 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
   const timeOf = (at: number) => format.dateTime(new Date(at), { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex h-[calc(100dvh-var(--header-h))] flex-col bg-surface-2">
+    <div className="chat-view flex h-[calc(100dvh-var(--header-h))] flex-col bg-surface-2">
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
           {turns.length === 0 ? (
-            <div className="flex flex-col items-center py-4 text-center sm:py-10">
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-fg shadow-2">
+            <div className="flex flex-col items-center py-4 text-center sm:py-10 [@media(max-height:46rem)]:py-2">
+              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-fg shadow-2 [@media(max-height:46rem)]:hidden">
                 <Sparkles className="h-7 w-7" aria-hidden />
               </span>
-              <h1 className="mt-6 text-balance text-3xl sm:text-4xl">
+              <h1 className="mt-6 text-balance text-3xl sm:text-4xl [@media(max-height:46rem)]:mt-0 [@media(max-height:46rem)]:text-2xl">
                 {t("title")}
                 <span className="block text-primary">{t("titleLine2")}</span>
               </h1>
-              <p className="mt-4 max-w-xl text-base text-muted sm:text-lg">{t("intro")}</p>
+              <p className="mt-4 max-w-xl text-base text-muted sm:text-lg [@media(max-height:46rem)]:mt-2 [@media(max-height:46rem)]:text-sm">{t("intro")}</p>
 
-              <div className="mt-10 w-full">
+              <div className="mt-10 w-full [@media(max-height:46rem)]:mt-4">
                 <p className="eyebrow">{t("tryExample")}</p>
                 <div className="mt-4 grid gap-3 text-left sm:grid-cols-3">
                   {examples.map((ex, i) => {
@@ -241,15 +254,18 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
               ) : null}
             </div>
           ) : (
-            <ol role="log" aria-live="polite" aria-relevant="additions" aria-label={ta("chatLog")} className="space-y-6">
+            // A list cannot carry role="log" (axe aria-allowed-role): the live log wraps it.
+            <>
+            <h1 className="sr-only">{t("title")}</h1>
+            <div role="log" aria-live="polite" aria-relevant="additions" aria-label={ta("chatLog")}>
+            <ol className="space-y-6">
               {turns.map((turn) => {
                 const isLast = last?.id === turn.id;
                 const role = turn.role === "user" ? t("roles.user") : t("roles.assistant");
                 const meta_ = (
                   <span className="text-xs text-muted">
-                    <span className="sr-only">{t("timestamp", { role, time: timeOf(turn.at) })}</span>
-                    <span aria-hidden>{role} · </span>
-                    <time aria-hidden dateTime={new Date(turn.at).toISOString()} className="tabular">
+                    {role} ·{" "}
+                    <time dateTime={new Date(turn.at).toISOString()} className="tabular">
                       {timeOf(turn.at)}
                     </time>
                   </span>
@@ -309,13 +325,6 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                           </Button>
                         </Alert>
                       ) : null}
-                      {turn.status === "done" ? (
-                        <ChatEvidence
-                          recommendation={turn.recommendation ?? null}
-                          advisory={turn.advisory ?? null}
-                          advisoryQuery={turn.advisoryQuery ?? null}
-                        />
-                      ) : null}
                       {turn.content || turn.status === "error" ? (
                         <div className="flex flex-wrap items-center gap-1.5 pl-1">
                           {finished && caps.output ? (
@@ -347,6 +356,21 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                               label={copied === turn.id ? t("copied") : t("copy")}
                             />
                           ) : null}
+                          {/* The answer is the conversation; the full ranking and its sources are one
+                              link away (no evidence card under every answer, 1 Nov 2026). */}
+                          {finished && (turn.recommendation?.query ?? turn.advisoryQuery) ? (
+                            <Link
+                              href={{
+                                pathname: "/advisor",
+                                query: advisorQuery((turn.recommendation?.query ?? turn.advisoryQuery) as RecommendQuery, ADVISOR_TOP_N),
+                              }}
+                              data-testid="chat-open-advisor"
+                              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-xs font-medium text-primary transition-colors duration-base hover:border-primary/50 hover:bg-primary-soft"
+                            >
+                              {t("openInAdvisor")}
+                              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                            </Link>
+                          ) : null}
                           <span className="ml-1">{meta_}</span>
                         </div>
                       ) : null}
@@ -355,6 +379,8 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
                 );
               })}
             </ol>
+            </div>
+            </>
           )}
 
           <div ref={bottomRef} />
@@ -363,7 +389,7 @@ export function ChatPanel({ seedMessage }: { seedMessage?: string | null }) {
 
       {/* Composer dock */}
       <div className="shrink-0 pb-3 pt-2 sm:pb-4">
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
           {error ? (
             <p className="mb-2 flex items-center gap-2 text-sm text-danger-text" role="alert">
               {error}
@@ -483,6 +509,8 @@ function Composer({
     if (!el) return;
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 168)}px`;
+    // D9: a scrollbar (and its arrows) only once the text is taller than the cap.
+    el.style.overflowY = el.scrollHeight > 168 ? "auto" : "hidden";
   }, [value, inputRef]);
   const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -577,7 +605,7 @@ function Composer({
               }
             }}
             placeholder={placeholder}
-            className="min-h-[2.75rem] min-w-0 flex-1 resize-none bg-transparent px-2 py-2.5 text-base text-text outline-none placeholder:text-muted"
+            className="chat-composer min-h-[2.75rem] min-w-0 flex-1 resize-none overflow-y-hidden bg-transparent px-2 py-2.5 text-base text-text outline-none placeholder:text-muted"
             disabled={busy}
           />
           <Button

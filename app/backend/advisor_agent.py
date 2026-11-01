@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-advisor_agent.py  -  LLM wiring for AgroAdvisor-ET (OpenAI).
+advisor_agent.py  -  LLM wiring for AgroEcoAdvisor (OpenAI).
 
-AgroAdvisor-ET recommends agroecological practices (including climate-smart
+AgroEcoAdvisor recommends agroecological practices (including climate-smart
 agriculture, CSA) for Ethiopian farms. The LLM's job:
   1. Understand the user (free text or UI selections) -> structured call to recommend().
   2. Present the model's recommendations in clean, short, natural language (default).
@@ -37,7 +37,7 @@ INDICATOR_PHRASING={
  "reduce runoff":"runoff","runoff":"runoff",
 }
 
-SYSTEM_PROMPT=f"""You are AgroAdvisor-ET, an agroecology advisor for Ethiopian farmers and
+SYSTEM_PROMPT=f"""You are AgroEcoAdvisor, an agroecology advisor for Ethiopian farmers and
 extension agents. You help users pick the best agroecological practice — including
 climate-smart agriculture (CSA) practices — for their location and goal.
 

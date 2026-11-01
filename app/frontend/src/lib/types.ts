@@ -1,4 +1,4 @@
-/** Shared API types matching the FastAPI schemas (AgroAdvisor-ET contract). */
+/** Shared API types matching the FastAPI schemas (AgroEcoAdvisor contract). */
 
 export type Direction = "increase" | "reduce";
 export type Confidence = "high" | "medium" | "low";
@@ -28,6 +28,8 @@ export interface Metadata {
   /** Practice names eligible for ranking within each practice_family. */
   practices_by_family?: Record<string, string[]>;
   crop_types: string[];
+  /** Crop types with field observations per practice family (additive, 1 Nov 2026). */
+  crop_types_by_family?: Record<string, string[]>;
   bounds: Bounds;
   model: ModelMeta;
   /** True when the RAG index is built — gates the Evidence panel. */
@@ -40,6 +42,8 @@ export interface Metadata {
   languages?: string[];
   /** Evidence-base counts for the trust strip (U1, additive). */
   evidence?: EvidenceCounts | null;
+  /** U9: evidence-fusion settings (ordering, k, disagreement and caution thresholds). */
+  fusion?: { ordering: string; confidence_k_sd: number; disagree_pct: number; caution_pct: number; min_obs_in_zone: number };
 }
 
 /** The clean, default-view item (practice + one-line effect). */
@@ -96,6 +100,11 @@ export interface RecommendRequest {
  * tier "guidance" = GARDIAN implementation-guidance document (url links out).
  */
 export interface ExplainCitation {
+  /** U9 (C3): full reference of a dataset study; `compilation` when it is cited via the compilation paper. */
+  reference?: string | null;
+  compilation?: boolean | null;
+  /** U9 (C2): original download link of a guidance PDF (url is the handle page). */
+  source_url?: string | null;
   era_code: string | null;
   /** Defaults to "evidence" on the backend; optional for old payloads. */
   tier?: "evidence" | "guidance" | "practice";
@@ -109,8 +118,11 @@ export interface ExplainCitation {
   journal: string | null;
   practice: string | null;
   snippet: string;
-  /** How many retrieved passages this study contributed. */
+  /** How many retrieved passages this study contributed (0: cited for its measured effect only, U9). */
   n_passages: number;
+  /** U9: dataset study id ("ERA_123", "CSA_18") and source, for study-effect citations. */
+  study_no?: string | null;
+  data_source?: string | null;
 }
 
 /** One study behind a practice — provenance only, never an effect size. */
@@ -139,8 +151,25 @@ export interface EvidenceBaseEntry {
   studies: EvidenceBaseStudy[];
 }
 
+/** A number with its provenance (U9, decision §5). `display` follows the shared rounding rule. */
+export interface NumberValue {
+  value: number;
+  unit: string | null;
+  source: "model" | "study" | "passage" | "context" | "count";
+  ref: string | null;
+  display: string;
+}
+
 export interface ExplainResponse {
+  /** The evidence register: labelled and cited; every number passed guard v2. */
   explanation: string;
+  /** The plain register: one plain sentence per practice, no markers (U9). */
+  summary?: string;
+  /** Provenance of every number in `explanation` (U9). */
+  numbers?: NumberValue[];
+  removed_sentences?: number;
+  /** Synthesised implementation steps per practice, each cited [Gn] and guarded (U9, C1). */
+  howto?: Record<string, string[]>;
   citations: ExplainCitation[];
   grounded: boolean;
   llm_used: boolean;
@@ -241,6 +270,11 @@ export interface EvidenceSufficiency {
 }
 
 export interface KnowledgeCitation {
+  /** U9 (C3): full reference of a dataset study; `compilation` when it is cited via the compilation paper. */
+  reference?: string | null;
+  compilation?: boolean | null;
+  /** U9 (C2): original download link of a guidance PDF (url is the handle page). */
+  source_url?: string | null;
   tier: "evidence" | "guidance" | "practice";
   ref?: string | null;
   era_code?: string | null;
@@ -288,15 +322,64 @@ export interface AdvisoryEvent {
   knowledge_candidates: KnowledgeCandidate[];
   evidence_sufficiency: EvidenceSufficiency;
   context: Record<string, number | string | null>;
+  /** U9: evidence bundles of the shown practices (chat attachment and Advisor cards). */
+  practices?: PracticeEvidence[];
   /** Chat only: the resolved slots, so a knowledge-led turn can deep-link to the Advisor. */
   query?: Omit<RecommendQuery, "goal_direction"> | null;
 }
 
 /** POST /advise */
+export type LeadSource = "model" | "study" | "documented";
+export type MatchLevel = "zone" | "belt_group" | "moisture" | "other";
+
+export interface Headline extends NumberValue {
+  /** Model and studies disagree: the headline is this range instead of one value. */
+  range?: NumberValue[] | null;
+}
+
+export interface StudyEvidence {
+  ref: string;
+  study_no: string;
+  era_code: string | null;
+  title: string | null;
+  year: number | string | null;
+  doi: string | null;
+  data_source: string | null;
+  n_obs: number;
+  mean_log_rr: number;
+  se_log: number;
+  effect: NumberValue;
+  share_positive: number | null;
+  aez_belts: string[];
+  obs_by_belt: Record<string, number>;
+  match: MatchLevel;
+}
+
+/** The evidence bundle of one shown practice (U9, docs/decisions/evidence_fusion.md). */
+export interface PracticeEvidence {
+  practice: string;
+  lead_source: LeadSource;
+  match: MatchLevel;
+  headline: Headline;
+  disagreement: boolean;
+  caution: boolean;
+  model: NumberValue & { confidence: Confidence; n_obs: number; n_studies: number; n_obs_in_zone: number; se_log: number };
+  study: (NumberValue & { refs: string[]; match: MatchLevel; n_studies: number; n_obs: number }) | null;
+  studies: StudyEvidence[];
+  conservative_bound: number;
+  matches_constraints?: string[];
+  replaces_crop?: boolean;
+  constraint_pick?: boolean;
+}
+
 export interface AdviseResponse extends AdvisoryEvent {
-  /** The unchanged /recommend payload, or null in knowledge-led mode. */
+  /** The engine payload: items unchanged, restricted to the shown practices in the fused order (U9). */
   model: RecommendResponse | null;
   language: ApiLanguage;
+  /** U9: one evidence bundle per shown practice, in display order. */
+  practices?: PracticeEvidence[];
+  ordering?: "conservative" | "model";
+  constraints?: string[];
 }
 
 /** Headline size of the evidence base — counts only, never an effect (U1). */

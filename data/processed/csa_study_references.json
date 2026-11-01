@@ -1,0 +1,2086 @@
+{
+ "_about": {
+  "description": "Study_No_ (CSA_<n>) -> bibliographic reference for dataset rows with source == 'CSA'.",
+  "provenance": "Reference column of data/raw/CSA_practices_by_Agroecology.xlsx (Adimassu et al. CSA compilation); built by pipelines/dataset/build_csa_references.py",
+  "caveats": "Reference strings are cut at 255 chars in the source (truncated: true); ambiguous: true = the study number carries >1 reference in the source sheet; doi only from an exact title match to the ERA corpus.",
+  "counts": {
+   "studies": 193,
+   "ambiguous": 26,
+   "unresolved_short_form": 27,
+   "with_doi": 49,
+   "truncated": 48
+  }
+ },
+ "_compilation": {
+  "authors": "Adimassu, Z.; Tibebe, D.; Abera, W.; Tamene, L.",
+  "year": 2024,
+  "title": "Integrating meta-analysis and experts’ knowledge for prioritizing climate-smart agricultural practices in Ethiopian",
+  "journal": "Farming System 2(4): 100110",
+  "doi": "10.1016/j.farsys.2024.100110",
+  "handle_url": "https://cgspace.cgiar.org/handle/10568/151652",
+  "citation": "Adimassu, Z., Tibebe, D., Abera, W., & Tamene, L. (2024). Integrating meta-analysis and experts’ knowledge for prioritizing climate-smart agricultural practices in Ethiopian. Farming System, 2(4), 100110. https://doi.org/10.1016/j.farsys.2024.100110",
+  "related": [
+   "Adimassu, Z., Tamene, L., Tibebe, D., Ebrahim, M., & Abera, W. (2024). Identification and prioritization of context-specific climate smart agricultural (CSA) practices in Ethiopia: a framework approach. Environmental Research Communications, 6, 065007. https://doi.org/10.1088/2515-7620/ad54a1",
+   "Adimassu, Z., Tamene, L., Tibebe, D., Ebrahim, M., & Abera, W. (2023). Identification and Prioritization of Context-Specific Climate-Smart Agricultural Practices in Major Agro-ecological Zones of Ethiopia. AICCRA Working Paper No. 11."
+  ]
+ },
+ "CSA_1": {
+  "authors": "Shiferaw, B., & Holden, S",
+  "year": 1999,
+  "title": "Soil erosion and smallholders' conservation decisions in the highlands of Ethiopia",
+  "journal": "World development",
+  "doi": null,
+  "citation": "Shiferaw, B., & Holden, S. (1999). Soil erosion and smallholders' conservation decisions in the highlands of Ethiopia. World development, 27(4), 739-752.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_2": {
+  "authors": "Teshome, A., Rolker, D., & de Graaff, J",
+  "year": 2013,
+  "title": "Financial viability of soil and water conservation technologies in northwestern Ethiopian highlands",
+  "journal": "Applied Geography",
+  "doi": null,
+  "citation": "Teshome, A., Rolker, D., & de Graaff, J. (2013). Financial viability of soil and water conservation technologies in northwestern Ethiopian highlands. Applied Geography, 37, 139-149.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_3": {
+  "authors": "Adimassu, Z., Mekonnen, K., Yirga, C., & Kessler, A",
+  "year": 2014,
+  "title": "Effect of soil bunds on runoff, soil and nutrient losses, and crop yield in the central highlands of Ethiopia",
+  "journal": "Land Degradation & Development",
+  "doi": "10.1002/ldr.2182",
+  "citation": "Adimassu, Z., Mekonnen, K., Yirga, C., & Kessler, A. (2014). Effect of soil bunds on runoff, soil and nutrient losses, and crop yield in the central highlands of Ethiopia. Land Degradation & Development, 25(6), 554-564.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_4": {
+  "authors": "Taa, A., Tanner, D., & Bennie, A. T",
+  "year": 2004,
+  "title": "Effects of stubble management, tillage and cropping sequence on wheat production in the south-eastern highlands of Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Taa, A., Tanner, D., & Bennie, A. T. (2004). Effects of stubble management, tillage and cropping sequence on wheat production in the south-eastern highlands of Ethiopia. Soil and Tillage Research, 76(1), 69-82.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_5": {
+  "authors": "Tulema, B., Aune, J. B., Johnsen, F. H., & Vanlauwe, B",
+  "year": 2008,
+  "title": "The prospects of reduced tillage in tef (Eragrostis tef Zucca) in gare arera, West Shawa Zone of Oromiya, Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Tulema, B., Aune, J. B., Johnsen, F. H., & Vanlauwe, B. (2008). The prospects of reduced tillage in tef (Eragrostis tef Zucca) in gare arera, West Shawa Zone of Oromiya, Ethiopia. Soil and Tillage Research, 99(1), 58-65.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_6": {
+  "authors": "Temesgen, M., Hoogmoed, W. B., Rockstrom, J., & Savenije, H. H. G",
+  "year": 2009,
+  "title": "Conservation tillage implements and systems for smallholder farmers in semi-arid Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": "10.1016/j.still.2008.10.026",
+  "citation": "Temesgen, M., Hoogmoed, W. B., Rockstrom, J., & Savenije, H. H. G. (2009). Conservation tillage implements and systems for smallholder farmers in semi-arid Ethiopia. Soil and Tillage Research, 104(1), 185-191.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_7": {
+  "authors": "Araya, A., & Stroosnijder, L",
+  "year": 2010,
+  "title": "Effects of tied ridges and mulch on barley (Hordeum vulgare) rainwater use efficiency and production in Northern Ethiopia",
+  "journal": "Agricultural water management",
+  "doi": "10.1016/j.agwat.2010.01.012",
+  "citation": "Araya, A., & Stroosnijder, L. (2010). Effects of tied ridges and mulch on barley (Hordeum vulgare) rainwater use efficiency and production in Northern Ethiopia. Agricultural water management, 97(6), 841-847.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_8": {
+  "authors": "Araya, T., Cornelis, W. M., Nyssen, J., Govaerts, B., Getnet, F., Bauer, H., ... & Deckers, J",
+  "year": 2012,
+  "title": "Medium-term effects of conservation agriculture based cropping systems for sustainable soil and water management and crop productivity in the Ethiopian",
+  "journal": null,
+  "doi": null,
+  "citation": "Araya, T., Cornelis, W. M., Nyssen, J., Govaerts, B., Getnet, F., Bauer, H., ... & Deckers, J. (2012). Medium-term effects of conservation agriculture based cropping systems for sustainable soil and water management and crop productivity in the Ethiopian",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_9": {
+  "authors": "Araya, T., Cornelis, W. M., Nyssen, J., Govaerts, B., Bauer, H., Gebreegziabher, T., ... & Deckers, J",
+  "year": 2011,
+  "title": "Effects of conservation agriculture on runoff, soil loss and crop yield under rainfed conditions in Tigray, Northern Ethiopia",
+  "journal": "Soil Use and Man",
+  "doi": "10.1111/j.1475-2743.2011.00347.x",
+  "citation": "Araya, T., Cornelis, W. M., Nyssen, J., Govaerts, B., Bauer, H., Gebreegziabher, T., ... & Deckers, J. (2011). Effects of conservation agriculture on runoff, soil loss and crop yield under rainfed conditions in Tigray, Northern Ethiopia. Soil Use and Man",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_10": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Anjeni, Gojam, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000b) Area of Anjeni, Gojam, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Araya, A., & Stroosnijder, L. (2010). Effects of tied ridges and mulch on barley (Hordeum vulgare) rainwater use efficiency and production in Northern Ethiopia. Agricultural water management, 97(6), 841-847."
+  ]
+ },
+ "CSA_11": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Dizi, Illubabor, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Min",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000c) Area of Dizi, Illubabor, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Min",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Biazin, B., & Stroosnijder, L. (2012). To tie or not to tie ridges for water conservation in Rift Valley drylands of Ethiopia. Soil and Tillage Research, 124, 83-94."
+  ]
+ },
+ "CSA_12": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Gununo, Sidamo, Ethiopia: Long-term Monitoring of the Agricultural Environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Mini",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000d) Area of Gununo, Sidamo, Ethiopia: Long-term Monitoring of the Agricultural Environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Mini",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Brhane, G., Wortmann, C. S., Mamo, M., Gebrekidan, H., & Belay, A. (2006). Micro?basin tillage for grain sorghum production in semiarid areas of northern Ethiopia. Agronomy Journal, 98(1), 124-128."
+  ]
+ },
+ "CSA_13": {
+  "authors": "Erkossa, T., Stahr, K., & Gaiser, T",
+  "year": 2006,
+  "title": "Soil tillage and crop productivity on a Vertisol in Ethiopian highlands",
+  "journal": "Soil and Tillage Research",
+  "doi": "10.1016/j.still.2005.01.009",
+  "citation": "Erkossa, T., Stahr, K., & Gaiser, T. (2006). Soil tillage and crop productivity on a Vertisol in Ethiopian highlands. Soil and Tillage Research, 85(1-2), 200-211.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_14": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Hunde Lafto, Harerge, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with th",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000e) Area of Hunde Lafto, Harerge, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with th",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_15": {
+  "authors": "Selassie, Y. G., & Belay, Y",
+  "year": 2013,
+  "title": "Costs of nutrient losses in priceless soils eroded from the highlands of Northwestern Ethiopia",
+  "journal": "Journal of Agricultural Science",
+  "doi": null,
+  "citation": "Selassie, Y. G., & Belay, Y. (2013). Costs of nutrient losses in priceless soils eroded from the highlands of Northwestern Ethiopia. Journal of Agricultural Science, 5(7), 227.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_16": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Maybar, Wello, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000f) Area of Maybar, Wello, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_17": {
+  "authors": "Habtegebrial, K., Singh, B. R., & Haile, M",
+  "year": 2007,
+  "title": "Impact of tillage and nitrogen fertilization on yield, nitrogen use efficiency of tef (Eragrostis tef (Zucc.) Trotter) and soil properties",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Habtegebrial, K., Singh, B. R., & Haile, M. (2007). Impact of tillage and nitrogen fertilization on yield, nitrogen use efficiency of tef (Eragrostis tef (Zucc.) Trotter) and soil properties. Soil and Tillage Research, 94(1), 55-63.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_18": {
+  "authors": "SCRP (Soil Conservation Research Programme)",
+  "year": 2000,
+  "title": "Area of Andit Tid, Shewa, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the M",
+  "doi": null,
+  "citation": "SCRP (Soil Conservation Research Programme) (2000). Area of Andit Tid, Shewa, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the M",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_19": {
+  "authors": "Herweg, K., & Ludi, E",
+  "year": 1999,
+  "title": "The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea",
+  "journal": "Catena",
+  "doi": "10.1016/s0341-8162(99)00004-1",
+  "citation": "Herweg, K., & Ludi, E. (1999). The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea. Catena, 36(1-2), 99-114.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_20": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Anjeni, Gojam, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000b) Area of Anjeni, Gojam, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Herweg, K., & Ludi, E. (1999). The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea. Catena, 36(1-2), 99-114."
+  ]
+ },
+ "CSA_21": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Dizi, Illubabor, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Min",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000c) Area of Dizi, Illubabor, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Min",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_22": {
+  "authors": "Ito, M., Matsumoto, T., & Quinones, M. A",
+  "year": 2007,
+  "title": "Conservation tillage practice in sub-Saharan Africa: the experience of Sasakawa Global 2000",
+  "journal": "Crop protection",
+  "doi": null,
+  "citation": "Ito, M., Matsumoto, T., & Quinones, M. A. (2007). Conservation tillage practice in sub-Saharan Africa: the experience of Sasakawa Global 2000. Crop protection, 26(3), 417-423.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_23": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Gununo, Sidamo, Ethiopia: Long-term Monitoring of the Agricultural Environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Mini",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000d) Area of Gununo, Sidamo, Ethiopia: Long-term Monitoring of the Agricultural Environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Mini",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_24": {
+  "authors": "Rockström, J., Kaumbutho, P., Mwalley, J., Nzabi, A. W., Temesgen, M., Mawenya, L., ... & Damgaard-Larsen, S",
+  "year": 2009,
+  "title": "Conservation farming strategies in East and Southern Africa: Yields and rain water productivity from on-farm action research",
+  "journal": "Soil and",
+  "doi": "10.1016/j.still.2008.09.013",
+  "citation": "Rockström, J., Kaumbutho, P., Mwalley, J., Nzabi, A. W., Temesgen, M., Mawenya, L., ... & Damgaard-Larsen, S. (2009). Conservation farming strategies in East and Southern Africa: Yields and rain water productivity from on-farm action research. Soil and",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_25": {
+  "authors": "Gebrekidan, H",
+  "year": 2003,
+  "title": "Grain yield response of sorghum (Sorghum bicolor) to tied ridges and planting methods on Entisols and Vertisols of Alemaya area, Eastern Ethiopian highlands",
+  "journal": "Journal of Agriculture and Rural Development in the Tropics and Subtropic",
+  "doi": null,
+  "citation": "Gebrekidan, H. (2003). Grain yield response of sorghum (Sorghum bicolor) to tied ridges and planting methods on Entisols and Vertisols of Alemaya area, Eastern Ethiopian highlands. Journal of Agriculture and Rural Development in the Tropics and Subtropic",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_26": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Hunde Lafto, Harerge, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with th",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000e) Area of Hunde Lafto, Harerge, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with th",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_27": {
+  "authors": "Belay, A., Gebrekidan, H., & Uloro, Y",
+  "year": 1998,
+  "title": "Effect of tied ridges on grain yield response of Maize (Zea mays L.) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia",
+  "journal": "South African Journal of Plant and Soil",
+  "doi": "10.1080/02571862.1998.10635130",
+  "citation": "Belay, A., Gebrekidan, H., & Uloro, Y. (1998). Effect of tied ridges on grain yield response of Maize (Zea mays L.) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia. South African Journal of Plant and Soil, 15(4)",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_28": {
+  "authors": "Soil Conservation Research Programme (SCRP)",
+  "year": 2000,
+  "title": "Area of Maybar, Wello, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994",
+  "journal": "Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "doi": null,
+  "citation": "Soil Conservation Research Programme (SCRP) (2000f) Area of Maybar, Wello, Ethiopia: Long-term monitoring of the agricultural environment 1982–1994. Centre for Development and Environment, University of Berne, Switzerland, in association with the Minis",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_29": {
+  "authors": "Belay, A., Gebrekidan, H., & Uloro, Y",
+  "year": 1998,
+  "title": "Effect of tied ridges on grain yield response of Maize (Zea mays L.) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia",
+  "journal": "South African Journal of Plant and Soil",
+  "doi": "10.1080/02571862.1998.10635130",
+  "citation": "Belay, A., Gebrekidan, H., & Uloro, Y. (1998). Effect of tied ridges on grain yield response of Maize (Zea mays L.) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia. South African Journal of Plant and Soil, 15(4)",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_30": {
+  "authors": "Erkossa, T., Stahr, K., & Gaiser, T",
+  "year": 2006,
+  "title": "Soil tillage and crop productivity on a Vertisol in Ethiopian highlands",
+  "journal": "Soil and Tillage Research",
+  "doi": "10.1016/j.still.2005.01.009",
+  "citation": "Erkossa, T., Stahr, K., & Gaiser, T. (2006). Soil tillage and crop productivity on a Vertisol in Ethiopian highlands. Soil and Tillage Research, 85(1-2), 200-211.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_31": {
+  "authors": "Herweg, K., & Ludi, E",
+  "year": 1999,
+  "title": "The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea",
+  "journal": "Catena",
+  "doi": "10.1016/s0341-8162(99)00004-1",
+  "citation": "Herweg, K., & Ludi, E. (1999). The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea. Catena, 36(1-2), 99-114.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_32": {
+  "authors": "Bayu, W., Rethman, N. F., & Hammes, P. S",
+  "year": 2012,
+  "title": "Effects of tied-ridge, nitrogen fertilizer and cultivar on the yield and nitrogen use efficiency of sorghum in semi-arid Ethiopia",
+  "journal": "Archives of Agronomy and Soil Science",
+  "doi": null,
+  "citation": "Bayu, W., Rethman, N. F., & Hammes, P. S. (2012). Effects of tied-ridge, nitrogen fertilizer and cultivar on the yield and nitrogen use efficiency of sorghum in semi-arid Ethiopia. Archives of Agronomy and Soil Science, 58(5), 547-560.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_33": {
+  "authors": "Mesfine, T., Abebe, G., & Al-Tawaha, A. R. M",
+  "year": 2005,
+  "title": "Effect of reduced tillage and crop residue ground cover on yield and water use efficiency of sorghum (Sorghum bicolor (L.) Moench) under semi-arid conditions of Ethiopia",
+  "journal": "World Journal of Agricultural",
+  "doi": null,
+  "citation": "Mesfine, T., Abebe, G., & Al-Tawaha, A. R. M. (2005). Effect of reduced tillage and crop residue ground cover on yield and water use efficiency of sorghum (Sorghum bicolor (L.) Moench) under semi-arid conditions of Ethiopia. World Journal of Agricultural",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_34": {
+  "authors": "Welle, S., Chantawarangul, K., Nontananandh, S., & Jantawat, S",
+  "year": 2006,
+  "title": "Effectiveness of grass strips as barrier against runoff and soil loss in Jijiga area, northern part of Somali region, Ethiopia",
+  "journal": "Agriculture and Natural Resources",
+  "doi": null,
+  "citation": "Welle, S., Chantawarangul, K., Nontananandh, S., & Jantawat, S. (2006). Effectiveness of grass strips as barrier against runoff and soil loss in Jijiga area, northern part of Somali region, Ethiopia. Agriculture and Natural Resources, 40(2), 549-558.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_35": {
+  "authors": "Burayu, W., Chinawong, S., Suwanketnikom, R., Mala, T., & Juntakool, S",
+  "year": 2006,
+  "title": "Tillage System and fertilizer rate effects on sorghum productivity in the Central Rift Valley of Oromiya, Ethiopia",
+  "journal": "Agriculture and Natural Resources",
+  "doi": null,
+  "citation": "Burayu, W., Chinawong, S., Suwanketnikom, R., Mala, T., & Juntakool, S. (2006). Tillage System and fertilizer rate effects on sorghum productivity in the Central Rift Valley of Oromiya, Ethiopia. Agriculture and Natural Resources, 40(1), 1-10.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Vancampenhout, K., Nyssen, J., Gebremichael, D., Deckers, J., Poesen, J., Haile, M., & Moeyersons, J. (2006). Stone bunds for soil conservation in the northern Ethiopian highlands: Impacts on soil fertility and crop yield. Soil and Tillage Research, 90(1"
+  ]
+ },
+ "CSA_36": {
+  "authors": "Aune, J. B., Asrat, R., Teklehaimanot, D. A., & Bune, B. T",
+  "year": 2006,
+  "title": "Zero tillage or reduced tillage: the key to intensification of the crop–livestock system in Ethiopia",
+  "journal": "Strategies for sustainable land management in the East African highlands",
+  "doi": null,
+  "citation": "Aune, J. B., Asrat, R., Teklehaimanot, D. A., & Bune, B. T. (2006). Zero tillage or reduced tillage: the key to intensification of the crop–livestock system in Ethiopia. Strategies for sustainable land management in the East African highlands, 309.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Asmamaw, B. A., & Georgis, K. (2013). Response of Sorghum Yield to Mulching and Planting Methods on Dry Land Areas of Tigray, Ethiopia. Open Science Repository Agriculture, (open-access), e23050477.",
+   "Oicha, T., Cornelis, W. M., Verplancke, H., Nyssen, J., Govaerts, B., Behailu, M., ... & Deckers, J. (2010). Short-term effects of conservation agriculture on Vertisols under tef (Eragrostis tef (Zucc.) Trotter) in the northern Ethiopian highlands. Soil"
+  ]
+ },
+ "CSA_37": {
+  "authors": "Welle, S., Chantawarangul, K., Nontananandh, S., & Jantawat, S",
+  "year": 2006,
+  "title": "Effectiveness of grass strips as barrier against runoff and soil loss in Jijiga area, northern part of Somali region, Ethiopia",
+  "journal": "Agriculture and Natural Resources",
+  "doi": null,
+  "citation": "Welle, S., Chantawarangul, K., Nontananandh, S., & Jantawat, S. (2006). Effectiveness of grass strips as barrier against runoff and soil loss in Jijiga area, northern part of Somali region, Ethiopia. Agriculture and Natural Resources, 40(2), 549-558.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Olkeba, B., Shoeb, Q., & Bobe, B. (2012). Effects of straw mulch and farmyard manure on runoff, erosion, in-situ water conservation, and yield and yield components of wheat at the highlands of Bale, south eastern Ethiopia. African Journal of Agricultural",
+   "Tewodros, M., Jibril, M., Abuhay, T., Feyera, M., & Charles, W. (2014). Skip-row planting of maize and sorghum in semi-arid Ethiopia. African Journal of Plant Science, 8(3), 140-146."
+  ]
+ },
+ "CSA_38": {
+  "authors": "Mesfin, T., Tesfahunegn, G. B., Wortmann, C. S., Nikus, O., & Mamo, M",
+  "year": 2009,
+  "title": "Tied-ridging and fertilizer use for sorghum production in semi-arid Ethiopia",
+  "journal": "Nutrient cycling in agroecosystems",
+  "doi": null,
+  "citation": "Mesfin, T., Tesfahunegn, G. B., Wortmann, C. S., Nikus, O., & Mamo, M. (2009). Tied-ridging and fertilizer use for sorghum production in semi-arid Ethiopia. Nutrient cycling in agroecosystems, 85(1), 87-94.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Woldetsadik, G., Chinawong, S., Suwanketnikom, R., Juntakool, S., & Pookpakdi, A. (2005). Nitrogen fertilization and moisture conservation practices on maize (Zea mays L.) grown under dryland conditions of Ethiopia. Agriculture and Natural Resources, 39("
+  ]
+ },
+ "CSA_39": {
+  "authors": "Tesfahunegn and Wortmann",
+  "year": 2008,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Tesfahunegn and Wortmann, 2008",
+  "truncated": false,
+  "short_form": true,
+  "ambiguous": true,
+  "alternatives": [
+   "Zeleke, T. B., Grevers, M. C. J., Si, B. C., Mermut, A. R., & Beyene, S. (2004). Effect of residue incorporation on physical properties of the surface soil in the South Central Rift Valley of Ethiopia. Soil and Tillage Research, 77(1), 35-46."
+  ]
+ },
+ "CSA_40": {
+  "authors": "Tadesse, T., Dechassa, N., Bayu, W., & Gebeyehu, S",
+  "year": 2013,
+  "title": "Effects of farmyard manure and inorganic fertilizer application on soil physico-chemical properties and nutrient balance in rain-fed lowland rice ecosystem",
+  "journal": null,
+  "doi": null,
+  "citation": "Tadesse, T., Dechassa, N., Bayu, W., & Gebeyehu, S. (2013). Effects of farmyard manure and inorganic fertilizer application on soil physico-chemical properties and nutrient balance in rain-fed lowland rice ecosystem.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Nyssen, J., Poesen, J., Gebremichael, D., Vancampenhout, K., D’aes, M., Yihdego, G., ... & Deckers, J. (2007). Interdisciplinary on-site evaluation of stone bunds to control soil erosion on cropland in Northern Ethiopia. Soil and Tillage Research, 94(1"
+  ]
+ },
+ "CSA_41": {
+  "authors": "Balemi, T",
+  "year": 2012,
+  "title": "Effect of integrated use of cattle manure and inorganic fertilizers on tuber yield of potato in Ethiopia",
+  "journal": "Journal of soil science and plant nutrition",
+  "doi": null,
+  "citation": "Balemi, T. (2012). Effect of integrated use of cattle manure and inorganic fertilizers on tuber yield of potato in Ethiopia. Journal of soil science and plant nutrition, 12(2), 253-261.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Temesgen, M., Uhlenbrook, S., Simane, B., Van Der Zaag, P., Mohamed, Y., Wenninger, J., & Savenije, H. H. G. (2012). Impacts of conservation tillage on the hydrological and agronomic performance of Fanya juus in the upper Blue Nile (Abbay) river basin. H"
+  ]
+ },
+ "CSA_42": {
+  "authors": "Gebremedhin, B., Swinton, S. M., & Tilahun, Y",
+  "year": 1999,
+  "title": "Effects of stone terraces on crop yields and farm profitability: Results of on-farm research in Tigray, northern Ethiopia",
+  "journal": "Journal of Soil and Water Conservation",
+  "doi": null,
+  "citation": "Gebremedhin, B., Swinton, S. M., & Tilahun, Y. (1999). Effects of stone terraces on crop yields and farm profitability: Results of on-farm research in Tigray, northern Ethiopia. Journal of Soil and Water Conservation, 54(3), 568-573.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Shiferaw, B., & Holden, S. T. (1998). Resource degradation and adoption of land conservation technologies in the Ethiopian highlands: a case study in Andit Tid, North Shewa. Agricultural economics, 18(3), 233-247."
+  ]
+ },
+ "CSA_43": {
+  "authors": "Alemu, G., & Bayu, W",
+  "year": 2005,
+  "title": "Effects of farmyard manure and combined N and P fertilizer on sorghum and soil characteristics in northeastern Ethiopia",
+  "journal": "Journal of sustainable agriculture",
+  "doi": "10.1300/J064v26n02_04",
+  "citation": "Alemu, G., & Bayu, W. (2005). Effects of farmyard manure and combined N and P fertilizer on sorghum and soil characteristics in northeastern Ethiopia. Journal of sustainable agriculture, 26(2), 23-41.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Abebe, Z., Dechasa, N., & Kanampiu, F. (2013). The effect of integrated organic and inorganic fertilizer rates on performances of soybean and maize component crops of a soybean/maize mixture at Bako, Western Ethiopia. African Journal of Agricultural Rese",
+   "Tolessa, D., Du Preez, C. C., & Ceronio, G. M. (2014). Effect of tillage system and nitrogen fertilization on organic matter content of Nitisols in Western Ethiopia. African Journal of Agricultural Research, 9(42), 3171-3184."
+  ]
+ },
+ "CSA_44": {
+  "authors": "Ayalew, A., & Dejene, T",
+  "year": 2012,
+  "title": "Combined application of organic and inorganic fertilizers to increase yield of barley and improve soil properties at Fereze in Southern Ethiopia",
+  "journal": "Innovative Systems Design and Engineering",
+  "doi": null,
+  "citation": "Ayalew, A., & Dejene, T. (2012). Combined application of organic and inorganic fertilizers to increase yield of barley and improve soil properties at Fereze in Southern Ethiopia. Innovative Systems Design and Engineering, 3(1), 25-35.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Woyessa, Y. E., & Bennie, A. T. P. (2007). Tillage-crop residue management and rainfall-runoff relationships for the Alemaya catchment in Eastern Ethiopia. South African Journal of Plant and Soil, 24(1), 8-15.",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 72",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 75",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 78"
+  ]
+ },
+ "CSA_45": {
+  "authors": "Ayalew, A., & Dejene, T",
+  "year": 2011,
+  "title": "Integrated application of compost and inorganic fertilizers for production of potato (Solanum tuberosum L.) at Angacha and Kokate in Southern Ethiopia",
+  "journal": "Journal of Biology, Agriculture and Healthcare",
+  "doi": null,
+  "citation": "Ayalew, A., & Dejene, T. (2011). Integrated application of compost and inorganic fertilizers for production of potato (Solanum tuberosum L.) at Angacha and Kokate in Southern Ethiopia. Journal of Biology, Agriculture and Healthcare, 1(2), 15-24.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Alemu, G., & Bayu, W. (2005). Effects of farmyard manure and combined N and P fertilizer on sorghum and soil characteristics in northeastern Ethiopia. Journal of sustainable agriculture, 26(2), 23-41.",
+   "Oicha, T., Cornelis, W. M., Verplancke, H., Nyssen, J., Govaerts, B., Behailu, M., ... & Deckers, J. (2010). Short-term effects of conservation agriculture on Vertisols under tef (Eragrostis tef (Zucc.) Trotter) in the northern Ethiopian highlands. Soil",
+   "Alemayehu, M., Yohannes, F., & Dubale, P. (2006). Effect of indigenous stone bunding (kab) on crop yield at Mesobit?Gedeba, North Shoa, Ethiopia. Land Degradation & Development, 17(1), 45-54."
+  ]
+ },
+ "CSA_46": {
+  "authors": "Bayu, W., Rethman, N. F. G., Hammes, P. S., & Alemu, G",
+  "year": 2006,
+  "title": "Application of farmyard manure improved the chemical and physical properties of the soil in a semi-arid area in Ethiopia",
+  "journal": "Biological agriculture & horticulture",
+  "doi": null,
+  "citation": "Bayu, W., Rethman, N. F. G., Hammes, P. S., & Alemu, G. (2006). Application of farmyard manure improved the chemical and physical properties of the soil in a semi-arid area in Ethiopia. Biological agriculture & horticulture, 24(3), 293-300.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Amare, T., Terefe, A., Selassie, Y. G., Yitaferu, B., Wolfgramm, B., & Hurni, H. (2013). Soil properties and crop yields along the terraces and toposequece of Anjeni Watershed, Central Highlands of Ethiopia. Journal of Agricultural Science, 5(2), 134-144",
+   "Gebretsadik, H., Haile, M., & Yamoah, C. F. (2009). Tillage frequency, soil compaction and N-fertilizer rate effects on yield of teff (Eragrostis tef (Zucc) Trotter) in central zone of Tigray, Northern Ethiopia. Momona Ethiopian journal of science, 1(1)."
+  ]
+ },
+ "CSA_47": {
+  "authors": "Tolessa, D., Du Preez, C. C., & Ceronio, G. M",
+  "year": 2014,
+  "title": "Effect of tillage system and nitrogen fertilization on the pH, extractable phosphorus and exchangeable potassium of Nitisols in Western Ethiopia",
+  "journal": "African Journal of Agricultural Research",
+  "doi": null,
+  "citation": "Tolessa, D., Du Preez, C. C., & Ceronio, G. M. (2014). Effect of tillage system and nitrogen fertilization on the pH, extractable phosphorus and exchangeable potassium of Nitisols in Western Ethiopia. African Journal of Agricultural Research, 9(35), 2669",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Oicha, T., Cornelis, W. M., Verplancke, H., Nyssen, J., Govaerts, B., Behailu, M., ... & Deckers, J. (2010). Short-term effects of conservation agriculture on Vertisols under tef (Eragrostis tef (Zucc.) Trotter) in the northern Ethiopian highlands. Soil"
+  ]
+ },
+ "CSA_48": {
+  "authors": "Asmamaw, B. A., & Georgis, K",
+  "year": 2013,
+  "title": "Response of Sorghum Yield to Mulching and Planting Methods on Dry Land Areas of Tigray, Ethiopia",
+  "journal": "Open Science Repository Agriculture, (open-access), e23050477",
+  "doi": null,
+  "citation": "Asmamaw, B. A., & Georgis, K. (2013). Response of Sorghum Yield to Mulching and Planting Methods on Dry Land Areas of Tigray, Ethiopia. Open Science Repository Agriculture, (open-access), e23050477.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Damene, S., Tamene, L., & Vlek, P. L. (2012). Performance of farmland terraces in maintaining soil fertility: A case of Lake Maybar watershed in Wello, northern highlands of Ethiopia. Journal of Life Sciences, 6(11), 1251."
+  ]
+ },
+ "CSA_49": {
+  "authors": "Tsigie, A., Agegnehu, G., & Tesfaye, A",
+  "year": 2011,
+  "title": "Crop residues as animal feed vs conservation agriculture in the central highlands of Ethiopia",
+  "journal": "Ethiopian Institute of Agricultural Research (EIAR), Addis Ababa",
+  "doi": null,
+  "citation": "Tsigie, A., Agegnehu, G., & Tesfaye, A. (2011). Crop residues as animal feed vs conservation agriculture in the central highlands of Ethiopia. Ethiopian Institute of Agricultural Research (EIAR), Addis Ababa.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_50": {
+  "authors": "Vågen, I. M., & Slimestad, R",
+  "year": 2008,
+  "title": "Amount of characteristic compounds in 15 cultivars of onion (Allium cepa L.) in controlled field trials",
+  "journal": "Journal of the Science of Food and Agriculture",
+  "doi": null,
+  "citation": "Vågen, I. M., & Slimestad, R. (2008). Amount of characteristic compounds in 15 cultivars of onion (Allium cepa L.) in controlled field trials. Journal of the Science of Food and Agriculture, 88(3), 404-411.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Mulugeta, D., & Karl, S. (2010). Assessment of integrated soil and water conservation measures on key soil properties in South Gonder, North-Western Highlands of Ethiopia. Journal of Soil Science and Environmental Management, 1(7), 164-176."
+  ]
+ },
+ "CSA_51": {
+  "authors": "Haile, W., Boke, S., & Box, P",
+  "year": 2009,
+  "title": "Mitigation of soil acidity and fertility decline challenges for sustainable livelihood improvement: research findings from southern region of Ethiopia and its policy implications",
+  "journal": "Awassa Agricultural Research Instit",
+  "doi": null,
+  "citation": "Haile, W., Boke, S., & Box, P. (2009). Mitigation of soil acidity and fertility decline challenges for sustainable livelihood improvement: research findings from southern region of Ethiopia and its policy implications. Awassa Agricultural Research Instit",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_52": {
+  "authors": "Bedada, W., Karltun, E., Lemenih, M., & Tolera, M",
+  "year": 2014,
+  "title": "Long-term addition of compost and NP fertilizer increases crop yield and improves soil quality in experiments on smallholder farms",
+  "journal": "Agriculture, ecosystems & environment",
+  "doi": "10.1016/j.agee.2014.06.017",
+  "citation": "Bedada, W., Karltun, E., Lemenih, M., & Tolera, M. (2014). Long-term addition of compost and NP fertilizer increases crop yield and improves soil quality in experiments on smallholder farms. Agriculture, ecosystems & environment, 195, 193-201.",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Bekeko, Z (2013). Effect of urea and common salt (NaCl) treated glyphosate on parthenium weed (Parthenium hysterophorus L.) at Western Hararghe zone, Ethiopia. African Journal of Agricultural Research, 8(23), 3036-3041."
+  ]
+ },
+ "CSA_53": {
+  "authors": "Edwards, S., & Arefayne, A",
+  "year": 2007,
+  "title": "The impact of compost use on crop yields in Tigray, Ethiopia",
+  "journal": "In International conference on organic agriculture and food security, FAO, Rome (Vol. 2)",
+  "doi": null,
+  "citation": "Edwards, S., & Arefayne, A. (2007, May). The impact of compost use on crop yields in Tigray, Ethiopia. In International conference on organic agriculture and food security, FAO, Rome (Vol. 2).",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_54": {
+  "authors": "Laekemariam, Fanuel, and Gifole Gidago. \"Response of maize (Zea mays L.) to integrated fertilizer application in Wolaita, South Ethiopia.\" Advances in Life Science and Technology 5",
+  "year": 2012,
+  "title": ": 21-30",
+  "journal": null,
+  "doi": null,
+  "citation": "Laekemariam, Fanuel, and Gifole Gidago. \"Response of maize (Zea mays L.) to integrated fertilizer application in Wolaita, South Ethiopia.\" Advances in Life Science and Technology 5 (2012): 21-30.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_55": {
+  "authors": "Abera, T., Feyissa, D., & Yusuf, H",
+  "year": 2005,
+  "title": "Effects of inorganic and organic fertilizers on grain yield of maize-climbing bean intercropping and soil fertility in Western Oromiya, Ethiopia",
+  "journal": "In a conference on International Agricultural research",
+  "doi": null,
+  "citation": "Abera, T., Feyissa, D., & Yusuf, H. (2005, October). Effects of inorganic and organic fertilizers on grain yield of maize-climbing bean intercropping and soil fertility in Western Oromiya, Ethiopia. In a conference on International Agricultural research",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_56": {
+  "authors": null,
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Terefe, H., Argaw, M., Tamene, L. et al. Sustainable land management interventions lead to carbon sequestration in plant biomass and soil in a mixed crop-livestock system: the case of Geda watershed, central highlands of Ethiopia. Ecol Process 9, 34 (202",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_60": {
+  "authors": "Raji, S. G. and Dörsch, P",
+  "year": 2020,
+  "title": "Effect of legume intercropping on N2O emissions and CH4 uptake during maize production in the Great Rift Valley, Ethiopia, Biogeosciences, 17, 345–359, https://doi.org/10.5194/bg-17-345-2020, 2020",
+  "journal": null,
+  "doi": "10.5194/bg-17-345-2020",
+  "citation": "Raji, S. G. and Dörsch, P. 2020. Effect of legume intercropping on N2O emissions and CH4 uptake during maize production in the Great Rift Valley, Ethiopia, Biogeosciences, 17, 345–359, https://doi.org/10.5194/bg-17-345-2020, 2020.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_61": {
+  "authors": "Bekele W., Belete K., Tana, T",
+  "year": 2016,
+  "title": "Effect of Soybean Varieties and Nitrogen Fertilizer Rates on Yield, Yield Components and Productivity of Associated Crops Under Maize/Soybean Intercropping at Mechara, Eastern Ethiopia",
+  "journal": null,
+  "doi": null,
+  "citation": "Bekele W., Belete K., Tana, T. 2016. Effect of Soybean Varieties and Nitrogen Fertilizer Rates on Yield, Yield Components and Productivity of Associated Crops Under Maize/Soybean Intercropping at Mechara, Eastern Ethiopia",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_62": {
+  "authors": "Araya, T., Nyssen, J., Govaerts, B., Deckers, J., Sommer, R., Bauer, H., ... & Cornelis, W. M",
+  "year": 2016,
+  "title": "Seven years resource-conserving agriculture effect on soil quality and crop productivity in the Ethiopian drylands",
+  "journal": "Soil and Tillage Research",
+  "doi": "10.1016/j.still.2016.05.011",
+  "citation": "Araya, T., Nyssen, J., Govaerts, B., Deckers, J., Sommer, R., Bauer, H., ... & Cornelis, W. M. (2016). Seven years resource-conserving agriculture effect on soil quality and crop productivity in the Ethiopian drylands. Soil and Tillage Research, 163, 99-",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_63": {
+  "authors": "Mekuria, W., Langan, S., Noble, A., & Johnston, R",
+  "year": 2017,
+  "title": "Soil restoration after seven years of exclosure management in northwestern Ethiopia",
+  "journal": "Land degradation & development",
+  "doi": null,
+  "citation": "Mekuria, W., Langan, S., Noble, A., & Johnston, R. (2017). Soil restoration after seven years of exclosure management in northwestern Ethiopia. Land degradation & development, 28(4), 1287-1297.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_64": {
+  "authors": "Gebremedhin Gebremeskel et al.",
+  "year": 2018,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Gebremedhin Gebremeskel at al., 2018",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_65": {
+  "authors": "Negash F., Mulualem T",
+  "year": 2016,
+  "title": "Enhanced land use system through cassava/maize intercropping in south region of Ethiopia",
+  "journal": null,
+  "doi": null,
+  "citation": "Negash F., Mulualem T. 2016.. Enhanced land use system through cassava/maize intercropping in south region of Ethiopia",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_66": {
+  "authors": "Amede, T., Menza, M., & Awlachew, S. B",
+  "year": 2011,
+  "title": "Zai improves nutrient and water productivity in the Ethiopian highlands",
+  "journal": "Experimental Agriculture",
+  "doi": "10.1017/s0014479710000803",
+  "citation": "Amede, T., Menza, M., & Awlachew, S. B. (2011). Zai improves nutrient and water productivity in the Ethiopian highlands. Experimental Agriculture, 47(S1), 7-20.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_67": {
+  "authors": null,
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Aserse, Aregu Amsalu, Daniel Markos, Genet Getachew, Markku Yli-Halla, and Kristina Lindström. \"Rhizobial inoculation improves drought tolerance, biomass and grain yields of common bean (Phaseolus vulgaris L.) and soybean (Glycine max L.) at Halaba and",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_68": {
+  "authors": "Lupwayi, N. Z., et al. \"Leucaena hedgerow intercropping and cattle manure application in the Ethiopian highlands II. Maize yields and nutrient uptake.\" Biology and fertility of soils 28.2",
+  "year": 1999,
+  "title": ": 196-203",
+  "journal": null,
+  "doi": null,
+  "citation": "Lupwayi, N. Z., et al. \"Leucaena hedgerow intercropping and cattle manure application in the Ethiopian highlands II. Maize yields and nutrient uptake.\" Biology and fertility of soils 28.2 (1999): 196-203.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_69": {
+  "authors": "Abebe, G., Assefa, T., Harrun, H. and Mesfine, T",
+  "year": 2005,
+  "title": "Participatory selection of drought tolerant maize varieties using mother and baby methodology: A case study in the semi arid zones of the central rift valley of Ethiopia",
+  "journal": "In African Crop Science Co",
+  "doi": null,
+  "citation": "Abebe, G., Assefa, T., Harrun, H. and Mesfine, T., 2005. Participatory selection of drought tolerant maize varieties using mother and baby methodology: A case study in the semi arid zones of the central rift valley of Ethiopia. In African Crop Science Co",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_70": {
+  "authors": "Dabi et al",
+  "year": 2017,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Dabi et al 2017",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_71": {
+  "authors": "Delelegn, Y. T., Purahong, W., Blazevic, A., Yitaferu, B., Wubet, T., Göransson, H., & Godbold, D. L",
+  "year": 2017,
+  "title": "Changes in land use alter soil quality and aggregate stability in the highlands of northern Ethiopia",
+  "journal": "Scientific Reports",
+  "doi": null,
+  "citation": "Delelegn, Y. T., Purahong, W., Blazevic, A., Yitaferu, B., Wubet, T., Göransson, H., & Godbold, D. L. (2017). Changes in land use alter soil quality and aggregate stability in the highlands of northern Ethiopia. Scientific Reports, 7(1), 1-12.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_72": {
+  "authors": "Adgo et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Adgo et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_73": {
+  "authors": "Abrham Abiyu et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Abrham Abiyu et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_74": {
+  "authors": "Addisu Dagnew et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Addisu Dagnew et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_75": {
+  "authors": "Birru et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Birru et al",
+  "truncated": false,
+  "short_form": true,
+  "ambiguous": true,
+  "alternatives": [
+   "Ayele et al"
+  ]
+ },
+ "CSA_76": {
+  "authors": "Dagnew et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Dagnew et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_77": {
+  "authors": "Brhane, G., Wortmann, C. S., Mamo, M., Gebrekidan, H., & Belay, A",
+  "year": 2006,
+  "title": "Micro?basin tillage for grain sorghum production in semiarid areas of northern Ethiopia",
+  "journal": "Agronomy Journal",
+  "doi": null,
+  "citation": "Brhane, G., Wortmann, C. S., Mamo, M., Gebrekidan, H., & Belay, A. (2006). Micro?basin tillage for grain sorghum production in semiarid areas of northern Ethiopia. Agronomy Journal, 98(1), 124-128.",
+  "truncated": false,
+  "short_form": false,
+  "resolved_from": "Brhane et al."
+ },
+ "CSA_78": {
+  "authors": "Belay, A., Gebrekidan, H., & Uloro, Y",
+  "year": 1998,
+  "title": "Effect of tied ridges on grain yield response of Maize (Zea mays L.) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia",
+  "journal": "South African Journal of Plant and Soil",
+  "doi": "10.1080/02571862.1998.10635130",
+  "citation": "Belay, A., Gebrekidan, H., & Uloro, Y. (1998). Effect of tied ridges on grain yield response of Maize (Zea mays L.) to application of crop residue and residual N and P on two soil types at Alemaya, Ethiopia. South African Journal of Plant and Soil, 15(4)",
+  "truncated": true,
+  "short_form": false,
+  "resolved_from": "Belay et al"
+ },
+ "CSA_79": {
+  "authors": "Burayu, W., Chinawong, S., Suwanketnikom, R., Mala, T., & Juntakool, S",
+  "year": 2006,
+  "title": "Tillage System and fertilizer rate effects on sorghum productivity in the Central Rift Valley of Oromiya, Ethiopia",
+  "journal": "Agriculture and Natural Resources",
+  "doi": null,
+  "citation": "Burayu, W., Chinawong, S., Suwanketnikom, R., Mala, T., & Juntakool, S. (2006). Tillage System and fertilizer rate effects on sorghum productivity in the Central Rift Valley of Oromiya, Ethiopia. Agriculture and Natural Resources, 40(1), 1-10.",
+  "truncated": false,
+  "short_form": false,
+  "resolved_from": "Burayu et al"
+ },
+ "CSA_80": {
+  "authors": "Descheemaeker, K., Nyssen, J., Rossi, J., Poesen, J., Haile, M., Raes, D., ... & Deckers, S",
+  "year": 2006,
+  "title": "Sediment deposition and pedogenesis in exclosures in the Tigray Highlands, Ethiopia",
+  "journal": "Geoderma",
+  "doi": null,
+  "citation": "Descheemaeker, K., Nyssen, J., Rossi, J., Poesen, J., Haile, M., Raes, D., ... & Deckers, S. (2006). Sediment deposition and pedogenesis in exclosures in the Tigray Highlands, Ethiopia. Geoderma, 132(3-4), 291-314.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_81": {
+  "authors": "Dagnenet Sultan et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Dagnenet Sultan et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_82": {
+  "authors": "Ebabua et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Ebabua et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_83": {
+  "authors": "Ehrensperger et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Ehrensperger et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_84": {
+  "authors": "Emmanuel et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Emmanuel et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_85": {
+  "authors": "Ermias Aynekulu et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Ermias Aynekulu et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_86": {
+  "authors": "Hishe et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Hishe et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_87": {
+  "authors": "Haregeweyn, N., Berhe, A., Tsunekawa, A., Tsubo, M., & Meshesha, D. T",
+  "year": 2012,
+  "title": "Integrated watershed management as an effective approach to curb land degradation: a case study of the Enabered watershed in northern Ethiopia",
+  "journal": "Environmental management",
+  "doi": null,
+  "citation": "Haregeweyn, N., Berhe, A., Tsunekawa, A., Tsubo, M., & Meshesha, D. T. (2012). Integrated watershed management as an effective approach to curb land degradation: a case study of the Enabered watershed in northern Ethiopia. Environmental management, 50, 1",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_88": {
+  "authors": "Hurni et al",
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Hurni et al",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_89": {
+  "authors": "Hengsdijk, H., Meijerink, G. W., & Mosugu, M. E",
+  "year": 2005,
+  "title": "Modeling the effect of three soil and water conservation practices in Tigray, Ethiopia",
+  "journal": "Agriculture, ecosystems & environment",
+  "doi": null,
+  "citation": "Hengsdijk, H., Meijerink, G. W., & Mosugu, M. E. (2005). Modeling the effect of three soil and water conservation practices in Tigray, Ethiopia. Agriculture, ecosystems & environment, 105(1-2), 29-40.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_90": {
+  "authors": "Habtegebrial, K., Singh, B. R., & Haile, M",
+  "year": 2007,
+  "title": "Impact of tillage and nitrogen fertilization on yield, nitrogen use efficiency of tef (Eragrostis tef (Zucc.) Trotter) and soil properties",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Habtegebrial, K., Singh, B. R., & Haile, M. (2007). Impact of tillage and nitrogen fertilization on yield, nitrogen use efficiency of tef (Eragrostis tef (Zucc.) Trotter) and soil properties. Soil and Tillage Research, 94(1), 55-63.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_91": {
+  "authors": "Herweg, K., & Ludi, E",
+  "year": 1999,
+  "title": "The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea",
+  "journal": "Catena",
+  "doi": "10.1016/s0341-8162(99)00004-1",
+  "citation": "Herweg, K., & Ludi, E. (1999). The performance of selected soil and water conservation measures—case studies from Ethiopia and Eritrea. Catena, 36(1-2), 99-114.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_92": {
+  "authors": "Hailu, W., Moges, A., & Yimer, F",
+  "year": 2012,
+  "title": "The effects of ‘fanyajuu’soil conservation structure on selected soil physical & chemical properties: the case of Goromti watershed, western Ethiopia",
+  "journal": "Resources and Environment",
+  "doi": null,
+  "citation": "Hailu, W., Moges, A., & Yimer, F. (2012). The effects of ‘fanyajuu’soil conservation structure on selected soil physical & chemical properties: the case of Goromti watershed, western Ethiopia. Resources and Environment, 2(4), 132-140.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_93": {
+  "authors": "Jemberu et al",
+  "year": 2017,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Jemberu et al 2017",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_94": {
+  "authors": "Katrien et al",
+  "year": 2006,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Katrien et al 2006",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_95": {
+  "authors": "Kebede and Yaekob",
+  "year": 2006,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Kebede and Yaekob 2006",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_99": {
+  "authors": "Mekuria, W., Wondie, M., Amare, T., Wubet, A., Feyisa, T., & Yitaferu, B",
+  "year": 2018,
+  "title": "Restoration of degraded landscapes for ecosystem services in North-Western Ethiopia",
+  "journal": "Heliyon",
+  "doi": null,
+  "citation": "Mekuria, W., Wondie, M., Amare, T., Wubet, A., Feyisa, T., & Yitaferu, B. (2018). Restoration of degraded landscapes for ecosystem services in North-Western Ethiopia. Heliyon, 4(8), e00764.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_100": {
+  "authors": "Mesfin, T., Tesfahunegn, G. B., Wortmann, C. S., Nikus, O., & Mamo, M",
+  "year": 2009,
+  "title": "Tied-ridging and fertilizer use for sorghum production in semi-arid Ethiopia",
+  "journal": "Nutrient cycling in agroecosystems",
+  "doi": null,
+  "citation": "Mesfin, T., Tesfahunegn, G. B., Wortmann, C. S., Nikus, O., & Mamo, M. (2009). Tied-ridging and fertilizer use for sorghum production in semi-arid Ethiopia. Nutrient cycling in agroecosystems, 85, 87-94.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_101": {
+  "authors": "Munro, R. N., Deckers, J., Haile, M., Grove, A. T., Poesen, J., & Nyssen, J",
+  "year": 2008,
+  "title": "Soil landscapes, land cover change and erosion features of the Central Plateau region of Tigrai, Ethiopia: Photo-monitoring with an interval of 30 years",
+  "journal": "Catena",
+  "doi": null,
+  "citation": "Munro, R. N., Deckers, J., Haile, M., Grove, A. T., Poesen, J., & Nyssen, J. (2008). Soil landscapes, land cover change and erosion features of the Central Plateau region of Tigrai, Ethiopia: Photo-monitoring with an interval of 30 years. Catena, 75(1),",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_102": {
+  "authors": "Masebo, N., Abdellkadir, A., & Mohammed, A",
+  "year": 2014,
+  "title": "Evaluating the effect of agroforestry based soil and water conservation measures on selected soil properties at Tembaro district, SNNPR, Ethiopia",
+  "journal": "Direct Research Journal of Agriculture and Food Science",
+  "doi": null,
+  "citation": "Masebo, N., Abdellkadir, A., & Mohammed, A. (2014). Evaluating the effect of agroforestry based soil and water conservation measures on selected soil properties at Tembaro district, SNNPR, Ethiopia. Direct Research Journal of Agriculture and Food Science",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_103": {
+  "authors": "Tadesse, M., Simane, B., Abera, W., Tamene, L., Ambaw, G., Recha, J. W., ... & Solomon, D",
+  "year": 2021,
+  "title": "The effect of climate-smart agriculture on soil fertility, crop yield, and soil carbon in southern ethiopia",
+  "journal": "Sustainability",
+  "doi": null,
+  "citation": "Tadesse, M., Simane, B., Abera, W., Tamene, L., Ambaw, G., Recha, J. W., ... & Solomon, D. (2021). The effect of climate-smart agriculture on soil fertility, crop yield, and soil carbon in southern ethiopia. Sustainability, 13(8), 4515.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_104": {
+  "authors": "Tadesse M, Simane B, Ambaw G, Recha J, Abera W, Tamene L, Demeke G, Mekonnen K, Radeny M, Solomon D",
+  "year": 2018,
+  "title": "Building soil carbon stocks to enhance adaptation and mitigate climate change in climate-smart landscapes, Southern Ethiopia",
+  "journal": "CCAFS Info Note. Wage",
+  "doi": null,
+  "citation": "Tadesse M, Simane B, Ambaw G, Recha J, Abera W, Tamene L, Demeke G, Mekonnen K, Radeny M, Solomon D. 2018. Building soil carbon stocks to enhance adaptation and mitigate climate change in climate-smart landscapes, Southern Ethiopia. CCAFS Info Note. Wage",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_105": {
+  "authors": "Mesfin, S., Taye, G., Desta, Y., Sibhatu, B., Muruts, H., & Mohammedbrhan, M",
+  "year": 2018,
+  "title": "Short-term effects of bench terraces on selected soil physical and chemical properties: Landscape improvement for hillside farming in semi-arid areas of northern Ethiop",
+  "journal": null,
+  "doi": null,
+  "citation": "Mesfin, S., Taye, G., Desta, Y., Sibhatu, B., Muruts, H., & Mohammedbrhan, M. (2018). Short-term effects of bench terraces on selected soil physical and chemical properties: Landscape improvement for hillside farming in semi-arid areas of northern Ethiop",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_106": {
+  "authors": "Nyssen, J., Clymans, W., Descheemaeker, K., Poesen, J., Vandecasteele, I., Vanmaercke, M., ... & Walraevens, K",
+  "year": 2010,
+  "title": "Impact of soil and water conservation measures on catchment hydrological response—a case in north Ethiopia",
+  "journal": "Hydrological processes",
+  "doi": null,
+  "citation": "Nyssen, J., Clymans, W., Descheemaeker, K., Poesen, J., Vandecasteele, I., Vanmaercke, M., ... & Walraevens, K. (2010). Impact of soil and water conservation measures on catchment hydrological response—a case in north Ethiopia. Hydrological processes,",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_107": {
+  "authors": "Nyssen, J., Clymans, W., Poesen, J., Vandecasteele, I., De Baets, S., Haregeweyn, N., ... & Deckers, J",
+  "year": 2009,
+  "title": "How soil conservation affects the catchment sediment budget–a comprehensive study in the north Ethiopian highlands",
+  "journal": "Earth Surface Processes",
+  "doi": null,
+  "citation": "Nyssen, J., Clymans, W., Poesen, J., Vandecasteele, I., De Baets, S., Haregeweyn, N., ... & Deckers, J. (2009). How soil conservation affects the catchment sediment budget–a comprehensive study in the north Ethiopian highlands. Earth Surface Processes",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_108": {
+  "authors": "Nyssen, J., Poesen, J., Moeyersons, J., Haile, M., & Deckers, J",
+  "year": 2008,
+  "title": "Dynamics of soil erosion rates and controlling factors in the Northern Ethiopian Highlands–towards a sediment budget",
+  "journal": "Earth surface processes and landforms",
+  "doi": null,
+  "citation": "Nyssen, J., Poesen, J., Moeyersons, J., Haile, M., & Deckers, J. (2008). Dynamics of soil erosion rates and controlling factors in the Northern Ethiopian Highlands–towards a sediment budget. Earth surface processes and landforms, 33(5), 695-711.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_109": {
+  "authors": "Nyssen, J., Poesen, J., Gebremichael, D., Vancampenhout, K., D’aes, M., Yihdego, G., ... & Deckers, J",
+  "year": 2007,
+  "title": "Interdisciplinary on-site evaluation of stone bunds to control soil erosion on cropland in Northern Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Nyssen, J., Poesen, J., Gebremichael, D., Vancampenhout, K., D’aes, M., Yihdego, G., ... & Deckers, J. (2007). Interdisciplinary on-site evaluation of stone bunds to control soil erosion on cropland in Northern Ethiopia. Soil and Tillage Research, 94(1",
+  "truncated": true,
+  "short_form": false,
+  "resolved_from": "Nyssen et al 2007"
+ },
+ "CSA_110": {
+  "authors": "Opolot et al",
+  "year": 2013,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Opolot et al 2013",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_111": {
+  "authors": "Rockström, J., Kaumbutho, P., Mwalley, J., Nzabi, A. W., Temesgen, M., Mawenya, L., ... & Damgaard-Larsen, S",
+  "year": 2009,
+  "title": "Conservation farming strategies in East and Southern Africa: Yields and rain water productivity from on-farm action research",
+  "journal": "Soil and",
+  "doi": "10.1016/j.still.2008.09.013",
+  "citation": "Rockström, J., Kaumbutho, P., Mwalley, J., Nzabi, A. W., Temesgen, M., Mawenya, L., ... & Damgaard-Larsen, S. (2009). Conservation farming strategies in East and Southern Africa: Yields and rain water productivity from on-farm action research. Soil and",
+  "truncated": true,
+  "short_form": false,
+  "resolved_from": "Rockstrom et al 2009"
+ },
+ "CSA_112": {
+  "authors": "Samson Shimeles et al",
+  "year": 2017,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Samson Shimeles et al 2017",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_113": {
+  "authors": "Sultan et al",
+  "year": 2017,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Sultan et al 2017",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_114": {
+  "authors": "Subhatu et al",
+  "year": 2017,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Subhatu et al 2017",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_115": {
+  "authors": "Welle, S., Chantawarangul, K., Nontananandh, S., & Jantawat, S",
+  "year": 2006,
+  "title": "Effectiveness of grass strips as barrier against runoff and soil loss in Jijiga area, northern part of Somali region, Ethiopia",
+  "journal": "Agriculture and Natural Resources",
+  "doi": null,
+  "citation": "Welle, S., Chantawarangul, K., Nontananandh, S., & Jantawat, S. (2006). Effectiveness of grass strips as barrier against runoff and soil loss in Jijiga area, northern part of Somali region, Ethiopia. Agriculture and Natural Resources, 40(2), 549-558.",
+  "truncated": false,
+  "short_form": false,
+  "resolved_from": "Sultan Welle et al 2006"
+ },
+ "CSA_116": {
+  "authors": "Tigest and Getachew",
+  "year": 2018,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Tigest and Getachew 2018",
+  "truncated": false,
+  "short_form": true,
+  "ambiguous": true,
+  "alternatives": [
+   "Alemayehu, T., & Fisseha, G. (2018). Effects of soil and water conservation practices on selected soil physico-chemical properties in Debre-Yakob Micro-Watershed, Northwest Ethiopia. Ethiopian Journal of Science and Technology, 11(1), 29-38."
+  ]
+ },
+ "CSA_117": {
+  "authors": null,
+  "year": null,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Tigabu et al 20014",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_118": {
+  "authors": "Taye, G., Poesen, J., Vanmaercke, M., Van Wesemael, B., Martens, L., Teka, D., ... & Hallet, V",
+  "year": 2015,
+  "title": "Evolution of the effectiveness of stone bunds and trenches in reducing runoff and soil loss in the semi-arid Ethiopian highlands",
+  "journal": "Zeitschrift für Geo",
+  "doi": null,
+  "citation": "Taye, G., Poesen, J., Vanmaercke, M., Van Wesemael, B., Martens, L., Teka, D., ... & Hallet, V. (2015). Evolution of the effectiveness of stone bunds and trenches in reducing runoff and soil loss in the semi-arid Ethiopian highlands. Zeitschrift für Geo",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_119": {
+  "authors": "Taye, G., Poesen, J., Vanmaercke, M., Van Wesemael, B., Martens, L., Teka, D., ... & Hallet, V",
+  "year": 2015,
+  "title": "Evolution of the effectiveness of stone bunds and trenches in reducing runoff and soil loss in the semi-arid Ethiopian highlands",
+  "journal": "Zeitschrift für Geo",
+  "doi": null,
+  "citation": "Taye, G., Poesen, J., Vanmaercke, M., Van Wesemael, B., Martens, L., Teka, D., ... & Hallet, V. (2015). Evolution of the effectiveness of stone bunds and trenches in reducing runoff and soil loss in the semi-arid Ethiopian highlands. Zeitschrift für Geo",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_120": {
+  "authors": "Taa, A., Tanner, D., & Bennie, A. T",
+  "year": 2004,
+  "title": "Effects of stubble management, tillage and cropping sequence on wheat production in the south-eastern highlands of Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Taa, A., Tanner, D., & Bennie, A. T. (2004). Effects of stubble management, tillage and cropping sequence on wheat production in the south-eastern highlands of Ethiopia. Soil and Tillage Research, 76(1), 69-82.",
+  "truncated": false,
+  "short_form": false,
+  "resolved_from": "Taa et al 2004"
+ },
+ "CSA_121": {
+  "authors": "Tulema, B., Aune, J. B., Johnsen, F. H., & Vanlauwe, B",
+  "year": 2008,
+  "title": "The prospects of reduced tillage in tef (Eragrostis tef Zucca) in gare arera, West Shawa Zone of Oromiya, Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": null,
+  "citation": "Tulema, B., Aune, J. B., Johnsen, F. H., & Vanlauwe, B. (2008). The prospects of reduced tillage in tef (Eragrostis tef Zucca) in gare arera, West Shawa Zone of Oromiya, Ethiopia. Soil and Tillage Research, 99(1), 58-65.",
+  "truncated": false,
+  "short_form": false,
+  "resolved_from": "Tulema et al  2008"
+ },
+ "CSA_122": {
+  "authors": "Temesgen, M., Hoogmoed, W. B., Rockstrom, J., & Savenije, H. H. G",
+  "year": 2009,
+  "title": "Conservation tillage implements and systems for smallholder farmers in semi-arid Ethiopia",
+  "journal": "Soil and Tillage Research",
+  "doi": "10.1016/j.still.2008.10.026",
+  "citation": "Temesgen, M., Hoogmoed, W. B., Rockstrom, J., & Savenije, H. H. G. (2009). Conservation tillage implements and systems for smallholder farmers in semi-arid Ethiopia. Soil and Tillage Research, 104(1), 185-191.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_123": {
+  "authors": "Tesfahunegn and Wortmann",
+  "year": 2008,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Tesfahunegn and Wortmann 2008",
+  "truncated": false,
+  "short_form": true,
+  "ambiguous": true,
+  "alternatives": [
+   "Beshah, T. (2003). Understanding farmers: explaining soil and water conservation in Konso, Wolaita and Wello, Ethiopia. pHD Thesis, Wageningen University and Research."
+  ]
+ },
+ "CSA_124": {
+  "authors": "Teklu Erkossa",
+  "year": 2011,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Teklu Erkossa 2011",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_125": {
+  "authors": "Temesgen, M., Uhlenbrook, S., Simane, B., Van Der Zaag, P., Mohamed, Y., Wenninger, J., & Savenije, H. H. G",
+  "year": 2012,
+  "title": "Impacts of conservation tillage on the hydrological and agronomic performance of Fanya juus in the upper Blue Nile (Abbay) river basin",
+  "journal": "H",
+  "doi": null,
+  "citation": "Temesgen, M., Uhlenbrook, S., Simane, B., Van Der Zaag, P., Mohamed, Y., Wenninger, J., & Savenije, H. H. G. (2012). Impacts of conservation tillage on the hydrological and agronomic performance of Fanya juus in the upper Blue Nile (Abbay) river basin. H",
+  "truncated": true,
+  "short_form": false,
+  "resolved_from": "Temesgen et al 2012"
+ },
+ "CSA_126": {
+  "authors": "Tesfaye Yaekob et al",
+  "year": 2018,
+  "title": null,
+  "journal": null,
+  "doi": null,
+  "citation": "Tesfaye Yaekob et al 2018",
+  "truncated": false,
+  "short_form": true
+ },
+ "CSA_127": {
+  "authors": "Tadesse, B., Mesfin, S., Tesfay, G., & Abay, F",
+  "year": 2016,
+  "title": "Effect of integrated soil bunds on key soil properties and soil carbon stock in semi-arid areas of northern Ethiopia",
+  "journal": "South African Journal of Plant and Soil",
+  "doi": null,
+  "citation": "Tadesse, B., Mesfin, S., Tesfay, G., & Abay, F. (2016). Effect of integrated soil bunds on key soil properties and soil carbon stock in semi-arid areas of northern Ethiopia. South African Journal of Plant and Soil, 33(4), 297-302.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_128": {
+  "authors": "Abate, D., & Melaku, S",
+  "year": 2009,
+  "title": "Effect of supplementing urea-treated barley straw with lucerne or vetch hays on feed intake, digestibility and growth of Arsi Bale sheep",
+  "journal": "Tropical Animal Health and Production",
+  "doi": "10.1007/s11250-008-9227-1",
+  "citation": "Abate, D., & Melaku, S. (2009). Effect of supplementing urea-treated barley straw with lucerne or vetch hays on feed intake, digestibility and growth of Arsi Bale sheep. Tropical Animal Health and Production, 41(4), 579-586.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_129": {
+  "authors": "Astatke, A., Jabbar, M., & Tanner, D",
+  "year": 2003,
+  "title": "Participatory conservation tillage research: an experience with minimum tillage on an Ethiopian highland Vertisol",
+  "journal": "Agriculture, ecosystems & environment",
+  "doi": "10.1016/s0167-8809(02)00225-6",
+  "citation": "Astatke, A., Jabbar, M., & Tanner, D. (2003). Participatory conservation tillage research: an experience with minimum tillage on an Ethiopian highland Vertisol. Agriculture, ecosystems & environment, 95(2-3), 401-415.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_130": {
+  "authors": "Astatke, A., & Saleem, M. M",
+  "year": 1998,
+  "title": "Effect of different cropping options on plant-available water of surface-drained Vertisols in the Ethiopian highlands",
+  "journal": "Agricultural Water Management",
+  "doi": "10.1016/s0378-3774(98)00029-8",
+  "citation": "Astatke, A., & Saleem, M. M. (1998). Effect of different cropping options on plant-available water of surface-drained Vertisols in the Ethiopian highlands. Agricultural Water Management, 36(2), 111-120.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_131": {
+  "authors": "Astatke, A., Saleem, M. M., & El Wakeel, A",
+  "year": 1995,
+  "title": "Soil water dynamics under cereal and forage legume mixtures on drained Vertisols in the Ethiopian highlands",
+  "journal": "Agricultural Water Management",
+  "doi": "10.1016/0378-3774(95)01131-2",
+  "citation": "Astatke, A., Saleem, M. M., & El Wakeel, A. (1995). Soil water dynamics under cereal and forage legume mixtures on drained Vertisols in the Ethiopian highlands. Agricultural Water Management, 27(1), 17-24.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_132": {
+  "authors": "Bekele, S., & Tilahun, K",
+  "year": 2007,
+  "title": "Regulated deficit irrigation scheduling of onion in a semiarid region of Ethiopia",
+  "journal": "Agricultural water management",
+  "doi": "10.1016/j.agwat.2007.01.002",
+  "citation": "Bekele, S., & Tilahun, K. (2007). Regulated deficit irrigation scheduling of onion in a semiarid region of Ethiopia. Agricultural water management, 89(1-2), 148-152.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_133": {
+  "authors": "Bekele, T., & Höfner, W",
+  "year": 1993,
+  "title": "Effects of different phosphate fertilizers on yield of barley and rape seed on reddish brown soils of the Ethiopian highlands",
+  "journal": "Fertilizer research",
+  "doi": "10.1007/bf00750570",
+  "citation": "Bekele, T., & Höfner, W. (1993). Effects of different phosphate fertilizers on yield of barley and rape seed on reddish brown soils of the Ethiopian highlands. Fertilizer research, 34(3), 243-250.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_134": {
+  "authors": "Messele, B",
+  "year": 2016,
+  "title": "Effects of Combined Application of Organic–P and Inorganic N Fertilizers on Yield of Carrot (Daucus Carrota L.)",
+  "journal": "Agricultural Research & Technology: Open Access Journal",
+  "doi": null,
+  "citation": "Messele, B. (2016). Effects of Combined Application of Organic–P and Inorganic N Fertilizers on Yield of Carrot (Daucus Carrota L.). Agricultural Research & Technology: Open Access Journal, 2(2), 35-39.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_135": {
+  "authors": "Bonsi et al",
+  "year": 2010,
+  "title": "Graded levels of Sesbania sesban and Leucaena leucocephala as supplements to teff straw given to Ethiopian Menz sheep",
+  "journal": null,
+  "doi": "10.1017/S0003356100007728",
+  "citation": "Bonsi et al., 2010. Graded levels of Sesbania sesban and Leucaena leucocephala as supplements to teff straw given to Ethiopian Menz sheep",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_136": {
+  "authors": "Coppock, D. L., & Reed, J. D",
+  "year": 1992,
+  "title": "Cultivated and native browse legumes as calf supplements in Ethiopia",
+  "journal": "Rangeland Ecology & Management/Journal of Range Management Archives",
+  "doi": "10.2307/4002969",
+  "citation": "Coppock, D. L., & Reed, J. D. (1992). Cultivated and native browse legumes as calf supplements in Ethiopia. Rangeland Ecology & Management/Journal of Range Management Archives, 45(3), 231-238.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_137": {
+  "authors": "Coppock, D. L., & Sovani, S",
+  "year": 1999,
+  "title": "Is supplementation justified to compensate pastoral calves for milk restriction?",
+  "journal": "Rangeland Ecology & Management/Journal of Range Management Archives",
+  "doi": "10.2307/4003682",
+  "citation": "Coppock, D. L., & Sovani, S. (1999). Is supplementation justified to compensate pastoral calves for milk restriction?. Rangeland Ecology & Management/Journal of Range Management Archives, 52(3), 208-217.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_138": {
+  "authors": "Taddesse, G., Peden, D., Abiye, A., & Wagnew, A",
+  "year": 2003,
+  "title": "Effect of manure on grazing lands in Ethiopia, East African highlands",
+  "journal": "Mountain Research and Development",
+  "doi": null,
+  "citation": "Taddesse, G., Peden, D., Abiye, A., & Wagnew, A. (2003). Effect of manure on grazing lands in Ethiopia, East African highlands. Mountain Research and Development, 23(2), 156-160.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_139": {
+  "authors": "Girma, T., & Endale, B",
+  "year": 1995,
+  "title": "Influence of manuring on certain soil physical properties in the Middle Awash area of Ethiopia",
+  "journal": "Communications in soil science and plant analysis",
+  "doi": "10.1080/00103629509369391",
+  "citation": "Girma, T., & Endale, B. (1995). Influence of manuring on certain soil physical properties in the Middle Awash area of Ethiopia. Communications in soil science and plant analysis, 26(9-10), 1565-1570.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_140": {
+  "authors": "Habtemicael, M., Yayneshet, T., & Treydte, A. C",
+  "year": 2015,
+  "title": "Responses of vegetation and soils to three grazing management regimes in a semi?arid highland mixed crop?livestock system",
+  "journal": "African Journal of Ecology",
+  "doi": null,
+  "citation": "Habtemicael, M., Yayneshet, T., & Treydte, A. C. (2015). Responses of vegetation and soils to three grazing management regimes in a semi?arid highland mixed crop?livestock system. African Journal of Ecology, 53(1), 75-82.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_141": {
+  "authors": "Haftay, H., Yayneshet, T., Animut, G., & Treydte, A. C",
+  "year": 2013,
+  "title": "Rangeland vegetation responses to traditional enclosure management in eastern Ethiopia",
+  "journal": "The Rangeland Journal",
+  "doi": "10.1071/RJ12054",
+  "citation": "Haftay, H., Yayneshet, T., Animut, G., & Treydte, A. C. (2013). Rangeland vegetation responses to traditional enclosure management in eastern Ethiopia. The Rangeland Journal, 35(1), 29-36.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_142": {
+  "authors": "Hailu, S., Seyoum, T., & Dechassa, N",
+  "year": 2008,
+  "title": "Effect of combined application of organic P and inorganic N fertilizers on post harvest quality of carrot",
+  "journal": "African Journal of Biotechnology",
+  "doi": null,
+  "citation": "Hailu, S., Seyoum, T., & Dechassa, N. (2008). Effect of combined application of organic P and inorganic N fertilizers on post harvest quality of carrot. African Journal of Biotechnology, 7(13).",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_143": {
+  "authors": "Haque, I., & Lupwayi, N. Z",
+  "year": 1998,
+  "title": "Agronomic effectiveness and residual effects of Egyptian and Togo phosphate rocks on clover production",
+  "journal": "Journal of plant nutrition",
+  "doi": "10.1080/01904169809365540",
+  "citation": "Haque, I., & Lupwayi, N. Z. (1998). Agronomic effectiveness and residual effects of Egyptian and Togo phosphate rocks on clover production. Journal of plant nutrition, 21(9), 2013-2033.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_144": {
+  "authors": "Kahurananga, J",
+  "year": 1991,
+  "title": "Intercropping Ethiopian Trifolium species with wheat",
+  "journal": "Experimental Agriculture",
+  "doi": null,
+  "citation": "Kahurananga, J. (1991). Intercropping Ethiopian Trifolium species with wheat. Experimental Agriculture, 27(4), 385-390.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_145": {
+  "authors": "Kaitho, R. J., Umunna, N. N., Nsahlai, I. V., Tamminga, S., & Van Bruchem, J",
+  "year": 1997,
+  "title": "Utilization of browse supplements with varying tannin levels by Ethiopian Menz sheep: 2",
+  "journal": "Nitrogen metabolism. Agroforestry systems",
+  "doi": null,
+  "citation": "Kaitho, R. J., Umunna, N. N., Nsahlai, I. V., Tamminga, S., & Van Bruchem, J. (1997). Utilization of browse supplements with varying tannin levels by Ethiopian Menz sheep: 2. Nitrogen metabolism. Agroforestry systems, 39(2), 161-173.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_146": {
+  "authors": "Kaitho, R. J., Umunna, N. N., Nsahlai, I. V., Tamminga, S., & Van Bruchem, J",
+  "year": 1997,
+  "title": "Utilization of browse supplements with varying tannin levels by Ethiopian Menz sheep: 1",
+  "journal": "Intake, digestibility and live weight changes. Agroforestry Systems",
+  "doi": null,
+  "citation": "Kaitho, R. J., Umunna, N. N., Nsahlai, I. V., Tamminga, S., & Van Bruchem, J. (1997). Utilization of browse supplements with varying tannin levels by Ethiopian Menz sheep: 1. Intake, digestibility and live weight changes. Agroforestry Systems, 39(2), 145",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_147": {
+  "authors": "Woldetsadik, K",
+  "year": 2003,
+  "title": "Shallot (Allium cepa var",
+  "journal": "ascolonicum) responses to plant nutrients and soil moisture in a sub-humid tropical climate (Doctoral dissertation, Swedish University of Agricultural Sciences)",
+  "doi": null,
+  "citation": "Woldetsadik, K. (2003). Shallot (Allium cepa var. ascolonicum) responses to plant nutrients and soil moisture in a sub-humid tropical climate (Doctoral dissertation, Swedish University of Agricultural Sciences).",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_149": {
+  "authors": "Nsahlai, I. V., & Umunna, N. N",
+  "year": 1996,
+  "title": "Sesbania and lablab supplementation of oat hay basal diet fed to sheep with or without maize grain",
+  "journal": "Animal Feed Science and Technology",
+  "doi": "10.1016/0377-8401(95)00941-8",
+  "citation": "Nsahlai, I. V., & Umunna, N. N. (1996). Sesbania and lablab supplementation of oat hay basal diet fed to sheep with or without maize grain. Animal Feed Science and Technology, 61(1-4), 275-289.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_150": {
+  "authors": "Poschen, P",
+  "year": 1986,
+  "title": "An evaluation of the Acacia albida-based agroforestry practices in the Hararghe highlands of Eastern Ethiopia",
+  "journal": "Agroforestry systems",
+  "doi": "10.1007/bf00141545",
+  "citation": "Poschen, P. (1986). An evaluation of the Acacia albida-based agroforestry practices in the Hararghe highlands of Eastern Ethiopia. Agroforestry systems, 4(2), 129-143.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_151": {
+  "authors": "Solomon, M., Melaku, S., & Tolera, A",
+  "year": 2008,
+  "title": "Supplementation of cottonseed meal on feed intake, digestibility, live weight and carcass parameters of Sidama goats",
+  "journal": "Livestock Science",
+  "doi": "10.1016/j.livsci.2008.03.011",
+  "citation": "Solomon, M., Melaku, S., & Tolera, A. (2008). Supplementation of cottonseed meal on feed intake, digestibility, live weight and carcass parameters of Sidama goats. Livestock Science, 119(1-3), 137-144.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_152": {
+  "authors": "Tadele, D., & Teketay, D",
+  "year": 2014,
+  "title": "Growth and yield of two grain crops on sites former covered with eucalypt plantations in Koga Watershed, northwestern Ethiopia",
+  "journal": "Journal of Forestry Research",
+  "doi": "10.1007/s11676-014-0483-9",
+  "citation": "Tadele, D., & Teketay, D. (2014). Growth and yield of two grain crops on sites former covered with eucalypt plantations in Koga Watershed, northwestern Ethiopia. Journal of Forestry Research, 25(4), 935-940.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_153": {
+  "authors": "Tanner, D. G., Gorfu, A., & Taa, A",
+  "year": 1993,
+  "title": "Fertiliser effects on sustainability in the wheat-based small-holder farming systems of southeastern Ethiopia",
+  "journal": "Field crops research",
+  "doi": "10.1016/0378-4290(93)90082-x",
+  "citation": "Tanner, D. G., Gorfu, A., & Taa, A. (1993). Fertiliser effects on sustainability in the wheat-based small-holder farming systems of southeastern Ethiopia. Field crops research, 33(3), 235-248.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_154": {
+  "authors": "Teklay, T., Nyberg, G., & Malmer, A",
+  "year": 2006,
+  "title": "Effect of organic inputs from agroforestry species and urea on crop yield and soil properties at Wondo Genet, Ethiopia",
+  "journal": "Nutrient Cycling in Agroecosystems",
+  "doi": "10.1007/s10705-006-9020-3",
+  "citation": "Teklay, T., Nyberg, G., & Malmer, A. (2006). Effect of organic inputs from agroforestry species and urea on crop yield and soil properties at Wondo Genet, Ethiopia. Nutrient Cycling in Agroecosystems, 75(1), 163-173.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_155": {
+  "authors": "Tsegay, T., Yoseph, M., & Mengistu, U",
+  "year": 2013,
+  "title": "Comparative evaluation of growth and carcass traits of indigenous and crossbred (Dorper× Indigenous) Ethiopian Sheep",
+  "journal": "Small Ruminant Research",
+  "doi": null,
+  "citation": "Tsegay, T., Yoseph, M., & Mengistu, U. (2013). Comparative evaluation of growth and carcass traits of indigenous and crossbred (Dorper× Indigenous) Ethiopian Sheep. Small Ruminant Research, 114(2-3), 247-252.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_156": {
+  "authors": "Umunna, N. N., Osuji, P. O., & Nsahlai, I. V",
+  "year": 1997,
+  "title": "Strategic supplementation of crossbred steers fed forages from cereal-legume cropping systems with cowpea hay",
+  "journal": "Journal of Applied Animal Research",
+  "doi": "10.1080/09712119.1997.9706177",
+  "citation": "Umunna, N. N., Osuji, P. O., & Nsahlai, I. V. (1997). Strategic supplementation of crossbred steers fed forages from cereal-legume cropping systems with cowpea hay. Journal of Applied Animal Research, 11(2), 169-182.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_157": {
+  "authors": "Welderufael, W. A., Le Roux, P. A. L., & Hensley, M",
+  "year": 2009,
+  "title": "Quantifying rainfall-runoff relationships on the Melkassa Hypo Calcic Regosol ecotope in Ethiopia",
+  "journal": "Water Sa",
+  "doi": "10.4314/wsa.v35i5.49189",
+  "citation": "Welderufael, W. A., Le Roux, P. A. L., & Hensley, M. (2009). Quantifying rainfall-runoff relationships on the Melkassa Hypo Calcic Regosol ecotope in Ethiopia. Water Sa, 35(5).",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_158": {
+  "authors": "Workayehu, T., & Wortmann, C. S",
+  "year": 2011,
+  "title": "Maize–bean intercrop weed suppression and profitability in Southern Ethiopia",
+  "journal": "Agronomy journal",
+  "doi": "10.2134/agronj2010.0493",
+  "citation": "Workayehu, T., & Wortmann, C. S. (2011). Maize–bean intercrop weed suppression and profitability in Southern Ethiopia. Agronomy journal, 103(4), 1058-1063.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_159": {
+  "authors": "Yemane, A., & Skjelvåg, A. O",
+  "year": 2003,
+  "title": "Effects of fertilizer phosphorus on yield traits of dekoko (Pisum sativum var",
+  "journal": "abyssinicum) under field conditions. Journal of agronomy and crop science",
+  "doi": null,
+  "citation": "Yemane, A., & Skjelvåg, A. O. (2003). Effects of fertilizer phosphorus on yield traits of dekoko (Pisum sativum var. abyssinicum) under field conditions. Journal of agronomy and crop science, 189(1), 14-20.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_160": {
+  "authors": "Yisehak, K., Biruk, K., Abegaze, B., & Janssens, G. P",
+  "year": 2014,
+  "title": "Growth of sheep fed tannin-rich Albizia gummifera with or without polyethylene glycol",
+  "journal": "Tropical animal health and production",
+  "doi": "10.1007/s11250-014-0605-6",
+  "citation": "Yisehak, K., Biruk, K., Abegaze, B., & Janssens, G. P. (2014). Growth of sheep fed tannin-rich Albizia gummifera with or without polyethylene glycol. Tropical animal health and production, 46(7), 1113-1118.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_161": {
+  "authors": "Yohannes, F",
+  "year": 1999,
+  "title": "Improvement of water application efficiency by moisture conservation methods for establishment of planted tree seedlings",
+  "journal": "Communications in soil science and plant analysis",
+  "doi": "10.1080/00103629909370272",
+  "citation": "Yohannes, F. (1999). Improvement of water application efficiency by moisture conservation methods for establishment of planted tree seedlings. Communications in soil science and plant analysis, 30(7-8), 1119-1125.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_162": {
+  "authors": "Yihun, Y. M",
+  "year": 2015,
+  "title": "Agricultural water productivity optimization for irrigated Teff (Eragrostic Tef) in water scarce semi-arid region of EthiopiaAgricultural water productivity optimization for irrigated Teff (Eragrostic Tef) in water scarce semi-arid r",
+  "journal": null,
+  "doi": null,
+  "citation": "Yihun, Y. M. (2015). Agricultural water productivity optimization for irrigated Teff (Eragrostic Tef) in water scarce semi-arid region of EthiopiaAgricultural water productivity optimization for irrigated Teff (Eragrostic Tef) in water scarce semi-arid r",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_163": {
+  "authors": "Shiferaw, B., & Holden, S. T",
+  "year": 1998,
+  "title": "Resource degradation and adoption of land conservation technologies in the Ethiopian highlands: a case study in Andit Tid, North Shewa",
+  "journal": "Agricultural economics",
+  "doi": null,
+  "citation": "Shiferaw, B., & Holden, S. T. (1998). Resource degradation and adoption of land conservation technologies in the Ethiopian highlands: a case study in Andit Tid, North Shewa. Agricultural economics, 18(3), 233-247.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_164": {
+  "authors": "Assefa A",
+  "year": 2007,
+  "title": "Impact of terrace development and management on soil properties in Anjeni area, West Gojam",
+  "journal": "MSc Thesis, Addis Ababa University, Ethiopia, pp 73",
+  "doi": null,
+  "citation": "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 73",
+  "truncated": false,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 74",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 76",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 77",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 79",
+   "Assefa A (2007) Impact of terrace development and management on soil properties in Anjeni area, West Gojam. MSc Thesis, Addis Ababa University, Ethiopia, pp 80"
+  ]
+ },
+ "CSA_165": {
+  "authors": "Amare, T., Terefe, A., Selassie, Y. G., Yitaferu, B., Wolfgramm, B., & Hurni, H",
+  "year": 2013,
+  "title": "Soil properties and crop yields along the terraces and toposequece of Anjeni Watershed, Central Highlands of Ethiopia",
+  "journal": "Journal of Agricultural Science",
+  "doi": null,
+  "citation": "Amare, T., Terefe, A., Selassie, Y. G., Yitaferu, B., Wolfgramm, B., & Hurni, H. (2013). Soil properties and crop yields along the terraces and toposequece of Anjeni Watershed, Central Highlands of Ethiopia. Journal of Agricultural Science, 5(2), 134-144",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_166": {
+  "authors": "Tanner, D. G., Gorfu, A., & Taa, A",
+  "year": 1993,
+  "title": "Fertiliser effects on sustainability in the wheat-based small-holder farming systems of southeastern Ethiopia",
+  "journal": "Field crops research",
+  "doi": "10.1016/0378-4290(93)90082-x",
+  "citation": "Tanner, D. G., Gorfu, A., & Taa, A. (1993). Fertiliser effects on sustainability in the wheat-based small-holder farming systems of southeastern Ethiopia. Field crops research, 33(3), 235-248.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_167": {
+  "authors": "Mulugeta, D., & Karl, S",
+  "year": 2010,
+  "title": "Assessment of integrated soil and water conservation measures on key soil properties in South Gonder, North-Western Highlands of Ethiopia",
+  "journal": "Journal of Soil Science and Environmental Management",
+  "doi": null,
+  "citation": "Mulugeta, D., & Karl, S. (2010). Assessment of integrated soil and water conservation measures on key soil properties in South Gonder, North-Western Highlands of Ethiopia. Journal of Soil Science and Environmental Management, 1(7), 164-176.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_168": {
+  "authors": "Vågen, I. M., & Slimestad, R",
+  "year": 2008,
+  "title": "Amount of characteristic compounds in 15 cultivars of onion (Allium cepa L.) in controlled field trials",
+  "journal": "Journal of the Science of Food and Agriculture",
+  "doi": null,
+  "citation": "Vågen, I. M., & Slimestad, R. (2008). Amount of characteristic compounds in 15 cultivars of onion (Allium cepa L.) in controlled field trials. Journal of the Science of Food and Agriculture, 88(3), 404-411.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_169": {
+  "authors": "Bayu, W., Rethman, N. F. G., Hammes, P. S., & Alemu, G",
+  "year": 2006,
+  "title": "Application of farmyard manure improved the chemical and physical properties of the soil in a semi-arid area in Ethiopia",
+  "journal": "Biological agriculture & horticulture",
+  "doi": null,
+  "citation": "Bayu, W., Rethman, N. F. G., Hammes, P. S., & Alemu, G. (2006). Application of farmyard manure improved the chemical and physical properties of the soil in a semi-arid area in Ethiopia. Biological agriculture & horticulture, 24(3), 293-300.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_170": {
+  "authors": "Damene, S., Tamene, L., & Vlek, P. L",
+  "year": 2012,
+  "title": "Performance of farmland terraces in maintaining soil fertility: A case of Lake Maybar watershed in Wello, northern highlands of Ethiopia",
+  "journal": "Journal of Life Sciences",
+  "doi": null,
+  "citation": "Damene, S., Tamene, L., & Vlek, P. L. (2012). Performance of farmland terraces in maintaining soil fertility: A case of Lake Maybar watershed in Wello, northern highlands of Ethiopia. Journal of Life Sciences, 6(11), 1251.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_171": {
+  "authors": "Hagos, F., Nakawuka, P., Schmitter, P., Tegegne, D., Haileselassie, A., Barron, J., ... & Mupangwa, W. T",
+  "year": 2016,
+  "title": "Drip irrigation and service provision of irrigation water: new ways to step into affordable small-scale irrigated agriculture",
+  "journal": "Promoting pro",
+  "doi": null,
+  "citation": "Hagos, F., Nakawuka, P., Schmitter, P., Tegegne, D., Haileselassie, A., Barron, J., ... & Mupangwa, W. T. (2016). Drip irrigation and service provision of irrigation water: new ways to step into affordable small-scale irrigated agriculture. Promoting pro",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_172": {
+  "authors": "Yimam, A. Y., Assefa, T. T., Adane, N. F., Tilahun, S. A., Jha, M. K., & Reyes, M. R",
+  "year": 2020,
+  "title": "Experimental evaluation for the impacts of conservation agriculture with drip irrigation on crop coefficient and soil properties in the Sub-Humid Ethiopian High",
+  "journal": null,
+  "doi": null,
+  "citation": "Yimam, A. Y., Assefa, T. T., Adane, N. F., Tilahun, S. A., Jha, M. K., & Reyes, M. R. (2020). Experimental evaluation for the impacts of conservation agriculture with drip irrigation on crop coefficient and soil properties in the Sub-Humid Ethiopian High",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_173": {
+  "authors": "Enchalew, B., Gebre, S. L., Rabo, M., Hindaye, B., Kedir, M., Musa, Y., & Shafi, A",
+  "year": 2016,
+  "title": "Effect of deficit irrigation on water productivity of onion (Allium cepal.) under drip irrigation",
+  "journal": "Irrigat Drainage Sys Eng",
+  "doi": null,
+  "citation": "Enchalew, B., Gebre, S. L., Rabo, M., Hindaye, B., Kedir, M., Musa, Y., & Shafi, A. (2016). Effect of deficit irrigation on water productivity of onion (Allium cepal.) under drip irrigation. Irrigat Drainage Sys Eng, 5(172), 2.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_174": {
+  "authors": "Chala, M., & Quraishi, S",
+  "year": 2015,
+  "title": "Effect of deficit irrigation on yield and water productivity of garlic (Allium sativum L.) under drip irrigation and mulching at Wolaita Soddo, Ethiopia",
+  "journal": "International Journal of Life Sciences",
+  "doi": null,
+  "citation": "Chala, M., & Quraishi, S. (2015). Effect of deficit irrigation on yield and water productivity of garlic (Allium sativum L.) under drip irrigation and mulching at Wolaita Soddo, Ethiopia. International Journal of Life Sciences, 4(4), 232-39.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_175": {
+  "authors": "Yohannes, F., & Tadesse, T",
+  "year": 1998,
+  "title": "Effect of drip and furrow irrigation and plant spacing on yield of tomato at Dire Dawa, Ethiopia",
+  "journal": "Agricultural Water Management",
+  "doi": null,
+  "citation": "Yohannes, F., & Tadesse, T. (1998). Effect of drip and furrow irrigation and plant spacing on yield of tomato at Dire Dawa, Ethiopia. Agricultural Water Management, 35(3), 201-207.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_176": {
+  "authors": "Gebremedhin, T",
+  "year": 2015,
+  "title": "Effect of drip and surface irrigation methods on yield and water use efficiency of onion (Allium cepa L.) under semi-arid condition of Northern Ethiopia",
+  "journal": "Journal of biology, Agriculture and Healthcare",
+  "doi": null,
+  "citation": "Gebremedhin, T. (2015). Effect of drip and surface irrigation methods on yield and water use efficiency of onion (Allium cepa L.) under semi-arid condition of Northern Ethiopia. Journal of biology, Agriculture and Healthcare, 5(14), 88-94.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_177": {
+  "authors": "Wondatir, S., & Belay, Z",
+  "year": 2020,
+  "title": "Effect of drip lateral spacing and irrigation amount on tomato and onion crops cum water productivity at kobo Girrana valley, Ethiopia",
+  "journal": "Black Sea Journal of Agriculture",
+  "doi": null,
+  "citation": "Wondatir, S., & Belay, Z. (2020). Effect of drip lateral spacing and irrigation amount on tomato and onion crops cum water productivity at kobo Girrana valley, Ethiopia. Black Sea Journal of Agriculture, 3(2), 120-127.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_178": {
+  "authors": "Berihun, B",
+  "year": 2011,
+  "title": "Effect of mulching and amount of water on the yield of tomato under drip irrigation",
+  "journal": "Journal of Horticulture and Forestry",
+  "doi": null,
+  "citation": "Berihun, B. (2011). Effect of mulching and amount of water on the yield of tomato under drip irrigation. Journal of Horticulture and Forestry, 3(7), 200-206.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_179": {
+  "authors": "Gadissa, T., & Chemeda, D",
+  "year": 2009,
+  "title": "Effects of drip irrigation levels and planting methods on yield and yield components of green pepper (Capsicum annuum, L.) in Bako, Ethiopia",
+  "journal": "Agricultural Water Management",
+  "doi": "10.1016/j.agwat.2009.07.004",
+  "citation": "Gadissa, T., & Chemeda, D. (2009). Effects of drip irrigation levels and planting methods on yield and yield components of green pepper (Capsicum annuum, L.) in Bako, Ethiopia. Agricultural Water Management, 96(11), 1673-1678.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_180": {
+  "authors": "Assefa, T. T., Adametie, T. F., Yimam, A. Y., Belay, S. A., Degu, Y. M., Hailemeskel, S. T., ... & Prasad, P. V",
+  "year": 2020,
+  "title": "Evaluating irrigation and farming systems with solar MajiPump in Ethiopia",
+  "journal": "Agronomy",
+  "doi": "10.3390/agronomy11010017",
+  "citation": "Assefa, T. T., Adametie, T. F., Yimam, A. Y., Belay, S. A., Degu, Y. M., Hailemeskel, S. T., ... & Prasad, P. V. (2020). Evaluating irrigation and farming systems with solar MajiPump in Ethiopia. Agronomy, 11(1), 17.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_181": {
+  "authors": "Bekele, S., & Tilahun, K",
+  "year": 2007,
+  "title": "Regulated deficit irrigation scheduling of onion in a semiarid region of Ethiopia",
+  "journal": "Agricultural water management",
+  "doi": "10.1016/j.agwat.2007.01.002",
+  "citation": "Bekele, S., & Tilahun, K. (2007). Regulated deficit irrigation scheduling of onion in a semiarid region of Ethiopia. Agricultural water management, 89(1-2), 148-152.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_182": {
+  "authors": "Borena, F. R., & Seyoum, T",
+  "year": 2021,
+  "title": "Effect of drip and furrow irrigation at different irrigation levels on water use efficiency and economics of maize (Zea Mays L.) at Werer, Middle Awash, Ethiopia",
+  "journal": "International Journal of Agricultural Science",
+  "doi": null,
+  "citation": "Borena, F. R., & Seyoum, T. (2021). Effect of drip and furrow irrigation at different irrigation levels on water use efficiency and economics of maize (Zea Mays L.) at Werer, Middle Awash, Ethiopia. International Journal of Agricultural Science, 6.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_183": {
+  "authors": "Ambachew, S., Alamirew, T., & Melese, A",
+  "year": 2014,
+  "title": "Performance of mungbean under deficit irrigation application in the semi-arid highlands of Ethiopia",
+  "journal": "Agricultural water management",
+  "doi": "10.1016/j.agwat.2014.01.012",
+  "citation": "Ambachew, S., Alamirew, T., & Melese, A. (2014). Performance of mungbean under deficit irrigation application in the semi-arid highlands of Ethiopia. Agricultural water management, 136, 68-74.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_184": {
+  "authors": "Demelash, N",
+  "year": 2013,
+  "title": "Deficit irrigation scheduling for potato production in North Gondar, Ethiopia",
+  "journal": "African Journal of Agricultural Research",
+  "doi": null,
+  "citation": "Demelash, N. (2013). Deficit irrigation scheduling for potato production in North Gondar, Ethiopia. African Journal of Agricultural Research, 8(11), 1144-1154.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_185": {
+  "authors": "Seid and Narayanan",
+  "year": 2015,
+  "title": "Effect of Deficit Irrigation on Maize under Conventional, Fixed and Alternate Furrow rrigation Systems at Melkassa, Ethiopia",
+  "journal": "nternational Journal of Engineering Research & Technology (IJERT), Vol. 4 Issue 11",
+  "doi": null,
+  "citation": "Seid and Narayanan, 2015. Effect of Deficit Irrigation on Maize under Conventional, Fixed and Alternate Furrow rrigation Systems at Melkassa, Ethiopia. nternational Journal of Engineering Research & Technology (IJERT), Vol. 4 Issue 11, 119-126. Conventio",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_186": {
+  "authors": "Meskelu, E., Woldemichael, A., & Hordofa, T",
+  "year": 2017,
+  "title": "Effect of moisture stress on yield and water use efficiency of irrigated wheat (Triticum aestivum L.) at Melkassa, Ethiopia",
+  "journal": "Acad. Res. J. Agri. Sci. Res",
+  "doi": null,
+  "citation": "Meskelu, E., Woldemichael, A., & Hordofa, T. (2017). Effect of moisture stress on yield and water use efficiency of irrigated wheat (Triticum aestivum L.) at Melkassa, Ethiopia. Acad. Res. J. Agri. Sci. Res, 5(2), 90-97.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_187": {
+  "authors": "Ayana, M",
+  "year": 2011,
+  "title": "Deficit irrigation practices as alternative means of improving water use efficiencies in irrigated agriculture: Case study of maize crop at Arba Minch, Ethiopia",
+  "journal": "African Journal of Agricultural Research",
+  "doi": null,
+  "citation": "Ayana, M. (2011). Deficit irrigation practices as alternative means of improving water use efficiencies in irrigated agriculture: Case study of maize crop at Arba Minch, Ethiopia. African Journal of Agricultural Research, 6(2), 226-235.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_188": {
+  "authors": "Temesgen, T., Ayana, M., & Bedadi, B",
+  "year": 2018,
+  "title": "Evaluating the effects of deficit irrigation on yield and water productivity of furrow irrigated onion (Allium cepa L.) in Ambo, Western Ethiopia",
+  "journal": "Irrigation & Drainage Systems Engineering",
+  "doi": null,
+  "citation": "Temesgen, T., Ayana, M., & Bedadi, B. (2018). Evaluating the effects of deficit irrigation on yield and water productivity of furrow irrigated onion (Allium cepa L.) in Ambo, Western Ethiopia. Irrigation & Drainage Systems Engineering, 7(1), 1-6.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_189": {
+  "authors": "Yenesew, M., & Tilahun, K",
+  "year": 2009,
+  "title": "Yield and water use efficiency of deficit-irrigated maize in a semi-arid region of Ethiopia",
+  "journal": "African Journal of Food, Agriculture, Nutrition and Development",
+  "doi": null,
+  "citation": "Yenesew, M., & Tilahun, K. (2009). Yield and water use efficiency of deficit-irrigated maize in a semi-arid region of Ethiopia. African Journal of Food, Agriculture, Nutrition and Development, 9(8).",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_190": {
+  "authors": "Bekele, S",
+  "year": 2017,
+  "title": "Response of Tomato to Deficit Irrigation at Ambo, Ethiopia",
+  "journal": "Journal of Natural Sciences Research",
+  "doi": null,
+  "citation": "Bekele, S. (2017). Response of Tomato to Deficit Irrigation at Ambo, Ethiopia. Journal of Natural Sciences Research, 7(23).",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_191": {
+  "authors": "Kifle, M., & Gebretsadikan, T. G",
+  "year": 2016,
+  "title": "Yield and water use efficiency of furrow irrigated potato under regulated deficit irrigation, Atsibi-Wemberta, North Ethiopia",
+  "journal": "Agricultural water management",
+  "doi": "10.1016/j.agwat.2016.01.003",
+  "citation": "Kifle, M., & Gebretsadikan, T. G. (2016). Yield and water use efficiency of furrow irrigated potato under regulated deficit irrigation, Atsibi-Wemberta, North Ethiopia. Agricultural water management, 170, 133-139.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_192": {
+  "authors": "Gebru, T. A., Brhane, G. K., & Gebremedhin, Y. G",
+  "year": 2021,
+  "title": "Contributions of water harvesting technologies intervention in arid and semi-arid regions of Ethiopia, in ensuring households’ food security, Tigray in focus",
+  "journal": "Journal of Arid Environments",
+  "doi": null,
+  "citation": "Gebru, T. A., Brhane, G. K., & Gebremedhin, Y. G. (2021). Contributions of water harvesting technologies intervention in arid and semi-arid regions of Ethiopia, in ensuring households’ food security, Tigray in focus. Journal of Arid Environments, 185,",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_193": {
+  "authors": "Grum, B., Assefa, D., Hessel, R., Woldearegay, K., Kessler, A., Ritsema, C., & Geissen, V",
+  "year": 2017,
+  "title": "Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi?Arid Northern Ethiopia",
+  "journal": "Land Degradation & Development",
+  "doi": null,
+  "citation": "Grum, B., Assefa, D., Hessel, R., Woldearegay, K., Kessler, A., Ritsema, C., & Geissen, V. (2017). Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi?Arid Northern Ethiopia. Land Degradation & Development, 28(3), 1016-1029",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Grum, B., Assefa, D., Hessel, R., Woldearegay, K., Kessler, A., Ritsema, C., & Geissen, V. (2017). Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi?Arid Northern Ethiopia. Land Degradation & Development, 28(3), 1016-1030",
+   "Grum, B., Assefa, D., Hessel, R., Woldearegay, K., Kessler, A., Ritsema, C., & Geissen, V. (2017). Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi?Arid Northern Ethiopia. Land Degradation & Development, 28(3), 1016-1031",
+   "Grum, B., Assefa, D., Hessel, R., Woldearegay, K., Kessler, A., Ritsema, C., & Geissen, V. (2017). Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi?Arid Northern Ethiopia. Land Degradation & Development, 28(3), 1016-1027",
+   "Grum, B., Assefa, D., Hessel, R., Woldearegay, K., Kessler, A., Ritsema, C., & Geissen, V. (2017). Effect of In Situ Water Harvesting Techniques on Soil and Nutrient Losses in Semi?Arid Northern Ethiopia. Land Degradation & Development, 28(3), 1016-1028"
+  ]
+ },
+ "CSA_194": {
+  "authors": "Milkias, A., Tadesse, T., & Zeleke, H",
+  "year": 2018,
+  "title": "Evaluating the effects of in-situ rainwater harvesting techniques on soil moisture conservation and grain yield of maize (Zea mays L.) in Fedis district, Eastern Hararghe, Ethiopia",
+  "journal": "Turkish Journal of Agricu",
+  "doi": null,
+  "citation": "Milkias, A., Tadesse, T., & Zeleke, H. (2018). Evaluating the effects of in-situ rainwater harvesting techniques on soil moisture conservation and grain yield of maize (Zea mays L.) in Fedis district, Eastern Hararghe, Ethiopia. Turkish Journal of Agricu",
+  "truncated": true,
+  "short_form": false
+ },
+ "CSA_195": {
+  "authors": "Hagos, F. G., Yohannes, M., Linderhof, V., Kruseman, G., Mulugeta, A., & Abreha, Z",
+  "year": 2006,
+  "title": "Micro water harvesting for climate change mitigation: Trade-offs between health and poverty reduction in Northern Ethiopia",
+  "journal": "Girmay and Abreha, Zenebe, Micro Water",
+  "doi": null,
+  "citation": "Hagos, F. G., Yohannes, M., Linderhof, V., Kruseman, G., Mulugeta, A., & Abreha, Z. (2006). Micro water harvesting for climate change mitigation: Trade-offs between health and poverty reduction in Northern Ethiopia. Girmay and Abreha, Zenebe, Micro Water",
+  "truncated": true,
+  "short_form": false,
+  "ambiguous": true,
+  "alternatives": [
+   "Teshome, A., Adgo, E., & Mati, B. (2010). Impact of water harvesting ponds on household incomes and rural livelihoods in Minjar Shenkora district of Ethiopia. Ecohydrology & Hydrobiology, 10(2-4), 315-322."
+  ]
+ },
+ "CSA_196": {
+  "authors": "Wale, A., Abera, M., & Beza, G",
+  "year": 2022,
+  "title": "Performance evaluation of technical aspects of ex-situ rainwater harvesting systems at Wag-Lasta, Northern, Ethiopia",
+  "journal": "Journal of Applied Water Engineering and Research",
+  "doi": null,
+  "citation": "Wale, A., Abera, M., & Beza, G. (2022). Performance evaluation of technical aspects of ex-situ rainwater harvesting systems at Wag-Lasta, Northern, Ethiopia. Journal of Applied Water Engineering and Research, 10(1), 39-51.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_197": {
+  "authors": "Wakeyo, M. B., & Gardebroek, C",
+  "year": 2013,
+  "title": "Does water harvesting induce fertilizer use among smallholders? Evidence from Ethiopia",
+  "journal": "Agricultural Systems",
+  "doi": null,
+  "citation": "Wakeyo, M. B., & Gardebroek, C. (2013). Does water harvesting induce fertilizer use among smallholders? Evidence from Ethiopia. Agricultural Systems, 114, 54-63.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_198": {
+  "authors": "Wakeyo, M. B., & Gardebroek, C",
+  "year": 2013,
+  "title": "Does water harvesting induce fertilizer use among smallholders? Evidence from Ethiopia",
+  "journal": "Agricultural Systems",
+  "doi": null,
+  "citation": "Wakeyo, M. B., & Gardebroek, C. (2013). Does water harvesting induce fertilizer use among smallholders? Evidence from Ethiopia. Agricultural Systems, 114, 54-63.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_199": {
+  "authors": "Abdelkdair, A., & Schultz, R. C",
+  "year": 2005,
+  "title": "Water harvesting in a ‘runoff-catchment’agroforestry system in the dry lands of Ethiopia",
+  "journal": "Agroforestry systems",
+  "doi": null,
+  "citation": "Abdelkdair, A., & Schultz, R. C. (2005). Water harvesting in a ‘runoff-catchment’agroforestry system in the dry lands of Ethiopia. Agroforestry systems, 63, 291-298.",
+  "truncated": false,
+  "short_form": false
+ },
+ "CSA_200": {
+  "authors": "Woldearegay, K., van Steenbergen, F., Perez, M. A., Grum, B., & van Beusekom, M",
+  "year": 2015,
+  "title": "Water harvesting from roads: climate resilience in Tigray, Ethiopia",
+  "journal": "IRF Examiner",
+  "doi": null,
+  "citation": "Woldearegay, K., van Steenbergen, F., Perez, M. A., Grum, B., & van Beusekom, M. (2015). Water harvesting from roads: climate resilience in Tigray, Ethiopia. IRF Examiner, 12, 1-7.",
+  "truncated": false,
+  "short_form": false
+ }
+}

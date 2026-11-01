@@ -61,9 +61,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "home.hero" });
   const tc = await getTranslations({ locale, namespace: "common" });
+  const fullTitle = `${tc("appName")} — ${tc("tagline")}`;
   return {
-    title: { default: `${tc("appName")} — ${tc("tagline")}`, template: `%s · ${tc("appName")}` },
+    title: { default: fullTitle, template: `%s · ${tc("appName")}` },
     description: t("subtitle"),
+    applicationName: tc("appName"),
+    openGraph: {
+      type: "website",
+      siteName: tc("appName"),
+      title: fullTitle,
+      description: t("subtitle"),
+      locale,
+    },
   };
 }
 
@@ -83,12 +92,17 @@ export default async function LocaleLayout({
   const shellMessages = pickMessages(await getMessages(), SHELL_NAMESPACES);
 
   return (
+    // translate="no" + the google notranslate meta (U9 B1): the app ships its
+    // own am/om translations, and Chrome's page translation rewrites text nodes
+    // React owns, which crashes reconciliation (NotFoundError: removeChild).
     <html
       lang={meta.lang}
+      translate="no"
       suppressHydrationWarning
       className={meta.ethiopic ? `${sans.variable} ${ethiopic.variable}` : sans.variable}
     >
       <head>
+        <meta name="google" content="notranslate" />
         {/* Applies the stored theme before first paint. A plain server-rendered
             <script> (U6): React hydrates it but never creates it on the client,
             which is what React 19.2 warns about for next/script in a component. */}

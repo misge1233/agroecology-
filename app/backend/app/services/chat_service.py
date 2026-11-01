@@ -169,7 +169,90 @@ def _advise_from_slots(slots, top_n: int, language: str) -> dict[str, Any]:
         crop_type=slots.crop_type,
         top_n=top_n,
         language=language,
+        constraints=list(getattr(slots, "constraints", []) or []),
     )
+
+
+# ------------------------------------------------------------- registers (U9)
+#: "Why?", "how do you know?", "what is the evidence?", "which study?" — en/am/om.
+_EVIDENCE_INTENT_RE = re.compile(
+    r"(?i)\b(?:why|how\s+do\s+you\s+know|how\s+sure|evidence|sources?|which\s+stud\w*|what\s+stud\w*|"
+    r"references?|proof|cite|citations?)\b"
+    # Amharic stems (inflected forms such as ምንጩ "its source", ማስረጃው "the evidence").
+    r"|ለምን|ማስረጃ|ምንጭ|ምንጩ|ምንጮች|የትኛው\s*ጥናት|እንዴት\s*(?:ታውቃለህ|አወቅህ|ታውቃላችሁ)"
+    # Afaan Oromoo stems (ragaa/ragaan "evidence", madda/maddi "source").
+    r"|\bmaaliif|\bragaa\w*|\bmadd[aiu]\w*|qorannoo\s+kam|akkamitti\s+beekte"
+)
+
+
+def is_evidence_request(message: str) -> bool:
+    """True when the user asks why / for the evidence or source (switch to the evidence register)."""
+    return bool(_EVIDENCE_INTENT_RE.search(message or ""))
+
+
+def _bundles_for(recommendation: dict[str, Any] | None, advisory_result: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    """Evidence bundles for an answer: from /advise when at hand, else fused afresh (cheap)."""
+    if advisory_result and advisory_result.get("practices"):
+        return list(advisory_result["practices"])
+    if not recommendation:
+        return []
+    from app.services import explain_service as es
+    from app.services import fusion_service as fusion
+
+    try:
+        return fusion.fuse(recommendation, graph_query=es.get_graph_query())
+    except Exception as exc:
+        logger.warning("Fusion unavailable for chat (%s)", exc)
+        return []
+
+
+def chat_summary(bundles: list[dict[str, Any]], recommendation: dict[str, Any], language: str) -> str:
+    """Plain register for chat: one sentence per practice plus constraint / crop notes."""
+    from app.services import fusion_service as fusion
+    from app.services.practice_names import practice_name
+
+    query = recommendation.get("query") or {}
+    indicator = str(query.get("indicator") or "")
+    crop = query.get("crop_type")
+    lines: list[str] = []
+    for b in bundles:
+        line = fusion.summary_text(b, indicator, language, practice_name(b["practice"], language))
+        for c in b.get("matches_constraints") or []:
+            line += t(language, f"fusion.note.{c}")
+        if b.get("constraint_pick"):
+            line += t(language, "fusion.note.constraint_pick")
+        if b.get("replaces_crop") and crop:
+            line += t(language, "fusion.note.replaces_crop", crop=crop)
+        lines.append(line.strip())
+    from app.services.slot_extraction import context_intro
+
+    # Conversational prose (1 Nov 2026): one paragraph, no list or headings.
+    return " ".join([context_intro(recommendation, language).strip(), *lines]).strip()
+
+
+def evidence_register(recommendation: dict[str, Any], language: str, bundles: list[dict[str, Any]] | None = None) -> str:
+    """Labelled, cited register for "why / which study?" (deterministic; numbers from the bundles)."""
+    from app.services import explain_service as es
+    from app.services import fusion_service as fusion
+    from app.services.practice_names import practice_name
+
+    bundles = bundles if bundles is not None else _bundles_for(recommendation)
+    if not bundles:
+        return t(language, "fusion.evidence.none")
+    indicator = str((recommendation.get("query") or {}).get("indicator") or "")
+    ref_of, cited = es.study_registry([], bundles)
+    # Conversational prose (1 Nov 2026): one short paragraph per practice and
+    # one sentence naming the sources; the same labelled values and markers,
+    # without headings, bullets or a menu-like layout.
+    blocks = [t(language, "fusion.evidence.intro").strip()]
+    for b in bundles:
+        lines = [s.strip() for s in fusion.evidence_lines(b, indicator, language, lambda r: ref_of.get(r, "?"))]
+        blocks.append(f"{practice_name(b['practice'], language)}: " + " ".join(lines))
+    if cited:
+        sources = [f"[{c['ref']}] " + ", ".join(str(x) for x in (c.get("title") or c.get("study_no"), c.get("year")) if x)
+                   for c in cited]
+        blocks.append(t(language, "fusion.evidence.sources").strip() + " " + "; ".join(sources) + ".")
+    return "\n\n".join(blocks)
 
 
 def _advisory_event(result: dict[str, Any], slots: Any) -> dict[str, Any]:
@@ -184,6 +267,8 @@ def _advisory_event(result: dict[str, Any], slots: Any) -> dict[str, Any]:
         "knowledge_candidates": result["knowledge_candidates"],
         "evidence_sufficiency": result["evidence_sufficiency"],
         "context": result.get("context") or {},
+        # U9: the evidence bundles of the shown practices (same vocabulary as the Advisor).
+        "practices": result.get("practices") or [],
         "query": {
             "lat": float(slots.lat),
             "lon": float(slots.lon),
@@ -231,6 +316,13 @@ async def stream_chat(
             steer_to_advisor = True
     yield _evt({"type": "slots", "data": slots.to_event()})
 
+    # U9 (A5): "why? / how do you know? / which study?" about the last answer →
+    # the labelled, cited evidence register (deterministic; never an LLM number).
+    if last_recommendation and is_evidence_request(message) and not _slots_changed(slots, last_recommendation):
+        async for chunk in _stream_text(evidence_register(last_recommendation, language)):
+            yield chunk
+        return
+
     # Prior result still valid (no slot changes): follow-ups / chitchat / repeat asks.
     if last_recommendation and not _slots_changed(slots, last_recommendation):
         if slots.is_followup or not slots.wants_advice:
@@ -241,7 +333,9 @@ async def stream_chat(
         if slots.is_complete:
             rec = _trim_recommendation(last_recommendation, top_n)
             yield _evt({"type": "recommendation", "data": rec})
-            narrative = await _narrative_for_recommendation(message, history, rec, settings, language)
+            narrative = await _narrative_for_recommendation(
+                message, history, rec, settings, language, bundles=_bundles_for(rec)
+            )
             for piece in _chunk(narrative):
                 yield _evt({"type": "token", "text": piece})
             yield _evt({"type": "done"})
@@ -269,9 +363,13 @@ async def stream_chat(
     yield _evt({"type": "advisory", "data": _advisory_event(result, slots)})
 
     if result.get("model"):
-        recommendation = _trim_recommendation(result["model"], top_n)
+        # /advise already returns exactly the shown practices (top N, plus a
+        # constraint pick when one was added), in the fused order.
+        recommendation = _trim_recommendation(result["model"], len(result.get("practices") or []) or top_n)
         yield _evt({"type": "recommendation", "data": recommendation})
-        narrative = await _narrative_for_recommendation(message, history, recommendation, settings, language)
+        narrative = await _narrative_for_recommendation(
+            message, history, recommendation, settings, language, bundles=_bundles_for(recommendation, result) or None,
+        )
         # Model-led: byte-identical to the pre-P9 narrative. Hybrid: one sentence more.
         narrative += advisory.hybrid_note(result, language)
     else:
@@ -369,13 +467,41 @@ async def _stream_offline_followup(
         yield chunk
 
 
-def narrative_system_instruction(recommendation: dict[str, Any], language: str = "en") -> str:
-    """System prompt for phrasing a server-computed recommendation (pure; tested)."""
+#: Conversational style for every chat answer (owner, 1 Nov 2026): talk, don't list.
+CONVERSATION_STYLE = (
+    "STYLE: Answer like an extension agent talking to a farmer: one or two short "
+    "paragraphs of plain sentences. No numbered or bulleted lists, no headings, no "
+    "tables, no menus of options. Bold a practice name at most once."
+)
+
+
+def narrative_system_instruction(
+    recommendation: dict[str, Any], language: str = "en", facts: str | None = None,
+) -> str:
+    """System prompt for phrasing a server-computed recommendation (pure; tested).
+
+    U9: with ``facts`` (the plain register built from the evidence bundles)
+    the model rephrases those facts in plain language — the facts carry the
+    only numbers it may use, with the exact practice names.
+    """
+    if facts:
+        return (
+            SYSTEM_PROMPT
+            + "\n\nCRITICAL: The recommendation was ALREADY computed by the server from "
+            "fused evidence (field-trial model and field studies). Write the DEFAULT "
+            "answer in plain language from these FACTS only. Keep every practice "
+            "name exactly as written. Use only the numbers in the FACTS; never add, "
+            "round differently, average or invent a number. No citation markers, no "
+            "\"reported in\" phrasing. Never say \"proven\", \"guaranteed\" or \"will "
+            "increase\". Do not call tools.\n" + CONVERSATION_STYLE + "\nFACTS:\n" + facts
+            + "\n\n" + reply_instruction(language)
+        )
     return (
         SYSTEM_PROMPT
         + "\n\nCRITICAL: A recommendation was ALREADY computed by the server. "
         "Phrase the DEFAULT clean answer using ONLY this JSON. "
         "Do not call tools. Do not invent practices, percentages, or coordinates.\n"
+        + CONVERSATION_STYLE + "\n"
         + json.dumps(recommendation, default=str)
         + "\n\n" + reply_instruction(language)
     )
@@ -387,8 +513,28 @@ async def _narrative_for_recommendation(
     recommendation: dict[str, Any],
     settings,
     language: str = "en",
+    bundles: list[dict[str, Any]] | None = None,
 ) -> str:
-    """Phrase the default answer from scored evidence; never free-invent practices."""
+    """Phrase the default answer from scored evidence; never free-invent practices.
+
+    U9: with evidence bundles the answer is the plain register (headline
+    values in words, exact display names, constraint / crop notes); an LLM
+    rephrasing is kept only if guard v2 finds no unsourced number in it.
+    """
+    if bundles:
+        facts = chat_summary(bundles, recommendation, language)
+        if not settings.openai_api_key:
+            return facts
+        text = await _llm_narrative(message, history, recommendation, settings, language, facts)
+        if not text:
+            return facts
+        from app.services import explain_service as es
+
+        guarded = es.guard_v2(text, es.fused_allowed(recommendation, bundles), {})
+        if guarded["removed"] or re.search(r"\[[GW]?\d+[a-z]?\]", text):
+            logger.info("Narrative carried an unsourced number or a marker — plain register used.")
+            return facts
+        return text
     fallback = evidence_summary(recommendation, language)
     if not settings.openai_api_key:
         return fallback
@@ -427,6 +573,26 @@ async def _narrative_for_recommendation(
     except Exception as exc:
         logger.info("Narrative phrasing fell back to template: %s", exc)
         return fallback
+
+
+async def _llm_narrative(
+    message: str, history: list[dict[str, str]], recommendation: dict[str, Any], settings, language: str, facts: str,
+) -> str | None:
+    """One tool-free completion rephrasing the plain facts; ``None`` on any failure."""
+    try:
+        client = make_client(settings.openai_api_key, settings.openai_timeout_seconds)
+        messages = build_messages(history, message, narrative_system_instruction(recommendation, language, facts))
+        async with client:
+            resp = await client.post(
+                OPENAI_CHAT_COMPLETIONS_URL,
+                json={"model": OPENAI_CHAT_MODEL, "messages": messages, "temperature": 0.3},
+            )
+            resp.raise_for_status()
+            text = (resp.json()["choices"][0]["message"].get("content") or "").strip()
+            return strip_leaked_tool_markup(text) or None
+    except Exception as exc:
+        logger.info("Narrative phrasing failed (%s) — plain register used.", exc)
+        return None
 
 
 async def run_chat(

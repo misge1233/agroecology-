@@ -2,6 +2,15 @@
 
 **Date:** 18 Aug 2026 · **Status:** approved (research_project_plan.md §2)
 
+> **Amended 1 Nov 2026 (U9): evidence fusion.** The original rule "the model owns
+> every number" is superseded by `docs/decisions/evidence_fusion.md`: the
+> strongest evidence for the user's context leads (model-led, study-led or
+> documented). A number may come from the model's estimate, a study-level effect
+> computed from the dataset (graph `REPORTS_EFFECT`), a figure stated verbatim in a
+> cited passage (same sentence as its citation), the context layers, or a count.
+> The LLM never produces a number; the guardrail below is now guard v2
+> (sentence-level, provenance objects).
+
 ## Decision
 
 Add a retrieval-augmented generation layer whose **Phase-1 corpus is the set of
@@ -39,7 +48,7 @@ filtered to Ethiopia/agroecology).
 | Store | Chroma (embedded) → Qdrant if scaled | zero-ops, fits Docker deploy |
 | Retrieval | hybrid dense+BM25; metadata pre-filter on practice family & indicator; top-k≈8 + rerank | the query is the **structured recommendation output**, not user free text |
 | Generation | existing Groq/OpenAI-swappable client; cite-or-silent prompt | extends current honesty guardrails |
-| Guardrail | numeric claims in text must match recommendation JSON | regex check, as chat_service does for practices |
+| Guardrail | guard v2 (U9): every number in a sentence must come from the model, a study effect, the context, a count, or a passage cited in that same sentence; unsourced sentences are removed | sentence-level check with provenance objects; deterministic fused fallback |
 
 ## Evaluation plan
 

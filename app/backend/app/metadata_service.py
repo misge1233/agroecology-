@@ -84,6 +84,8 @@ def build_metadata() -> dict[str, Any]:
         "indicators_by_family": svc.ui_indicators_by_family(),
         "practices_by_family": svc.practices_by_family(),
         "crop_types": svc.crop_types(),
+        # Crops measured within each family (the Advisor's crop picker, crop production only).
+        "crop_types_by_family": svc.crop_types_by_family(),
         "bounds": {"lat": [lat_lo, lat_hi], "lon": [lon_lo, lon_hi]},
         "model": model_meta,
         # True when the RAG evidence index exists on disk (POST /explain usable).
@@ -91,6 +93,8 @@ def build_metadata() -> dict[str, Any]:
         # True when the knowledge graph is built — gates the evidence-base
         # line in the UI's Evidence panel.
         "graph_ready": explain_service.graph_is_ready(),
+        # U9 evidence fusion: ordering and the lead / disagreement thresholds (decision §3).
+        "fusion": _fusion_settings(),
         # True when server-side voice (POST /speech/*) is configured (U6).
         "speech_ready": speech_service.is_ready(get_settings())
         or bool(speech_service.local_languages(get_settings())),
@@ -111,3 +115,9 @@ def build_metadata() -> dict[str, Any]:
             },
         },
     }
+
+
+def _fusion_settings() -> dict[str, Any]:
+    from app.services.advisory_service import fusion_settings
+
+    return fusion_settings()
