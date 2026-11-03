@@ -201,8 +201,22 @@ def evidence_counts() -> dict[str, int]:
         "n_studies": int(df["Study_No_"].nunique()),
         "n_practices": int(df["CSA_practices"].nunique()),
         "n_belts": int(df["aez_belt"].dropna().nunique()),
+        "n_belts_total": _n_belts_in_system(),
         "n_crop_types": int(df["crop_type"].dropna().nunique()),
     }
+
+
+def _n_belts_in_system() -> int:
+    """Belts in Ethiopia's agro-ecological belt system (the raster's legend).
+
+    Read from ``aez_belt_lookup.csv`` — the same lookup the engine uses to name a
+    pin's belt — so the figure has a source. ``n_belts`` above counts only the
+    belts that carry field observations; this is the whole system (15).
+    """
+    import pandas as pd
+
+    lookup = pd.read_csv(_BACKEND_ROOT / "aez_belt_lookup.csv")
+    return int(lookup["Agro_zone"].dropna().nunique())
 
 
 def _assert_recommendations_in_family(result: dict[str, Any], practice_family: str) -> None:

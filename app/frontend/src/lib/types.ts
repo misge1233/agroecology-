@@ -388,6 +388,8 @@ export interface EvidenceCounts {
   n_studies: number;
   n_practices: number;
   n_belts: number;
+  /** Belts in the agro-ecological belt system (15), not only those with observations. */
+  n_belts_total?: number;
   n_crop_types: number;
 }
 

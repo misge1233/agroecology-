@@ -359,6 +359,7 @@ def test_metadata_evidence_counts_and_languages(client):
     assert 0 < ev["n_studies"] < ev["n_observations"]
     assert ev["n_practices"] >= 50
     assert 1 <= ev["n_belts"] <= 12
+    assert ev["n_belts_total"] == 15 and ev["n_belts_total"] >= ev["n_belts"]
     assert ev["n_crop_types"] > 10
     # Counts only — the trust strip must never carry an effect size.
     assert not any(k.startswith(("pct", "effect", "ratio")) for k in ev)

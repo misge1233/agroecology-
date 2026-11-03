@@ -306,6 +306,7 @@
     "n_studies": 337,
     "n_practices": 100,
     "n_belts": 12,
+    "n_belts_total": 15,
     "n_crop_types": 80
   },
   "advisory": {

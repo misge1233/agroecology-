@@ -19,8 +19,11 @@ export function TrustStrip() {
     ? [
         { key: "observations", value: meta.evidence?.n_observations },
         { key: "studies", value: meta.evidence?.n_studies },
-        { key: "practices", value: meta.evidence?.n_practices },
-        { key: "belts", value: meta.evidence?.n_belts },
+        // Shown as "100+": the dataset holds 100 distinct practice labels, and
+        // documented practices from guidance and records come on top of them.
+        { key: "practices", value: meta.evidence?.n_practices, suffix: "+" },
+        // The whole belt system (15), not only the belts with observations.
+        { key: "belts", value: meta.evidence?.n_belts_total ?? meta.evidence?.n_belts },
       ].filter((f) => typeof f.value === "number")
     : [];
 
@@ -44,7 +47,10 @@ export function TrustStrip() {
             <dl className="grid grid-cols-2 gap-y-6 md:grid-cols-4 md:divide-x md:divide-border">
               {figures.map((f) => (
                 <div key={f.key} className="flex flex-col items-center text-center md:px-4">
-                  <dd className="text-3xl font-semibold tabular text-primary sm:text-4xl">{fmt(f.value as number)}</dd>
+                  <dd className="text-3xl font-semibold tabular text-primary sm:text-4xl">
+                    {fmt(f.value as number)}
+                    {"suffix" in f && f.suffix ? f.suffix : ""}
+                  </dd>
                   <dt className="mt-1.5 text-sm text-muted">{t(f.key)}</dt>
                 </div>
               ))}

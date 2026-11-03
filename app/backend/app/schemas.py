@@ -373,6 +373,9 @@ class EvidenceCounts(BaseModel):
     n_studies: int
     n_practices: int
     n_belts: int
+    #: belts in the agro-ecological belt system (from the AEZ lookup), not only
+    #: those with observations — the figure the home page shows.
+    n_belts_total: int
     n_crop_types: int
 
 
