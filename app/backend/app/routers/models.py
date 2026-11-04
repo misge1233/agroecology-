@@ -28,7 +28,7 @@ def models():
     return [
         ModelListItem(
             key="csa_agroecology",
-            label="AgroEcoAdvisor evidence model (Ethiopia)",
+            label="AE+ Transform evidence model (Ethiopia)",
             description=(
                 "Pooled RandomForest predicting the with/without response ratio of "
                 "agroecological practices (including CSA) from a map location "

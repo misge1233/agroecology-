@@ -1,7 +1,7 @@
 {
   "common": {
-    "appName": "AgroEcoAdvisor",
-    "tagline": "Furmaata Agroecology+ AI irratti hundaa'an",
+    "appName": "AE+ Transform",
+    "tagline": "Injinii jijjiirama agro-ekoloojii AI irratti hundaa'e",
     "loading": "Fe'aa jira…",
     "retry": "Irra deebi'ii yaali",
     "close": "Cufi",
@@ -43,7 +43,7 @@
     "licence": "Hayyama fi daataa",
     "explore": "Daawwadhu",
     "resources": "Qabeenyota",
-    "rights": "© {year} AgroEcoAdvisor · Alliance of Bioversity International and CIAT",
+    "rights": "© {year} AE+ Transform · Alliance of Bioversity International and CIAT",
     "contact": "Quunnamtii",
     "cite": "Akkamitti wabeeffamuu danda'a"
   },
@@ -56,9 +56,8 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Ragaa dirree · Haala jiyoo-ispaashaalii · Sadarkeessuu iftoomina qabu",
-      "title": "Gorsa gochaa qonnaan bultoota Itoophiyaatiif, ragaa dirreetiin sadarkeeffame.",
-      "subtitle": "Mallattoo kaa'aa, rakkoo fi kaayyoo himaa. AgroEcoAdvisor gochaalee agro-ekoloojii bu'aa isaanii haalawwan akka keessanii keessatti safarameen sadarkeessa, qorannoowwan tokkoon tokkoon isaanii duuba jiranis ni agarsiisa.",
+      "title": "AE+ Transform · Injinii jijjiirama agro-ekoloojii AI irratti hundaa'e",
+      "subtitle": "Waltajjii hubannoo murtii daataa irratti hundaa'e kan rakkoolee qonnaa fi naannoo lafaa adda baasu, kalaqa agro-ekoloojii haala naannootiif mijatu filatu, akkasumas raawwii baayoo-fiizikaalaa, danda'amummaa dinagdee, fedhii humna namaa, daangaa hojiirra oolmaa, dandamannaa yeroo dheeraa fi wal-jijjiirraa isaanii madaaluudhaan karaalee jijjiiramaa cimaa qopheessu.",
       "ctaAdvisor": "Gorsa argadhu",
       "ctaChat": "Gorsaa gaafadhu"
     },
@@ -333,7 +332,7 @@
         "sources": "Maddoota",
         "evidencePending": "Osoo hin maxxanfamin dura bal'inni ragaa hin fe'amne; isaan dabaluuf gocha irratti \"Ragaa\" bani ergasii irra deebi'ii maxxansi.",
         "preparing": "Ragaa maxxansaaf qopheessaa jira…",
-        "footer": "AgroEcoAdvisor (Alliance of Bioversity International fi CIAT) irraa maxxanfame. Ragaadhaan sadarkeeffame malee raaga miti: gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbantaawwan tilmaama moodeelaa amantaa ibsameen."
+        "footer": "AE+ Transform (Alliance of Bioversity International fi CIAT) irraa maxxanfame. Ragaadhaan sadarkeeffame malee raaga miti: gochaaleen bu'aa yaaliiwwan dirree cimdii keessatti eegamuun tartiibeffaman; dhibbantaawwan tilmaama moodeelaa amantaa ibsameen."
       },
       "mode": {
         "explain": {
@@ -422,7 +421,7 @@
     "datasetStudy": "Qorannoo kuusaa daataa #{n}"
   },
   "chat": {
-    "eyebrow": "Gorsaa gochaa Agro-ekoloojii+",
+    "eyebrow": "Gorsaa gochaalee AE+ Transform",
     "title": "Haala qonnaa ibsaa.",
     "titleLine2": "Gocha caalaa walsimu fudhadhaa.",
     "intro": "Qonna afaan salphaadhaan ibsaa; maqaa bakkaa ykn mallattoo kaartaa, rakkoo fi kaayyoo. Gochaaleen godinaaf ragaa dirree irraa sadarkeeffamu malee hin uumaman.",
@@ -530,11 +529,11 @@
     "copied": "Garagalfameera"
   },
   "about": {
-    "title": "Waa'ee AgroEcoAdvisor",
+    "title": "Waa'ee AE+ Transform",
     "lead": "Gorsaa ragaa irratti hundaa'e kan gochaalee agro-ekoloojii bakka murtaa'aa Itoophiyaa keessaatiif sadarkeessu fi qorannoowwan dirree gorsa hunda duuba jiran agarsiisu.",
     "what": {
       "title": "Maal akka ta'e",
-      "body": "AgroEcoAdvisor haala agro-ikoloojii mallattoo kaartaa jala jiru (rooba, ho'a, ol-ka'iinsa, gaarummaa lafaa, biyyee fi yeroo guddinaa sadarkaalee jiyoospaashaalaa 250 m irraa) dubbisa. Moodela daawwannaawwan dirree wal-qabsiifaman kumaatama qorannoowwan Itoophiyaa irraa irratti leenji'een gochaalee tartiibessa, tokkoon tokkoo isaanii bu'aa qorannoowwan maxxanfaman naannoowwan walfakkaatan keessatti safarame waliin wal-bira qaba. Sadarkaan barbaachaa qorannoowwan sana irraa kutaalee fudhachuun gorsa hunda ibsa."
+      "body": "AE+ Transform haala agro-ikoloojii mallattoo kaartaa jala jiru (rooba, ho'a, ol-ka'iinsa, gaarummaa lafaa, biyyee fi yeroo guddinaa sadarkaalee jiyoospaashaalaa 250 m irraa) dubbisa. Moodela daawwannaawwan dirree wal-qabsiifaman kumaatama qorannoowwan Itoophiyaa irraa irratti leenji'een gochaalee tartiibessa, tokkoon tokkoo isaanii bu'aa qorannoowwan maxxanfaman naannoowwan walfakkaatan keessatti safarame waliin wal-bira qaba. Sadarkaan barbaachaa qorannoowwan sana irraa kutaalee fudhachuun gorsa hunda ibsa."
     },
     "confidence": {
       "title": "Amantaa akkamitti dubbisuu",
@@ -559,7 +558,7 @@
     "cta": "Gorsaa bani",
     "contact": {
       "title": "Nu quunnamaa",
-      "body": "Gaaffii, yaada ykn yaada hojii waliinii qabduu? Garee AgroEcoAdvisor tiif barreessaa; deebii isiniif ni kennina.",
+      "body": "Gaaffii, yaada ykn yaada hojii waliinii qabduu? Garee AE+ Transform tiif barreessaa; deebii isiniif ni kennina.",
       "cta": "Imeelii ergaa"
     },
     "decides": {
@@ -590,11 +589,11 @@
       },
       "privacy": {
         "title": "Sagalee fi dhuunfaa",
-        "body": "Waraabbiiwwan yaadannoo keessatti gara barreeffamaatti jijjiiramu malee hin kuufaman; guddinni isaanii qofti galmaa'a. Sagaleen Amaariffaa fi Afaan Oromoo sarvarii AgroEcoAdvisor irratti hojjeta. Sagaleen sarvarii yoo hin argamne, tajaajilli sagalee barbaadduu keessanii fayyadama; innis sagalee gara dhiyeessaa barbaadduutti erguu danda'a."
+        "body": "Waraabbiiwwan yaadannoo keessatti gara barreeffamaatti jijjiiramu malee hin kuufaman; guddinni isaanii qofti galmaa'a. Sagaleen Amaariffaa fi Afaan Oromoo sarvarii AE+ Transform irratti hojjeta. Sagaleen sarvarii yoo hin argamne, tajaajilli sagalee barbaadduu keessanii fayyadama; innis sagalee gara dhiyeessaa barbaadduutti erguu danda'a."
       },
       "cite": {
         "title": "Akkamitti wabeeffamuu danda'a",
-        "body": "Alliance of Bioversity International and CIAT ({year}). AgroEcoAdvisor: AI-Powered Agroecology+ Solutions, version {version}."
+        "body": "Alliance of Bioversity International and CIAT ({year}). AE+ Transform: An AI-powered agroecological transformation engine, version {version}."
       },
       "version": "Gosa {version}"
     }

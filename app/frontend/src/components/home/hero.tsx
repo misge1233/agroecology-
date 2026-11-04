@@ -40,9 +40,8 @@ export function HomeHero() {
 
       <div className="container-page flex min-h-[32rem] flex-col justify-center pb-28 pt-16 sm:min-h-[36rem] lg:min-h-[40rem]">
         <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.1em] text-forest-200">{t("eyebrow")}</p>
-          <h1 className="mt-4 text-balance text-4xl font-semibold text-white sm:text-5xl">{t("title")}</h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85">{t("subtitle")}</p>
+          <h1 className="text-balance text-4xl font-semibold text-white sm:text-5xl">{t("title")}</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/85">{t("subtitle")}</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Button size="xl" variant="inverse" asChild>
               <Link href="/advisor">

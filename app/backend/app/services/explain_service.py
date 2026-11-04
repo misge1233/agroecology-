@@ -67,7 +67,7 @@ _NUM_RE = re.compile(r"\d+(?:\.\d+)?")
 _CITE_MARKER_RE = re.compile(r"\[[GW]?\d+[a-z]?\]")
 
 EXPLAIN_SYSTEM_PROMPT = (
-    "You are the evidence-explanation layer of AgroEcoAdvisor, an evidence-fusion "
+    "You are the evidence-explanation layer of AE+ Transform, an evidence-fusion "
     "advisor for agroecological practices in Ethiopia. You are given (1) a "
     "recommendation JSON from a field-trial machine-learning model, (2) a FUSED "
     "EVIDENCE block that states, for each practice, the model estimate for this "

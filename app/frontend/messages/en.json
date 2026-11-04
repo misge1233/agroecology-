@@ -1,7 +1,7 @@
 {
   "common": {
-    "appName": "AgroEcoAdvisor",
-    "tagline": "AI-Powered Agroecology+ Solutions",
+    "appName": "AE+ Transform",
+    "tagline": "An AI-powered agroecological transformation engine",
     "loading": "Loading…",
     "retry": "Try again",
     "close": "Close",
@@ -43,7 +43,7 @@
     "licence": "Licence and data",
     "explore": "Explore",
     "resources": "Resources",
-    "rights": "© {year} AgroEcoAdvisor · Alliance of Bioversity International and CIAT",
+    "rights": "© {year} AE+ Transform · Alliance of Bioversity International and CIAT",
     "contact": "Contact",
     "cite": "How to cite"
   },
@@ -56,9 +56,8 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Field evidence · Geospatial context · Transparent ranking",
-      "title": "Practice advice for Ethiopian farms, ranked by field evidence.",
-      "subtitle": "Drop a pin, name the challenge and the goal. AgroEcoAdvisor ranks agroecological practices by their measured effect in contexts like yours and shows the studies behind each one.",
+      "title": "AE+ Transform · An AI-powered agroecological transformation engine",
+      "subtitle": "A data-driven decision intelligence platform that diagnoses farm and landscape challenges, identifies context-specific agroecological innovations, and evaluates their biophysical performance, economic feasibility, labour requirements, implementation constraints, long-term resilience and trade-offs to design robust transformation pathways.",
       "ctaAdvisor": "Get a recommendation",
       "ctaChat": "Ask the advisor"
     },
@@ -333,7 +332,7 @@
         "sources": "Sources",
         "evidencePending": "Evidence details were not loaded before printing; open \"Evidence\" on a practice and print again to include them.",
         "preparing": "Preparing the evidence for printing…",
-        "footer": "Printed from AgroEcoAdvisor (Alliance of Bioversity International and CIAT). Evidence-ranked, not a forecast: practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence."
+        "footer": "Printed from AE+ Transform (Alliance of Bioversity International and CIAT). Evidence-ranked, not a forecast: practices are ordered by their expected effect in paired field trials; percentages are model estimates with stated confidence."
       },
       "mode": {
         "explain": {
@@ -422,7 +421,7 @@
     "datasetStudy": "Dataset study #{n}"
   },
   "chat": {
-    "eyebrow": "Agroecology+ practice advisor",
+    "eyebrow": "AE+ Transform practice advisor",
     "title": "Describe the farm context.",
     "titleLine2": "Receive the best-fit practice.",
     "intro": "Describe the farm in plain language: a place name or map pin, the challenge and the goal. Practices are ranked from field evidence for the zone, never invented.",
@@ -530,11 +529,11 @@
     "copied": "Copied"
   },
   "about": {
-    "title": "About AgroEcoAdvisor",
+    "title": "About AE+ Transform",
     "lead": "An evidence-grounded advisor that ranks agroecological practices for a specific place in Ethiopia and shows the field studies behind every recommendation.",
     "what": {
       "title": "What it is",
-      "body": "AgroEcoAdvisor reads the agro-ecological context under a map pin (rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack). It ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials, and checks each one against the effects measured in published studies from similar areas. The retrieval layer then explains each recommendation with passages from those studies."
+      "body": "AE+ Transform reads the agro-ecological context under a map pin (rainfall, temperature, altitude, slope, soil and growing period from a 250 m geospatial stack). It ranks practices with a model trained on thousands of paired with/without field observations from Ethiopian trials, and checks each one against the effects measured in published studies from similar areas. The retrieval layer then explains each recommendation with passages from those studies."
     },
     "confidence": {
       "title": "How to read confidence",
@@ -559,7 +558,7 @@
     "cta": "Open the Advisor",
     "contact": {
       "title": "Contact us",
-      "body": "Questions, feedback or ideas for collaboration? Write to the team behind AgroEcoAdvisor and we will get back to you.",
+      "body": "Questions, feedback or ideas for collaboration? Write to the team behind AE+ Transform and we will get back to you.",
       "cta": "Send an email"
     },
     "decides": {
@@ -590,11 +589,11 @@
       },
       "privacy": {
         "title": "Voice and privacy",
-        "body": "Recordings are transcribed in memory and are not stored; only their size is logged. Amharic and Afaan Oromoo voice runs on the AgroEcoAdvisor server. Where server speech is not available, your browser's speech service is used, and it may send audio to the browser vendor."
+        "body": "Recordings are transcribed in memory and are not stored; only their size is logged. Amharic and Afaan Oromoo voice runs on the AE+ Transform server. Where server speech is not available, your browser's speech service is used, and it may send audio to the browser vendor."
       },
       "cite": {
         "title": "How to cite",
-        "body": "Alliance of Bioversity International and CIAT ({year}). AgroEcoAdvisor: AI-Powered Agroecology+ Solutions, version {version}."
+        "body": "Alliance of Bioversity International and CIAT ({year}). AE+ Transform: An AI-powered agroecological transformation engine, version {version}."
       },
       "version": "Version {version}"
     }

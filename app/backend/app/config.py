@@ -23,7 +23,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "AgroEcoAdvisor — AI-Powered Agroecology+ Solutions"
+    app_name: str = "AE+ Transform — An AI-powered agroecological transformation engine"
     debug: bool = False
 
     # Root that holds the canonical engine + ML artifacts.
