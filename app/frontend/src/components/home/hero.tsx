@@ -14,6 +14,7 @@ import heroImage from "../../../public/hero/agroecology-landscape.webp";
 
 export function HomeHero() {
   const t = useTranslations("home.hero");
+  const tc = useTranslations("common");
   return (
     <section className="relative isolate overflow-hidden bg-forest-950">
       {/* Decorative: the headline carries the meaning. */}
@@ -40,7 +41,15 @@ export function HomeHero() {
 
       <div className="container-page flex min-h-[32rem] flex-col justify-center pb-28 pt-16 sm:min-h-[36rem] lg:min-h-[40rem]">
         <div className="max-w-2xl">
-          <h1 className="text-balance text-4xl font-semibold text-white sm:text-5xl">{t("title")}</h1>
+          <h1 className="text-balance text-white">
+            {/* Brand in the forest green, tagline lighter: two lines, two roles. */}
+            {/* The rule spans the full brand: harvest gold fading into the brand green. */}
+            <span className="inline-block">
+              <span className="block text-4xl font-semibold text-forest-200 sm:text-5xl">{tc("appName")}</span>
+              <span aria-hidden className="mt-2.5 block h-1 w-full rounded-full bg-gradient-to-r from-[#E0A43A] to-forest-200" />
+            </span>
+            <span className="mt-5 block text-3xl font-normal text-white/95 sm:text-4xl">{t("title")}</span>
+          </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/85">{t("subtitle")}</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Button size="xl" variant="inverse" asChild>

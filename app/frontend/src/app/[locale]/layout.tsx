@@ -61,7 +61,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "home.hero" });
   const tc = await getTranslations({ locale, namespace: "common" });
-  const fullTitle = `${tc("appName")} — ${tc("tagline")}`;
+  const fullTitle = `${tc("appName")} · ${tc("tagline")}`;
   return {
     title: { default: fullTitle, template: `%s · ${tc("appName")}` },
     description: t("subtitle"),
