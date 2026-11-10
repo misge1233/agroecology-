@@ -1,29 +1,39 @@
 practice_id_a,practice_id_b,relation,reason,accepted,reviewer,date
-DEFICIT_IRRIGATION_CSA,DEFICIT_IRRIGATION_ERA,same_practice,labels differ only by case across sources; same component in the component layer,,,2026-11-10
-BENCH_TERRACE,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-HILLSIDE_TERRACE,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-HILLSIDE_TERRACE_WITH_TRENCH,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-EYE_BROW_BASIN,IN_SITU_WATER_HARVESTING,narrower_than,catalogue technology shares the component set ['In-situ Water Harvesting'] with the frozen category,,,2026-11-10
-LEVEL_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-GRADED_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 SOIL_BUND_VEGETATED_WITH_FORAGE_GRASS,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-STONE_FACED_GRADED_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 STONE_FACED_SOIL_BUND_WITH_FORAGE_TREES,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-LEVEL_FANYA_JUU,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 FANYA_JUU_VEGETATED_WITH_FORAGE_GRASS_TREES,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 FANYA_JUU_WITH_VETIVAR_GRASS,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 DENSHO_GRASS_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-SOIL_FACED_DEEP_TRENCH_BUNDS,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-STONE_FACED_LEVEL_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-STONE_FACED_LEVEL_SOIL_BUND_WITH_TRENCH,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 GRADED_LEVEL_STONE_FACED_SOIL_BUND_STABILIZED_WITH_GRASSES,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 GRADED_LEVEL_STONE_FACED_SOIL_BUND_STABILIZED_WITH_TREES,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-MICRO_BASIN,IN_SITU_WATER_HARVESTING,narrower_than,catalogue technology shares the component set ['In-situ Water Harvesting'] with the frozen category,,,2026-11-10
-SANDBAG_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-LOOSE_ROCK_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 LIVE_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-STONE_WALL_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-BRUSH_WOODEN_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
-GABION_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 BIOLOGICAL_GULLY_REHABILITATION,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
 GULLY_WALL_RE_SHAPING_AND_REVEGETATION,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,,,2026-11-10
+DEFICIT_IRRIGATION_CSA,DEFICIT_IRRIGATION_ERA,same_practice,labels differ only by case across sources; same component in the component layer,yes,Misganu T.,2026-11-10
+BENCH_TERRACE,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+HILLSIDE_TERRACE,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+HILLSIDE_TERRACE_WITH_TRENCH,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+EYE_BROW_BASIN,IN_SITU_WATER_HARVESTING,narrower_than,catalogue technology shares the component set ['In-situ Water Harvesting'] with the frozen category,yes,Misganu T.,2026-11-10
+LEVEL_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+GRADED_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+SOIL_BUND_VEGETATED_WITH_FORAGE_GRASS,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+STONE_FACED_GRADED_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+STONE_FACED_SOIL_BUND_WITH_FORAGE_TREES,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+LEVEL_FANYA_JUU,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+FANYA_JUU_VEGETATED_WITH_FORAGE_GRASS_TREES,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+FANYA_JUU_WITH_VETIVAR_GRASS,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+DENSHO_GRASS_BUND,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+SOIL_FACED_DEEP_TRENCH_BUNDS,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+STONE_FACED_LEVEL_SOIL_BUND,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+STONE_FACED_LEVEL_SOIL_BUND_WITH_TRENCH,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+GRADED_LEVEL_STONE_FACED_SOIL_BUND_STABILIZED_WITH_GRASSES,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+GRADED_LEVEL_STONE_FACED_SOIL_BUND_STABILIZED_WITH_TREES,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+MICRO_BASIN,IN_SITU_WATER_HARVESTING,narrower_than,catalogue technology shares the component set ['In-situ Water Harvesting'] with the frozen category,yes,Misganu T.,2026-11-10
+SANDBAG_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+LOOSE_ROCK_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+LIVE_CHECK_DAM,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+STONE_WALL_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+BRUSH_WOODEN_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+GABION_CHECK_DAM,PHYSICAL_SWC_MEASURES,narrower_than,catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category,yes,Misganu T.,2026-11-10
+BIOLOGICAL_GULLY_REHABILITATION,BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: biological measure, parent corrected to BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10
+GULLY_WALL_RE_SHAPING_AND_REVEGETATION,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,narrower_than,"catalogue technology shares the component set ['Physical SWC Measures'] with the frozen category | reviewer: vegetated or live structure, parent corrected to PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES",yes,Misganu T.,2026-11-10

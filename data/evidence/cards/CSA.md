@@ -38,7 +38,7 @@
 | `site_name` | 90.9% |
 | `practice_id` | 100.0% |
 | `outcome_id` | 100.0% |
-| `direction` | 61.3% |
+| `direction` | 90.3% |
 | `crop` | 89.1% |
 | `crop_group` | 73.9% |
 | `unit` | 99.5% |
@@ -73,7 +73,7 @@
 |---|---:|---:|
 | `practice_id` | 3,344 | 100.0% |
 | `outcome_id` | 3,344 | 100.0% |
-| `direction` (reviewed) | 2,051 | 61.3% |
+| `direction` (reviewed) | 3,019 | 90.3% |
 
 ## Reconciliation with the frozen dataset (brief B2)
 

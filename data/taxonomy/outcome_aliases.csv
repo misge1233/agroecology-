@@ -1,4 +1,168 @@
 alias,source,outcome_id,method,confidence,accepted,reviewer,date,notes
+Fat content,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Plant height,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total fruit number per plant (Main Effect),HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+N₂ fixed (2013),HAB,BIOLOGICAL_NITROGEN_FIXATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Herbivore abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total N uptake,HAB,NUTRIENT_UPTAKE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Net energy,HAB,ENERGY_BALANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Spider abundance,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil Quality Index,HAB,SOIL_HEALTH_INDEX,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Overall enzyme activity,HAB,SOIL_ENZYME_ACTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carbon balance,HAB,CARBON_BALANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Timber tree abundance,HAB,TREE_DENSITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Decomposition rate (k),HAB,LITTER_DECOMPOSITION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Mycorrhizal colonization,HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total energy output,HAB,ENERGY_BALANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Protein content,HAB,CRUDE_PROTEIN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Financial resilience,HAB,FINANCIAL_RESILIENCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Dietary fiber,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Ash content,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carbohydrate content,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Fresh marketable weight,HAB,YIELD,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Shoot nitrogen accumulation,HAB,N_CONTENT_SHOOT,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Subsurface tile-drainage discharge (1999),HAB,DISCHARGE,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil inorganic nitrogen (0–30 cm depth),HAB,SOIL_AVAILABLE_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Average annual net economic return,HAB,GROSS_MARGIN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Net financial benefit per hectare,HAB,GROSS_MARGIN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil inorganic nitrogen content (Tillering stage),HAB,SOIL_AVAILABLE_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Exchangeable K,HAB,SOIL_POTASSIUM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Oil content,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Chlorophyll content,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Daily averaged heterotrophic respiration,HAB,SOIL_RESPIRATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Phosphatase activity,HAB,SOIL_ENZYME_ACTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Understory cover,HAB,VEGETATION_COVER,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Phytophagous insect frequency,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Parasitoid frequency,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil inorganic N stock,HAB,SOIL_AVAILABLE_NITROGEN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Yeast assimilable nitrogen (YAN),HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Urease activity,HAB,SOIL_ENZYME_ACTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Microbial load,HAB,SOIL_MICROBIAL_BIOMASS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Production efficiency,HAB,TOTAL_FACTOR_PRODUCTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+MAOM nitrogen stock,HAB,SOIL_TOTAL_NITROGEN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+POM nitrogen stock,HAB,SOIL_TOTAL_NITROGEN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Nitrogen derived from atmosphere (%Ndfa),HAB,BIOLOGICAL_NITROGEN_FIXATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Nitrogen transfer from peanut to maize (%NTFL),HAB,BIOLOGICAL_NITROGEN_FIXATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Tecia solanivora abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Whole soil N,HAB,SOIL_TOTAL_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+N in medium fraction,HAB,SOIL_TOTAL_NITROGEN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Annual soil respiration C loss,HAB,SOIL_RESPIRATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Economic return,HAB,GROSS_RETURN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Diameter mean annual increment,HAB,TREE_HEIGHT,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Litter decomposition coefficient (k),HAB,LITTER_DECOMPOSITION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total P uptake,HAB,P_UPTAKE,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total K uptake,HAB,NUTRIENT_UPTAKE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Seed nitrogen concentration,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Commercial grade score,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Filled seed proportion,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Flow through <0.5 mm pores,HAB,INFILTRATION_RATE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil respiration rate,HAB,SOIL_RESPIRATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Sum of available nutrients,HAB,SOIL_AVAILABLE_NUTRIENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil permeability,HAB,INFILTRATION_RATE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+VEM feed value,HAB,FEED_DIGESTIBILITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Starch content,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carabid functional divergence,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carabid functional dispersion,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Herbivorous carabids,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Granivorous carabids,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hunting spiders,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Semi-net margin,HAB,GROSS_MARGIN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Seed weight per plant,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Thousand-seed weight,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of flowers per plant,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of seeds per plant,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Market value per plant,HAB,GROSS_RETURN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carbon Pool Index,HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total phosphorus,HAB,SOIL_TOTAL_PHOSPHORUS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Codling moth abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil nitrogen stock (0–0.02 m),HAB,SOIL_TOTAL_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil organic nitrogen (0–20 cm),HAB,SOIL_TOTAL_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil organic nitrogen (0–60 cm),HAB,SOIL_TOTAL_NITROGEN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Glucosidase activity,HAB,SOIL_ENZYME_ACTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Kernel weight,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Nut weight,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Flower visitor abundance,HAB,POLLINATOR_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Bee abundance,HAB,POLLINATOR_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Percentage flowers setting fruit,HAB,POLLINATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Pod length,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Pod weight,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Pod diameter,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carbon output,HAB,CARBON_DIOXIDE_EMISSIONS,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Sapling density,HAB,TREE_REGENERATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Water extractable organic nitrogen (WEON),HAB,SOIL_AVAILABLE_NITROGEN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Calcium,HAB,SOIL_FERTILITY_INDICATOR_CA,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Sulfur,HAB,SOIL_SULFUR,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Haney soil health score,HAB,SOIL_HEALTH_INDEX,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Almond magnesium concentration,HAB,PRODUCE_QUALITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Humic + fulvic acid carbon (0–5 cm),HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Humification rate (0–5 cm),HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of bunches,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Pruning weight,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Unit soil transport rate,HAB,SOIL_LOSS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Employment generation,HAB,EMPLOYMENT,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Net energy gain,HAB,ENERGY_BALANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Net carbon gain,HAB,CARBON_BALANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Leaf area,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil conductivity,HAB,SOIL_SALINITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total chlorophyll,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Beta-galactosidase activity,HAB,SOIL_ENZYME_ACTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Lamb's quarters density,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Field bindweed density,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+EBIT,HAB,GROSS_MARGIN,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Adult Ceratitis fruit fly abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Gall fly density,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Nodulation,HAB,BIOLOGICAL_NITROGEN_FIXATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil nitrogen stock,HAB,SOIL_TOTAL_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil mulch cover,HAB,VEGETATION_COVER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Planthopper abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Rice bug abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Snail abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Average NH₃ concentration,HAB,AMMONIA_EMISSIONS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Groundwater NO₃ concentration,HAB,NUTRIENT_LEACHING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+ActiveC size,HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+PyroC size,HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+POXC proportion,HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+StableC proportion,HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Active carbon,HAB,SOIL_ORGANIC_CARBON,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Food production,HAB,YIELD,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cabbage head fresh mass,HAB,YIELD,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Beet root fresh mass,HAB,YIELD,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Leaf area index,HAB,LAI,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Larval feeding preference,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Lentil lodging,HAB,LODGING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Pruning dry weight,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carbon in prunings,HAB,ABOVEGROUND_CARBON_BIOMASS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Carbon in fruits,HAB,ABOVEGROUND_CARBON_BIOMASS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total carbon sequestered in olive grove system,HAB,SOIL_CARBON_STOCKS,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+AM root colonization (all crops),HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+AM root colonization (vetch–rye),HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+AM root colonization (winter wheat),HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+AM root colonization (grass–clover),HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Mycorrhizal infection potential (indigenous AM fungi only),HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Mycorrhizal infection potential (+ inoculum),HAB,MYCORRHIZAL_COLONIZATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Herbivory rate,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Canopy height,HAB,PLANT_GROWTH,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Shade cover (wet season),HAB,VEGETATION_COVER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil calcium,HAB,SOIL_FERTILITY_INDICATOR_CA,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Fruit tree abundance,HAB,TREE_DENSITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of capsules per plant,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Exchangeable calcium,HAB,SOIL_FERTILITY_INDICATOR_CA,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Exchangeable magnesium,HAB,SOIL_FERTILITY_INDICATOR_MG,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total N content (0–5 cm),HAB,SOIL_TOTAL_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Organic C storage (0–5 cm),HAB,SOIL_CARBON_STOCKS,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Total N storage (0–5 cm),HAB,SOIL_TOTAL_NITROGEN,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of leaves,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of tillers,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Number of panicles,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+1000-grain weight,HAB,YIELD_COMPONENTS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+β-glucosidase activity,HAB,SOIL_ENZYME_ACTIVITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil phosphorus (P),HAB,AVAILABLE_PHOSPHORUS,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil stability class,HAB,SOIL_AGGREGATE_STABILITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Stabilisation factor (S),HAB,SOIL_AGGREGATE_STABILITY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Macrolophus presence,HAB,NATURAL_ENEMY_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Tuta absoluta abundance,HAB,PEST_ABUNDANCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Soil biological activity,HAB,SOIL_MICROBIAL_BIOMASS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Available soil P,HAB,AVAILABLE_PHOSPHORUS,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
 Aboveground Carbon Biomass,ERA,ABOVEGROUND_CARBON_BIOMASS,era_code,1.00,,,2026-11-10,
 Animal Survival,ERA,ANIMAL_SURVIVAL,era_code,1.00,,,2026-11-10,
 Beneficial Organisms,ERA,BENEFICIAL_ORGANISMS,era_code,1.00,,,2026-11-10,
@@ -150,7 +314,7 @@ relative dry matter yield respnse,CSA,BIOMASS_YIELD,keyword,0.80,,,2026-11-10,
 total sugar,CSA,TOTAL_SUGAR,seed_new,1.00,,,2026-11-10,
 av.k,CSA,SOIL_POTASSIUM,keyword,0.80,,,2026-11-10,
 total dry matter yield,CSA,BIOMASS_YIELD,keyword,0.80,,,2026-11-10,
-soil inflitration rate tration rates,CSA,SOIL_INFLITRATION_RATE_TRATION_RATES,seed_new,1.00,,,2026-11-10,
+soil inflitration rate tration rates,CSA,INFILTRATION_RATE,seed_new,1.00,,Misganu T.,2026-11-10,moved from SOIL_INFLITRATION_RATE_TRATION_RATES (Misganu T. 2026-11-10)
 sediment yield,CSA,SOIL_LOSS,keyword,0.80,,,2026-11-10,
 yield tuber,CSA,YIELD,keyword,0.80,,,2026-11-10,
 root yield,CSA,YIELD,keyword,0.80,,,2026-11-10,

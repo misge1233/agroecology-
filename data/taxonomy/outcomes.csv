@@ -1,5 +1,5 @@
 outcome_id,name_en,direction,unit_class,objective_group,legacy_indicator,status,notes
-TREE_HEIGHT,mean tree height differencxe,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed; renamed from MEAN_TREE_HEIGHT_DIFFERENCXE (E2)"
+TREE_HEIGHT,mean tree height differencxe,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; renamed from MEAN_TREE_HEIGHT_DIFFERENCXE (E2); accept by Misganu T. 2026-11-10"
 YIELD,Crop yield,1,yield,productivity,yield,frozen,legacy model indicator; direction from recommend.DIRECTION; ERA Outcode 101 (Crop Yield)
 BIOMASS_YIELD,Biomass yield,1,yield,productivity,biomass yield,frozen,legacy model indicator; direction from recommend.DIRECTION; ERA Outcode 101.1 (Biomass Yield)
 INCOME,Income (net return),1,money,economics,income,frozen,legacy model indicator; direction from recommend.DIRECTION; ERA Outcode 124 (Net Return)
@@ -7,125 +7,150 @@ WATER_USE_EFFICIENCY,Water use efficiency,1,rate,water,water use efficiency,froz
 SOM_CONTENT,Soil organic matter content,1,fraction,soil_health,SOM content,frozen,legacy model indicator; direction from recommend.DIRECTION; ERA Outcode 223 (Soil Organic Matter)
 SOIL_LOSS,Soil loss,-1,mass,water,soil loss,frozen,legacy model indicator; direction from recommend.DIRECTION; ERA Outcode 217 (Erosion)
 RUNOFF,Runoff,-1,other,water,runoff,frozen,legacy model indicator; direction from recommend.DIRECTION; ERA Outcode 218 (Runoff)
-ABOVEGROUND_CARBON_BIOMASS,Aboveground Carbon Biomass,1,mass,other,,seed,ERA Outcode 309; direction proposed
-ANIMAL_SURVIVAL,Animal Survival,1,fraction,livestock,,seed,ERA Outcode 236.1; direction proposed
-BENEFICIAL_ORGANISMS,Beneficial Organisms,1,count,resilience_biodiversity,,seed,ERA Outcode 268; direction proposed
-BENEFIT_COST_RATIO_GMVC,Benefit Cost Ratio (GMVC),1,index,economics,,seed,ERA Outcode 125.2; direction proposed
-BENEFIT_COST_RATIO_GRVC,Benefit Cost Ratio (GRVC),1,index,economics,,seed,ERA Outcode 125.1; direction proposed
-BENEFIT_COST_RATIO_NRTC,Benefit Cost Ratio (NRTC),1,index,economics,,seed,ERA Outcode 125.5; direction proposed
-BIODIVERSITY,Biodiversity,1,index,resilience_biodiversity,,seed,ERA Outcode 203; direction proposed
-CO2_EQUIVALENT_EMISSIONS,CO2 Equivalent Emissions,-1,mass,other,,seed,ERA Outcode 304; direction proposed
-CARBON_DIOXIDE_EMISSIONS,Carbon Dioxide Emissions,-1,mass,other,,seed,ERA Outcode 307; direction proposed
-CATION_EXCHANGE_CAPACITY,Cation Exchange Capacity,1,concentration,soil_health,,seed,ERA Outcode 228; direction proposed
-COOKING_TIME,Cooking Time,-1,other,other,,seed,ERA Outcode 321; direction proposed
-COOKSTOVE_EMISSIONS,Cookstove Emissions,-1,mass,other,,seed,ERA Outcode 324; direction proposed
-CROP_RESIDUE_YIELD,Crop Residue Yield,1,yield,productivity,,seed,ERA Outcode 102; direction proposed
-FEED_CONVERSION_RATIO_IN_OUT,Feed Conversion Ratio (In Out),-1,index,livestock,,seed,ERA Outcode 267.1; direction proposed
-FEED_CONVERSION_RATIO_OUT_IN,Feed Conversion Ratio (Out In),1,index,livestock,,seed,ERA Outcode 267; direction proposed
-FIXED_COST,Fixed Cost,-1,money,economics,,seed,ERA Outcode 151; direction proposed
-FUEL_SAVINGS,Fuel Savings,1,other,other,,seed,ERA Outcode 320; direction proposed
-FUEL_USE,Fuel Use,-1,other,other,,seed,ERA Outcode 323; direction proposed
-GROSS_MARGIN,Gross Margin,1,money,economics,,seed,ERA Outcode 124.1; direction proposed
-GROSS_RETURN,Gross Return,1,money,economics,,seed,ERA Outcode 120; direction proposed
-INFILTRATION_RATE,Infiltration Rate,1,rate,water,,seed,ERA Outcode 221; direction proposed
-LABOUR_COST,Labour Cost,-1,money,economics,,seed,ERA Outcode 152.1; direction proposed
-LABOUR_FEMALE,Labour Female,-1,other,economics,,seed,"ERA Outcode 239; direction proposed (labour input; -1 proposed (less labour better), review)"
-LABOUR_MALE,Labour Male,-1,other,economics,,seed,"ERA Outcode 240; direction proposed (labour input; -1 proposed (less labour better), review)"
-LABOUR_PERSON_HOURS,Labour Person Hours,-1,other,economics,,seed,ERA Outcode 132; direction proposed
-LAND_EQUIVALENT_RATIO,Land Equivalent Ratio,1,index,productivity,,seed,ERA Outcode 103; direction proposed
-MARGINAL_RATE_OF_RETURN,Marginal Rate of Return,1,index,economics,,seed,ERA Outcode 137.1; direction proposed
-MEAT_YIELD,Meat Yield,1,yield,livestock,,seed,ERA Outcode 119.1; direction proposed
-MILK_YIELD,Milk Yield,1,yield,livestock,,seed,ERA Outcode 119.2; direction proposed
-NITROGEN_APPARENT_EFFICIENCY_ANIMALS_FEED,Nitrogen (Apparent Efficiency Animals Feed),1,rate,livestock,,seed,ERA Outcode 238; direction proposed
-NITROGEN_AGRONOMIC_EFFICIENCY,Nitrogen Agronomic Efficiency,1,rate,other,,seed,ERA Outcode 257.1; direction proposed
-NITROGEN_FACTOR_PRODUCTIVITY,Nitrogen Factor Productivity,1,rate,other,,seed,ERA Outcode 257.2; direction proposed
-NITROGEN_USE_EFFICIENCY_ARE_AGB,Nitrogen Use Efficiency (ARE AGB),1,rate,other,,seed,ERA Outcode 233.2; direction proposed
-NITROGEN_USE_EFFICIENCY_ARE_PRODUCT,Nitrogen Use Efficiency (ARE Product),1,rate,other,,seed,ERA Outcode 233.1; direction proposed
-NITROGEN_USE_EFFICIENCY_ARE_UNSPECIFICED,Nitrogen Use Efficiency (ARE Unspecificed),1,rate,other,,seed,ERA Outcode 233; direction proposed
-PHOSPHORUS_AGRONOMIC_EFFICIENCY,Phosphorus Agronomic Efficiency,1,rate,other,,seed,ERA Outcode 258; direction proposed
-PHOSPHORUS_USE_EFFICIENCY_ARE_PRODUCT,Phosphorus Use Efficiency (ARE Product),1,rate,other,,seed,ERA Outcode 234.1; direction proposed
-PROTEIN_CONVERSION_RATIO_IN_OUT,Protein Conversion Ratio (In Out),-1,index,livestock,,seed,ERA Outcode 265.1; direction proposed
-PROTEIN_CONVERSION_RATIO_OUT_IN,Protein Conversion Ratio (Out In),1,index,livestock,,seed,ERA Outcode 265; direction proposed
-RETURN_TO_LABOUR,Return to Labour,1,money,economics,,seed,ERA Outcode 133; direction proposed
-SOIL_AVAILABLE_NITROGEN,Soil Available Nitrogen,1,concentration,soil_health,,seed,ERA Outcode 226.2; direction proposed
-SOIL_CARBON_STOCKS,Soil Carbon Stocks,1,mass,soil_health,,seed,ERA Outcode 308; direction proposed
-SOIL_MOISTURE,Soil Moisture,1,fraction,water,,seed,ERA Outcode 231; direction proposed
-SOIL_NITROGEN,Soil Nitrogen,1,concentration,soil_health,,seed,ERA Outcode 226; direction proposed
-SOIL_ORGANIC_CARBON,Soil Organic Carbon,1,concentration,soil_health,,seed,ERA Outcode 224; direction proposed
-SOIL_ORGANIC_CARBON_CHANGE,Soil Organic Carbon (Change),1,rate,soil_health,,seed,ERA Outcode 224.1; direction proposed
-SOIL_TOTAL_NITROGEN,Soil Total Nitrogen,1,concentration,soil_health,,seed,ERA Outcode 226.1; direction proposed
-TOTAL_COST,Total Cost,-1,money,economics,,seed,ERA Outcode 150; direction proposed
-TOTAL_FACTOR_PRODUCTIVITY,Total Factor Productivity,1,index,economics,,seed,ERA Outcode 257; direction proposed
-VARIABLE_COST,Variable Cost,-1,money,economics,,seed,ERA Outcode 152; direction proposed
-WATER_USE,Water Use,-1,other,water,,seed,"ERA Outcode 232.1; direction proposed (ambiguous in ERA (amount of water used); direction -1 proposed, review)"
-WEIGHT_GAIN,Weight Gain,1,rate,livestock,,seed,ERA Outcode 118; direction proposed
-RUNOFF_COEFFICIENT,Runoff coefficient,-1,fraction,water,,seed,keyword-rule target; direction proposed
-WATER_HOLDING_CAPACITY,Soil water holding capacity,1,fraction,water,,seed,keyword-rule target; direction proposed
-BULK_DENSITY,Soil bulk density,-1,concentration,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_COMPACTION,Soil compaction / penetration resistance,-1,other,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_AGGREGATE_STABILITY,Soil aggregate stability,1,fraction,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_POROSITY,Soil porosity,1,fraction,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_MICROBIAL_BIOMASS,Soil microbial biomass,1,concentration,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_FAUNA,Soil fauna abundance,1,count,resilience_biodiversity,,seed,keyword-rule target; direction proposed
-AVAILABLE_PHOSPHORUS,Soil available phosphorus,1,concentration,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_POTASSIUM,Soil potassium,1,concentration,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_PH,Soil pH (higher is better on acidic soils; context dependent),1,index,soil_health,,seed,keyword-rule target; direction proposed
-SOIL_ACIDITY,Soil exchangeable acidity,-1,concentration,soil_health,,seed,keyword-rule target; direction proposed
-NUTRIENT_LEACHING,Nutrient leaching / loss,-1,mass,water,,seed,keyword-rule target; direction proposed
-NUTRIENT_USE_EFFICIENCY,Nutrient use efficiency,1,rate,other,,seed,keyword-rule target; direction proposed
-GHG_EMISSIONS,Greenhouse gas emissions,-1,mass,other,,seed,keyword-rule target; direction proposed
-NET_PRESENT_VALUE,Net present value,1,money,economics,,seed,keyword-rule target; direction proposed
-BENEFIT_COST_RATIO,Benefit cost ratio,1,index,economics,,seed,keyword-rule target; direction proposed
-PRODUCTION_COST,Production cost,-1,money,economics,,seed,keyword-rule target; direction proposed
-LABOUR_INPUT,Labour input,-1,other,economics,,seed,keyword-rule target; direction proposed
-WEED_SUPPRESSION,Weed suppression,1,fraction,productivity,,seed,keyword-rule target; direction proposed
-WEED_PRESSURE,"Weed pressure (density, biomass, cover)",-1,count,productivity,,seed,keyword-rule target; direction proposed
-PEST_DAMAGE,Pest and disease damage,-1,fraction,productivity,,seed,keyword-rule target; direction proposed
-NATURAL_PEST_CONTROL,"Natural pest control (parasitism, predation)",1,fraction,resilience_biodiversity,,seed,keyword-rule target; direction proposed
-POLLINATION,"Pollination (visitation, seed or fruit set)",1,fraction,resilience_biodiversity,,seed,keyword-rule target; direction proposed
-VEGETATION_COVER,Vegetation cover,1,fraction,water,,seed,keyword-rule target; direction proposed
-FEED_DIGESTIBILITY,Feed digestibility / conversion,1,fraction,livestock,,seed,keyword-rule target; direction proposed
-SURVIVAL_RATE,Survival rate,1,fraction,resilience_biodiversity,,seed,keyword-rule target; direction proposed
-IRRIGATION_AMOUNT,irrigation amount,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SAND,sand %,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SILT,silt %,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-CLAY,clay%,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SOIL_TEXTURE,soil texture,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-PER_CAPITA_CALORIE,per capita calorie,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-DROUGHT_RESISTANT,drought resistant,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-EVAPOTRANSPIRATION,evapotranspiration,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-BULB_WEIGHT,bulb weight,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SOIL_COLOR,soil color,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SOIL_FERTILITY_INDICATOR_CACO3,soil fertility indicator_caco3,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-BASE_SATURATION,base saturation,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-WEIGHT_OF_STALK,weight of stalk,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-GROUND_WATER_LEVEL,ground water level,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-LAI,lai,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-N_CONTENT_SHOOT,n content shoot,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-N_CONTENT_ROOT,n content root,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-N_CONTENT_NODULE,n content nodule,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-P_CONTENT_SHOOT,p content shoot,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-P_CONTENT_ROOT,p content root,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-P_CONTENT_NODULE,p content nodule,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-DISCHARGE,discharge,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-MICROBIAL_PROTEIN,microbial protein,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-CRUDE_PROTEIN,crude protein,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-LIGNIN,lignin,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-DEGRADABILITY,degradability,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-TOTAL_SUGAR,total sugar,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SOIL_INFLITRATION_RATE_TRATION_RATES,soil inflitration rate tration rates,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-MAKATABILITY,makatability,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-OTHERS,others,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-COLLAR_DIAMETER,collar diameter,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-NA,na,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SOIL_FERTILITY_INDICATOR_CA,soil fertility indicator_ca,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SOIL_FERTILITY_INDICATOR_MG,soil fertility indicator_mg,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-BASEFLOW_INDEX,baseflow index,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-MALARIA_PREVALENCE,malaria prevalence,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-WEIGHT_SHOLDER_HEIGHT,weight:sholder height,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-DRAFT_OXEN_TIME,draft oxen time,-1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-SHOLDER_HEIGHT,sholder height,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-P_UPTAKE,p uptake,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-BLANK,(blank),1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-FERTILIZER_USE,fertilizer use,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
-WATERSHORTAGE,watershortage,1,other,other,,seed,"CSA indicator label with no rule match; new seed, direction proposed"
+ABOVEGROUND_CARBON_BIOMASS,Aboveground Carbon Biomass,1,mass,climate,,reviewed,ERA Outcode 309; direction proposed; accept by Misganu T. 2026-11-10
+ANIMAL_SURVIVAL,Animal Survival,1,fraction,livestock,,reviewed,ERA Outcode 236.1; direction proposed; accept by Misganu T. 2026-11-10
+BENEFICIAL_ORGANISMS,Beneficial Organisms,1,count,resilience_biodiversity,,reviewed,ERA Outcode 268; direction proposed; accept by Misganu T. 2026-11-10
+BENEFIT_COST_RATIO_GMVC,Benefit Cost Ratio (GMVC),1,index,economics,,reviewed,ERA Outcode 125.2; direction proposed; accept by Misganu T. 2026-11-10
+BENEFIT_COST_RATIO_GRVC,Benefit Cost Ratio (GRVC),1,index,economics,,reviewed,ERA Outcode 125.1; direction proposed; accept by Misganu T. 2026-11-10
+BENEFIT_COST_RATIO_NRTC,Benefit Cost Ratio (NRTC),1,index,economics,,reviewed,ERA Outcode 125.5; direction proposed; accept by Misganu T. 2026-11-10
+BIODIVERSITY,Biodiversity,1,index,resilience_biodiversity,,reviewed,ERA Outcode 203; direction proposed; accept by Misganu T. 2026-11-10
+CO2_EQUIVALENT_EMISSIONS,CO2 Equivalent Emissions,-1,mass,climate,,reviewed,ERA Outcode 304; direction proposed; accept by Misganu T. 2026-11-10
+CARBON_DIOXIDE_EMISSIONS,Carbon Dioxide Emissions,-1,mass,climate,,reviewed,ERA Outcode 307; direction proposed; accept by Misganu T. 2026-11-10
+CATION_EXCHANGE_CAPACITY,Cation Exchange Capacity,1,concentration,soil_health,,reviewed,ERA Outcode 228; direction proposed; accept by Misganu T. 2026-11-10
+COOKING_TIME,Cooking Time,-1,other,other,,reviewed,ERA Outcode 321; direction proposed; accept by Misganu T. 2026-11-10
+COOKSTOVE_EMISSIONS,Cookstove Emissions,-1,mass,climate,,reviewed,ERA Outcode 324; direction proposed; accept by Misganu T. 2026-11-10
+CROP_RESIDUE_YIELD,Crop Residue Yield,1,yield,productivity,,reviewed,ERA Outcode 102; direction proposed; accept by Misganu T. 2026-11-10
+FEED_CONVERSION_RATIO_IN_OUT,Feed Conversion Ratio (In Out),-1,index,livestock,,reviewed,ERA Outcode 267.1; direction proposed; accept by Misganu T. 2026-11-10
+FEED_CONVERSION_RATIO_OUT_IN,Feed Conversion Ratio (Out In),1,index,livestock,,reviewed,ERA Outcode 267; direction proposed; accept by Misganu T. 2026-11-10
+FIXED_COST,Fixed Cost,-1,money,economics,,reviewed,ERA Outcode 151; direction proposed; accept by Misganu T. 2026-11-10
+FUEL_SAVINGS,Fuel Savings,1,other,other,,reviewed,ERA Outcode 320; direction proposed; accept by Misganu T. 2026-11-10
+FUEL_USE,Fuel Use,-1,other,other,,reviewed,ERA Outcode 323; direction proposed; accept by Misganu T. 2026-11-10
+GROSS_MARGIN,Gross Margin,1,money,economics,,reviewed,ERA Outcode 124.1; direction proposed; accept by Misganu T. 2026-11-10
+GROSS_RETURN,Gross Return,1,money,economics,,reviewed,ERA Outcode 120; direction proposed; accept by Misganu T. 2026-11-10
+INFILTRATION_RATE,Infiltration Rate,1,rate,water,,reviewed,ERA Outcode 221; direction proposed; accept by Misganu T. 2026-11-10
+LABOUR_COST,Labour Cost,-1,money,economics,,reviewed,ERA Outcode 152.1; direction proposed; accept by Misganu T. 2026-11-10
+LABOUR_FEMALE,Labour Female,-1,other,economics,,reviewed,"ERA Outcode 239; direction proposed (labour input; -1 proposed (less labour better), review); accept by Misganu T. 2026-11-10"
+LABOUR_MALE,Labour Male,-1,other,economics,,reviewed,"ERA Outcode 240; direction proposed (labour input; -1 proposed (less labour better), review); accept by Misganu T. 2026-11-10"
+LABOUR_PERSON_HOURS,Labour Person Hours,-1,other,economics,,reviewed,ERA Outcode 132; direction proposed; accept by Misganu T. 2026-11-10
+LAND_EQUIVALENT_RATIO,Land Equivalent Ratio,1,index,productivity,,reviewed,ERA Outcode 103; direction proposed; accept by Misganu T. 2026-11-10
+MARGINAL_RATE_OF_RETURN,Marginal Rate of Return,1,index,economics,,reviewed,ERA Outcode 137.1; direction proposed; accept by Misganu T. 2026-11-10
+MEAT_YIELD,Meat Yield,1,yield,livestock,,reviewed,ERA Outcode 119.1; direction proposed; accept by Misganu T. 2026-11-10
+MILK_YIELD,Milk Yield,1,yield,livestock,,reviewed,ERA Outcode 119.2; direction proposed; accept by Misganu T. 2026-11-10
+NITROGEN_APPARENT_EFFICIENCY_ANIMALS_FEED,Nitrogen (Apparent Efficiency Animals Feed),1,rate,livestock,,reviewed,ERA Outcode 238; direction proposed; accept by Misganu T. 2026-11-10
+NITROGEN_AGRONOMIC_EFFICIENCY,Nitrogen Agronomic Efficiency,1,rate,productivity,,reviewed,ERA Outcode 257.1; direction proposed; accept by Misganu T. 2026-11-10
+NITROGEN_FACTOR_PRODUCTIVITY,Nitrogen Factor Productivity,1,rate,productivity,,reviewed,ERA Outcode 257.2; direction proposed; accept by Misganu T. 2026-11-10
+NITROGEN_USE_EFFICIENCY_ARE_AGB,Nitrogen Use Efficiency (ARE AGB),1,rate,productivity,,reviewed,ERA Outcode 233.2; direction proposed; accept by Misganu T. 2026-11-10
+NITROGEN_USE_EFFICIENCY_ARE_PRODUCT,Nitrogen Use Efficiency (ARE Product),1,rate,productivity,,reviewed,ERA Outcode 233.1; direction proposed; accept by Misganu T. 2026-11-10
+NITROGEN_USE_EFFICIENCY_ARE_UNSPECIFICED,Nitrogen Use Efficiency (ARE Unspecificed),1,rate,productivity,,reviewed,ERA Outcode 233; direction proposed; accept by Misganu T. 2026-11-10
+PHOSPHORUS_AGRONOMIC_EFFICIENCY,Phosphorus Agronomic Efficiency,1,rate,productivity,,reviewed,ERA Outcode 258; direction proposed; accept by Misganu T. 2026-11-10
+PHOSPHORUS_USE_EFFICIENCY_ARE_PRODUCT,Phosphorus Use Efficiency (ARE Product),1,rate,productivity,,reviewed,ERA Outcode 234.1; direction proposed; accept by Misganu T. 2026-11-10
+PROTEIN_CONVERSION_RATIO_IN_OUT,Protein Conversion Ratio (In Out),-1,index,livestock,,reviewed,ERA Outcode 265.1; direction proposed; accept by Misganu T. 2026-11-10
+PROTEIN_CONVERSION_RATIO_OUT_IN,Protein Conversion Ratio (Out In),1,index,livestock,,reviewed,ERA Outcode 265; direction proposed; accept by Misganu T. 2026-11-10
+RETURN_TO_LABOUR,Return to Labour,1,money,economics,,reviewed,ERA Outcode 133; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_AVAILABLE_NITROGEN,Soil Available Nitrogen,1,concentration,soil_health,,reviewed,ERA Outcode 226.2; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_CARBON_STOCKS,Soil Carbon Stocks,1,mass,soil_health,,reviewed,ERA Outcode 308; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_MOISTURE,Soil Moisture,1,fraction,water,,reviewed,ERA Outcode 231; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_NITROGEN,Soil Nitrogen,1,concentration,soil_health,,reviewed,ERA Outcode 226; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_ORGANIC_CARBON,Soil Organic Carbon,1,concentration,soil_health,,reviewed,ERA Outcode 224; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_ORGANIC_CARBON_CHANGE,Soil Organic Carbon (Change),1,rate,soil_health,,reviewed,ERA Outcode 224.1; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_TOTAL_NITROGEN,Soil Total Nitrogen,1,concentration,soil_health,,reviewed,ERA Outcode 226.1; direction proposed; accept by Misganu T. 2026-11-10
+TOTAL_COST,Total Cost,-1,money,economics,,reviewed,ERA Outcode 150; direction proposed; accept by Misganu T. 2026-11-10
+TOTAL_FACTOR_PRODUCTIVITY,Total Factor Productivity,1,index,economics,,reviewed,ERA Outcode 257; direction proposed; accept by Misganu T. 2026-11-10
+VARIABLE_COST,Variable Cost,-1,money,economics,,reviewed,ERA Outcode 152; direction proposed; accept by Misganu T. 2026-11-10
+WATER_USE,Water Use,-1,other,water,,reviewed,"ERA Outcode 232.1; direction proposed (ambiguous in ERA (amount of water used); direction -1 proposed, review); accept by Misganu T. 2026-11-10"
+WEIGHT_GAIN,Weight Gain,1,rate,livestock,,reviewed,ERA Outcode 118; direction proposed; accept by Misganu T. 2026-11-10
+RUNOFF_COEFFICIENT,Runoff coefficient,-1,fraction,water,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+WATER_HOLDING_CAPACITY,Soil water holding capacity,1,fraction,water,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+BULK_DENSITY,Soil bulk density,-1,concentration,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_COMPACTION,Soil compaction / penetration resistance,-1,other,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_AGGREGATE_STABILITY,Soil aggregate stability,1,fraction,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_POROSITY,Soil porosity,1,fraction,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_MICROBIAL_BIOMASS,Soil microbial biomass,1,concentration,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_FAUNA,Soil fauna abundance,1,count,resilience_biodiversity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+AVAILABLE_PHOSPHORUS,Soil available phosphorus,1,concentration,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_POTASSIUM,Soil potassium,1,concentration,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SOIL_PH,Soil pH (higher is better on acidic soils; context dependent),,index,soil_health,,context_dependent,keyword-rule target; direction proposed; context dependent (Misganu T. 2026-11-10): Direction depends on the soil: an increase is good on acid soils and bad on alkaline soils; keep rows but exclude from ranking until a context rule exists (E5)
+SOIL_ACIDITY,Soil exchangeable acidity,-1,concentration,soil_health,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+NUTRIENT_LEACHING,Nutrient leaching / loss,-1,mass,water,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+NUTRIENT_USE_EFFICIENCY,Nutrient use efficiency,1,rate,productivity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+GHG_EMISSIONS,Greenhouse gas emissions,-1,mass,climate,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+NET_PRESENT_VALUE,Net present value,1,money,economics,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+BENEFIT_COST_RATIO,Benefit cost ratio,1,index,economics,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+PRODUCTION_COST,Production cost,-1,money,economics,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+LABOUR_INPUT,Labour input,-1,other,economics,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+WEED_SUPPRESSION,Weed suppression,1,fraction,productivity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+WEED_PRESSURE,"Weed pressure (density, biomass, cover)",-1,count,productivity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+PEST_DAMAGE,Pest and disease damage,-1,fraction,productivity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+NATURAL_PEST_CONTROL,"Natural pest control (parasitism, predation)",1,fraction,resilience_biodiversity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+POLLINATION,"Pollination (visitation, seed or fruit set)",1,fraction,resilience_biodiversity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+VEGETATION_COVER,Vegetation cover,1,fraction,resilience_biodiversity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+FEED_DIGESTIBILITY,Feed digestibility / conversion,1,fraction,livestock,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+SURVIVAL_RATE,Survival rate,1,fraction,resilience_biodiversity,,reviewed,keyword-rule target; direction proposed; accept by Misganu T. 2026-11-10
+IRRIGATION_AMOUNT,irrigation amount,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Amount of irrigation water applied is an input not an outcome; 1 alias row"
+SAND,sand %,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Soil texture fraction is a descriptor without a direction"
+SILT,silt %,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Descriptor"
+CLAY,clay%,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Descriptor"
+SOIL_TEXTURE,soil texture,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Descriptor"
+PER_CAPITA_CALORIE,per capita calorie,1,other,economics,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+DROUGHT_RESISTANT,drought resistant,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Not a measured outcome"
+EVAPOTRANSPIRATION,evapotranspiration,,other,water,,context_dependent,"CSA indicator label with no rule match; new seed, direction proposed; context dependent (Misganu T. 2026-11-10): Higher ET can mean more productive water use or more loss; exclude from ranking"
+BULB_WEIGHT,bulb weight,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+SOIL_COLOR,soil color,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Descriptor"
+SOIL_FERTILITY_INDICATOR_CACO3,soil fertility indicator_caco3,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Ambiguous indicator"
+BASE_SATURATION,base saturation,1,other,soil_health,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+WEIGHT_OF_STALK,weight of stalk,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+GROUND_WATER_LEVEL,ground water level,1,other,water,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+LAI,lai,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+N_CONTENT_SHOOT,n content shoot,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+N_CONTENT_ROOT,n content root,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+N_CONTENT_NODULE,n content nodule,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+P_CONTENT_SHOOT,p content shoot,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+P_CONTENT_ROOT,p content root,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+P_CONTENT_NODULE,p content nodule,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+DISCHARGE,discharge,,other,water,,context_dependent,"CSA indicator label with no rule match; new seed, direction proposed; context dependent (Misganu T. 2026-11-10): Stream discharge: more baseflow is good but more storm discharge is bad; exclude from ranking"
+MICROBIAL_PROTEIN,microbial protein,1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+CRUDE_PROTEIN,crude protein,1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+LIGNIN,lignin,-1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; flip by Misganu T. 2026-11-10"
+DEGRADABILITY,degradability,1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+TOTAL_SUGAR,total sugar,1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+SOIL_INFLITRATION_RATE_TRATION_RATES,soil inflitration rate tration rates,,other,other,,merged,"CSA indicator label with no rule match; new seed, direction proposed; merged into INFILTRATION_RATE by Misganu T. 2026-11-10 (1 aliases)"
+MAKATABILITY,makatability,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Unreadable label (marketability?); 1 alias row"
+OTHERS,others,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Not an outcome"
+COLLAR_DIAMETER,collar diameter,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+NA,na,,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Blank label"
+SOIL_FERTILITY_INDICATOR_CA,soil fertility indicator_ca,1,other,soil_health,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+SOIL_FERTILITY_INDICATOR_MG,soil fertility indicator_mg,1,other,soil_health,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+BASEFLOW_INDEX,baseflow index,1,other,water,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+MALARIA_PREVALENCE,malaria prevalence,-1,other,other,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; flip by Misganu T. 2026-11-10"
+WEIGHT_SHOLDER_HEIGHT,weight:sholder height,1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+DRAFT_OXEN_TIME,draft oxen time,-1,other,economics,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+SHOLDER_HEIGHT,sholder height,1,other,livestock,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+P_UPTAKE,p uptake,1,other,productivity,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; accept by Misganu T. 2026-11-10"
+BLANK,(blank),,other,other,,excluded,"CSA indicator label with no rule match; new seed, direction proposed; excluded by Misganu T. 2026-11-10: Blank label"
+FERTILIZER_USE,fertilizer use,-1,other,economics,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; flip by Misganu T. 2026-11-10"
+WATERSHORTAGE,watershortage,-1,other,water,,reviewed,"CSA indicator label with no rule match; new seed, direction proposed; flip by Misganu T. 2026-11-10"
+PRODUCE_QUALITY,Fat content,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+PLANT_GROWTH,Plant height,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+YIELD_COMPONENTS,Total fruit number per plant (Main Effect),1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+BIOLOGICAL_NITROGEN_FIXATION,N₂ fixed (2013),1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+PEST_ABUNDANCE,Herbivore abundance,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+NUTRIENT_UPTAKE,Total N uptake,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+ENERGY_BALANCE,Net energy,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+NATURAL_ENEMY_ABUNDANCE,Spider abundance,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_HEALTH_INDEX,Soil Quality Index,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_ENZYME_ACTIVITY,Overall enzyme activity,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+CARBON_BALANCE,Carbon balance,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+TREE_DENSITY,Timber tree abundance,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+LITTER_DECOMPOSITION,Decomposition rate (k),1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+MYCORRHIZAL_COLONIZATION,Mycorrhizal colonization,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+FINANCIAL_RESILIENCE,Financial resilience,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_RESPIRATION,Daily averaged heterotrophic respiration,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_AVAILABLE_NUTRIENTS,Sum of available nutrients,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_TOTAL_PHOSPHORUS,Total phosphorus,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+POLLINATOR_ABUNDANCE,Flower visitor abundance,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+TREE_REGENERATION,Sapling density,-1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_SULFUR,Sulfur,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+EMPLOYMENT,Employment generation,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+SOIL_SALINITY,Soil conductivity,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+AMMONIA_EMISSIONS,Average NH₃ concentration,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed
+LODGING,Lentil lodging,1,other,other,,seed,created from HAB review by Misganu T. 2026-11-10; direction proposed

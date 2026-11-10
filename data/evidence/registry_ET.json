@@ -1,15 +1,15 @@
 {
   "country": "ET",
   "registry_version": "1.0",
-  "built_at": "2026-11-10T15:01:38+00:00",
-  "store_manifest": "data/evidence/store_manifest.json (built 2026-11-10T15:01:38+00:00, schema 1.1)",
+  "built_at": "2026-11-10T17:46:46+00:00",
+  "store_manifest": "data/evidence/store_manifest.json (built 2026-11-10T17:46:44+00:00, schema 1.1)",
   "thresholds": {
     "min_rows": 30,
     "min_studies": 5,
     "min_docs": 3
   },
   "counting_rule": "country match, reviewed direction, computable lrr, not an exact duplicate",
-  "n_counted_rows": 9757,
+  "n_counted_rows": 16672,
   "challenges": [
     {
       "id": "SOIL_EROSION",
@@ -48,18 +48,6 @@
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
-        },
-        {
-          "id": "VEGETATION_COVER",
-          "name_en": "Vegetation cover",
-          "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 10
         }
       ],
       "n_rows": 721,
@@ -93,7 +81,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 10
+      "n_rows_pending_review": 0
     },
     {
       "id": "GULLY_EROSION",
@@ -182,31 +170,31 @@
           "id": "SOIL_ORGANIC_CARBON",
           "name_en": "Soil Organic Carbon",
           "objective_group": "soil_health",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 313
+          "direction": 1,
+          "n_rows": 313,
+          "n_studies": 43,
+          "n_practices": 27,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "SOIL_TOTAL_NITROGEN",
           "name_en": "Soil Total Nitrogen",
           "objective_group": "soil_health",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 234
+          "direction": 1,
+          "n_rows": 234,
+          "n_studies": 32,
+          "n_practices": 21,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "SOIL_AVAILABLE_NITROGEN",
           "name_en": "Soil Available Nitrogen",
           "objective_group": "soil_health",
-          "direction": null,
+          "direction": 1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -218,54 +206,54 @@
           "id": "SOIL_NITROGEN",
           "name_en": "Soil Nitrogen",
           "objective_group": "soil_health",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 80
+          "direction": 1,
+          "n_rows": 80,
+          "n_studies": 13,
+          "n_practices": 10,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "AVAILABLE_PHOSPHORUS",
           "name_en": "Soil available phosphorus",
           "objective_group": "soil_health",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 67
+          "direction": 1,
+          "n_rows": 67,
+          "n_studies": 31,
+          "n_practices": 11,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "CATION_EXCHANGE_CAPACITY",
           "name_en": "Cation Exchange Capacity",
           "objective_group": "soil_health",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 135
+          "direction": 1,
+          "n_rows": 135,
+          "n_studies": 26,
+          "n_practices": 19,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "YIELD",
           "name_en": "Crop yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 6530,
+          "n_rows": 6532,
           "n_studies": 315,
-          "n_practices": 88,
+          "n_practices": 89,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 6687,
-      "n_studies": 337,
-      "n_practices_with_evidence": 90,
+      "n_rows": 7518,
+      "n_studies": 363,
+      "n_practices_with_evidence": 95,
       "n_documented_practices": 21,
       "documented_catalogue_ids": [
         "CAT_01",
@@ -293,7 +281,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 829
+      "n_rows_pending_review": 0
     },
     {
       "id": "MOISTURE_STRESS_DROUGHT",
@@ -312,13 +300,13 @@
           "id": "SOIL_MOISTURE",
           "name_en": "Soil Moisture",
           "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 1101
+          "direction": 1,
+          "n_rows": 1102,
+          "n_studies": 34,
+          "n_practices": 16,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "WATER_USE_EFFICIENCY",
@@ -327,7 +315,7 @@
           "direction": 1,
           "n_rows": 237,
           "n_studies": 49,
-          "n_practices": 13,
+          "n_practices": 12,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
@@ -336,30 +324,30 @@
           "id": "INFILTRATION_RATE",
           "name_en": "Infiltration Rate",
           "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": 1,
+          "n_rows": 5,
+          "n_studies": 4,
+          "n_practices": 3,
           "exposed": false,
           "documented_only": true,
-          "n_rows_pending_review": 4
+          "n_rows_pending_review": 0
         },
         {
           "id": "YIELD",
           "name_en": "Crop yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 2477,
+          "n_rows": 2479,
           "n_studies": 214,
-          "n_practices": 33,
+          "n_practices": 34,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 2714,
-      "n_studies": 223,
-      "n_practices_with_evidence": 33,
+      "n_rows": 3823,
+      "n_studies": 238,
+      "n_practices_with_evidence": 36,
       "n_documented_practices": 21,
       "documented_catalogue_ids": [
         "CAT_01",
@@ -387,7 +375,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 1105
+      "n_rows_pending_review": 0
     },
     {
       "id": "WATERLOGGING_EXCESS_RUNOFF",
@@ -416,13 +404,13 @@
           "id": "INFILTRATION_RATE",
           "name_en": "Infiltration Rate",
           "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": 1,
+          "n_rows": 3,
+          "n_studies": 3,
+          "n_practices": 2,
           "exposed": false,
           "documented_only": true,
-          "n_rows_pending_review": 2
+          "n_rows_pending_review": 0
         },
         {
           "id": "SOIL_LOSS",
@@ -437,8 +425,8 @@
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 620,
-      "n_studies": 75,
+      "n_rows": 623,
+      "n_studies": 76,
       "n_practices_with_evidence": 12,
       "n_documented_practices": 10,
       "documented_catalogue_ids": [
@@ -456,7 +444,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 2
+      "n_rows_pending_review": 0
     },
     {
       "id": "LOW_CROP_PRODUCTIVITY",
@@ -477,9 +465,9 @@
           "name_en": "Crop yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 6530,
+          "n_rows": 6532,
           "n_studies": 315,
-          "n_practices": 88,
+          "n_practices": 89,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
@@ -489,9 +477,9 @@
           "name_en": "Biomass yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 1654,
+          "n_rows": 1655,
           "n_studies": 94,
-          "n_practices": 46,
+          "n_practices": 47,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
@@ -500,36 +488,36 @@
           "id": "LAND_EQUIVALENT_RATIO",
           "name_en": "Land Equivalent Ratio",
           "objective_group": "productivity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": 1,
+          "n_rows": 36,
+          "n_studies": 3,
+          "n_practices": 2,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 36
+          "n_rows_pending_review": 0
         },
         {
           "id": "CROP_RESIDUE_YIELD",
           "name_en": "Crop Residue Yield",
           "objective_group": "productivity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
+          "direction": 1,
+          "n_rows": 566,
+          "n_studies": 35,
+          "n_practices": 27,
+          "exposed": true,
           "documented_only": false,
-          "n_rows_pending_review": 566
+          "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 8184,
-      "n_studies": 338,
-      "n_practices_with_evidence": 89,
+      "n_rows": 8789,
+      "n_studies": 341,
+      "n_practices_with_evidence": 90,
       "n_documented_practices": 0,
       "documented_catalogue_ids": [],
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 602
+      "n_rows_pending_review": 0
     },
     {
       "id": "FEED_SHORTAGE",
@@ -550,9 +538,9 @@
           "name_en": "Biomass yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 430,
+          "n_rows": 431,
           "n_studies": 37,
-          "n_practices": 19,
+          "n_practices": 20,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
@@ -561,54 +549,54 @@
           "id": "WEIGHT_GAIN",
           "name_en": "Weight Gain",
           "objective_group": "livestock",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 259
+          "direction": 1,
+          "n_rows": 259,
+          "n_studies": 55,
+          "n_practices": 9,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "MILK_YIELD",
           "name_en": "Milk Yield",
           "objective_group": "livestock",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 35
+          "direction": 1,
+          "n_rows": 35,
+          "n_studies": 7,
+          "n_practices": 6,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "MEAT_YIELD",
           "name_en": "Meat Yield",
           "objective_group": "livestock",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 395
+          "direction": 1,
+          "n_rows": 395,
+          "n_studies": 46,
+          "n_practices": 7,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "CROP_RESIDUE_YIELD",
           "name_en": "Crop Residue Yield",
           "objective_group": "productivity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 128
+          "direction": 1,
+          "n_rows": 128,
+          "n_studies": 13,
+          "n_practices": 12,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 430,
-      "n_studies": 37,
-      "n_practices_with_evidence": 19,
+      "n_rows": 1248,
+      "n_studies": 122,
+      "n_practices_with_evidence": 34,
       "n_documented_practices": 8,
       "documented_catalogue_ids": [
         "CAT_07",
@@ -623,7 +611,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 817
+      "n_rows_pending_review": 0
     },
     {
       "id": "PESTS_AND_DISEASES",
@@ -641,19 +629,19 @@
           "id": "PEST_DAMAGE",
           "name_en": "Pest and disease damage",
           "objective_group": "productivity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": -1,
+          "n_rows": 1,
+          "n_studies": 1,
+          "n_practices": 1,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 1
+          "n_rows_pending_review": 0
         },
         {
           "id": "NATURAL_PEST_CONTROL",
           "name_en": "Natural pest control (parasitism, predation)",
           "objective_group": "resilience_biodiversity",
-          "direction": null,
+          "direction": 1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -665,19 +653,19 @@
           "id": "WEED_PRESSURE",
           "name_en": "Weed pressure (density, biomass, cover)",
           "objective_group": "productivity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": -1,
+          "n_rows": 13,
+          "n_studies": 1,
+          "n_practices": 2,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 13
+          "n_rows_pending_review": 0
         },
         {
           "id": "WEED_SUPPRESSION",
           "name_en": "Weed suppression",
           "objective_group": "productivity",
-          "direction": null,
+          "direction": 1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -686,15 +674,15 @@
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 0,
-      "n_studies": 0,
-      "n_practices_with_evidence": 0,
+      "n_rows": 14,
+      "n_studies": 2,
+      "n_practices_with_evidence": 3,
       "n_documented_practices": 0,
       "documented_catalogue_ids": [],
       "exposed": false,
       "documented_only": false,
       "exposure_reason": "below rows>=30/studies>=5 and documented practices<3",
-      "n_rows_pending_review": 14
+      "n_rows_pending_review": 0
     },
     {
       "id": "DEFORESTATION_FUELWOOD",
@@ -709,33 +697,33 @@
       ],
       "objectives": [
         {
-          "id": "ABOVEGROUND_CARBON_BIOMASS",
-          "name_en": "Aboveground Carbon Biomass",
-          "objective_group": "other",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "id": "BIODIVERSITY",
+          "name_en": "Biodiversity",
+          "objective_group": "resilience_biodiversity",
+          "direction": 1,
+          "n_rows": 17,
+          "n_studies": 6,
+          "n_practices": 2,
           "exposed": false,
           "documented_only": false,
           "n_rows_pending_review": 0
         },
         {
-          "id": "BIODIVERSITY",
-          "name_en": "Biodiversity",
+          "id": "VEGETATION_COVER",
+          "name_en": "Vegetation cover",
           "objective_group": "resilience_biodiversity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": 1,
+          "n_rows": 2,
+          "n_studies": 1,
+          "n_practices": 1,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 17
+          "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 0,
-      "n_studies": 0,
-      "n_practices_with_evidence": 0,
+      "n_rows": 19,
+      "n_studies": 7,
+      "n_practices_with_evidence": 2,
       "n_documented_practices": 2,
       "documented_catalogue_ids": [
         "CAT_04",
@@ -744,7 +732,7 @@
       "exposed": false,
       "documented_only": false,
       "exposure_reason": "below rows>=30/studies>=5 and documented practices<3",
-      "n_rows_pending_review": 17
+      "n_rows_pending_review": 0
     },
     {
       "id": "DEGRADED_HILLSIDES",
@@ -786,31 +774,31 @@
         {
           "id": "VEGETATION_COVER",
           "name_en": "Vegetation cover",
-          "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "objective_group": "resilience_biodiversity",
+          "direction": 1,
+          "n_rows": 4,
+          "n_studies": 3,
+          "n_practices": 2,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 4
+          "n_rows_pending_review": 0
         },
         {
           "id": "BIODIVERSITY",
           "name_en": "Biodiversity",
           "objective_group": "resilience_biodiversity",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": 1,
+          "n_rows": 22,
+          "n_studies": 8,
+          "n_practices": 4,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 18
+          "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 666,
-      "n_studies": 80,
-      "n_practices_with_evidence": 13,
+      "n_rows": 692,
+      "n_studies": 89,
+      "n_practices_with_evidence": 14,
       "n_documented_practices": 1,
       "documented_catalogue_ids": [
         "CAT_03"
@@ -818,7 +806,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 22
+      "n_rows_pending_review": 0
     },
     {
       "id": "LOW_INCOME_MARKET_ACCESS",
@@ -851,31 +839,31 @@
           "id": "GROSS_MARGIN",
           "name_en": "Gross Margin",
           "objective_group": "economics",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
+          "direction": 1,
+          "n_rows": 695,
+          "n_studies": 33,
+          "n_practices": 19,
+          "exposed": true,
           "documented_only": false,
-          "n_rows_pending_review": 695
+          "n_rows_pending_review": 0
         },
         {
           "id": "GROSS_RETURN",
           "name_en": "Gross Return",
           "objective_group": "economics",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
+          "direction": 1,
+          "n_rows": 834,
+          "n_studies": 50,
+          "n_practices": 31,
+          "exposed": true,
           "documented_only": false,
-          "n_rows_pending_review": 833
+          "n_rows_pending_review": 0
         },
         {
           "id": "BENEFIT_COST_RATIO",
           "name_en": "Benefit cost ratio",
           "objective_group": "economics",
-          "direction": null,
+          "direction": 1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -887,7 +875,7 @@
           "id": "NET_PRESENT_VALUE",
           "name_en": "Net present value",
           "objective_group": "economics",
-          "direction": null,
+          "direction": 1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -899,7 +887,7 @@
           "id": "PRODUCTION_COST",
           "name_en": "Production cost",
           "objective_group": "economics",
-          "direction": null,
+          "direction": -1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -911,24 +899,24 @@
           "id": "RETURN_TO_LABOUR",
           "name_en": "Return to Labour",
           "objective_group": "economics",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": 1,
+          "n_rows": 3,
+          "n_studies": 1,
+          "n_practices": 1,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 3
+          "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 226,
-      "n_studies": 23,
-      "n_practices_with_evidence": 21,
+      "n_rows": 1758,
+      "n_studies": 66,
+      "n_practices_with_evidence": 39,
       "n_documented_practices": 0,
       "documented_catalogue_ids": [],
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 1531
+      "n_rows_pending_review": 0
     },
     {
       "id": "SOIL_ACIDITY",
@@ -951,13 +939,13 @@
           "n_practices": 0,
           "exposed": false,
           "documented_only": false,
-          "n_rows_pending_review": 8
+          "n_rows_pending_review": 0
         },
         {
           "id": "SOIL_ACIDITY",
           "name_en": "Soil exchangeable acidity",
           "objective_group": "soil_health",
-          "direction": null,
+          "direction": -1,
           "n_rows": 0,
           "n_studies": 0,
           "n_practices": 0,
@@ -974,7 +962,7 @@
       "exposed": false,
       "documented_only": false,
       "exposure_reason": "below rows>=30/studies>=5 and documented practices<3",
-      "n_rows_pending_review": 8
+      "n_rows_pending_review": 0
     },
     {
       "id": "WATER_SCARCITY_IRRIGATION",
@@ -994,7 +982,7 @@
           "direction": 1,
           "n_rows": 218,
           "n_studies": 47,
-          "n_practices": 11,
+          "n_practices": 10,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
@@ -1003,30 +991,30 @@
           "id": "SOIL_MOISTURE",
           "name_en": "Soil Moisture",
           "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
-          "exposed": false,
-          "documented_only": true,
-          "n_rows_pending_review": 934
+          "direction": 1,
+          "n_rows": 935,
+          "n_studies": 26,
+          "n_practices": 12,
+          "exposed": true,
+          "documented_only": false,
+          "n_rows_pending_review": 0
         },
         {
           "id": "WATER_USE",
           "name_en": "Water Use",
           "objective_group": "water",
-          "direction": null,
-          "n_rows": 0,
-          "n_studies": 0,
-          "n_practices": 0,
+          "direction": -1,
+          "n_rows": 16,
+          "n_studies": 2,
+          "n_practices": 2,
           "exposed": false,
           "documented_only": true,
-          "n_rows_pending_review": 16
+          "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 218,
-      "n_studies": 47,
-      "n_practices_with_evidence": 11,
+      "n_rows": 1169,
+      "n_studies": 73,
+      "n_practices_with_evidence": 16,
       "n_documented_practices": 3,
       "documented_catalogue_ids": [
         "CAT_03",
@@ -1036,7 +1024,7 @@
       "exposed": true,
       "documented_only": false,
       "exposure_reason": "rows>=30 and studies>=5",
-      "n_rows_pending_review": 950
+      "n_rows_pending_review": 0
     }
   ],
   "practices": [
@@ -1045,10 +1033,11 @@
       "name_en": "Agroforestry Fallow",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 4,
       "catalogue_ids": []
     },
     {
@@ -1056,10 +1045,22 @@
       "name_en": "Agroforestry Pruning",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 26,
+      "n_rows": 90,
+      "catalogue_ids": []
+    },
+    {
+      "id": "AGROFORESTRY_PRUNING_ALLEYCROPPING",
+      "name_en": "Agroforestry Pruning-Alleycropping",
+      "family": "Agro-forestry and forest management",
+      "challenges": [
+        "SOIL_FERTILITY_DECLINE"
+      ],
+      "n_rows": 18,
       "catalogue_ids": []
     },
     {
@@ -1067,10 +1068,12 @@
       "name_en": "Agroforestry Pruning-Inorganic Fertilizer",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 26,
+      "n_rows": 52,
       "catalogue_ids": []
     },
     {
@@ -1078,10 +1081,21 @@
       "name_en": "Agroforestry Pruning-Inorganic Fertilizer Reduction",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 10,
+      "n_rows": 25,
+      "catalogue_ids": []
+    },
+    {
+      "id": "AGROFORESTRY_PRUNING_PARKLANDS",
+      "name_en": "Agroforestry Pruning-Parklands",
+      "family": "Agro-forestry and forest management",
+      "challenges": [
+        "SOIL_FERTILITY_DECLINE"
+      ],
+      "n_rows": 48,
       "catalogue_ids": []
     },
     {
@@ -1097,7 +1111,7 @@
         "SOIL_FERTILITY_DECLINE",
         "WATERLOGGING_EXCESS_RUNOFF"
       ],
-      "n_rows": 80,
+      "n_rows": 89,
       "catalogue_ids": []
     },
     {
@@ -1105,10 +1119,12 @@
       "name_en": "Alleycropping",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 6,
+      "n_rows": 19,
       "catalogue_ids": []
     },
     {
@@ -1119,7 +1135,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 8,
       "catalogue_ids": []
     },
     {
@@ -1130,7 +1146,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 8,
       "catalogue_ids": []
     },
     {
@@ -1138,7 +1154,7 @@
       "name_en": "Alleycropping-Crop Rotation-Improved Varieties-Inorganic Fertilizer",
       "family": "Agro-forestry and forest management",
       "challenges": [],
-      "n_rows": 1,
+      "n_rows": 6,
       "catalogue_ids": []
     },
     {
@@ -1146,7 +1162,7 @@
       "name_en": "Alleycropping-Improved Varieties-Inorganic Fertilizer-Intercropping",
       "family": "Agro-forestry and forest management",
       "challenges": [],
-      "n_rows": 1,
+      "n_rows": 6,
       "catalogue_ids": []
     },
     {
@@ -1157,7 +1173,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 8,
       "catalogue_ids": []
     },
     {
@@ -1165,7 +1181,7 @@
       "name_en": "Alleycropping-Inorganic Fertilizer",
       "family": "Agro-forestry and forest management",
       "challenges": [],
-      "n_rows": 1,
+      "n_rows": 6,
       "catalogue_ids": []
     },
     {
@@ -1173,7 +1189,7 @@
       "name_en": "Alleycropping-Inorganic Fertilizer-Intercropping",
       "family": "Agro-forestry and forest management",
       "challenges": [],
-      "n_rows": 1,
+      "n_rows": 6,
       "catalogue_ids": []
     },
     {
@@ -1184,7 +1200,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 8,
       "catalogue_ids": []
     },
     {
@@ -1194,7 +1210,7 @@
       "challenges": [
         "FEED_SHORTAGE"
       ],
-      "n_rows": 105,
+      "n_rows": 287,
       "catalogue_ids": []
     },
     {
@@ -1219,7 +1235,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 94,
+      "n_rows": 216,
       "catalogue_ids": []
     },
     {
@@ -1230,7 +1246,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 80,
+      "n_rows": 112,
       "catalogue_ids": []
     },
     {
@@ -1252,7 +1268,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 60,
+      "n_rows": 92,
       "catalogue_ids": []
     },
     {
@@ -1284,7 +1300,7 @@
         "SOIL_FERTILITY_DECLINE",
         "WATERLOGGING_EXCESS_RUNOFF"
       ],
-      "n_rows": 35,
+      "n_rows": 40,
       "catalogue_ids": []
     },
     {
@@ -1309,10 +1325,19 @@
         "LOW_CROP_PRODUCTIVITY",
         "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
+        "PESTS_AND_DISEASES",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 103,
+      "n_rows": 143,
+      "catalogue_ids": []
+    },
+    {
+      "id": "COOKSTOVE",
+      "name_en": "Cookstove",
+      "family": "Crop production and management",
+      "challenges": [],
+      "n_rows": 21,
       "catalogue_ids": []
     },
     {
@@ -1357,7 +1382,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 36,
+      "n_rows": 72,
       "catalogue_ids": []
     },
     {
@@ -1369,7 +1394,7 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 24,
+      "n_rows": 40,
       "catalogue_ids": []
     },
     {
@@ -1380,7 +1405,15 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 5,
+      "n_rows": 10,
+      "catalogue_ids": []
+    },
+    {
+      "id": "CROP_ROTATION_INORGANIC_FERTILIZER_MULCH_REDUCED_TILLAGE",
+      "name_en": "Crop Rotation-Inorganic Fertilizer-Mulch-Reduced Tillage",
+      "family": "Integrated soil fertility management",
+      "challenges": [],
+      "n_rows": 1,
       "catalogue_ids": []
     },
     {
@@ -1395,30 +1428,18 @@
       "catalogue_ids": []
     },
     {
-      "id": "DEFICIT_IRRIGATION_CSA",
-      "name_en": "Deficit irrigation",
-      "family": "Erosion control and water management",
-      "challenges": [
-        "LOW_CROP_PRODUCTIVITY",
-        "MOISTURE_STRESS_DROUGHT",
-        "SOIL_FERTILITY_DECLINE",
-        "WATER_SCARCITY_IRRIGATION"
-      ],
-      "n_rows": 98,
-      "catalogue_ids": []
-    },
-    {
       "id": "DEFICIT_IRRIGATION_ERA",
       "name_en": "Deficit Irrigation",
       "family": "Erosion control and water management",
       "challenges": [
         "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 223,
+      "n_rows": 352,
       "catalogue_ids": []
     },
     {
@@ -1447,7 +1468,7 @@
         "SOIL_FERTILITY_DECLINE",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 59,
+      "n_rows": 60,
       "catalogue_ids": []
     },
     {
@@ -1467,6 +1488,7 @@
       "name_en": "Exclosure",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "DEFORESTATION_FUELWOOD",
         "DEGRADED_HILLSIDES",
         "FEED_SHORTAGE",
         "GULLY_EROSION",
@@ -1474,7 +1496,7 @@
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 90,
+      "n_rows": 167,
       "catalogue_ids": []
     },
     {
@@ -1484,7 +1506,7 @@
       "challenges": [
         "LOW_INCOME_MARKET_ACCESS"
       ],
-      "n_rows": 1,
+      "n_rows": 5,
       "catalogue_ids": []
     },
     {
@@ -1530,13 +1552,64 @@
       ]
     },
     {
+      "id": "FEED_ADDITION",
+      "name_en": "Feed Addition",
+      "family": "Livestock production and management",
+      "challenges": [
+        "FEED_SHORTAGE"
+      ],
+      "n_rows": 242,
+      "catalogue_ids": []
+    },
+    {
       "id": "FEED_ADDITION_FEED_PROCESSING",
       "name_en": "Feed Addition-Feed Processing",
       "family": "Livestock production and management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_INCOME_MARKET_ACCESS"
       ],
-      "n_rows": 3,
+      "n_rows": 295,
+      "catalogue_ids": []
+    },
+    {
+      "id": "FEED_ADDITION_FEED_PROCESSING_GENETIC_IMPROVEMENT",
+      "name_en": "Feed Addition-Feed Processing-Genetic Improvement",
+      "family": "Livestock production and management",
+      "challenges": [
+        "FEED_SHORTAGE"
+      ],
+      "n_rows": 4,
+      "catalogue_ids": []
+    },
+    {
+      "id": "FEED_PROCESSING",
+      "name_en": "Feed Processing",
+      "family": "Livestock production and management",
+      "challenges": [
+        "FEED_SHORTAGE"
+      ],
+      "n_rows": 67,
+      "catalogue_ids": []
+    },
+    {
+      "id": "FEED_PROCESSING_FEED_SUBSTITUTION",
+      "name_en": "Feed Processing-Feed Substitution",
+      "family": "Livestock production and management",
+      "challenges": [
+        "FEED_SHORTAGE"
+      ],
+      "n_rows": 49,
+      "catalogue_ids": []
+    },
+    {
+      "id": "FEED_PROCESSING_FEED_SUBSTITUTION_GENETIC_IMPROVEMENT",
+      "name_en": "Feed Processing-Feed Substitution-Genetic Improvement",
+      "family": "Livestock production and management",
+      "challenges": [
+        "FEED_SHORTAGE"
+      ],
+      "n_rows": 2,
       "catalogue_ids": []
     },
     {
@@ -1544,9 +1617,10 @@
       "name_en": "Feed Substitution",
       "family": "Livestock production and management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_INCOME_MARKET_ACCESS"
       ],
-      "n_rows": 3,
+      "n_rows": 169,
       "catalogue_ids": []
     },
     {
@@ -1588,6 +1662,14 @@
       "catalogue_ids": [
         "CAT_27"
       ]
+    },
+    {
+      "id": "GENETIC_IMPROVEMENT",
+      "name_en": "Genetic Improvement",
+      "family": "Crop production and management",
+      "challenges": [],
+      "n_rows": 45,
+      "catalogue_ids": []
     },
     {
       "id": "GRADED_LEVEL_STONE_FACED_SOIL_BUND_STABILIZED_WITH_GRASSES",
@@ -1643,7 +1725,7 @@
       "challenges": [
         "FEED_SHORTAGE"
       ],
-      "n_rows": 47,
+      "n_rows": 54,
       "catalogue_ids": []
     },
     {
@@ -1710,7 +1792,7 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 880,
+      "n_rows": 1171,
       "catalogue_ids": []
     },
     {
@@ -1722,7 +1804,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 47,
+      "n_rows": 95,
       "catalogue_ids": []
     },
     {
@@ -1734,7 +1816,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 5,
       "catalogue_ids": []
     },
     {
@@ -1756,7 +1838,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 1,
+      "n_rows": 4,
       "catalogue_ids": []
     },
     {
@@ -1765,10 +1847,11 @@
       "family": "Crop production and management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 32,
+      "n_rows": 66,
       "catalogue_ids": []
     },
     {
@@ -1781,7 +1864,7 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 5,
       "catalogue_ids": []
     },
     {
@@ -1801,11 +1884,13 @@
       "name_en": "Improved Varieties-Supplemental Irrigation",
       "family": "Erosion control and water management",
       "challenges": [
+        "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 24,
+      "n_rows": 96,
       "catalogue_ids": []
     },
     {
@@ -1830,7 +1915,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2767,
+      "n_rows": 4314,
       "catalogue_ids": []
     },
     {
@@ -1842,7 +1927,15 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 103,
+      "n_rows": 164,
+      "catalogue_ids": []
+    },
+    {
+      "id": "INORGANIC_FERTILIZER_INTERCROPPING_MULCH_REDUCED_TILLAGE",
+      "name_en": "Inorganic Fertilizer-Intercropping-Mulch-Reduced Tillage",
+      "family": "Integrated soil fertility management",
+      "challenges": [],
+      "n_rows": 1,
       "catalogue_ids": []
     },
     {
@@ -1854,7 +1947,17 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 4,
+      "n_rows": 10,
+      "catalogue_ids": []
+    },
+    {
+      "id": "INORGANIC_FERTILIZER_INTERCROPPING_REDUCED_TILLAGE",
+      "name_en": "Inorganic Fertilizer-Intercropping-Reduced Tillage",
+      "family": "Integrated soil fertility management",
+      "challenges": [
+        "LOW_INCOME_MARKET_ACCESS"
+      ],
+      "n_rows": 14,
       "catalogue_ids": []
     },
     {
@@ -1874,9 +1977,10 @@
       "family": "Integrated soil fertility management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 50,
+      "n_rows": 62,
       "catalogue_ids": []
     },
     {
@@ -1910,7 +2014,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 340,
+      "n_rows": 602,
       "catalogue_ids": []
     },
     {
@@ -1919,9 +2023,10 @@
       "family": "Integrated soil fertility management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 8,
+      "n_rows": 14,
       "catalogue_ids": []
     },
     {
@@ -1963,9 +2068,10 @@
       "family": "Integrated soil fertility management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 60,
+      "n_rows": 78,
       "catalogue_ids": []
     },
     {
@@ -1996,9 +2102,18 @@
       "family": "Integrated soil fertility management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 233,
+      "n_rows": 271,
+      "catalogue_ids": []
+    },
+    {
+      "id": "INORGANIC_FERTILIZER_REDUCTION_ORGANIC_FERTILIZER",
+      "name_en": "Inorganic Fertilizer Reduction-Organic Fertilizer",
+      "family": "Integrated soil fertility management",
+      "challenges": [],
+      "n_rows": 2,
       "catalogue_ids": []
     },
     {
@@ -2031,10 +2146,11 @@
         "LOW_CROP_PRODUCTIVITY",
         "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
+        "PESTS_AND_DISEASES",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 573,
+      "n_rows": 886,
       "catalogue_ids": []
     },
     {
@@ -2050,6 +2166,17 @@
       "catalogue_ids": []
     },
     {
+      "id": "INTERCROPPING_MULCH_REDUCED_TILLAGE",
+      "name_en": "Intercropping-Mulch-Reduced Tillage",
+      "family": "Erosion control and water management",
+      "challenges": [
+        "MOISTURE_STRESS_DROUGHT",
+        "WATER_SCARCITY_IRRIGATION"
+      ],
+      "n_rows": 1,
+      "catalogue_ids": []
+    },
+    {
       "id": "INTERCROPPING_OR_ROTATION",
       "name_en": "Intercropping or Rotation",
       "family": "Crop production and management",
@@ -2059,7 +2186,7 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 8,
+      "n_rows": 20,
       "catalogue_ids": []
     },
     {
@@ -2068,10 +2195,11 @@
       "family": "Crop production and management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 3,
+      "n_rows": 24,
       "catalogue_ids": []
     },
     {
@@ -2096,13 +2224,14 @@
         "FEED_SHORTAGE",
         "GULLY_EROSION",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
         "WATERLOGGING_EXCESS_RUNOFF",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 213,
+      "n_rows": 287,
       "catalogue_ids": []
     },
     {
@@ -2114,7 +2243,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 153,
+      "n_rows": 254,
       "catalogue_ids": []
     },
     {
@@ -2128,9 +2257,10 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
-        "WATERLOGGING_EXCESS_RUNOFF"
+        "WATERLOGGING_EXCESS_RUNOFF",
+        "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 16,
+      "n_rows": 19,
       "catalogue_ids": []
     },
     {
@@ -2209,13 +2339,14 @@
         "FEED_SHORTAGE",
         "GULLY_EROSION",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
         "WATERLOGGING_EXCESS_RUNOFF",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 154,
+      "n_rows": 305,
       "catalogue_ids": []
     },
     {
@@ -2267,7 +2398,7 @@
         "WATERLOGGING_EXCESS_RUNOFF",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 47,
+      "n_rows": 74,
       "catalogue_ids": []
     },
     {
@@ -2277,11 +2408,13 @@
       "challenges": [
         "DEGRADED_HILLSIDES",
         "GULLY_EROSION",
+        "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
-        "WATERLOGGING_EXCESS_RUNOFF"
+        "WATERLOGGING_EXCESS_RUNOFF",
+        "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 12,
+      "n_rows": 16,
       "catalogue_ids": []
     },
     {
@@ -2289,11 +2422,24 @@
       "name_en": "Multistrata Agroforestry",
       "family": "Agro-forestry and forest management",
       "challenges": [
+        "DEFORESTATION_FUELWOOD",
+        "DEGRADED_HILLSIDES",
         "FEED_SHORTAGE",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 52,
+      "n_rows": 180,
+      "catalogue_ids": []
+    },
+    {
+      "id": "MULTISTRATA_AGROFORESTRY_PARKLANDS",
+      "name_en": "Multistrata Agroforestry-Parklands",
+      "family": "Agro-forestry and forest management",
+      "challenges": [
+        "SOIL_FERTILITY_DECLINE"
+      ],
+      "n_rows": 20,
       "catalogue_ids": []
     },
     {
@@ -2305,7 +2451,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 135,
+      "n_rows": 174,
       "catalogue_ids": []
     },
     {
@@ -2317,7 +2463,7 @@
         "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 307,
+      "n_rows": 567,
       "catalogue_ids": []
     },
     {
@@ -2326,9 +2472,10 @@
       "family": "Integrated soil fertility management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 16,
+      "n_rows": 33,
       "catalogue_ids": []
     },
     {
@@ -2339,7 +2486,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 17,
+      "n_rows": 29,
       "catalogue_ids": []
     },
     {
@@ -2388,7 +2535,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 137,
+      "n_rows": 179,
       "catalogue_ids": []
     },
     {
@@ -2398,7 +2545,7 @@
       "challenges": [
         "FEED_SHORTAGE"
       ],
-      "n_rows": 11,
+      "n_rows": 31,
       "catalogue_ids": []
     },
     {
@@ -2413,9 +2560,10 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
-        "WATERLOGGING_EXCESS_RUNOFF"
+        "WATERLOGGING_EXCESS_RUNOFF",
+        "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 11,
+      "n_rows": 46,
       "catalogue_ids": []
     },
     {
@@ -2430,9 +2578,10 @@
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
-        "WATERLOGGING_EXCESS_RUNOFF"
+        "WATERLOGGING_EXCESS_RUNOFF",
+        "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 463,
+      "n_rows": 589,
       "catalogue_ids": []
     },
     {
@@ -2441,9 +2590,10 @@
       "family": "Integrated soil fertility management",
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 64,
+      "n_rows": 166,
       "catalogue_ids": []
     },
     {
@@ -2454,7 +2604,7 @@
         "LOW_CROP_PRODUCTIVITY",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 2,
+      "n_rows": 6,
       "catalogue_ids": []
     },
     {
@@ -2468,7 +2618,7 @@
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 239,
+      "n_rows": 515,
       "catalogue_ids": []
     },
     {
@@ -2477,14 +2627,29 @@
       "family": "Erosion control and water management",
       "challenges": [
         "DEGRADED_HILLSIDES",
+        "FEED_SHORTAGE",
         "GULLY_EROSION",
         "LOW_CROP_PRODUCTIVITY",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
-        "WATERLOGGING_EXCESS_RUNOFF"
+        "WATERLOGGING_EXCESS_RUNOFF",
+        "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 27,
+      "n_rows": 35,
+      "catalogue_ids": []
+    },
+    {
+      "id": "RIDGE_TILLAGE",
+      "name_en": "Ridge farming tillage (RFT)",
+      "family": "Erosion control and water management",
+      "challenges": [
+        "FEED_SHORTAGE",
+        "LOW_CROP_PRODUCTIVITY",
+        "MOISTURE_STRESS_DROUGHT",
+        "SOIL_FERTILITY_DECLINE"
+      ],
+      "n_rows": 2,
       "catalogue_ids": []
     },
     {
@@ -2514,6 +2679,16 @@
       "catalogue_ids": [
         "CAT_22"
       ]
+    },
+    {
+      "id": "SILVOPASTURE",
+      "name_en": "Silvopasture",
+      "family": "Agro-forestry and forest management",
+      "challenges": [
+        "SOIL_FERTILITY_DECLINE"
+      ],
+      "n_rows": 4,
+      "catalogue_ids": []
     },
     {
       "id": "SOIL_BUND_VEGETATED_WITH_FORAGE_GRASS",
@@ -2630,6 +2805,18 @@
       ]
     },
     {
+      "id": "SUBSOILING",
+      "name_en": "Subsoiling",
+      "family": "Crop production and management",
+      "challenges": [
+        "LOW_CROP_PRODUCTIVITY",
+        "MOISTURE_STRESS_DROUGHT",
+        "SOIL_FERTILITY_DECLINE"
+      ],
+      "n_rows": 1,
+      "catalogue_ids": []
+    },
+    {
       "id": "SUPPLEMENTAL_IRRIGATION",
       "name_en": "Supplemental Irrigation",
       "family": "Erosion control and water management",
@@ -2641,7 +2828,7 @@
         "SOIL_FERTILITY_DECLINE",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 289,
+      "n_rows": 482,
       "catalogue_ids": []
     },
     {
@@ -2653,13 +2840,14 @@
         "FEED_SHORTAGE",
         "GULLY_EROSION",
         "LOW_CROP_PRODUCTIVITY",
+        "LOW_INCOME_MARKET_ACCESS",
         "MOISTURE_STRESS_DROUGHT",
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE",
         "WATERLOGGING_EXCESS_RUNOFF",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 407,
+      "n_rows": 1180,
       "catalogue_ids": []
     },
     {
@@ -2669,9 +2857,10 @@
       "challenges": [
         "LOW_CROP_PRODUCTIVITY",
         "MOISTURE_STRESS_DROUGHT",
+        "PESTS_AND_DISEASES",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 30,
+      "n_rows": 40,
       "catalogue_ids": []
     },
     {

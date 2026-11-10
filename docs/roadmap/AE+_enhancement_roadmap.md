@@ -1,6 +1,6 @@
 # AE+ Transform: enhancement roadmap
 
-**Version 1.0, 10 November 2026. Author: Senior AI Engineer (Claude). Owner: Misganu Tuse, Alliance of Bioversity International and CIAT.**
+**Version 1.0, 10 November 2026. Author: Senior AI Engineer. Owner: Misganu Tuse, Alliance of Bioversity International and CIAT.**
 **Status: proposal for owner and team review. Once approved it replaces the "Immediate next actions" of `progress.md` and becomes the phase plan Claude Code implements, one phase at a time.**
 
 This document turns the team discussion of 9 November 2026 into a defensible methodology and an implementation plan for the next generation of AE+ Transform: an evidence-fusion advisor that ranks agroecological practices for one location, built for Ethiopia first and designed from the start to be replicated country by country.

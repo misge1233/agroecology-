@@ -1,21 +1,52 @@
 study_id,lat,lon,loc_precision,site_name,loc_method,method,quote
-HAB_Abate_2024_01,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_02,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_03,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_04,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_05,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_06,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_07,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_08,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_09,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Abate_2024_10,10.5,37.5,district,Gozamin,geocoded_llm_unchecked,geonames:Guzamn,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
-HAB_Adame_2025_01,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
-HAB_Adame_2025_02,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
-HAB_Adame_2025_03,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
-HAB_Adame_2025_04,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
-HAB_Adame_2025_05,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
-HAB_Adame_2025_06,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
-HAB_Adame_2025_07,5.25,37.48333,district,Konso Zone,geocoded_llm_unchecked,geonames_admin:Konso,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Abate_2024_01,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_02,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_03,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_04,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_05,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_06,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_07,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_08,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_09,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Abate_2024_10,10.5,37.5,district,Gozamin,geocoded_llm_checked,reviewer_confirmed,"Field experiments were conducted in three districts (Gozamin, Hult eju enesie and Jabitenan) in North western Ethiopia in 2017 and 2018 cropping seasons."
+HAB_Adame_2025_01,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adame_2025_02,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adame_2025_03,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adame_2025_04,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adame_2025_05,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adame_2025_06,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adame_2025_07,5.25,37.483,district,"Kenna district, Konso",geocoded_llm_checked,reviewer_confirmed,"This study was initiated to gain better insight into the impact of terracing practices on the conservation of selected soil properties in Kenna District, Konso Zone, South Ethiopia Regional Government, Ethiopia."
+HAB_Adimassu_2012_01,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_02,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_03,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_04,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_05,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_06,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_07,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_08,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_09,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_10,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_11,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_12,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_13,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Adimassu_2012_14,9.07,38.1,district,"Galessa watershed, Dendi",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Central Highlands
+HAB_Araya_2010_01,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_02,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_03,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_04,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_05,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_06,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_07,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_08,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_09,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_10,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_11,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_12,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_13,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_14,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_15,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_16,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
+HAB_Araya_2010_17,13.48,39.48,site,Mekelle,geocoded_llm_checked,reviewer_knowledge,Recorded zone: Tigray Highlands
 HAB_Bartomeus_2014_Buckwheat,50.06143,19.93658,site,Krakow,geocoded_llm_unchecked,geonames:Kraków,"...buckwheat (Fagopyrum esculentum) near Krakow, Poland."
 HAB_Bartomeus_2014_FieldBean,51.45625,-0.97113,site,Reading,geocoded_llm_unchecked,geonames:Reading,"Field bean (Vicia faba) in around Reading, UK."
 HAB_Bartomeus_2014_OSR,59.85882,17.63889,site,Uppsala,geocoded_llm_unchecked,geonames:Uppsala,"Spring oilseed rape (Brassica napus) was assessed in the region around the city of Uppsala, Sweden."
@@ -59,6 +90,7 @@ HAB_Fenster_2021_15,39.688,-121.876,site,,geocoded_llm_unchecked,stated_coordina
 HAB_Fenster_2021_16,39.688,-121.876,site,,geocoded_llm_unchecked,stated_coordinates_regex,"N 39.688, W121.876 "
 HAB_Fenster_2021_17,39.688,-121.876,site,,geocoded_llm_unchecked,stated_coordinates_regex,"N 39.688, W121.876 "
 HAB_Fenster_2021_18,39.688,-121.876,site,,geocoded_llm_unchecked,stated_coordinates_regex,"N 39.688, W121.876 "
+HAB_Gebremichael_2005,13.65,39.17,district,Dogu'a Tembien (Hagere Selam),geocoded_llm_checked,reviewer_knowledge,assessments of soil loss and sediment accumulation were conducted on 202 plots at 12 representative sites in Dogu'a Tembien district.
 HAB_Hajji_2024,33.533333,-5.15,site,Ifrane,geocoded_llm_unchecked,stated_coordinates_llm_regex,"The substrate, characterised by a clay-loam texture, was collected near the town of Ifrane (33°32′ N–5°09′ W)."
 HAB_Haring_2024,37.30216,-120.48297,site,Merced County,geocoded_llm_unchecked,geonames:Merced,We evaluated their impact on weed population density and species communities across a wide geographical area in central California.
 HAB_Herrera_2026,38.29186,-122.45804,site,Sonoma County,geocoded_llm_unchecked,geonames:Sonoma,"This study investigates the farm-level economic implications of transitioning to RA in the viticulture sector, with an application to California’s North Coast region, specifically Sonoma County."
@@ -96,6 +128,7 @@ HAB_Khumairoh_2021_001_c,-7.9797,112.6304,site,Malang District,geocoded_llm_unch
 HAB_Leskovsek_2025,46.05108,14.50513,district,Ljubljana,geocoded_llm_unchecked,geonames_admin:Ljubljana,"In total, four field experiments have been conducted between 2020 and 2022 at the Agricultural Institute of Slovenia (Infrastructure Center Jablje pri Mengšu; 46°08’33.9’’ N, 14°34’21.5’’ E, 309m a.s.l.)."
 HAB_LopezSampson_2020,11.43977,-85.82749,district,Nicaragua,geocoded_llm_unchecked,geonames_admin:Rivas,Long-term effects of shade and input levels on coffee yields in the Pacific region of Nicaragua.
 HAB_Martin_2021,-14.26667,50.16667,site,Sambava,geocoded_llm_unchecked,geonames:Sambava,"Diversity Turn Research Project, Sambava, Madagascar"
+HAB_McHugh_2007,11.72,39.63,site,"Lenche Dima watershed, Gubalafto",geocoded_llm_checked,reviewer_knowledge,Recorded zone: Dry Woina Dega
 HAB_Mendez_2009,13.90111,-89.92972,site,Tacuba,geocoded_llm_unchecked,geonames:Tacuba,The study was conducted in three shade coffee farmer cooperatives in the municipality of Tacuba in western El Salvador.
 HAB_Ndayisaba_2020,0.0607,34.28806,site,Siaya,geocoded_llm_unchecked,geonames:Siaya,"We compared maize grain yield, aboveground biomass and striga emergence of push-pull system with common maize farming systems in 45 farms in three contrasting sites (Vihiga, Siaya and Bondo) in western Kenya."
 HAB_Ndengu_2022,-14.82027,34.63586,district,Ntcheu District,geocoded_llm_unchecked,geonames_admin:Ntcheu,The study was undertaken in Kandeu (Ntcheu District) and Linthipe (Dedza District) Extension Planning Areas in central Malawi.
@@ -168,14 +201,14 @@ HAB_Zama_2026_001,-28.8475,32.0025,site,Mvutshini,geocoded_llm_unchecked,stated_
 HAB_Zama_2026_001_a,-28.8475,32.0025,site,Mvutshini,geocoded_llm_unchecked,stated_coordinates_llm_regex,"Five rain-fed sugarcane plantations located in the KwaZulu-Natal province (KZN), South Africa, were used in this study."
 HAB_Zama_2026_001_b,-28.8475,32.0025,site,Mvutshini,geocoded_llm_unchecked,stated_coordinates_llm_regex,"Five rain-fed sugarcane plantations located in the KwaZulu-Natal province (KZN), South Africa, were used in this study."
 HAB_Zama_2026_001_c,-28.8475,32.0025,site,Mvutshini,geocoded_llm_unchecked,stated_coordinates_llm_regex,"Five rain-fed sugarcane plantations located in the KwaZulu-Natal province (KZN), South Africa, were used in this study."
-HAB_Zekarias_2025_001,8.67245,40.84885,district,West Harerghe,geocoded_llm_unchecked,geonames_zone_text:West Harerghe Zone,Recorded zone: West Harerghe (Tullo district)
-HAB_Zekarias_2025_001_a,8.67245,40.84885,district,West Harerghe,geocoded_llm_unchecked,geonames_zone_text:West Harerghe Zone,Recorded zone: West Harerghe (Tullo district)
-HAB_Zekarias_2025_001_b,8.67245,40.84885,district,West Harerghe,geocoded_llm_unchecked,geonames_zone_text:West Harerghe Zone,Recorded zone: West Harerghe (Tullo district)
-HAB_Zekarias_2025_001_c,8.67245,40.84885,district,West Harerghe,geocoded_llm_unchecked,geonames_zone_text:West Harerghe Zone,Recorded zone: West Harerghe (Tullo district)
-HAB_Zerihun_2014_001,9.0,37.1667,site,Bako Tibe,geocoded_llm_unchecked,geonames:Bako Tibe,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
-HAB_Zerihun_2014_001_a,9.0,37.1667,site,Bako Tibe,geocoded_llm_unchecked,geonames:Bako Tibe,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
-HAB_Zerihun_2014_001_b,9.0,37.1667,site,Bako Tibe,geocoded_llm_unchecked,geonames:Bako Tibe,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
-HAB_Zerihun_2014_001_c,9.0,37.1667,site,Bako Tibe,geocoded_llm_unchecked,geonames:Bako Tibe,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
+HAB_Zekarias_2025_001,8.67,40.85,district,"Tullo district, West Hararghe",geocoded_llm_checked,reviewer_confirmed,Recorded zone: West Harerghe (Tullo district)
+HAB_Zekarias_2025_001_a,8.67,40.85,district,"Tullo district, West Hararghe",geocoded_llm_checked,reviewer_confirmed,Recorded zone: West Harerghe (Tullo district)
+HAB_Zekarias_2025_001_b,8.67,40.85,district,"Tullo district, West Hararghe",geocoded_llm_checked,reviewer_confirmed,Recorded zone: West Harerghe (Tullo district)
+HAB_Zekarias_2025_001_c,8.67,40.85,district,"Tullo district, West Hararghe",geocoded_llm_checked,reviewer_confirmed,Recorded zone: West Harerghe (Tullo district)
+HAB_Zerihun_2014_001,9.0,37.167,site,Bako Tibe,geocoded_llm_checked,reviewer_confirmed,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
+HAB_Zerihun_2014_001_a,9.0,37.167,site,Bako Tibe,geocoded_llm_checked,reviewer_confirmed,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
+HAB_Zerihun_2014_001_b,9.0,37.167,site,Bako Tibe,geocoded_llm_checked,reviewer_confirmed,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
+HAB_Zerihun_2014_001_c,9.0,37.167,site,Bako Tibe,geocoded_llm_checked,reviewer_confirmed,On-farm experiments were conducted in two district of Western Ethiopia between 2010-2012.
 HAB_Zhang_2025_002,38.84999,114.19321,site,Fuping County,geocoded_llm_unchecked,geonames:Fuping,"The study area is located at an altitude of 302 m in the Agricultural Ecological Demonstration Park on Fuping Avenue, Baoding City, Hebei Province (115.48°E, 38.86°N)."
 HAB_Zhang_2025_002_a,38.84999,114.19321,site,Fuping County,geocoded_llm_unchecked,geonames:Fuping,"The study area is located at an altitude of 302 m in the Agricultural Ecological Demonstration Park on Fuping Avenue, Baoding City, Hebei Province (115.48°E, 38.86°N)."
 HAB_Zhang_2025_002_b,38.84999,114.19321,site,Fuping County,geocoded_llm_unchecked,geonames:Fuping,Field sampling and experiments were conducted at 72 sites in Fuping County.

@@ -75,7 +75,8 @@
 | year_from_study_id_suffix | 1,185 |
 | year_from_study_period_last_year | 412 |
 | year_missing | 20 |
-| geocoding_applied_geocoded_llm_unchecked | 417 |
+| geocoding_applied_geocoded_llm_unchecked | 381 |
+| geocoding_applied_geocoded_llm_checked | 84 |
 
 ## Coverage of key fields (share non-null)
 
@@ -84,11 +85,11 @@
 | `doi` | 92.3% |
 | `year` | 98.8% |
 | `country` | 99.4% |
-| `lat` | 25.8% |
+| `lat` | 28.8% |
 | `site_name` | 95.9% |
-| `practice_id` | 60.1% |
-| `outcome_id` | 82.2% |
-| `direction` | 31.9% |
+| `practice_id` | 93.6% |
+| `outcome_id` | 95.9% |
+| `direction` | 86.6% |
 | `crop` | 69.9% |
 | `crop_group` | 69.9% |
 | `unit` | 99.9% |
@@ -123,9 +124,9 @@
 
 | Field | Rows mapped | Share |
 |---|---:|---:|
-| `practice_id` | 971 | 60.0% |
-| `outcome_id` | 1,330 | 82.3% |
-| `direction` (reviewed) | 516 | 31.9% |
+| `practice_id` | 1,513 | 93.6% |
+| `outcome_id` | 1,551 | 95.9% |
+| `direction` (reviewed) | 1,400 | 86.6% |
 
 ## Counts against the 10 Nov profile
 
@@ -142,15 +143,15 @@
 
 ## Geocoding (E2, roadmap 5.5)
 
-Review sheet `data/evidence/review/geocoding_review.csv`: 605 studies, every row with a quote (605), quote found verbatim in the source text for 233. Accepted by a reviewer: 0.
+Review sheet `data/evidence/review/geocoding_review.csv`: 605 studies, every row with a quote (605), quote found verbatim in the source text for 233. Accepted by a reviewer: 58.
 
 | Scope | Studies | Site | District | Country | Site or district |
 |---|---:|---:|---:|---:|---:|
-| All studies | 605 | 116 | 73 | 416 | 189 (31%) |
-| Ethiopian studies | 100 | 4 | 21 | 75 | 25 (25%) |
-| Ethiopian DOIs | 14 | 1 | 3 | 10 | 4 (29%) |
+| All studies | 605 | 134 | 88 | 383 | 222 (37%) |
+| Ethiopian studies | 100 | 22 | 36 | 42 | 58 (58%) |
+| Ethiopian DOIs | 14 | 3 | 5 | 6 | 8 (57%) |
 
-Store rows by `loc_method`: none 1,200, geocoded_llm_unchecked 417. Rows with `geocoded_llm_unchecked` stay out of training (E3/E5 filter) until a reviewer accepts them.
+Store rows by `loc_method`: none 1,152, geocoded_llm_unchecked 381, geocoded_llm_checked 84. Rows with `geocoded_llm_unchecked` stay out of training (E3/E5 filter) until a reviewer accepts them.
 
 ## Countries (top 15)
 
@@ -176,18 +177,18 @@ Store rows by `loc_method`: none 1,200, geocoded_llm_unchecked 417. Rows with `g
 
 | outcome_id | Rows |
 |---|---:|
-| YIELD | 320 |
-| (null) | 287 |
+| YIELD | 327 |
 | BIODIVERSITY | 179 |
 | BIOMASS_YIELD | 81 |
-| SOIL_ORGANIC_CARBON | 68 |
-| SOIL_CARBON_STOCKS | 59 |
+| SOIL_ORGANIC_CARBON | 76 |
+| (null) | 66 |
+| SOIL_CARBON_STOCKS | 61 |
 | SOIL_MOISTURE | 42 |
 | PEST_DAMAGE | 34 |
+| SOIL_LOSS | 34 |
 | SOM_CONTENT | 34 |
-| SOIL_LOSS | 33 |
 | LAND_EQUIVALENT_RATIO | 32 |
+| SOIL_TOTAL_NITROGEN | 31 |
 | SOIL_FAUNA | 29 |
 | SOIL_ORGANIC_CARBON_CHANGE | 28 |
 | BULK_DENSITY | 27 |
-| NUTRIENT_LEACHING | 24 |

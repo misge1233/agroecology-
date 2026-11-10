@@ -16,16 +16,16 @@ no engine reads a raw file.
 | `review/habtamu_papers_missing.csv` | yes | E2: Habtamu papers with a DOI but no open-access full text (landing URL for the owner) |
 | `hab_geocoding.csv` | yes | E2: geocoding applied to the store (`geocode_sites.py --apply-geocoding`) |
 
-Last build: 2026-11-10T15:01:38+00:00 (commit `99810750c78abb8d9f59d7b4660630dc1e34d5d2`):
+Last build: 2026-11-10T17:46:44+00:00 (commit `c51e191e46d3791d39ae4f6ad09a8ec533854a3b`):
 CSA 3,344, ERA 14,792, HAB 1,617 rows.
 
 ```
 Evidence store: 19,753 rows, 1,104 studies, schema 1.1
   per source: ERA 14,792, CSA 3,344, HAB 1,617
   per country: ET 18,294, CN 143, IT 142, ES 140, US 100, IN 86, FR 63, KE 60, +45 more
-  per family: Integrated soil fertility management 8,625, Erosion control and water management 4,403, Crop production and management 3,485, Livestock production and management 1,408, Agro-forestry and forest management 1,186, (unmapped) 646
-  per objective group: productivity 9,463, economics 2,852, water 2,687, soil_health 1,627, other 1,317, livestock 1,175, resilience_biodiversity 345, (unmapped) 287
-  with coordinates: 93.6%   with var_lrr: 18.2%   with lrr: 92.6%   reviewed direction: 52.8%
+  per family: Integrated soil fertility management 8,724, Erosion control and water management 4,418, Crop production and management 3,860, Livestock production and management 1,417, Agro-forestry and forest management 1,230, (unmapped) 104
+  per objective group: productivity 10,324, economics 2,871, water 2,680, soil_health 1,677, livestock 1,236, other 415, resilience_biodiversity 374, climate 110, (unmapped) 66
+  with coordinates: 93.8%   with var_lrr: 18.2%   with lrr: 92.6%   reviewed direction: 97.3%
 ```
 
 ## Rebuild

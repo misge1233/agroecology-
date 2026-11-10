@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "built_at": "2026-11-10T15:01:38+00:00",
-  "git_commit": "99810750c78abb8d9f59d7b4660630dc1e34d5d2",
+  "built_at": "2026-11-10T17:46:44+00:00",
+  "git_commit": "c51e191e46d3791d39ae4f6ad09a8ec533854a3b",
   "n_rows": 19753,
   "rows_per_source": {
     "CSA": 3344,
@@ -70,10 +70,10 @@
     "data/taxonomy/crop_harmonisation.csv": "cebbabc2d480c21fc33ffc46bc78eccb01ddc2e08883fd837c90990d28ddbd53",
     "data/processed/CSA_ERA_final_model_ready.csv": "4c44ecaa65149971baca0729dde2e543ddcd9d4d8728e75e3e201aa81501d37e",
     "data/raw/catalogue/Catalogue 1-30 for dashboard testing.docx": "809d584770f560a581397cf60394300628664c8f89eaa52b9832509eea2a94e1",
-    "data/taxonomy/practices.csv": "c629a3510853f9f264d9aeb135a85a001a85403d1783bc1202ea672611430511",
-    "data/taxonomy/practice_aliases.csv": "1484954b19ed811a7fcf18f276e52d2100a17cb7b1e647fe6da40c7e4c75eb30",
-    "data/taxonomy/outcomes.csv": "59c5ef38c118d1a332d35c89cd1ee1deb507e3013b68766715a12e4a8c681438",
-    "data/taxonomy/outcome_aliases.csv": "2874745e5b2f6ae61025d843b341d2e67a8741d52e7d0d597799ae192d7eedb3",
+    "data/taxonomy/practices.csv": "ff4175390bf358d8923eb74289b3ff415a3bab998d256e50d856b75e47b6141a",
+    "data/taxonomy/practice_aliases.csv": "38c5543822163c1fd5c57b67e864d6b64a7f1cec8deb1a2bb5bfac9140bbacd0",
+    "data/taxonomy/outcomes.csv": "fa4ee831cd5ae72342157d91a94f7da860beb763973e6117f6ec7da21d8c322b",
+    "data/taxonomy/outcome_aliases.csv": "fcb0bcfc25fd6cbb4326a4c2e939a6122f586ad9e98cdb2330a3ed3219143936",
     "data/taxonomy/challenges.csv": "557e4d3e4d79cf67d74bce0409df0d8030ca3790ebeb89df82dc5836b59cb35a"
   },
   "weights": {
@@ -116,13 +116,13 @@
     "practices": {
       "ERA": 1.0,
       "CSA": 1.0,
-      "HAB": 0.6005,
+      "HAB": 0.9357,
       "CAT": 1.0
     },
     "outcomes": {
       "ERA": 1.0,
       "CSA": 1.0,
-      "HAB": 0.8225
+      "HAB": 0.9592
     }
   },
   "habtamu_grist_rows": 1617,

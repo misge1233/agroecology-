@@ -1,4 +1,177 @@
 alias,source,practice_id,method,confidence,accepted,reviewer,date,notes
+Organic farming,HAB,ORGANIC_FARMING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Biodiversity-based pest control,HAB,BIODIVERSITY_BASED_PEST_CONTROL,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Increased semi-natural habitat cover,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Gymnopleurus sturmi + dung,HAB,DUNG_BEETLE_INTRODUCTION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Complex Rice System (CRS: rice + azolla + fish + ducks + border plants),HAB,INTEGRATED_RICE_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Insect pollination,HAB,INSECT_POLLINATION_SERVICE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cover crops (CC),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Bacillus-amended biofertilizer (BF),HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+SRI,HAB,SYSTEM_OF_RICE_INTENSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+STRIP (3 m),HAB,FIELD_MARGINS_AND_HABITAT_STRIPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Ridge farming tillage (RFT),HAB,RIDGE_TILLAGE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Functional crop diversification,HAB,CROP_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (Bladen, NE)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Agroecological farming system,HAB,AGROECOLOGICAL_FARMING_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Regenerative almond system,HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Agroecological farming practices,HAB,AGROECOLOGICAL_FARMING_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Higher Regenerative Farming Index (RFI),HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Open insect pollination,HAB,INSECT_POLLINATION_SERVICE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Ecohydrological NbS,HAB,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High tree species richness in forest fragments,HAB,FOREST_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Tillage termination,HAB,REDUCED_TILLAGE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Chickpea + Barley (100:100),HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+CRS,HAB,INTEGRATED_RICE_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Sunflower–durum wheat (CS),HAB,CROP_ROTATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Gmelina + Mango + Pigeon pea,HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Regenerative almond management,HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Increased non-crop land cover near fields,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Livestock-based Integrated Farming System (LIFS),HAB,INTEGRATED_CROP_LIVESTOCK_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+BA+FU (50% fertilizer + bacteria + fungi),HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+winter rye cover crop following corn,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+roller crimper (RC) ASC termination,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Farming with Alternative Pollinators (FAP),HAB,FARMING_WITH_ALTERNATIVE_POLLINATORS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Trichoderma spp.,HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Floating Treatment Wetland (FTW),HAB,CONSTRUCTED_WETLAND,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Agri-environment scheme (AES),HAB,AGRI_ENVIRONMENT_SCHEME,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Permanent vegetation cover (PVC),HAB,PERMANENT_GROUND_COVER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Adjacent natural vegetation,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cover crop mixture,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High ratio of natural/semi-natural habitat within 500 m radius,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+open panicles (accessible to vertebrates and arthropods),HAB,BIODIVERSITY_BASED_PEST_CONTROL,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"long-term tree presence (near tree trunk, 0–10 cm depth)",HAB,PARKLANDS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+tree and herbaceous corridor (THC),HAB,OTHER_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+agroecological family farm management,HAB,AGROECOLOGICAL_FARMING_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cajanus cajan cover crop (Series 2),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"mycorrhiza-based biofertilizer (""Technofert"" nursery inoculation)",HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+organic farming systems (pesticide/mineral fertilizer restrictions),HAB,ORGANIC_FARMING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+maximizing ecosystem services system (maximising-ES: margins + in-field strips + cover crops + organic matter),HAB,AGROECOLOGICAL_FARMING_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+RT,HAB,REDUCED_TILLAGE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Rye (R),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Onthophagus marginalis andalusicus + dung,HAB,DUNG_BEETLE_INTRODUCTION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cover cropping,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Organic farming (D2+O2),HAB,ORGANIC_FARMING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Italian ryegrass + crimson clover + Persian clover (RCC),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Functionally diverse cover crop mix,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Winter cover crop + grassland set-aside,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Regenerative corn production system,HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hairy vetch + cereal rye cover crops under CP,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High ratio of natural/semi-natural habitat within 1000 m radius,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High aphid predation rate,HAB,BIODIVERSITY_BASED_PEST_CONTROL,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Small mean field size (<6 ha),HAB,LANDSCAPE_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High diversity of crop types available in the landscape,HAB,LANDSCAPE_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+pure rye cover crop (CC),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+mixture of faba bean/Indian mustard/phacelia CC,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"cage exclusion (accessible to arthropods, excluded vertebrates)",HAB,BIODIVERSITY_BASED_PEST_CONTROL,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High ecological crop functional diversity,HAB,CROP_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+perennial bioenergy crop (P-BC),HAB,PERENNIAL_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"improved live fence practice (near trees, 0–10 cm depth)",HAB,LIVE_FENCE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+shrub and herbaceous corridor (SHC),HAB,OTHER_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Mucuna pruriens cover crop (Series 2),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+regenerative management (RegG farm-scale integrated loop),HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+system of rice intensification water management (SRI-W),HAB,SYSTEM_OF_RICE_INTENSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+native perennial wildland buffer conservation,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+long-term oak woodland/savanna protection (2018),HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+organic farming fields across high landscape complexity,HAB,ORGANIC_FARMING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+enhancing ecosystem services system (enhancing-ES: wildflower margins + cover crops),HAB,FIELD_MARGINS_AND_HABITAT_STRIPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+legume cover crop planting (Vicia sativa),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+legume cover crop planting (Vicia villosa),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+legume cover crop planting (Mucuna pruriens),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+native perennial plant species components,HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+tree crop components (life-form),HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+8-year-old pear orchard land use (F8),HAB,OTHER_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Trichoderma-amended biofertilizer (MF),HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+AMF-biofertilizer,HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+SRI without compost,HAB,SYSTEM_OF_RICE_INTENSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Semi-natural cover heterogeneity,HAB,LANDSCAPE_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Oat–Radish mixture (alternate rows),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Vetch–Oat mixture (within row),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Vetch–Radish mixture (alternate rows),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hairy vetch + crimson clover (VC),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Phacelia + white mustard (PM),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Onthophagus vacca + dung,HAB,DUNG_BEETLE_INTRODUCTION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Improved forage condition,HAB,PASTURE_MANAGEMENT,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+STRIP_VAR,HAB,FIELD_MARGINS_AND_HABITAT_STRIPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+STRIP_ADD,HAB,FIELD_MARGINS_AND_HABITAT_STRIPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Pixel cropping,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Natural revegetation (shrubland),HAB,NATURAL_REGENERATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Bokashi + biodynamic preparations (P502–P507),HAB,ORGANIC_FERTILIZER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Bokashi + Calcarea carbonica 12 CH,HAB,ORGANIC_FERTILIZER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+W100+L150,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+W150+L100,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+W150+L150,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+W200+L100,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+W200+L150,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Biochar (9 t ha⁻¹ yr⁻¹) without N fertilizer,HAB,BIOCHAR,llm,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Organic farming soils (D1,D2,O1,O2)",HAB,ORGANIC_FARMING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Open ridge tillage,HAB,RIDGE_TILLAGE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Related crop diversification,HAB,CROP_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Permanent green fallow,HAB,IMPROVED_FALLOW,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Infiltration pits (IF),HAB,IN_SITU_WATER_HARVESTING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Organic inversion tillage (O-IT),HAB,ORGANIC_FARMING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hairy vetch + cereal rye cover crops under MP,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cassava spacing 2 m × 0.5 m,HAB,PLANT_SPACING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+8-species mixture (M8),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Squarrosum clover (S),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+SGTR-CI (Simarouba glauca + Tabebuia rosea; intensive conventional),HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+SSTR-OI (Samanea saman + Tabebuia rosea; intensive organic),HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+SGTR-OI (Simarouba glauca + Tabebuia rosea; intensive organic),HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+ILSG-CM (Inga laurina + Simarouba glauca; moderate conventional),HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Tabebuia rosea in SGTR-CM,HAB,MULTISTRATA_AGROFORESTRY,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+SRA without fertilizer,HAB,SYSTEM_OF_RICE_INTENSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Ecohydrological NbS using wooden runoff-regulating barriers and vegetation restoration,HAB,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Insect pollination (open flowers),HAB,INSECT_POLLINATION_SERVICE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High woody-species diversity,HAB,FOREST_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Forest habitat conservation,HAB,FOREST_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Local-field agrobiodiversity,HAB,CROP_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Crop mosaic heterogeneity,HAB,LANDSCAPE_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Oat–Radish mixture (within row),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Vetch–Oat mixture (alternate rows),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Vetch–Radish mixture (within row),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Service crop termination at budburst,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Budburst termination,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Uniform cover crop mix,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cover crop cover increase,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Improved proximity of woody vegetation to production areas,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Improved proximity of woody vegetation,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+High ecological condition,HAB,LANDSCAPE_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Aggregated woody vegetation patches,HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Cover crop (COVER),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T40–V60 (40% triticale + 60% vetch),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T60–V40 (60% triticale + 40% vetch),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T40–F60 (40% triticale + 60% fenugreek),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T60–F40 (60% triticale + 40% fenugreek),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T40–V60,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T60–V40,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T40–F60,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+T60–F40,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Winter cover crop only,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+CRS (rice+azolla+fish+ducks+border plants),HAB,INTEGRATED_RICE_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Duck integration,HAB,INTEGRATED_RICE_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Duck presence,HAB,INTEGRATED_RICE_SYSTEM,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Bokashi + Chamomilla 12 CH,HAB,ORGANIC_FERTILIZER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Bokashi + Carbo vegetabilis 12 CH,HAB,ORGANIC_FERTILIZER,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (York, NE)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (Bismarck, ND)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (Toronto, SD)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (Gary, SD)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (Arlington, SD)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+"Regenerative agriculture (Lake Norden, SD)",HAB,REGENERATIVE_AGRICULTURE,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Wheat 100+Lentile 100,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+W100+L100,HAB,INTERCROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Wheat+ Maize border trap crop,HAB,TRAP_CROPPING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Increased functional diversity of trees,HAB,FOREST_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Reduction of invasive tree species,HAB,INVASIVE_SPECIES_CONTROL,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Subsoiling,HAB,SUBSOILING,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Increased total plant diversity (surrounding natural vegetation),HAB,SEMI_NATURAL_HABITAT_CONSERVATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Increased crop diversity,HAB,CROP_DIVERSIFICATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+BA (F50 + bacterial biofertilizer),HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+BA + FU (F50 + bacteria + fungi biofertilizer),HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+BA(Bactrial) +FU(Fungie (50% fertilizer + bacteria + fungi),HAB,BIOFERTILIZER_INOCULATION,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hairy vetch + cereal rye cover crops under NT,HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hairy vetch + cereal rye cover crops under CP (Chisel plow),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Hairy vetch + cereal rye cover crops under MP (Moldboard plow),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
+Oat monocrop (O),HAB,COVER_CROPS,manual,1.00,yes,Misganu T.,2026-11-10,from review sheet
 Conservation tillage,CSA,CONSERVATION_TILLAGE,exact,1.00,,,2026-11-10,
 drip irrigation,CSA,DRIP_IRRIGATION,exact,1.00,,,2026-11-10,
 Exclosure,CSA,EXCLOSURE,exact,1.00,,,2026-11-10,
@@ -8,7 +181,7 @@ ISFM,CSA,ISFM,exact,1.00,,,2026-11-10,
 agronomic/biological SWCP,CSA,AGRONOMIC_BIOLOGICAL_SWCP,exact,1.00,,,2026-11-10,
 Animal feed management,CSA,ANIMAL_FEED_MANAGEMENT,exact,1.00,,,2026-11-10,
 Biological SWC practices,CSA,BIOLOGICAL_SWC_PRACTICES,exact,1.00,,,2026-11-10,
-Deficit irrigation,CSA,DEFICIT_IRRIGATION_CSA,exact,1.00,,,2026-11-10,
+Deficit irrigation,CSA,DEFICIT_IRRIGATION_ERA,exact,1.00,,Misganu T.,2026-11-10,moved from DEFICIT_IRRIGATION_CSA (Misganu T. 2026-11-10)
 Drought tolerrant crops,CSA,DROUGHT_TOLERRANT_CROPS,exact,1.00,,,2026-11-10,
 IWM,CSA,IWM,exact,1.00,,,2026-11-10,
 Physical + biological SWC practices,CSA,PHYSICAL_PLUS_BIOLOGICAL_SWC_PRACTICES,exact,1.00,,,2026-11-10,
