@@ -195,7 +195,35 @@ def get_guidance_retriever() -> Any:
         _guidance_unavailable = True
         logger.warning("Guidance retriever unavailable (%s) — Tier-2 disabled.", exc)
         return None
+    _guidance_retriever = _with_guidelines(_guidance_retriever, settings)
     return _guidance_retriever
+
+
+def _with_guidelines(tier2: Any, settings: Any) -> Any:
+    """Tier 2 fused with the Tier 2b guidelines (E2), or Tier 2 unchanged.
+
+    Disabled (``RAG_GUIDELINES_ENABLED=false``), not built (chunks file or
+    collection missing) or failing: the Tier 2 retriever object is returned as
+    is, so the documented path behaves exactly as before E2.
+    """
+    if not settings.rag_guidelines_enabled:
+        return tier2
+    path = settings.resolved_rag_guidelines_chunks_path
+    if not path.is_file():
+        logger.info("Guidelines corpus not built (%s missing) — Tier 2b disabled.", path)
+        return tier2
+    try:
+        from rag.retrieve import GUIDELINES_COLLECTION, RagRetriever, TieredRetriever
+
+        guidelines = RagRetriever(
+            index_dir=settings.resolved_rag_index_dir, chunks_path=path,
+            api_key=settings.openai_api_key or None, collection=GUIDELINES_COLLECTION,
+        )
+    except Exception as exc:
+        logger.warning("Guidelines retriever unavailable (%s) — Tier 2 only.", exc)
+        return tier2
+    logger.info("Documented path: Tier 2 guidance + Tier 2b guidelines (chunks=%s).", path)
+    return TieredRetriever([tier2, guidelines])
 
 
 # --------------------------------------------------------------- graph layer
@@ -375,6 +403,8 @@ def _safe_int(value: Any) -> int | None:
 def study_key(chunk: dict[str, Any], index: int) -> str:
     """The provenance key one chunk is grouped under: era_code for Tier 1,
     url/doi/title for Tier 2/3; two unidentifiable chunks never collapse."""
+    if chunk.get("tier") == "guidelines" and chunk.get("doc_id"):
+        return f"{chunk['doc_id']}#p{chunk.get('page')}"  # E2: one citation per guideline page
     return str(chunk.get("era_code") or chunk.get("url") or chunk.get("doi")
                or chunk.get("title") or f"chunk-{index}")
 
@@ -397,7 +427,7 @@ def group_chunks_by_study(chunks: list[dict[str, Any]]) -> list[tuple[str, list[
     return [(key, groups[key]) for key in order]
 
 
-_TIER_PREFIX = {"evidence": "", "guidance": "G", "practice": "W"}
+_TIER_PREFIX = {"evidence": "", "guidance": "G", "guidelines": "G", "practice": "W"}
 
 
 def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -412,13 +442,15 @@ def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     tier, in the same order as the prompt labels.
     """
     citations: list[dict[str, Any]] = []
-    counters: dict[str, int] = {"evidence": 0, "guidance": 0, "practice": 0}
+    # Numbered per PREFIX (E2): Tier 2 guidance and Tier 2b guidelines share [Gn].
+    counters: dict[str, int] = {}
     for _, group in group_chunks_by_study(chunks):
         c = group[0]
         tier = c.get("tier") or "evidence"
-        counters[tier] = counters.get(tier, 0) + 1
+        prefix = _TIER_PREFIX.get(tier, "")
+        counters[prefix] = counters.get(prefix, 0) + 1
         text = (c.get("text") or "").strip()
-        citations.append({
+        cit = {
             "era_code": c.get("era_code"),
             "tier": tier,
             "doi": c.get("doi"),
@@ -429,8 +461,12 @@ def shape_citations(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "practice": c.get("for_practice"),
             "snippet": text[:SNIPPET_CHARS],
             "n_passages": len(group),
-            "ref": f"{_TIER_PREFIX.get(tier, '')}{counters[tier]}",
-        })
+            "ref": f"{prefix}{counters[prefix]}",
+        }
+        if tier == "guidelines":  # "MoA 2016, Guidelines for ..., p. 34"
+            cit.update(title=c.get("citation") or c.get("title"), page=_safe_int(c.get("page")),
+                       doc_id=c.get("doc_id"), language=c.get("language"))
+        citations.append(cit)
     # C2/C3: CGSpace titles and handle pages for guidance (identity-preserving).
     from app.services.source_meta import enrich_citation
     return [enrich_citation(c) for c in citations]
@@ -896,7 +932,8 @@ def howto_steps(
     passages = []
     for i, (_, group) in enumerate(group_chunks_by_study(guidance_chunks), start=1):
         body = "\n".join((c.get("text") or "").strip() for c in group)
-        passages.append(f"[G{i}] {group[0].get('title')} (for {group[0].get('for_practice')})\n{body}")
+        label = group[0].get("citation") or group[0].get("title")  # guideline pages carry "..., p. n"
+        passages.append(f"[G{i}] {label} (for {group[0].get('for_practice')})\n{body}")
     messages = [
         {"role": "system", "content": HOWTO_PROMPT + "\n" + reply_instruction(language)},
         {"role": "user", "content": "PRACTICES:\n" + "\n".join(f"- {p}" for p in practices)

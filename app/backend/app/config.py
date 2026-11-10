@@ -56,6 +56,28 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("RAG_GUIDANCE_CHUNKS_PATH"),
     )
 
+    # Tier 2b government guidelines (E2): a separate Chroma collection
+    # ("guidelines") fused with Tier 2 on the documented path. false = Tier 2
+    # alone, exactly as before E2.
+    rag_guidelines_enabled: bool = Field(default=True, validation_alias=AliasChoices("RAG_GUIDELINES_ENABLED"))
+    rag_guidelines_chunks_path: str = Field(
+        default="../../rag/corpus/guidelines/chunks.jsonl",
+        validation_alias=AliasChoices("RAG_GUIDELINES_CHUNKS_PATH"),
+    )
+
+    # Evidence store outputs (Phase E1): registry_<CC>.json lives here; the
+    # country configurations (countries/<CC>.yaml) tell an unknown country
+    # (404) from a known one whose registry is not built yet (503). Relative
+    # paths resolve against backend_root, mirroring RAG_INDEX_DIR.
+    evidence_dir: str = Field(
+        default="../../data/evidence",
+        validation_alias=AliasChoices("EVIDENCE_DIR"),
+    )
+    countries_dir: str = Field(
+        default="../../countries",
+        validation_alias=AliasChoices("COUNTRIES_DIR"),
+    )
+
     # OpenAI chat — set OPENAI_API_KEY in backend/.env; model/URL live in openai_chat.py
     openai_api_key: str = ""
     openai_timeout_seconds: float = Field(
@@ -129,6 +151,24 @@ class Settings(BaseSettings):
     def resolved_rag_chunks_path(self) -> Path:
         """Absolute path of the corpus chunks JSONL (RAG_CHUNKS_PATH)."""
         p = Path(self.rag_chunks_path)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
+
+    @property
+    def resolved_rag_guidelines_chunks_path(self) -> Path:
+        """Absolute path of the Tier 2b guidelines chunks JSONL (optional)."""
+        p = Path(self.rag_guidelines_chunks_path)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
+
+    @property
+    def resolved_evidence_dir(self) -> Path:
+        """Absolute path of the evidence-store output folder (EVIDENCE_DIR)."""
+        p = Path(self.evidence_dir)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
+
+    @property
+    def resolved_countries_dir(self) -> Path:
+        """Absolute path of the country configurations (COUNTRIES_DIR)."""
+        p = Path(self.countries_dir)
         return p if p.is_absolute() else (self.backend_root / p).resolve()
 
     @property

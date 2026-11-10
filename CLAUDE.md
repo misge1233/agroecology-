@@ -11,6 +11,7 @@ at a time and report; you do not decide the roadmap.
 2. `README.md` — system overview and repo layout.
 3. `docs/decisions/rag_design.md` — the RAG design record (binding).
    Also binding: `docs/decisions/evidence_fusion.md` — evidence fusion (1 Nov 2026).
+   Also binding: `docs/decisions/enhancement_v2.md` — enhancement v2 decisions (10 Nov 2026).
 4. `research_project_plan.md` (one level up, project root) — the overall plan,
    if broader context is needed.
 

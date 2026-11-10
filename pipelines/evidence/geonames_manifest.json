@@ -1,0 +1,13 @@
+{
+  "purpose": "Gazetteer for geocode_sites.py (brief E2 B2). Downloaded once into pipelines/evidence/cache/geonames/ (git-ignored).",
+  "licence": "CC BY 4.0, GeoNames (https://www.geonames.org/); attribution shown on the review map",
+  "downloaded_on": "2026-11-10",
+  "files": [
+    {"file": "ET.zip", "url": "https://download.geonames.org/export/dump/ET.zip", "unzipped": "ET.txt", "use": "all Ethiopian features (classes P and A used)"},
+    {"file": "cities500.zip", "url": "https://download.geonames.org/export/dump/cities500.zip", "unzipped": "cities500.txt", "use": "populated places of every other country; world bounding boxes"},
+    {"file": "admin1CodesASCII.txt", "url": "https://download.geonames.org/export/dump/admin1CodesASCII.txt", "use": "admin-1 names for admin agreement"},
+    {"file": "admin2Codes.txt", "url": "https://download.geonames.org/export/dump/admin2Codes.txt", "use": "admin-2 names (reference)"},
+    {"file": "countryInfo.txt", "url": "https://download.geonames.org/export/dump/countryInfo.txt", "use": "country metadata (reference)"}
+  ],
+  "command": "for f in ET.zip cities500.zip admin1CodesASCII.txt admin2Codes.txt countryInfo.txt; do curl -fL -o pipelines/evidence/cache/geonames/$f https://download.geonames.org/export/dump/$f; done; cd pipelines/evidence/cache/geonames && unzip -o ET.zip && unzip -o cities500.zip"
+}

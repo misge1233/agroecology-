@@ -16,6 +16,12 @@ Two tiers, never mixed (P5a): the same class serves Tier 1 evidence
 BM25 over its own chunks, so the hybrid machinery is shared but the corpora
 stay strictly separate.
 
+Tier 2b (E2): the ``guidelines`` collection (government guidelines, page-level
+chunks) is a third, separate collection. :class:`TieredRetriever` fuses the
+ranked lists of several tiers with the same RRF used inside each tier, and
+every hit carries its ``tier`` tag. ``RAG_GUIDELINES_ENABLED=false`` (env or
+``app/backend/.env``; default true) leaves the Tier 2 path exactly as before.
+
 Usage (library):
     from rag.retrieve import RagRetriever
     r = RagRetriever(index_dir=".../rag/index/store", chunks_path=".../rag/corpus/chunks.jsonl")
@@ -35,6 +41,7 @@ EMBED_MODEL = "text-embedding-3-small"
 EMBED_URL = "https://api.openai.com/v1/embeddings"
 COLLECTION = "era_corpus"
 GUIDANCE_COLLECTION = "guidance_corpus"
+GUIDELINES_COLLECTION = "guidelines"   # Tier 2b, government guidelines (E2)
 RRF_K = 60          # standard reciprocal-rank-fusion constant
 CANDIDATES = 40     # candidates per retriever before fusion
 
@@ -200,7 +207,8 @@ class RagRetriever:
         for cid in fused[:k]:
             c = self._by_id.get(cid)
             if c:
-                out.append(c)
+                # tier tag on every hit (E2); Tier 1 chunks carry none on disk
+                out.append(c if c.get("tier") else {**c, "tier": "evidence"})
         return out
 
     def retrieve_for_recommendation(self, recommendation: dict[str, Any],
@@ -225,6 +233,55 @@ class RagRetriever:
         return out[:k]
 
 
+class TieredRetriever:
+    """Several tier retrievers behind one interface, fused by reciprocal-rank fusion.
+
+    Each tier keeps its own collection and BM25 (the corpora are never mixed in
+    one index); this class only fuses the per-tier ranked lists with the same
+    RRF constant the tiers use internally, so a guideline page competes with a
+    Tier 2 passage on rank, not on raw score. Hits keep their ``tier`` tag.
+    """
+
+    def __init__(self, retrievers: list[Any], per_tier: int = CANDIDATES) -> None:
+        if not retrievers:
+            raise ValueError("TieredRetriever needs at least one retriever")
+        self.retrievers = list(retrievers)
+        self.per_tier = per_tier
+
+    def retrieve(self, query: str, k: int = 8) -> list[dict[str, Any]]:
+        lists: list[list[str]] = []
+        by_id: dict[str, dict[str, Any]] = {}
+        for r in self.retrievers:
+            hits = r.retrieve(query, k=max(k, min(self.per_tier, 3 * k)))
+            lists.append([h["chunk_id"] for h in hits])
+            for h in hits:
+                by_id.setdefault(h["chunk_id"], h)
+        return [by_id[cid] for cid in RagRetriever._rrf(lists)[:k]]
+
+    # same per-practice loop as a single tier (it only calls self.retrieve)
+    retrieve_for_recommendation = RagRetriever.retrieve_for_recommendation
+
+
+def _env_flag(name: str, default: bool = True) -> bool:
+    """Boolean setting from the environment, else app/backend/.env, else ``default``."""
+    value = os.environ.get(name, "").strip()
+    if not value:
+        env_path = Path(__file__).resolve().parents[1] / "app" / "backend" / ".env"
+        if env_path.exists():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                if line.strip().startswith(f"{name}="):
+                    value = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    break
+    if not value:
+        return default
+    return value.lower() not in ("0", "false", "no", "off")
+
+
+def guidelines_enabled() -> bool:
+    """``RAG_GUIDELINES_ENABLED`` (default true)."""
+    return _env_flag("RAG_GUIDELINES_ENABLED", True)
+
+
 @lru_cache
 def default_retriever() -> RagRetriever:
     """Retriever wired to the standard locations (RAG_INDEX_DIR honored)."""
@@ -244,6 +301,26 @@ def default_guidance_retriever() -> RagRetriever:
     return RagRetriever(index_dir=_find_index_dir(root / "index" / "store"),
                         chunks_path=root / "corpus" / "guidance" / "chunks.jsonl",
                         collection=GUIDANCE_COLLECTION)
+
+
+@lru_cache
+def default_guidelines_retriever() -> RagRetriever:
+    """Tier 2b guidelines retriever at the repo's standard locations (raises if not built)."""
+    root = Path(__file__).resolve().parent
+    return RagRetriever(index_dir=_find_index_dir(root / "index" / "store"),
+                        chunks_path=root / "corpus" / "guidelines" / "chunks.jsonl",
+                        collection=GUIDELINES_COLLECTION)
+
+
+def default_documented_retriever() -> Any:
+    """Tier 2 guidance plus, when enabled and built, Tier 2b guidelines (tiered)."""
+    tiers: list[Any] = [default_guidance_retriever()]
+    if guidelines_enabled():
+        try:
+            tiers.append(default_guidelines_retriever())
+        except Exception:  # not built: Tier 2 alone, as before
+            pass
+    return tiers[0] if len(tiers) == 1 else TieredRetriever(tiers)
 
 
 if __name__ == "__main__":

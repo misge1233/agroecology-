@@ -1,0 +1,132 @@
+source,crop_raw,crop,crop_group,n_rows,method
+ERA,Alfalfa,Alfalfa,Forage,1,derived_from_frozen_model_ready
+ERA,Arabica,Coffee,Perennial-Cash,17,derived_from_frozen_model_ready
+ERA,Banana Sweet,Banana,Fruit,12,derived_from_frozen_model_ready
+ERA,Barley,Barley,Cereal,659,derived_from_frozen_model_ready
+ERA,Barley-Chickpea-Common Bean-Maize-Sorghum-Teff-Wheat,Barley-Chickpea-Common Bean-Maize-Sorghum-Teff-Wheat,Cereal-Legume,5,derived_from_frozen_model_ready
+ERA,Barley-Chickpea-Indian Pea-Lentil-Teff-Wheat,Barley-Chickpea-Indian Pea-Lentil-Teff-Wheat,Cereal-Legume,18,derived_from_frozen_model_ready
+ERA,Barley-Chickpea-Wheat,Barley-Chickpea-Wheat,Cereal-Legume,22,derived_from_frozen_model_ready
+ERA,Barley-Common Bean-Finger Millet-Teff-Wheat,Barley-Common Bean-Finger Millet-Teff-Wheat,Cereal-Legume,2,derived_from_frozen_model_ready
+ERA,Barley-Common Bean-Linseed-Peas-Teff-Wheat,Barley-Common Bean-Linseed-Peas-Teff-Wheat,Mixed cropping,3,derived_from_frozen_model_ready
+ERA,Barley-Fava Bean-Maize-Teff-Wheat,Barley-Fava Bean-Maize-Teff-Wheat,Cereal-Legume,1,derived_from_frozen_model_ready
+ERA,Barley-Indian Pea-Teff-Wheat,Barley-Indian Pea-Teff-Wheat,Cereal-Legume,14,derived_from_frozen_model_ready
+ERA,Barley-Peas-Teff-Wheat,Barley-Peas-Teff-Wheat,Cereal-Legume,38,derived_from_frozen_model_ready
+ERA,Brachiaria hybrid,Brachiaria hybrid,Forage,50,derived_from_frozen_model_ready
+ERA,Cabbage,Cabbage,Vegetable,1,derived_from_frozen_model_ready
+ERA,Canola,Rapeseed,Oilseed,18,derived_from_frozen_model_ready
+ERA,Capsicum,Pepper,Vegetable,4,derived_from_frozen_model_ready
+ERA,Carrot,Carrot,Vegetable,41,derived_from_frozen_model_ready
+ERA,Cattle,Cattle,Livestock,5,derived_from_frozen_model_ready
+ERA,Chickpea,Chickpea,Pulse,71,derived_from_frozen_model_ready
+ERA,Coffee,Coffee,Perennial-Cash,30,derived_from_frozen_model_ready
+ERA,Common Bean,Common bean,Pulse,351,derived_from_frozen_model_ready
+ERA,Common Bean-Maize,Common Bean-Maize,Cereal-Legume,45,derived_from_frozen_model_ready
+ERA,Cowpea,Cowpea,Pulse,94,derived_from_frozen_model_ready
+ERA,Cowpea-Maize,Cowpea-Maize,Cereal-Legume,1,derived_from_frozen_model_ready
+ERA,Desho Grass,Desho Grass,Forage,16,derived_from_frozen_model_ready
+ERA,Durum Wheat,Wheat,Cereal,10,derived_from_frozen_model_ready
+ERA,Durum Wheat-Lentil-Teff,Durum Wheat-Lentil-Teff,Cereal-Legume,8,derived_from_frozen_model_ready
+ERA,Fava Bean,Faba bean,Pulse,217,derived_from_frozen_model_ready
+ERA,Finger Millet,Finger millet,Cereal,39,derived_from_frozen_model_ready
+ERA,Fodder (Natural Vegetation),Fodder (Natural Vegetation),Forage,54,derived_from_frozen_model_ready
+ERA,Fodder Legume,Fodder Legume,Forage,41,derived_from_frozen_model_ready
+ERA,Fodder Legume-Oats,Fodder Legume-Oats,Mixed cropping,1,derived_from_frozen_model_ready
+ERA,Fodder Tree,Fodder Tree,Forage,8,derived_from_frozen_model_ready
+ERA,Garlic,Garlic,Vegetable,11,derived_from_frozen_model_ready
+ERA,Garlic-Onion-Pepper,Garlic-Onion-Pepper,Vegetable,2,derived_from_frozen_model_ready
+ERA,Ginger,Ginger,Root & tuber,94,derived_from_frozen_model_ready
+ERA,Hairy Vetch,Hairy Vetch,Forage,16,derived_from_frozen_model_ready
+ERA,Hairy Vetch-Maize,Hairy Vetch-Maize,Mixed cropping,1,derived_from_frozen_model_ready
+ERA,Indian Pea,Grass pea,Pulse,20,derived_from_frozen_model_ready
+ERA,Lablab,Lablab,Pulse,6,derived_from_frozen_model_ready
+ERA,Lablab-Maize,Lablab-Maize,Cereal-Legume,1,derived_from_frozen_model_ready
+ERA,Lentil,Lentil,Pulse,47,derived_from_frozen_model_ready
+ERA,Lupin,Lupin,Pulse,12,derived_from_frozen_model_ready
+ERA,Lupin-Teff,Lupin-Teff,Cereal-Legume,6,derived_from_frozen_model_ready
+ERA,Maize,Maize,Cereal,1596,derived_from_frozen_model_ready
+ERA,Maize-Potato,Maize-Potato,Mixed cropping,6,derived_from_frozen_model_ready
+ERA,Maize-Sorghum,Maize-Sorghum,Cereal,3,derived_from_frozen_model_ready
+ERA,Mung Bean,Mungbean,Pulse,27,derived_from_frozen_model_ready
+ERA,Mung Bean-Sorghum,Mung Bean-Sorghum,Cereal-Legume,8,derived_from_frozen_model_ready
+ERA,Oats,Oat,Cereal,1,derived_from_frozen_model_ready
+ERA,Onion,Onion,Vegetable,403,derived_from_frozen_model_ready
+ERA,Pearl Millet,Pearl millet,Cereal,326,derived_from_frozen_model_ready
+ERA,Peas,Field pea,Pulse,72,derived_from_frozen_model_ready
+ERA,Pepper,Pepper,Vegetable,66,derived_from_frozen_model_ready
+ERA,Potato,Potato,Root & tuber,335,derived_from_frozen_model_ready
+ERA,Purple Vetch,Purple Vetch,Forage,3,derived_from_frozen_model_ready
+ERA,Rice,Rice,Cereal,150,derived_from_frozen_model_ready
+ERA,Sesame,Sesame,Oilseed,417,derived_from_frozen_model_ready
+ERA,Sheep,Sheep,Livestock,2,derived_from_frozen_model_ready
+ERA,Sorghum,Sorghum,Cereal,584,derived_from_frozen_model_ready
+ERA,Soybean,Soybean,Pulse,36,derived_from_frozen_model_ready
+ERA,Spring Onion,Spring Onion,Vegetable,6,derived_from_frozen_model_ready
+ERA,Sweet Potato,Sweet potato,Root & tuber,120,derived_from_frozen_model_ready
+ERA,Teff,Teff,Cereal,1154,derived_from_frozen_model_ready
+ERA,Tomato,Tomato,Vegetable,12,derived_from_frozen_model_ready
+ERA,Turmeric,Turmeric,Root & tuber,100,derived_from_frozen_model_ready
+ERA,Unspecified Fodder Grass,Unspecified Fodder Grass,Forage,42,derived_from_frozen_model_ready
+ERA,Wheat,Wheat,Cereal,245,derived_from_frozen_model_ready
+CSA,Ater,Field pea,Pulse,3,derived_from_frozen_model_ready
+CSA,Barely,Barley,Cereal,36,derived_from_frozen_model_ready
+CSA,Barley,Barley,Cereal,34,derived_from_frozen_model_ready
+CSA,Bean,Common bean,Pulse,19,derived_from_frozen_model_ready
+CSA,Beans,Common bean,Pulse,3,derived_from_frozen_model_ready
+CSA,Cabbage,Cabbage,Vegetable,6,derived_from_frozen_model_ready
+CSA,Cassava,Cassava,Root & tuber,5,derived_from_frozen_model_ready
+CSA,Chickpea,Chickpea,Pulse,1,derived_from_frozen_model_ready
+CSA,Crop land,Cropland,Cropland,2,derived_from_frozen_model_ready
+CSA,Dekeko,Field pea,Pulse,3,derived_from_frozen_model_ready
+CSA,Exclosure,Exclosure,Grassland-Rangeland,2,derived_from_frozen_model_ready
+CSA,Faba bean,Faba bean,Pulse,24,derived_from_frozen_model_ready
+CSA,Finger millet,Finger millet,Cereal,2,derived_from_frozen_model_ready
+CSA,Fingure millet,Finger millet,Cereal,2,derived_from_frozen_model_ready
+CSA,Forest and shrub land,Forest,Forest-Woody,2,derived_from_frozen_model_ready
+CSA,Forest land,Forest,Forest-Woody,2,derived_from_frozen_model_ready
+CSA,Lentil,Lentil,Pulse,10,derived_from_frozen_model_ready
+CSA,Maize,Maize,Cereal,255,derived_from_frozen_model_ready
+CSA,Maize and beans,Maize-bean intercrop,Cereal-Legume,1,derived_from_frozen_model_ready
+CSA,Niger seed,Niger seed,Oilseed,7,derived_from_frozen_model_ready
+CSA,Onion,Onion,Vegetable,50,derived_from_frozen_model_ready
+CSA,Potato,Potato,Root & tuber,12,derived_from_frozen_model_ready
+CSA,Rangeland,Rangeland,Grassland-Rangeland,39,derived_from_frozen_model_ready
+CSA,"Several crops (wheat, Teff, maize)",Mixed cereals,Cereal,1,derived_from_frozen_model_ready
+CSA,Sorghum,Sorghum,Cereal,129,derived_from_frozen_model_ready
+CSA,Soybeans,Soybean,Pulse,16,derived_from_frozen_model_ready
+CSA,Tef,Teff,Cereal,2,derived_from_frozen_model_ready
+CSA,Teff,Teff,Cereal,42,derived_from_frozen_model_ready
+CSA,Weat,Wheat,Cereal,9,derived_from_frozen_model_ready
+CSA,Wheat,Wheat,Cereal,54,derived_from_frozen_model_ready
+CSA,barley,Barley,Cereal,124,derived_from_frozen_model_ready
+CSA,bushland,Bushland,Forest-Woody,2,derived_from_frozen_model_ready
+CSA,carrot,Carrot,Vegetable,4,derived_from_frozen_model_ready
+CSA,common beans,Common bean,Pulse,16,derived_from_frozen_model_ready
+CSA,conserved crop land,Cropland,Cropland,2,derived_from_frozen_model_ready
+CSA,cropland,Cropland,Cropland,116,derived_from_frozen_model_ready
+CSA,cropland (65%),Cropland,Cropland,2,derived_from_frozen_model_ready
+CSA,cultivated land,Cropland,Cropland,23,derived_from_frozen_model_ready
+CSA,field pea,Field pea,Pulse,38,derived_from_frozen_model_ready
+CSA,foest land,Forest,Forest-Woody,1,derived_from_frozen_model_ready
+CSA,forest,Forest,Forest-Woody,3,derived_from_frozen_model_ready
+CSA,garlic,Garlic,Vegetable,2,derived_from_frozen_model_ready
+CSA,grass pee,Grass pea,Pulse,2,derived_from_frozen_model_ready
+CSA,grazing land,Grazing land,Grassland-Rangeland,5,derived_from_frozen_model_ready
+CSA,h Bean,Common bean,Pulse,24,derived_from_frozen_model_ready
+CSA,homestead,Homestead,Mixed cropping,1,derived_from_frozen_model_ready
+CSA,maize,Maize,Cereal,75,derived_from_frozen_model_ready
+CSA,mixed,Mixed,Mixed cropping,3,derived_from_frozen_model_ready
+CSA,mixed crop-livestock,Mixed crop-livestock,Mixed cropping,1,derived_from_frozen_model_ready
+CSA,mungbean.,Mungbean,Pulse,7,derived_from_frozen_model_ready
+CSA,onion,Onion,Vegetable,23,derived_from_frozen_model_ready
+CSA,pepper,Pepper,Vegetable,4,derived_from_frozen_model_ready
+CSA,plantation,Plantation forest,Forest-Woody,2,derived_from_frozen_model_ready
+CSA,plantation forest,Plantation forest,Forest-Woody,2,derived_from_frozen_model_ready
+CSA,potato,Potato,Root & tuber,61,derived_from_frozen_model_ready
+CSA,rape seed,Rapeseed,Oilseed,30,derived_from_frozen_model_ready
+CSA,small-scale rainfed subsistence agriculture,Cropland,Cropland,5,derived_from_frozen_model_ready
+CSA,sorghum,Sorghum,Cereal,1,derived_from_frozen_model_ready
+CSA,teff,Teff,Cereal,20,derived_from_frozen_model_ready
+CSA,tomato,Tomato,Vegetable,36,derived_from_frozen_model_ready
+CSA,various,Mixed,Mixed cropping,2,derived_from_frozen_model_ready
+CSA,wheat,Wheat,Cereal,101,derived_from_frozen_model_ready
+CSA,woodland,Woodland,Forest-Woody,7,derived_from_frozen_model_ready

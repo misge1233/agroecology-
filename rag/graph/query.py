@@ -421,6 +421,107 @@ class GraphQuery:
         return paths[:max_paths]
 
 
+
+# ------------------------------------------------------ E2 knowledge layer
+#: challenge objective ids that are the legacy model indicators (REPORTS_EFFECT ``indicator``)
+LEGACY_INDICATOR_OF = {"YIELD": "yield", "BIOMASS_YIELD": "biomass yield", "INCOME": "income",
+                       "WATER_USE_EFFICIENCY": "water use efficiency", "SOM_CONTENT": "SOM content",
+                       "SOIL_LOSS": "soil loss", "RUNOFF": "runoff"}
+
+
+def _practice_node(self: GraphQuery, practice: str) -> str | None:
+    """Practice node by label (frozen label / catalogue name) or by ``practice_id``."""
+    nid = node_id(NodeType.PRACTICE, practice)
+    if self.graph.has_node(nid):
+        return nid
+    for pid in self._nodes_of(NodeType.PRACTICE):
+        if self._attrs(pid).get("practice_id") == practice:
+            return pid
+    return None
+
+
+def _catalogue_dict(self: GraphQuery, cid: str, relation: str, accepted: str = "") -> dict[str, Any]:
+    a = self._attrs(cid)
+    return {"catalogue_id": cid.split(":", 1)[1], "name": a.get("name"), "category": a.get("category"),
+            "farming_system": a.get("farming_system"), "scaling_stage": a.get("scaling_stage"),
+            "scale": a.get("scale"), "evidence_base": a.get("evidence_base"), "limitations": a.get("limitations"),
+            "key_problems": a.get("key_problems"), "relation": relation, "accepted": accepted,
+            "source": "Agroecology+ Solutions Catalogue"}
+
+
+def practices_for_challenge(self: GraphQuery, challenge_id: str) -> list[dict[str, Any]]:
+    """Practices that address a challenge: catalogue links (ADDRESSES_PROBLEM) and field
+    evidence (REPORTS_EFFECT on the challenge's legacy objectives, practice family in the
+    challenge's families). Sorted by evidence then catalogue support."""
+    cnode = node_id(NodeType.CHALLENGE, challenge_id)
+    if not self.graph.has_node(cnode):
+        return []
+    ch = self._attrs(cnode)
+    out: dict[str, dict[str, Any]] = {}
+    for src, attrs in self._in(cnode, EdgeType.ADDRESSES_PROBLEM):
+        if self._attrs(src).get("type") != NodeType.PRACTICE.value:
+            continue
+        r = out.setdefault(src, {"practice": src.split(":", 1)[1], "practice_id": self._attrs(src).get("practice_id"),
+                                 "practice_family": self._attrs(src).get("practice_family"), "sources": set(),
+                                 "n_studies": 0, "indicators": set(), "catalogue_ids": set()})
+        r["sources"].add("catalogue")
+        if attrs.get("via"):
+            r["catalogue_ids"].add(attrs["via"])
+    indicators = {LEGACY_INDICATOR_OF[o] for o in ch.get("outcome_ids") or [] if o in LEGACY_INDICATOR_OF}
+    families = set(ch.get("practice_families") or [])
+    if indicators:
+        for pid in self._nodes_of(NodeType.PRACTICE):
+            pa = self._attrs(pid)
+            if families and pa.get("practice_family") not in families:
+                continue
+            studies, inds = set(), set()
+            for sid, e in self._in(pid, EdgeType.REPORTS_EFFECT):
+                if e.get("indicator") in indicators:
+                    studies.add(sid)
+                    inds.add(e.get("indicator"))
+            if studies:
+                r = out.setdefault(pid, {"practice": pid.split(":", 1)[1], "practice_id": pa.get("practice_id"),
+                                         "practice_family": pa.get("practice_family"), "sources": set(),
+                                         "n_studies": 0, "indicators": set(), "catalogue_ids": set()})
+                r["sources"].add("evidence")
+                r["n_studies"] = len(studies)
+                r["indicators"] |= inds
+    rows = [{**r, "sources": sorted(r["sources"]), "indicators": sorted(r["indicators"]),
+             "catalogue_ids": sorted(r["catalogue_ids"])} for r in out.values()]
+    rows.sort(key=lambda r: (-r["n_studies"], -len(r["catalogue_ids"]), r["practice"]))
+    return rows
+
+
+def catalogue_entry(self: GraphQuery, practice: str) -> dict[str, Any] | None:
+    """The catalogue entry describing a practice (its own entry first, else a proposed narrower one)."""
+    entries = self.documents_for_practice(practice)["catalogue"]
+    return entries[0] if entries else None
+
+
+def documents_for_practice(self: GraphQuery, practice: str, max_docs: int = 5) -> dict[str, list[dict[str, Any]]]:
+    """Catalogue entries (DESCRIBED_BY) and guideline documents (DOCUMENTED_IN) of a practice."""
+    nid = _practice_node(self, practice)
+    if nid is None:
+        return {"catalogue": [], "guideline_docs": []}
+    cats = [_catalogue_dict(self, dst, e.get("relation", ""), e.get("accepted", ""))
+            for dst, e in self._out(nid, EdgeType.DESCRIBED_BY)]
+    cats.sort(key=lambda c: (c["relation"] != "alias", c["catalogue_id"]))
+    docs = []
+    for dst, e in self._out(nid, EdgeType.DOCUMENTED_IN):
+        a = self._attrs(dst)
+        docs.append({"doc_id": a.get("doc_id"), "title": a.get("title"), "publisher": a.get("publisher"),
+                     "year": a.get("year"), "language": a.get("language"), "theme": a.get("theme"),
+                     "url": a.get("url"), "n_chunks": e.get("n_chunks", 0), "title_match": e.get("title_match", False),
+                     "tier": "guidelines"})
+    docs.sort(key=lambda d: (not d["title_match"], -int(d["n_chunks"] or 0), d["doc_id"]))
+    return {"catalogue": cats, "guideline_docs": docs[:max_docs]}
+
+
+GraphQuery.practices_for_challenge = practices_for_challenge
+GraphQuery.catalogue_entry = catalogue_entry
+GraphQuery.documents_for_practice = documents_for_practice
+
+
 # -------------------------------------------------------- module-level API
 _CACHED: GraphQuery | None = None
 
@@ -466,3 +567,13 @@ def similar_context_technologies(
 def explain_paths(practice: str, indicator: str, max_paths: int = 5) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.explain_paths`."""
     return default_query().explain_paths(practice, indicator, max_paths)
+
+
+def practices_for_challenge_q(challenge_id: str) -> list[dict[str, Any]]:
+    """Module-level shortcut for :meth:`GraphQuery.practices_for_challenge` (E2)."""
+    return default_query().practices_for_challenge(challenge_id)
+
+
+def documents_for_practice_q(practice: str) -> dict[str, list[dict[str, Any]]]:
+    """Module-level shortcut for :meth:`GraphQuery.documents_for_practice` (E2)."""
+    return default_query().documents_for_practice(practice)

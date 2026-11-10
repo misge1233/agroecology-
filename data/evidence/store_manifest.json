@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.1",
+  "built_at": "2026-11-10T15:01:38+00:00",
+  "git_commit": "99810750c78abb8d9f59d7b4660630dc1e34d5d2",
+  "n_rows": 19753,
+  "rows_per_source": {
+    "CSA": 3344,
+    "ERA": 14792,
+    "HAB": 1617
+  },
+  "columns": [
+    "row_id",
+    "source",
+    "study_id",
+    "doi",
+    "citation",
+    "year",
+    "country",
+    "lat",
+    "lon",
+    "loc_precision",
+    "loc_method",
+    "site_name",
+    "practice_id",
+    "practice_raw",
+    "practice_components",
+    "practice_family",
+    "comparator",
+    "crop_group",
+    "crop",
+    "outcome_id",
+    "outcome_raw",
+    "direction",
+    "unit",
+    "mean_with",
+    "mean_without",
+    "sd_with",
+    "sd_without",
+    "se_with",
+    "se_without",
+    "n_with",
+    "n_without",
+    "lrr",
+    "var_lrr",
+    "weight",
+    "duration_years",
+    "study_design",
+    "replication",
+    "scale",
+    "quality_flag",
+    "ctx_reported_rain_mm",
+    "ctx_reported_altitude_m",
+    "ctx_reported_soil",
+    "ctx_reported_aez",
+    "ctx_release",
+    "evidence_text",
+    "extraction_locator",
+    "licence",
+    "hlpe_principle",
+    "mfl_domain",
+    "extra",
+    "direction_reviewed",
+    "ctx_reported_slope_pct"
+  ],
+  "input_files": {
+    "data/raw/ERA_Ethiopia_dataset.csv": "f0ba3918ba0173207964773d070d02a8e2fead43a992a0712abe150df7dbcbeb",
+    "data/raw/CSA_practices_by_Agroecology.xlsx": "2ff2151066d716a4a8dd6d5bc829ebdb980410f57de849bd5218b961b9b29d02",
+    "data/processed/csa_study_references.json": "cf676b3d62a36c193b742abebb8f737eda0675f9b0e54065b83fa7aa78ee1a0f",
+    "data/raw/grist_habtamu/@HabtamuSewnet-MasterData.csv": "abf22f2254b21e77dcb0c4b09234508a03002dbdcfd35bf7ccc9b3bec6946ddf",
+    "data/taxonomy/crop_harmonisation.csv": "cebbabc2d480c21fc33ffc46bc78eccb01ddc2e08883fd837c90990d28ddbd53",
+    "data/processed/CSA_ERA_final_model_ready.csv": "4c44ecaa65149971baca0729dde2e543ddcd9d4d8728e75e3e201aa81501d37e",
+    "data/raw/catalogue/Catalogue 1-30 for dashboard testing.docx": "809d584770f560a581397cf60394300628664c8f89eaa52b9832509eea2a94e1",
+    "data/taxonomy/practices.csv": "c629a3510853f9f264d9aeb135a85a001a85403d1783bc1202ea672611430511",
+    "data/taxonomy/practice_aliases.csv": "1484954b19ed811a7fcf18f276e52d2100a17cb7b1e647fe6da40c7e4c75eb30",
+    "data/taxonomy/outcomes.csv": "59c5ef38c118d1a332d35c89cd1ee1deb507e3013b68766715a12e4a8c681438",
+    "data/taxonomy/outcome_aliases.csv": "2874745e5b2f6ae61025d843b341d2e67a8741d52e7d0d597799ae192d7eedb3",
+    "data/taxonomy/challenges.csv": "557e4d3e4d79cf67d74bce0409df0d8030ca3790ebeb89df82dc5836b59cb35a"
+  },
+  "weights": {
+    "method": "inverse variance, capped at the 99th percentile; default = factor(quality) x median",
+    "cap": 39680.90511667359,
+    "median_inverse_variance": 82.83132807067406,
+    "quality_factor": {
+      "High": 1.0,
+      "Medium": 0.8,
+      "NR": 0.8,
+      "Low": 0.5
+    },
+    "n_inverse_variance": 3598,
+    "n_default": 16155
+  },
+  "validation": {
+    "n_rows": 19753,
+    "n_errors": 0,
+    "errors": {}
+  },
+  "reconciliation": {
+    "ERA": {
+      "exact": true,
+      "expected": 7250,
+      "reproduced": 7250,
+      "only_in_store": 0,
+      "only_in_frozen": 0,
+      "max_abs_lrr_diff": 8.881784197001252e-16
+    },
+    "CSA": {
+      "exact": true,
+      "expected": 1414,
+      "reproduced": 1414,
+      "only_in_store": 0,
+      "only_in_frozen": 0,
+      "max_abs_lrr_diff": 6.661338147750939e-16
+    }
+  },
+  "mapping_coverage_rows": {
+    "practices": {
+      "ERA": 1.0,
+      "CSA": 1.0,
+      "HAB": 0.6005,
+      "CAT": 1.0
+    },
+    "outcomes": {
+      "ERA": 1.0,
+      "CSA": 1.0,
+      "HAB": 0.8225
+    }
+  },
+  "habtamu_grist_rows": 1617,
+  "catalogue_entries": 30
+}

@@ -387,23 +387,28 @@ def guidance_candidates(
         from app.services.source_meta import guidance_meta
 
         item = guidance_meta(chunk) or {}
-        doc_key = item.get("handle_url") or chunk.get("url") or chunk.get("doi") or chunk.get("title") or chunk.get("chunk_id")
+        is_guideline = chunk.get("tier") == "guidelines"
+        doc_key = (chunk.get("doc_id") if is_guideline else None) or item.get("handle_url") or chunk.get("url") \
+            or chunk.get("doi") or chunk.get("title") or chunk.get("chunk_id")
         for component in mentions:
             cand = out.setdefault(component, _Candidate(component, component, component))
             cand.sources.add(SOURCE_GUIDANCE)
             cand.n_passages += 1
             if doc_key:
                 cand.documents.add(f"doc:{doc_key}")
-            cand.add_citation({
-                "tier": "guidance",
+            citation = {
+                "tier": "guidelines" if is_guideline else "guidance",
                 "era_code": None,
-                "title": chunk.get("title"),
+                "title": (chunk.get("citation") if is_guideline else None) or chunk.get("title"),
                 "year": chunk.get("year"),
                 "doi": chunk.get("doi"),
                 "url": chunk.get("url"),
                 "snippet": text[:240],
                 "chunk_id": chunk.get("chunk_id"),
-            })
+            }
+            if is_guideline:
+                citation.update(page=chunk.get("page"), doc_id=chunk.get("doc_id"))
+            cand.add_citation(citation)
     return out, funnel
 
 
@@ -461,8 +466,41 @@ def _merge(*groups: dict[str, _Candidate]) -> dict[str, _Candidate]:
     return merged
 
 
+def practice_documents(graph_query: Any, practices: Iterable[str], max_each: int = 3) -> tuple[list[dict], list[dict]]:
+    """Catalogue entries and guideline documents of a card's practices (E2, D2; additive).
+
+    Uses ``GraphQuery.documents_for_practice``; a graph without the knowledge layer
+    (or a test double without the method) gives two empty lists. These are
+    documents, never numbers: nothing here enters the numeric guard's allowed set.
+    """
+    fn = getattr(graph_query, "documents_for_practice", None)
+    if fn is None:
+        return [], []
+    cats: dict[str, dict] = {}
+    docs: dict[str, dict] = {}
+    for p in practices:
+        try:
+            found = fn(p)
+        except Exception as exc:  # optional layer: degrade, never fail
+            logger.debug("documents_for_practice failed for %r (%s)", p, exc)
+            continue
+        for c in found.get("catalogue") or []:
+            cats.setdefault(c["catalogue_id"], c)
+        for d in found.get("guideline_docs") or []:
+            docs.setdefault(d["doc_id"], d)
+    cat_list = sorted(cats.values(), key=lambda c: (c.get("relation") != "alias", c["catalogue_id"]))[:max_each]
+    doc_list = sorted(docs.values(), key=lambda d: (not d.get("title_match"), -int(d.get("n_chunks") or 0)))[:max_each]
+    return cat_list, doc_list
+
+
 def citation_identity(c: dict[str, Any]) -> str | None:
-    """What makes a citation citable: ERA code, dataset study id, URL, WOCAT id or title."""
+    """What makes a citation citable: ERA code, dataset study id, URL, WOCAT id or title.
+
+    A guideline page (E2) is identified by document and page, so two pages of one
+    guideline are two citations ("..., p. 12" and "..., p. 34").
+    """
+    if c.get("tier") == "guidelines" and c.get("doc_id"):
+        return f"guideline:{c['doc_id']}#p{c.get('page')}"
     for key in ("era_code", "study_no", "url", "wocat_id", "doi", "title"):
         if c.get(key):
             return f"{key}:{c[key]}"
@@ -476,8 +514,8 @@ def _number_citations(candidates: list[dict[str, Any]]) -> None:
     number). A citation with no identity at all cannot be cited and is dropped
     (doctrine 2); a candidate left without citations is dropped by the caller.
     """
-    counters = {"evidence": 0, "guidance": 0, "practice": 0}
-    prefix = {"evidence": "", "guidance": "G", "practice": "W"}
+    counters = {"": 0, "G": 0, "W": 0}  # per prefix: guidance and guidelines (E2) share [Gn]
+    prefix = {"evidence": "", "guidance": "G", "guidelines": "G", "practice": "W"}
     seen: dict[tuple[str, str], str] = {}
     for cand in candidates:
         kept: list[dict[str, Any]] = []
@@ -488,8 +526,9 @@ def _number_citations(candidates: list[dict[str, Any]]) -> None:
                 continue
             ident = (tier, identity)
             if ident not in seen:
-                counters[tier] += 1
-                seen[ident] = f"{prefix[tier]}{counters[tier]}"
+                pre = prefix.get(tier, "")
+                counters[pre] += 1
+                seen[ident] = f"{pre}{counters[pre]}"
             c["ref"] = seen[ident]
             kept.append(c)
         cand["citations"] = kept
@@ -612,6 +651,7 @@ def knowledge_candidates(
             "citations": [dict(c) for c in cand.citations],
         }
         item["rationale"], item["rationale_text"] = rationale(item, practice_family, indicator, language)
+        item["catalogue"], item["guideline_docs"] = practice_documents(graph_query, item["practices"])
         out.append(item)
         if len(out) >= int(s.knowledge_candidates_max):
             break

@@ -87,6 +87,29 @@ def embed_batch(texts: list[str], api_key: str, session: requests.Session) -> li
     raise SystemExit("Embeddings API kept failing after retries.")
 
 
+#: E2 (Tier 2b guidelines): metadata keys stored ONLY when the chunk has them,
+#: so Tier 1 and Tier 2 metadata stay exactly as before.
+OPTIONAL_METADATA = ("doc_id", "page", "language", "theme", "publisher", "citation")
+
+
+def _metadata(c: dict) -> dict:
+    """Chroma metadata of one chunk (fixed keys + optional guideline keys)."""
+    meta = {
+        "era_code": c.get("era_code") or "",   # "" for Tier-2 guidance
+        "tier": c.get("tier") or "evidence",
+        "doi": c.get("doi") or "",
+        "title": c.get("title") or "",
+        "year": int(c["year"]) if c.get("year") else 0,
+        "journal": c.get("journal") or "",
+        "url": c.get("url") or "",
+        "source": c["source"],
+    }
+    for key in OPTIONAL_METADATA:
+        if c.get(key) not in (None, ""):
+            meta[key] = c[key]
+    return meta
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", default="../corpus")
@@ -135,16 +158,7 @@ def main() -> int:
             ids=[c["chunk_id"] for c in batch],
             embeddings=vecs,
             documents=[c["text"] for c in batch],
-            metadatas=[{
-                "era_code": c.get("era_code") or "",   # "" for Tier-2 guidance
-                "tier": c.get("tier") or "evidence",
-                "doi": c.get("doi") or "",
-                "title": c.get("title") or "",
-                "year": int(c["year"]) if c.get("year") else 0,
-                "journal": c.get("journal") or "",
-                "url": c.get("url") or "",
-                "source": c["source"],
-            } for c in batch],
+            metadatas=[_metadata(c) for c in batch],
         )
         done += len(batch)
         print(f"  indexed {done}/{len(todo)}")

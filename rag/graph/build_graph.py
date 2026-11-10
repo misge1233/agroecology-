@@ -645,8 +645,14 @@ def build(
     wocat_path: Path | None = None,
     include_proposed: bool = False,
     allow_synthetic: bool = False,
+    knowledge: Any = None,
 ):
-    """Build the graph and its report. Returns ``(graph, report)``."""
+    """Build the graph and its report. Returns ``(graph, report)``.
+
+    ``knowledge`` (E2): a :class:`rag.graph.knowledge_layer.KnowledgeInputs`; when
+    given, the challenge / catalogue / guideline layer is added. ``None`` builds
+    exactly the P6a graph (the fixture tests rely on this).
+    """
     graph = new_graph()
     rows = load_rows(dataset_path)
 
@@ -662,6 +668,11 @@ def build(
     wocat_stats = add_wocat_records(
         graph, load_wocat(wocat_path, allow_synthetic)
     )
+    knowledge_stats: dict[str, Any] = {}
+    if knowledge is not None:
+        from .knowledge_layer import add_knowledge_layer
+
+        knowledge_stats = add_knowledge_layer(graph, knowledge)
 
     node_counts: dict[str, int] = defaultdict(int)
     for _, attrs in graph.nodes(data=True):
@@ -714,6 +725,7 @@ def build(
             "unknown_tokens": dataset_stats["unknown_component_tokens"],
         },
         "wocat": wocat_stats,
+        "knowledge": knowledge_stats,
         "validation": validate_graph(graph),
     }
     return graph, report
@@ -754,6 +766,10 @@ def main(argv: list[str] | None = None) -> int:
         help="admit records flagged synthetic:true — TESTS ONLY; such a graph "
              "must never feed the app or an evaluation",
     )
+    parser.add_argument(
+        "--no-knowledge", action="store_true",
+        help="skip the E2 knowledge layer (challenges, catalogue, guidelines)",
+    )
     parser.add_argument("--out-dir", type=Path, default=STORE_DIR)
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(argv)
@@ -762,9 +778,12 @@ def main(argv: list[str] | None = None) -> int:
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(levelname)s %(name)s: %(message)s",
     )
+    from .knowledge_layer import KnowledgeInputs
+
     graph, report = build(
         args.dataset, args.manifest, args.chunks, args.crosswalk,
         args.wocat, args.include_proposed, args.allow_synthetic,
+        knowledge=None if args.no_knowledge else KnowledgeInputs(),
     )
     graph_path, report_path = write_store(graph, report, args.out_dir)
     logger.info("graph  -> %s (%d nodes, %d edges)",

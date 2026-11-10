@@ -1,0 +1,23 @@
+# Country configuration: Ethiopia (roadmap section 6.5; docs/decisions/enhancement_v2.md).
+# Paths are relative to the repository root. Loaded by pipelines/common/country_config.py.
+code: ET
+name: Ethiopia
+status: active
+bbox: {lon_min: 32.9, lon_max: 48.2, lat_min: 3.3, lat_max: 14.9}
+grid: data/lookups/grid_definition.json
+aez:
+  anchor_raster: geodata/layers/aez_belt.tif
+  lookup: data/lookups/aez_belt_lookup.csv
+  attributes: data/lookups/aez_attributes.csv
+languages: [en, am, om]
+evidence_sources: [ERA, CSA, HAB]
+knowledge_sources: [catalogue, guidelines, gardian, era_papers]
+exposure:
+  min_rows: 30
+  min_studies: 5
+  min_docs: 3
+overlays:
+  omo_gibe:
+    status: planned
+    rasters: {hotspot_coldspot: data/raw/hotspot and coldspot/, typology: data/raw/Typology/}
+contact: Alliance of Bioversity International and CIAT, Addis Ababa

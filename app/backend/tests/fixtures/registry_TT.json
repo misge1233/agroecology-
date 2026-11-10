@@ -1,0 +1,28 @@
+{
+  "country": "TT",
+  "registry_version": "1.0",
+  "built_at": "2026-11-10T12:00:00+00:00",
+  "store_manifest": "data/evidence/store_manifest.json (fixture)",
+  "thresholds": {"min_rows": 30, "min_studies": 5, "min_docs": 3},
+  "counting_rule": "country match, reviewed direction, computable lrr, not an exact duplicate",
+  "n_counted_rows": 40,
+  "challenges": [
+    {"id": "SOIL_EROSION", "name_en": "Soil erosion (sheet and rill)", "description_en": "Fixture.",
+     "objective_groups": ["soil_health", "water"], "practice_families": ["Erosion control and water management"],
+     "objectives": [{"id": "SOIL_LOSS", "name_en": "Soil loss", "objective_group": "water", "direction": -1,
+                     "n_rows": 40, "n_studies": 6, "n_practices": 3, "exposed": true, "documented_only": false,
+                     "n_rows_pending_review": 0}],
+     "n_rows": 40, "n_studies": 6, "n_practices_with_evidence": 3, "n_documented_practices": 4,
+     "documented_catalogue_ids": ["CAT_01", "CAT_02", "CAT_05", "CAT_06"], "exposed": true, "documented_only": false,
+     "exposure_reason": "rows>=30 and studies>=5", "n_rows_pending_review": 0},
+    {"id": "GULLY_EROSION", "name_en": "Gully erosion", "description_en": "Fixture.",
+     "objective_groups": ["water"], "practice_families": ["Erosion control and water management"],
+     "objectives": [], "n_rows": 0, "n_studies": 0, "n_practices_with_evidence": 0, "n_documented_practices": 3,
+     "documented_catalogue_ids": ["CAT_23", "CAT_24", "CAT_25"], "exposed": false, "documented_only": true,
+     "exposure_reason": "below rows>=30/studies>=5; 3 documented practices >= 3", "n_rows_pending_review": 0}
+  ],
+  "practices": [
+    {"id": "PHYSICAL_SWC_MEASURES", "name_en": "Physical SWC measures", "family": "Erosion control and water management",
+     "challenges": ["SOIL_EROSION"], "n_rows": 40, "catalogue_ids": []}
+  ]
+}

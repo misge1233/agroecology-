@@ -222,6 +222,10 @@ class KnowledgeCitation(BaseModel):
     reference_truncated: bool | None = None
     compilation: bool | None = None
     source_url: str | None = None
+    #: Tier 2b guideline pages (E2): document id, page and language of the cited passage.
+    page: int | None = None
+    doc_id: str | None = None
+    language: str | None = None
 
 
 class CandidateSupport(BaseModel):
@@ -246,6 +250,10 @@ class KnowledgeCandidate(BaseModel):
     citations: list[KnowledgeCitation] = Field(default_factory=list)
     rationale: dict[str, Any] = Field(default_factory=dict)
     rationale_text: str
+    #: E2 (additive): catalogue entries and guideline documents attached to the
+    #: candidate's practices through the knowledge graph (``documents_for_practice``).
+    catalogue: list[dict[str, Any]] = Field(default_factory=list)
+    guideline_docs: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class NumberValue(BaseModel):
@@ -456,6 +464,10 @@ class ExplainCitation(BaseModel):
     #: U9: dataset study id ("ERA_123", "CSA_18") and data source, for study-effect citations.
     study_no: str | None = None
     data_source: str | None = None
+    #: Tier 2b guideline pages (E2).
+    page: int | None = None
+    doc_id: str | None = None
+    language: str | None = None
 
 
 class EvidenceBaseStudy(BaseModel):
@@ -527,3 +539,64 @@ class ErrorDetail(BaseModel):
 
 class ErrorEnvelope(BaseModel):
     error: ErrorDetail
+
+
+# ------------------------------------------------------------ registry (E1)
+class RegistryObjective(BaseModel):
+    """One objective (canonical outcome) of a challenge, with its evidence counts."""
+
+    id: str
+    name_en: str
+    objective_group: str | None = None
+    direction: Literal[1, -1] | None = None
+    n_rows: int
+    n_studies: int
+    n_practices: int
+    exposed: bool
+    documented_only: bool = False
+    n_rows_pending_review: int = 0
+
+
+class RegistryChallenge(BaseModel):
+    """One problem-based challenge with its objectives and exposure decision."""
+
+    id: str
+    name_en: str
+    description_en: str | None = None
+    objective_groups: list[str] = Field(default_factory=list)
+    practice_families: list[str] = Field(default_factory=list)
+    objectives: list[RegistryObjective] = Field(default_factory=list)
+    n_rows: int
+    n_studies: int
+    n_practices_with_evidence: int = 0
+    n_documented_practices: int
+    documented_catalogue_ids: list[str] = Field(default_factory=list)
+    exposed: bool
+    documented_only: bool = False
+    exposure_reason: str
+    n_rows_pending_review: int = 0
+
+
+class RegistryPractice(BaseModel):
+    """A canonical practice with evidence in the country or a catalogue entry."""
+
+    id: str
+    name_en: str
+    family: str | None = None
+    challenges: list[str] = Field(default_factory=list)
+    n_rows: int
+    catalogue_ids: list[str] = Field(default_factory=list)
+
+
+class RegistryResponse(BaseModel):
+    """GET /registry: the data-driven challenge/objective registry of one country."""
+
+    country: str
+    registry_version: str | None = None
+    built_at: str
+    store_manifest: str
+    thresholds: dict[str, int]
+    counting_rule: str | None = None
+    n_counted_rows: int | None = None
+    challenges: list[RegistryChallenge]
+    practices: list[RegistryPractice]

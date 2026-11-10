@@ -1,0 +1,21 @@
+# Country configuration: Kenya (DRAFT). A dry run of the country abstraction
+# (roadmap 6.5): no data, rasters or translations behind it yet. File checks are
+# skipped while status is draft.
+code: KE
+name: Kenya
+status: draft
+bbox: {lon_min: 33.9, lon_max: 41.9, lat_min: -4.7, lat_max: 5.0}
+grid: null
+aez:
+  anchor_raster: null
+  lookup: null
+  attributes: null
+languages: [en, sw]
+evidence_sources: []
+knowledge_sources: []
+exposure:
+  min_rows: 30
+  min_studies: 5
+  min_docs: 3
+overlays: {}
+contact: null

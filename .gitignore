@@ -49,3 +49,27 @@ rag/corpus/wocat/
 .DS_Store
 Thumbs.db
 *.swp
+
+# --- Government guideline PDFs (rebuildable from rag/corpus/guidelines/manifest.csv URLs) ---
+rag/corpus/guidelines/pdfs/*.pdf
+rag/corpus/guidelines/texts/
+
+# --- Unpublished partner data and large raw inputs (never in git; see data/raw/README notes) ---
+data/raw/grist_habtamu/
+data/raw/catalogue/
+data/raw/hotspot and coldspot/
+data/raw/Typology/
+
+# --- Unified evidence store rows (E1): built from partner data, never in git ---
+data/evidence/evidence_rows.parquet
+data/evidence/evidence_rows.csv
+data/taxonomy/review/llm_cache.jsonl
+
+# --- Partner catalogue text (parsed from data/raw/catalogue; not shared yet) ---
+data/taxonomy/catalogue_entries.csv
+data/taxonomy/catalogue_entries.json
+
+# --- E2: caches and rebuildable mirrors (LLM caches never in git; GeoNames is downloaded once) ---
+data/evidence/review/geocode_llm_cache.jsonl
+pipelines/evidence/cache/
+rag/corpus/guidelines/chunks.jsonl

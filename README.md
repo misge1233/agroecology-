@@ -37,16 +37,23 @@ pin + goal / free text
 | `data/raw/` | ERA Ethiopia dataset (Harvard Dataverse), CSA workbook — inputs, never edited |
 | `data/processed/` | model-ready CSVs (harmonized, merged; see `docs/reports/`) |
 | `data/lookups/` | AEZ belt lookup/attributes, grid definition, demo points |
+| `data/evidence/` | the unified evidence store (`evidence_rows.parquet`/`.csv`, git-ignored), manifest, data cards, `registry_ET.json` |
+| `data/taxonomy/` | practice, outcome and challenge taxonomies, aliases, review sheets, parsed catalogue, crop lookup |
 | `geodata/layers/` | the 11 aligned 250 m GeoTIFFs + VRT (git-ignored — see `geodata/README.md`) |
 | `geodata/sources/` | AEZ shapefiles, soil grids, agroclimatic rasters |
 | `pipelines/features/` | scripts that built the raster stack + `extract_features.py` (train/serve shared) |
 | `pipelines/dataset/` | dataset harmonization / practice-family crosswalk scripts |
+| `pipelines/evidence/` | unified evidence store (E1): schema, loaders (ERA, CSA, Habtamu), catalogue parser, store and registry builders, reconciliation |
+| `pipelines/taxonomy/` | practice/outcome/challenge taxonomy rules, review sheets, `propose_mappings.py` (rules propose, a human ticks) |
+| `countries/` | country configuration (`ET.yaml` active, `KE.yaml` draft); loader in `pipelines/common/country_config.py` |
 | `model/` | `train_model.py`, `feature_selection.py`, trained artifact + metrics |
 | `rag/` | RAG corpus acquisition, indexing, retrieval, evaluation (phase 2 of the plan) |
 | `app/backend/` | FastAPI service wrapping the canonical engine (`recommend.py`, advisor) |
 | `app/frontend/` | Next.js UI — guided chat + map finder |
 | `docs/` | preprocessing reports, data dictionary, design decisions, prototype deck |
 | `paper/` | manuscript, figures, references (target: *Computers and Electronics in Agriculture*) |
+
+**Evidence store (E1, 10 Nov 2026).** `countries/` holds the country configuration, so Ethiopia is one instance of a general pipeline. `pipelines/evidence/` loads ERA Ethiopia, the Adimassu CSA compilation and Habtamu Sewnet's extraction database into one frozen schema with provenance and writes `data/evidence/` (store, data cards, challenge registry served by `GET /registry`); `pipelines/taxonomy/` maps every raw practice and outcome label onto the taxonomies in `data/taxonomy/` by rules, with review sheets for a human to tick. The current dataset, model and engine are unchanged. See `data/evidence/README.md` and `docs/decisions/enhancement_v2.md`.
 
 `MIGRATION_MAP.md` records where every file came from in the original project
 folders (which remain untouched).

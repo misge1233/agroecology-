@@ -27,7 +27,9 @@ from typing import Any
 
 import networkx as nx
 
-SCHEMA_VERSION = "p6a.1"
+#: e2.1: Challenge, CatalogueEntry and filled GuidanceDoc nodes; ADDRESSES_PROBLEM,
+#: DESCRIBED_BY, DOCUMENTED_IN, SUITABLE_IN edges (knowledge layer, Phase E2). Additive.
+SCHEMA_VERSION = "e2.1"
 
 
 class NodeType(StrEnum):
@@ -49,6 +51,9 @@ class NodeType(StrEnum):
     TECHNOLOGY = "Technology"
     APPROACH = "Approach"
     GUIDANCE_DOC = "GuidanceDoc"
+    # E2 knowledge layer
+    CHALLENGE = "Challenge"
+    CATALOGUE_ENTRY = "CatalogueEntry"
 
 
 class EdgeType(StrEnum):
@@ -69,6 +74,11 @@ class EdgeType(StrEnum):
     HAS_CONTEXT = "HAS_CONTEXT"
     REPORTS_IMPACT = "REPORTS_IMPACT"
     LINKED_APPROACH = "LINKED_APPROACH"
+    # E2 knowledge layer
+    ADDRESSES_PROBLEM = "ADDRESSES_PROBLEM"
+    DESCRIBED_BY = "DESCRIBED_BY"
+    DOCUMENTED_IN = "DOCUMENTED_IN"
+    SUITABLE_IN = "SUITABLE_IN"
 
 
 #: Allowed values of the mandatory ``source`` attribute on every edge.
@@ -82,6 +92,9 @@ PROVENANCE_SOURCES: frozenset[str] = frozenset(
         "crosswalk_validated",  # owner-validated crosswalk row
         "wocat_fixture",       # hand-built fixture record
         "wocat_export",        # the WOCAT research data export (P6b)
+        "catalogue",           # Agroecology+ Solutions Catalogue entries + taxonomy aliases (E2)
+        "guidelines_title_match",  # practice name/alias in a guideline title or >= 3 of its chunks (E2)
+        "catalogue_text",      # rules on the catalogue's "suitable land use and agroecology" text (E2)
     }
 )
 
@@ -159,6 +172,22 @@ EDGE_ENDPOINTS: dict[EdgeType, tuple[frozenset[NodeType], frozenset[NodeType]]] 
         frozenset({NodeType.TECHNOLOGY}),
         frozenset({NodeType.APPROACH}),
     ),
+    EdgeType.ADDRESSES_PROBLEM: (
+        frozenset({NodeType.CATALOGUE_ENTRY, NodeType.PRACTICE}),
+        frozenset({NodeType.CHALLENGE}),
+    ),
+    EdgeType.DESCRIBED_BY: (
+        frozenset({NodeType.PRACTICE}),
+        frozenset({NodeType.CATALOGUE_ENTRY}),
+    ),
+    EdgeType.DOCUMENTED_IN: (
+        frozenset({NodeType.PRACTICE}),
+        frozenset({NodeType.GUIDANCE_DOC}),
+    ),
+    EdgeType.SUITABLE_IN: (
+        frozenset({NodeType.CATALOGUE_ENTRY}),
+        frozenset({NodeType.AEZ_BELT, NodeType.CONTEXT_CLASS}),
+    ),
 }
 
 #: edge type -> attribute names that must be present (besides ``source``).
@@ -179,6 +208,10 @@ EDGE_REQUIRED_ATTRS: dict[EdgeType, tuple[str, ...]] = {
     EdgeType.HAS_CONTEXT: ("kind",),
     EdgeType.REPORTS_IMPACT: ("rating", "rating_index", "good_direction"),
     EdgeType.LINKED_APPROACH: (),
+    EdgeType.ADDRESSES_PROBLEM: ("terms",),
+    EdgeType.DESCRIBED_BY: ("relation",),
+    EdgeType.DOCUMENTED_IN: ("n_chunks", "title_match"),
+    EdgeType.SUITABLE_IN: ("rule", "quote"),
 }
 
 #: node type -> attribute names that must be present (besides ``type``/``label``).
@@ -198,7 +231,10 @@ NODE_REQUIRED_ATTRS: dict[NodeType, tuple[str, ...]] = {
     NodeType.IMPACT_VARIABLE: ("category", "good_direction"),
     NodeType.TECHNOLOGY: ("wocat_id", "country", "licence", "url"),
     NodeType.APPROACH: ("wocat_id", "country", "licence", "url"),
-    NodeType.GUIDANCE_DOC: (),
+    NodeType.GUIDANCE_DOC: ("doc_id", "title", "publisher", "year", "language", "theme"),
+    NodeType.CHALLENGE: ("name_en", "objective_groups", "status"),
+    NodeType.CATALOGUE_ENTRY: ("name", "category", "farming_system", "scaling_stage", "scale", "evidence_base",
+                               "limitations"),
 }
 
 
