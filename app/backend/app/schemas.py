@@ -430,6 +430,10 @@ class MetadataResponse(BaseModel):
     evidence: EvidenceCounts | None = None
     # Additive (P9): the evidence-tiered advisory's thresholds and sources.
     advisory: dict[str, Any] | None = None
+    #: Additive (E3): context layers served from a geodata release
+    #: ({"release": "ET/2026.1", "source": "release", ...}) or from LAYERS_DIR
+    #: ({"release": null, "source": "layers_dir", ...}).
+    geodata: dict[str, Any] | None = None
 
 
 class ExplainCitation(BaseModel):

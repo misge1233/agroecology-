@@ -1,5 +1,17 @@
 # Geodata
 
+## Releases (E3): `<CC>/<release>/`, the versioned stack
+
+Since E3 the context layers are built by `pipelines/geodata/refresh.py` into immutable releases,
+e.g. `ET/2026.1/`: the 11 layers below rebuilt from their public sources (equal cell for cell to
+`layers/`), plus terrain (LS, TPI, TWI, flow accumulation, distance to stream), soil (sand, bulk
+density, CEC, nitrogen, AWC), recent climate (CHIRPS 1991-2020 mean, CV, dry-season length,
+aridity), cropland share, travel time and Köppen class. Each release holds `manifest.json`,
+`qa_report.json`, `README.md`, diffs and `stack.vrt` (in git) and its GeoTIFFs (
+git-ignored). The backend switches with `GEODATA_RELEASE=ET/2026.1` in `backend/.env`; without
+it, `layers/` below is used as before. How to build one: `pipelines/geodata/README.md`.
+
+
 ## `layers/` — the 11-layer, 250 m Ethiopia feature stack (canonical)
 
 WGS84 · ~250 m (0.00225°) · 6,800 × 5,156 cells · all layers snapped to one grid

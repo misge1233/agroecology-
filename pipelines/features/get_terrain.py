@@ -14,8 +14,12 @@ Setup:  pip install rasterio requests numpy
 Run:    python get_terrain.py
 Verify: python extract_features.py --lat 9.03 --lon 38.74
 """
-import os, math, time, numpy as np, requests, rasterio
-from rasterio.warp import reproject, Resampling
+import math, time, numpy as np, requests, rasterio
+import os, sys
+_REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+from pipelines.geodata.layers import terrain as tl  # noqa: E402  (logic moved there; wrap, never fork)
 
 BASE   = os.path.dirname(os.path.abspath(__file__))
 RAW    = os.path.join(BASE, "raw", "dem"); os.makedirs(RAW, exist_ok=True)
@@ -24,9 +28,7 @@ REF    = os.path.join(LAYERS, "aez_belt.tif")
 ND     = -9999.0
 S3     = "https://copernicus-dem-30m.s3.amazonaws.com"
 
-def tile_url(lat, lon):
-    name = "Copernicus_DSM_COG_10_N%02d_00_E%03d_00_DEM" % (lat, lon)
-    return name, "%s/%s/%s.tif" % (S3, name, name)
+tile_url = tl.tile_url   # (name, url) of a GLO-30 tile
 
 def download(url, dest, retries=4):
     if os.path.exists(dest) and os.path.getsize(dest) > 1000:
@@ -49,14 +51,7 @@ def download(url, dest, retries=4):
     return False
 
 
-def warp_tile(dest, H, W, transform, crs):
-    tmp = np.full((H, W), ND, dtype="float32")
-    with rasterio.open(dest) as src:
-        reproject(source=rasterio.band(src, 1), destination=tmp,
-                  src_transform=src.transform, src_crs=src.crs, src_nodata=src.nodata,
-                  dst_transform=transform, dst_crs=crs, dst_nodata=ND,
-                  resampling=Resampling.bilinear)
-    return tmp
+warp_tile = tl.warp_tile  # one tile warped bilinear onto the full grid
 
 
 def main():
@@ -112,18 +107,8 @@ def main():
     ev = elev[elev > ND]
     print("  wrote layers/elevation.tif  range %.0f - %.0f m" % (ev.min(), ev.max()))
 
-    # slope (percent), latitude-aware cell size on the geographic grid
-    res = transform.a                                   # degrees per pixel
-    lat0 = transform.f                                  # top latitude
-    z = np.where(elev > ND, elev, np.nan)
-    dzdy, dzdx = np.gradient(z)                          # per-pixel rise
-    dy_m = res * 111320.0
-    lats = lat0 + (np.arange(H) + 0.5) * (-res)
-    dx_m = (res * 111320.0 * np.cos(np.radians(lats)))[:, None]
-    gx = dzdx / dx_m
-    gy = dzdy / dy_m
-    slope_pct = np.sqrt(gx * gx + gy * gy) * 100.0
-    slope_pct = np.where(np.isnan(slope_pct), ND, slope_pct).astype("float32")
+    # slope (percent), latitude-aware cell size on the geographic grid (pipelines/geodata/layers/terrain.py)
+    slope_pct = tl.slope_percent(elev, transform)
     with rasterio.open(os.path.join(LAYERS, "slope.tif"), "w", **prof) as d:
         d.write(slope_pct, 1)
     sv = slope_pct[slope_pct > ND]

@@ -73,3 +73,8 @@ data/taxonomy/catalogue_entries.json
 data/evidence/review/geocode_llm_cache.jsonl
 pipelines/evidence/cache/
 rag/corpus/guidelines/chunks.jsonl
+
+# --- E3 geodata releases: rasters out of git; manifest.json, qa_report.json, README.md, diffs and stack.vrt stay IN git ---
+geodata/*/*/*.tif
+geodata/*/.*.partial/
+pipelines/geodata/cache/

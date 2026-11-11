@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "built_at": "2026-11-10T17:46:44+00:00",
-  "git_commit": "c51e191e46d3791d39ae4f6ad09a8ec533854a3b",
+  "built_at": "2026-11-11T10:42:04+00:00",
+  "git_commit": "adb446d3aa5dc99728dfd79a7ad431fa0f0ac06f",
   "n_rows": 19753,
   "rows_per_source": {
     "CSA": 3344,
@@ -60,7 +60,37 @@
     "mfl_domain",
     "extra",
     "direction_reviewed",
-    "ctx_reported_slope_pct"
+    "ctx_reported_slope_pct",
+    "ctx_aez_belt",
+    "ctx_precip_annual",
+    "ctx_temp_mean_annual",
+    "ctx_precip_seasonality",
+    "ctx_lgp_days",
+    "ctx_elevation",
+    "ctx_slope",
+    "ctx_soil_clay",
+    "ctx_soil_ph",
+    "ctx_soil_soc",
+    "ctx_land_cover",
+    "ctx_slope_length_factor",
+    "ctx_tpi",
+    "ctx_twi",
+    "ctx_flow_accumulation",
+    "ctx_dist_to_stream_m",
+    "ctx_soil_sand",
+    "ctx_soil_bulk_density",
+    "ctx_soil_cec",
+    "ctx_soil_nitrogen",
+    "ctx_soil_awc",
+    "ctx_soil_depth_bedrock",
+    "ctx_rain_mean_1991_2020",
+    "ctx_rain_cv_interannual",
+    "ctx_dry_season_length_months",
+    "ctx_pet_hargreaves_annual",
+    "ctx_aridity_index",
+    "ctx_cropland_fraction_1km",
+    "ctx_travel_time_to_city_min",
+    "ctx_koppen_class"
   ],
   "input_files": {
     "data/raw/ERA_Ethiopia_dataset.csv": "f0ba3918ba0173207964773d070d02a8e2fead43a992a0712abe150df7dbcbeb",
@@ -126,5 +156,25 @@
     }
   },
   "habtamu_grist_rows": 1617,
-  "catalogue_entries": 30
+  "catalogue_entries": 30,
+  "context": {
+    "release": "ET/2026.1",
+    "rows": 19753,
+    "eligible": 18146,
+    "written": 18096,
+    "outside_country_mask": 50,
+    "not_eligible": {
+      "precision_country_or_none": 742,
+      "geocoded_llm_unchecked": 381,
+      "no_coordinates": 484
+    },
+    "written_by_source": {
+      "CSA": 3220,
+      "ERA": 14792,
+      "HAB": 84
+    },
+    "null_after_fallback": {},
+    "release_manifest_sha256": "fcedbbd49859b7b578b1da197ed8385b520702d9677b2ac2e480ac3d0ef90c02",
+    "reconciliation_within_tolerance": false
+  }
 }

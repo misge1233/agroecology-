@@ -16,8 +16,13 @@ Setup:  pip install rasterio requests numpy
 Run:    python get_seasonality.py
 Verify: python extract_features.py --lat 9.03 --lon 38.74
 """
-import os, zipfile, glob, numpy as np, requests, rasterio
-from rasterio.warp import reproject, Resampling
+import zipfile, glob, numpy as np, requests, rasterio
+import os, sys
+_REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+from pipelines.geodata.grid import grid_from_raster  # noqa: E402
+from pipelines.geodata.layers import climate_worldclim as wc  # noqa: E402  (logic moved there; wrap, never fork)
 
 BASE   = os.path.dirname(os.path.abspath(__file__))
 RAW    = os.path.join(BASE, "raw"); os.makedirs(RAW, exist_ok=True)
@@ -49,26 +54,11 @@ def main():
     if len(months) != 12:
         raise SystemExit("Expected 12 monthly precip files, found %d" % len(months))
 
-    with rasterio.open(REF) as ref:
-        crs, transform, W, H = ref.crs, ref.transform, ref.width, ref.height
-
-    # resample each month to the grid FIRST (small), then stack
-    aligned = np.full((12, H, W), np.nan, dtype="float32")
-    for i, m in enumerate(months):
-        with rasterio.open(m) as src:
-            tmp = np.full((H, W), np.nan, dtype="float32")
-            reproject(source=rasterio.band(src, 1), destination=tmp,
-                      src_transform=src.transform, src_crs=src.crs,
-                      src_nodata=src.nodata, dst_transform=transform, dst_crs=crs,
-                      dst_nodata=np.nan, resampling=Resampling.bilinear)
-            aligned[i] = tmp
-        print("  aligned month %2d/12" % (i + 1))
-
-    mean = np.nanmean(aligned, axis=0)
-    std  = np.nanstd(aligned, axis=0)            # population std (ddof=0), like BIO15
-    with np.errstate(divide="ignore", invalid="ignore"):
-        cv = np.where(mean > 0, 100.0 * std / mean, ND).astype("float32")
-    cv = np.where(np.isnan(cv), ND, cv).astype("float32")
+    g = grid_from_raster(REF)
+    crs, transform, W, H = g.crs, g.transform, g.ncols, g.nrows
+    # resample each month to the grid FIRST (small), then CV (pipelines/geodata/layers/climate_worldclim.py)
+    aligned = wc.align_stack(months, g)
+    cv = wc.seasonality_cv(aligned)
 
     out = os.path.join(LAYERS, "precip_seasonality.tif")
     prof = dict(driver="GTiff", height=H, width=W, count=1, dtype="float32",

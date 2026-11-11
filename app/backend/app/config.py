@@ -38,6 +38,13 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("LAYERS_DIR"),
     )
 
+    # Geodata release (E3). Empty -> the unversioned stack at LAYERS_DIR, exactly
+    # as before E3. Set e.g. GEODATA_RELEASE=ET/2026.1 to read every context
+    # value through pipelines/geodata/extract.ContextExtractor from
+    # GEODATA_DIR/ET/2026.1 (GEODATA_DIR resolves against backend/).
+    geodata_release: str = Field(default="", validation_alias=AliasChoices("GEODATA_RELEASE"))
+    geodata_dir: str = Field(default="../../geodata", validation_alias=AliasChoices("GEODATA_DIR"))
+
     # RAG evidence index (Phase P2b). Built by rag/ingest (fetch_papers →
     # parse_and_chunk → build_index); lives at the repo root by default. Relative
     # paths resolve against backend_root, mirroring LAYERS_DIR.
@@ -140,6 +147,18 @@ class Settings(BaseSettings):
             p = Path(self.layers_dir)
             return p if p.is_absolute() else (self.backend_root / p).resolve()
         return self.backend_root / "layers"
+
+    @property
+    def resolved_geodata_dir(self) -> Path:
+        """Absolute path of the geodata release root (GEODATA_DIR)."""
+        p = Path(self.geodata_dir)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
+
+    @property
+    def resolved_geodata_release_dir(self) -> Path | None:
+        """Folder of the configured release (``GEODATA_DIR/<CC>/<release>``), or None when unset."""
+        rel = self.geodata_release.strip().strip("/")
+        return (self.resolved_geodata_dir / rel) if rel else None
 
     @property
     def resolved_rag_index_dir(self) -> Path:

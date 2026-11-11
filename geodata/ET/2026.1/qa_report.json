@@ -1,0 +1,1808 @@
+{
+  "status": "pass",
+  "required_failed": [],
+  "optional_failed": [],
+  "legacy_layers_differing": [],
+  "legacy_layers_within_tolerance": [
+    "elevation",
+    "slope"
+  ],
+  "layers": {
+    "aez_belt": {
+      "layer": "aez_belt",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "int16 (declared int16)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "0.0 (declared 0)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.0)"
+        },
+        {
+          "check": "classes",
+          "status": "pass",
+          "detail": "codes [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "classes": {
+          "1": 2291710,
+          "2": 274184,
+          "3": 7544166,
+          "4": 1685332,
+          "5": 222021,
+          "6": 1199068,
+          "7": 2152362,
+          "8": 1426615,
+          "9": 152153,
+          "10": 794314,
+          "11": 537290,
+          "12": 77969,
+          "13": 21972,
+          "14": 16861,
+          "15": 2366
+        }
+      }
+    },
+    "precip_annual": {
+      "layer": "precip_annual",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 5000]; observed 20 to 1997"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 432.3"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 102.00202178955078,
+        "max": 1996.9666748046875,
+        "mean": 799.9012089231876,
+        "sd": 448.9693836561738,
+        "quantiles": {
+          "1": 159.3718374633789,
+          "5": 225.8156280517578,
+          "25": 405.969970703125,
+          "50": 721.3150024414062,
+          "75": 1116.2606811523438,
+          "95": 1653.5798095703121,
+          "99": 1818.7606860351561
+        }
+      }
+    },
+    "temp_mean_annual": {
+      "layer": "temp_mean_annual",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [-10, 40]; observed 5.114 to 31.39"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 4.036"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 5.114249229431152,
+        "max": 31.013839721679688,
+        "mean": 22.688512460021737,
+        "sd": 4.221431592311232,
+        "quantiles": {
+          "1": 11.905213890075684,
+          "5": 15.026984691619873,
+          "25": 19.878271102905273,
+          "50": 22.89212989807129,
+          "75": 26.238597869873047,
+          "95": 28.542743301391596,
+          "99": 29.600228042602538
+        }
+      }
+    },
+    "precip_seasonality": {
+      "layer": "precip_seasonality",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 400]; observed 31.53 to 163.9"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 29.32"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 33.35123062133789,
+        "max": 137.3806915283203,
+        "mean": 88.53696313871454,
+        "sd": 26.87862159188642,
+        "quantiles": {
+          "1": 37.3102677154541,
+          "5": 44.046596908569335,
+          "25": 67.78330612182617,
+          "50": 87.7132797241211,
+          "75": 111.96511459350586,
+          "95": 130.68820190429688,
+          "99": 133.5560482788086
+        }
+      }
+    },
+    "lgp_days": {
+      "layer": "lgp_days",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 365]; observed 0 to 365"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 104.1"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 365.0,
+        "mean": 162.07151459995154,
+        "sd": 102.39546931558795,
+        "quantiles": {
+          "1": 0.0,
+          "5": 0.0,
+          "25": 92.0,
+          "50": 181.0,
+          "75": 245.0,
+          "95": 334.0,
+          "99": 365.0
+        }
+      }
+    },
+    "elevation": {
+      "layer": "elevation",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [-500, 5000]; observed -154 to 4470"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 706.4"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": -125.0,
+        "max": 4469.88134765625,
+        "mean": 1253.7824102948955,
+        "sd": 711.3122347711143,
+        "quantiles": {
+          "1": 47.895801544189474,
+          "5": 354.1804229736328,
+          "25": 672.9946594238281,
+          "50": 1143.240478515625,
+          "75": 1733.5979614257812,
+          "95": 2567.9174072265614,
+          "99": 3113.8731787109373
+        }
+      }
+    },
+    "slope": {
+      "layer": "slope",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 1000]; observed 0 to 173.6"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 9.712"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 173.5823211669922,
+        "mean": 8.209087581672392,
+        "sd": 10.713984255639867,
+        "quantiles": {
+          "1": 0.031141580641269685,
+          "5": 0.24420412182807927,
+          "25": 1.1512122750282288,
+          "50": 3.7545418739318848,
+          "75": 11.040036678314209,
+          "95": 31.269534111022878,
+          "99": 48.1596885681152
+        }
+      }
+    },
+    "soil_clay": {
+      "layer": "soil_clay",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.007815 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 100]; observed 9.4 to 71.8"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 7.824"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 13.300000190734863,
+        "max": 66.5999984741211,
+        "mean": 33.078271600725614,
+        "sd": 6.421301268253946,
+        "quantiles": {
+          "1": 18.700000762939453,
+          "5": 21.80000114440918,
+          "25": 29.100000381469727,
+          "50": 32.900001525878906,
+          "75": 37.5,
+          "95": 43.60000228881836,
+          "99": 48.10000228881836
+        }
+      }
+    },
+    "soil_ph": {
+      "layer": "soil_ph",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.007815 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [3, 11]; observed 4.6 to 9.3"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 0.7823"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 4.599999904632568,
+        "max": 9.100000381469727,
+        "mean": 6.973711607477706,
+        "sd": 0.8152282890286539,
+        "quantiles": {
+          "1": 5.400000095367432,
+          "5": 5.700000286102295,
+          "25": 6.200000286102295,
+          "50": 7.099999904632568,
+          "75": 7.700000286102295,
+          "95": 8.0,
+          "99": 8.199999809265137
+        }
+      }
+    },
+    "soil_soc": {
+      "layer": "soil_soc",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.008662 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 1000]; observed 3.2 to 131.2"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 13.83"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18239009,
+        "nodata_share_in_mask": 0.008662,
+        "min": 4.599999904632568,
+        "max": 131.1999969482422,
+        "mean": 32.63850758903145,
+        "sd": 13.92079997749816,
+        "quantiles": {
+          "1": 9.300000190734863,
+          "5": 13.800000190734863,
+          "25": 22.399999618530273,
+          "50": 30.200000762939453,
+          "75": 40.29999923706055,
+          "95": 60.0,
+          "99": 72.5999984741211
+        }
+      }
+    },
+    "land_cover": {
+      "layer": "land_cover",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "uint8 (declared uint8)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "0.0 (declared 0)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.01)"
+        },
+        {
+          "check": "classes",
+          "status": "pass",
+          "detail": "codes [10, 20, 30, 40, 50, 60, 80, 90, 95]"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "classes": {
+          "10": 2487373,
+          "20": 6991263,
+          "30": 3915266,
+          "40": 3339314,
+          "50": 32871,
+          "60": 1365466,
+          "80": 136599,
+          "90": 130231
+        }
+      }
+    },
+    "slope_length_factor": {
+      "layer": "slope_length_factor",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 100]; observed 0 to 55.42"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 5.847"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 55.42013931274414,
+        "mean": 4.697776519066388,
+        "sd": 6.184320439635338,
+        "quantiles": {
+          "1": 0.045509835556149486,
+          "5": 0.09738926365971566,
+          "25": 0.33051322400569916,
+          "50": 1.7804023027420044,
+          "75": 6.940733909606934,
+          "95": 18.313123512268064,
+          "99": 25.7588286590576
+        }
+      }
+    },
+    "tpi": {
+      "layer": "tpi",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [-1000, 1000]; observed -283.2 to 345.9"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 15.93"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": -283.2454833984375,
+        "max": 345.8926086425781,
+        "mean": 0.0001267370702867876,
+        "sd": 18.073121623244052,
+        "quantiles": {
+          "1": -54.416640625,
+          "5": -27.093439102172848,
+          "25": -4.2189061641693115,
+          "50": -0.10340025275945663,
+          "75": 2.807594656944275,
+          "95": 29.698434829711914,
+          "99": 62.48557365417477
+        }
+      }
+    },
+    "twi": {
+      "layer": "twi",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [-10, 40]; observed 4.245 to 22.57"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 1.971"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 4.244781970977783,
+        "max": 22.190439224243164,
+        "mean": 8.811241156861565,
+        "sd": 1.900741417739641,
+        "quantiles": {
+          "1": 5.48868257522583,
+          "5": 6.022115707397461,
+          "25": 7.29376745223999,
+          "50": 8.681852340698242,
+          "75": 10.177777290344238,
+          "95": 11.969414329528803,
+          "99": 13.616118431091309
+        }
+      }
+    },
+    "flow_accumulation": {
+      "layer": "flow_accumulation",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 3000000]; observed 0.008316 to 2.826e+05"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 4498"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.016635842621326447,
+        "max": 192691.953125,
+        "mean": 178.68811039418762,
+        "sd": 3309.003865789429,
+        "quantiles": {
+          "1": 0.017022276297211647,
+          "5": 0.025604180991649628,
+          "25": 0.0686289444565773,
+          "50": 0.2308373898267746,
+          "75": 1.236147403717041,
+          "95": 42.539817810058366,
+          "99": 1112.8433911132752
+        }
+      }
+    },
+    "dist_to_stream_m": {
+      "layer": "dist_to_stream_m",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 300000]; observed 0 to 2.524e+04"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 318.3"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 3360.88916015625,
+        "mean": 312.5121257032946,
+        "sd": 319.2867530379131,
+        "quantiles": {
+          "1": 0.0,
+          "5": 0.0,
+          "25": 0.0,
+          "50": 206.9129638671875,
+          "75": 498.7010803222656,
+          "95": 927.6666870117188,
+          "99": 1247.2611083984375
+        }
+      }
+    },
+    "soil_sand": {
+      "layer": "soil_sand",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.007815 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 100]; observed 1.75 to 81"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 8.947"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 2.0166666507720947,
+        "max": 72.13333129882812,
+        "mean": 34.136140119652616,
+        "sd": 8.266833265258935,
+        "quantiles": {
+          "1": 16.350000381469727,
+          "5": 20.83333396911621,
+          "25": 29.016666412353516,
+          "50": 33.88333511352539,
+          "75": 38.66666793823242,
+          "95": 48.78333282470703,
+          "99": 57.31666564941406
+        }
+      }
+    },
+    "soil_bulk_density": {
+      "layer": "soil_bulk_density",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.008667 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0.3, 2.5]; observed 0.7783 to 1.82"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 0.1312"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18238927,
+        "nodata_share_in_mask": 0.008667,
+        "min": 0.8849999904632568,
+        "max": 1.681666612625122,
+        "mean": 1.3144129568206517,
+        "sd": 0.1262367950755319,
+        "quantiles": {
+          "1": 1.0416666269302368,
+          "5": 1.0866665840148926,
+          "25": 1.2300000190734863,
+          "50": 1.3199999332427979,
+          "75": 1.4249999523162842,
+          "95": 1.4866665601730347,
+          "99": 1.534999966621399
+        }
+      }
+    },
+    "soil_cec": {
+      "layer": "soil_cec",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.007815 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 250]; observed 3.433 to 96.93"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 9.794"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 8.816666603088379,
+        "max": 96.93333435058594,
+        "mean": 30.59173214297805,
+        "sd": 8.344943499848526,
+        "quantiles": {
+          "1": 16.41666603088379,
+          "5": 19.616666793823242,
+          "25": 24.899999618530273,
+          "50": 28.733333587646484,
+          "75": 35.150001525878906,
+          "95": 46.04999923706055,
+          "99": 55.63333511352539
+        }
+      }
+    },
+    "soil_nitrogen": {
+      "layer": "soil_nitrogen",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.018882 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 60]; observed 0.3383 to 37.26"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 0.8875"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18050980,
+        "nodata_share_in_mask": 0.018882,
+        "min": 0.375,
+        "max": 8.850000381469727,
+        "mean": 1.703920825664585,
+        "sd": 0.7253033962996234,
+        "quantiles": {
+          "1": 0.7733333706855774,
+          "5": 0.8816667199134827,
+          "25": 1.1033332347869873,
+          "50": 1.5416666269302368,
+          "75": 2.121666669845581,
+          "95": 3.1399998664855957,
+          "99": 3.7316665649414062
+        }
+      }
+    },
+    "soil_awc": {
+      "layer": "soil_awc",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.008667 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 500]; observed 53.22 to 207.7"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 11.23"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18238927,
+        "nodata_share_in_mask": 0.008667,
+        "min": 53.220333099365234,
+        "max": 207.7158203125,
+        "mean": 135.6456375011216,
+        "sd": 9.110144118480004,
+        "quantiles": {
+          "1": 110.75959045410156,
+          "5": 120.0714614868164,
+          "25": 130.56680297851562,
+          "50": 135.528564453125,
+          "75": 141.2512969970703,
+          "95": 150.33558654785156,
+          "99": 156.97997650146482
+        }
+      }
+    },
+    "soil_depth_bedrock": {
+      "layer": "soil_depth_bedrock",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.00649 inside the country mask (max 0.05)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 100000]; observed 9 to 200"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 21.85"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18278984,
+        "nodata_share_in_mask": 0.00649,
+        "min": 19.0,
+        "max": 200.0,
+        "mean": 191.72724649247465,
+        "sd": 19.50552101940907,
+        "quantiles": {
+          "1": 108.0,
+          "5": 147.0,
+          "25": 197.0,
+          "50": 200.0,
+          "75": 200.0,
+          "95": 200.0,
+          "99": 200.0
+        }
+      }
+    },
+    "rain_mean_1991_2020": {
+      "layer": "rain_mean_1991_2020",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 5000]; observed 34.64 to 2212"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 449.2"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 113.40962982177734,
+        "max": 2212.15283203125,
+        "mean": 821.0307101282389,
+        "sd": 468.6196346526547,
+        "quantiles": {
+          "1": 171.88389038085938,
+          "5": 232.00046081542968,
+          "25": 377.5402526855469,
+          "50": 782.7030029296875,
+          "75": 1151.6875,
+          "95": 1702.37353515625,
+          "99": 1902.177900390625
+        }
+      }
+    },
+    "rain_cv_interannual": {
+      "layer": "rain_cv_interannual",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 300]; observed 5.39 to 73.96"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 8.634"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 5.390401840209961,
+        "max": 42.35885238647461,
+        "mean": 17.37704600753034,
+        "sd": 7.965222296205847,
+        "quantiles": {
+          "1": 7.151233806610107,
+          "5": 8.247356414794922,
+          "25": 11.158830642700195,
+          "50": 14.950263977050781,
+          "75": 21.83775043487549,
+          "95": 33.72409019470214,
+          "99": 36.690019073486326
+        }
+      }
+    },
+    "dry_season_length_months": {
+      "layer": "dry_season_length_months",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "int16 (declared int16)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 12]; observed 0 to 12"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 2.733"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 12.0,
+        "mean": 6.858121499046955,
+        "sd": 2.519572877227967,
+        "quantiles": {
+          "1": 1.0,
+          "5": 3.0,
+          "25": 5.0,
+          "50": 7.0,
+          "75": 9.0,
+          "95": 11.0,
+          "99": 12.0
+        }
+      }
+    },
+    "pet_hargreaves_annual": {
+      "layer": "pet_hargreaves_annual",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 4000]; observed 1049 to 2321"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 186.9"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 1049.0242919921875,
+        "max": 2204.3974609375,
+        "mean": 1780.7635735229437,
+        "sd": 165.1757451453639,
+        "quantiles": {
+          "1": 1342.6658715820313,
+          "5": 1498.7320556640625,
+          "25": 1675.6597900390625,
+          "50": 1787.515869140625,
+          "75": 1890.93212890625,
+          "95": 2047.23681640625,
+          "99": 2113.99560546875
+        }
+      }
+    },
+    "aridity_index": {
+      "layer": "aridity_index",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 10]; observed 0.0224 to 1.657"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 0.2722"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.06422877311706543,
+        "max": 1.6572645902633667,
+        "mean": 0.47571900582358406,
+        "sd": 0.29096274226082297,
+        "quantiles": {
+          "1": 0.09852695271372795,
+          "5": 0.12200455814599992,
+          "25": 0.2037254124879837,
+          "50": 0.43457502126693726,
+          "75": 0.6806479692459106,
+          "95": 1.0235669612884521,
+          "99": 1.1847066330909728
+        }
+      }
+    },
+    "cropland_fraction_1km": {
+      "layer": "cropland_fraction_1km",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.01)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 1]; observed 0 to 1"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 0.2814"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.16976720681141994,
+        "sd": 0.2855037783350954,
+        "quantiles": {
+          "1": 0.0,
+          "5": 0.0,
+          "25": 0.0,
+          "50": 0.00032150206970982254,
+          "75": 0.23456789553165436,
+          "95": 0.8714634776115417,
+          "99": 0.9871184825897217
+        }
+      }
+    },
+    "travel_time_to_city_min": {
+      "layer": "travel_time_to_city_min",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "float32 (declared float32)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "-9999.0 (declared -9999)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.02)"
+        },
+        {
+          "check": "range",
+          "status": "pass",
+          "detail": "0 values outside [0, 100000]; observed 0 to 1409"
+        },
+        {
+          "check": "not_constant",
+          "status": "pass",
+          "detail": "sd 187.1"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 1409.284423828125,
+        "mean": 245.73448820322764,
+        "sd": 179.06507389179635,
+        "quantiles": {
+          "1": 6.001459617614747,
+          "5": 24.977075576782227,
+          "25": 104.07499694824219,
+          "50": 212.37261962890625,
+          "75": 349.2477264404297,
+          "95": 581.97998046875,
+          "99": 782.0155053710932
+        }
+      }
+    },
+    "koppen_class": {
+      "layer": "koppen_class",
+      "status": "pass",
+      "checks": [
+        {
+          "check": "alignment",
+          "status": "pass",
+          "detail": "transform (0.00225, 0.0, 32.9, 0.0, -0.00225, 14.901), 6800 x 5156, EPSG:4326"
+        },
+        {
+          "check": "dtype",
+          "status": "pass",
+          "detail": "uint8 (declared uint8)"
+        },
+        {
+          "check": "nodata",
+          "status": "pass",
+          "detail": "0.0 (declared 0)"
+        },
+        {
+          "check": "nodata_share",
+          "status": "pass",
+          "detail": "0.0 inside the country mask (max 0.01)"
+        },
+        {
+          "check": "classes",
+          "status": "pass",
+          "detail": "codes [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 29]"
+        }
+      ],
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "classes": {
+          "2": 395030,
+          "3": 5696219,
+          "4": 4701727,
+          "6": 3882940,
+          "7": 68738,
+          "8": 39214,
+          "9": 1452900,
+          "10": 5565,
+          "11": 62393,
+          "12": 1776963,
+          "13": 12780,
+          "14": 92,
+          "15": 267970,
+          "16": 12,
+          "29": 35840
+        }
+      }
+    }
+  },
+  "legacy_comparison": {
+    "aez_belt": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "precip_annual": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "temp_mean_annual": {
+      "equal": true,
+      "identical": false,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 1.9073486328125e-06,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "precip_seasonality": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "lgp_days": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "elevation": {
+      "equal": false,
+      "identical": false,
+      "cells_differing": 25842010,
+      "nodata_mismatch": 197136,
+      "newly_valid": 197136,
+      "newly_nodata": 0,
+      "max_abs_diff": 61.430419921875,
+      "tolerance": 0.001,
+      "within_tolerance": true,
+      "cells_differing_in_mask": 15698654,
+      "abs_diff": {
+        "median": 0.02880859375,
+        "p95": 2.570065307617142,
+        "p99": 6.1702880859375,
+        "max": 61.430419921875,
+        "cells": 18398383,
+        "region": "mask"
+      },
+      "tolerance_spec": {
+        "median_abs": 0.1,
+        "p99_abs": 10
+      },
+      "tolerance_checks": {
+        "median_abs": true,
+        "p99_abs": true
+      },
+      "accepted": true
+    },
+    "slope": {
+      "equal": false,
+      "identical": false,
+      "cells_differing": 23031209,
+      "nodata_mismatch": 198022,
+      "newly_valid": 198022,
+      "newly_nodata": 0,
+      "max_abs_diff": 18.915023803710938,
+      "tolerance": 0.001,
+      "within_tolerance": true,
+      "cells_differing_in_mask": 14156871,
+      "abs_diff": {
+        "median": 0.009219884872436523,
+        "p95": 0.8183135032653794,
+        "p99": 1.89046703338623,
+        "max": 18.915023803710938,
+        "cells": 18398383,
+        "region": "mask"
+      },
+      "tolerance_spec": {
+        "median_abs": 0.05,
+        "p99_abs": 5
+      },
+      "tolerance_checks": {
+        "median_abs": true,
+        "p99_abs": true
+      },
+      "accepted": true
+    },
+    "soil_clay": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "soil_ph": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "soil_soc": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0.001,
+      "within_tolerance": null,
+      "accepted": true
+    },
+    "land_cover": {
+      "equal": true,
+      "identical": true,
+      "cells_differing": 0,
+      "nodata_mismatch": 0,
+      "newly_valid": 0,
+      "newly_nodata": 0,
+      "max_abs_diff": 0.0,
+      "tolerance": 0,
+      "within_tolerance": null,
+      "accepted": true
+    }
+  },
+  "not_built": {
+    "ndvi_trend": {
+      "status": "pending",
+      "reason": "LP DAAC and AppEEARS downloads need a NASA Earthdata login; the brief excludes credentials"
+    },
+    "overlay_hotspot_coldspot": {
+      "status": "pending",
+      "reason": "no GeoTIFF at countries/ET.yaml overlays.omo_gibe.rasters.hotspot_coldspot = 'data/raw/hotspot and coldspot/'"
+    },
+    "overlay_typology": {
+      "status": "pending",
+      "reason": "no GeoTIFF at countries/ET.yaml overlays.omo_gibe.rasters.typology = 'data/raw/Typology/'"
+    },
+    "mask_omo_gibe": {
+      "status": "pending",
+      "reason": "no overlay raster present"
+    }
+  }
+}

@@ -22,8 +22,13 @@ Setup:  pip install rasterio requests numpy
 Run:    python get_lgp.py
 Verify: python extract_features.py --lat 9.03 --lon 38.74
 """
-import os, glob, zipfile, calendar, numpy as np, requests, rasterio
-from rasterio.warp import reproject, Resampling
+import glob, zipfile, calendar, numpy as np, requests, rasterio
+import os, sys
+_REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+from pipelines.geodata.grid import grid_from_raster  # noqa: E402
+from pipelines.geodata.layers import climate_worldclim as wc  # noqa: E402  (logic moved there; wrap, never fork)
 
 BASE   = os.path.dirname(os.path.abspath(__file__))
 RAW    = os.path.join(BASE, "raw"); os.makedirs(RAW, exist_ok=True)
@@ -49,61 +54,15 @@ def ensure(var):
     zipfile.ZipFile(dest).extractall(RAW)
     return sorted(glob.glob(os.path.join(RAW, "wc2.1_30s_%s_*.tif" % var)))
 
+# The algorithms live in pipelines/geodata/layers/climate_worldclim.py (moved, not rewritten).
+daylength_hours = wc.daylength_hours
+thornthwaite_pet = wc.thornthwaite_pet
+compute_lgp = wc.compute_lgp
+
+
 def align_stack(files, crs, transform, W, H):
-    out = np.full((12, H, W), np.nan, dtype="float32")
-    for i, f in enumerate(files):
-        with rasterio.open(f) as src:
-            tmp = np.full((H, W), np.nan, dtype="float32")
-            reproject(source=rasterio.band(src, 1), destination=tmp,
-                      src_transform=src.transform, src_crs=src.crs, src_nodata=src.nodata,
-                      dst_transform=transform, dst_crs=crs, dst_nodata=np.nan,
-                      resampling=Resampling.bilinear)
-            out[i] = tmp
-        print("    aligned %2d/12" % (i + 1))
-    return out
-
-def daylength_hours(lat_deg):
-    """N (hours) per month for each latitude row -> shape (12, H)."""
-    lat = np.radians(lat_deg)                       # (H,)
-    N = np.zeros((12, lat.size), dtype="float32")
-    for m in range(12):
-        decl = np.radians(23.45 * np.sin(np.radians(360.0 * (284 + MIDDOY[m]) / 365.0)))
-        x = -np.tan(lat) * np.tan(decl)
-        x = np.clip(x, -1.0, 1.0)
-        ws = np.arccos(x)                           # sunset hour angle
-        N[m] = (24.0 / np.pi) * ws
-    return N
-
-def thornthwaite_pet(tavg, N_by_row, H, W):
-    """tavg: (12,H,W) monthly mean T. Returns PET (12,H,W) mm/month."""
-    T = np.where(np.isnan(tavg), 0.0, tavg)
-    Tpos = np.clip(T, 0, None)
-    I = np.sum((Tpos / 5.0) ** 1.514, axis=0)       # heat index (H,W)
-    a = (6.75e-7 * I**3) - (7.71e-5 * I**2) + (1.792e-2 * I) + 0.49239
-    pet = np.zeros((12, H, W), dtype="float32")
-    Isafe = np.where(I <= 0, np.nan, I)
-    for m in range(12):
-        Tm = T[m]
-        base = np.zeros((H, W), dtype="float32")
-        mid = (Tm > 0) & (Tm <= 26.5)
-        base[mid] = 16.0 * (10.0 * Tm[mid] / Isafe[mid]) ** a[mid]
-        hot = Tm > 26.5
-        base[hot] = -415.85 + 32.24 * Tm[hot] - 0.43 * Tm[hot] ** 2
-        base = np.nan_to_num(base, nan=0.0, posinf=0.0, neginf=0.0)
-        corr = (N_by_row[m][:, None] / 12.0) * (DAYS[m] / 30.0)   # (H,1) broadcast
-        pet[m] = np.clip(base, 0, None) * corr
-    return pet
-
-def compute_lgp(precip, tavg, lat_deg):
-    H, W = precip.shape[1], precip.shape[2]
-    N = daylength_hours(lat_deg)
-    pet = thornthwaite_pet(tavg, N, H, W)
-    growing = (precip >= 0.5 * pet) & (tavg > 5.0)          # (12,H,W)
-    lgp = np.tensordot(DAYS, growing.astype("float32"), axes=([0], [0]))
-    lgp = np.clip(lgp, 0, 365).astype("float32")
-    valid = ~np.isnan(precip[0]) & ~np.isnan(tavg[0])
-    lgp = np.where(valid, lgp, ND).astype("float32")
-    return lgp
+    """Kept signature; delegates to climate_worldclim.align_stack on the reference grid."""
+    return wc.align_stack(files, grid_from_raster(REF))
 
 def main():
     if not os.path.exists(REF):

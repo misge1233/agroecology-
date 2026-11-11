@@ -12,8 +12,13 @@ Setup:  pip install rasterio requests numpy
 Run:    python get_temp.py
 Verify: python extract_features.py --lat 9.03 --lon 38.74
 """
-import os, zipfile, glob, numpy as np, requests, rasterio
-from rasterio.warp import reproject, Resampling
+import zipfile, glob, numpy as np, requests, rasterio
+import os, sys
+_REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+from pipelines.geodata.grid import grid_from_raster  # noqa: E402
+from pipelines.geodata.layers import climate_worldclim as wc  # noqa: E402  (logic moved there; wrap, never fork)
 
 BASE   = os.path.dirname(os.path.abspath(__file__))
 RAW    = os.path.join(BASE, "raw"); os.makedirs(RAW, exist_ok=True)
@@ -41,33 +46,11 @@ def main():
     if len(months) != 12:
         raise SystemExit("Expected 12 monthly files, found %d" % len(months))
 
-    # average the 12 monthly means -> mean annual temperature
-    acc, n = None, 0
-    with rasterio.open(months[0]) as s0:
-        src_nodata = s0.nodata
-    for m in months:
-        with rasterio.open(m) as s:
-            a = s.read(1).astype("float32")
-            if src_nodata is not None:
-                a[a == src_nodata] = np.nan
-            acc = a if acc is None else acc + a
-            n += 1
-    mean_t = acc / n
-    tmp = os.path.join(RAW, "temp_mean_global.tif")
-    with rasterio.open(months[0]) as s0:
-        prof = s0.profile
-    prof.update(dtype="float32", nodata=np.nan, compress="lzw")
-    with rasterio.open(tmp, "w", **prof) as d:
-        d.write(mean_t, 1)
-
-    with rasterio.open(REF) as ref:
-        g = dict(crs=ref.crs, transform=ref.transform, width=ref.width, height=ref.height)
-    dst = np.full((g["height"], g["width"]), -9999.0, dtype="float32")
-    with rasterio.open(tmp) as src:
-        reproject(source=rasterio.band(src, 1), destination=dst,
-                  src_transform=src.transform, src_crs=src.crs, src_nodata=np.nan,
-                  dst_transform=g["transform"], dst_crs=g["crs"], dst_nodata=-9999.0,
-                  resampling=Resampling.bilinear)
+    # average the 12 monthly means, then align (pipelines/geodata/layers/climate_worldclim.py)
+    mean_t, src_transform, src_crs = wc.mean_months(months)
+    g = grid_from_raster(REF)
+    dst = wc.to_grid(mean_t, src_transform, src_crs, g)
+    g = dict(crs=g.crs, transform=g.transform, width=g.ncols, height=g.nrows)
     out = os.path.join(LAYERS, "temp_mean_annual.tif")
     prof = dict(driver="GTiff", height=g["height"], width=g["width"], count=1,
                 dtype="float32", crs=g["crs"], transform=g["transform"],

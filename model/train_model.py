@@ -26,6 +26,9 @@ Usage:
     python model/train_model.py --quick         # 2 reps, 1 setting (smoke)
     python model/train_model.py --reuse-eval    # re-emit artefacts, no re-run
     python model/train_model.py --dataset X.csv --artifacts out/ --no-copy
+    python model/train_model.py --release ET/2026.1   # E3: re-extract the context
+                                # features from a geodata release, print the quick-protocol
+                                # ranking metrics of the current stack versus the release, then fit
 
 Requires: pandas, numpy, scikit-learn, joblib.
 """
@@ -115,6 +118,55 @@ def build_metrics(payload: dict[str, Any], best: dict[str, Any],
     }
 
 
+#: E3 (brief C4): training columns read from the geodata context, -> release layer.
+RELEASE_CONTEXT = {"Rainfall": "precip_annual", "Altitude_r": "elevation", "temp_mean_annual": "temp_mean_annual",
+                   "precip_seasonality": "precip_seasonality", "slope": "slope", "soil_clay": "soil_clay",
+                   "land_cover": "land_cover", "aez_belt": "aez_belt",
+                   "lgp_days": "lgp_days", "soil_ph": "soil_ph", "soil_soc": "soil_soc"}
+
+
+def reextract_from_release(df: pd.DataFrame, release: str,
+                           geodata_dir: Path = REPO_ROOT / "geodata") -> tuple[pd.DataFrame, dict[str, Any]]:
+    """The training rows with every context feature re-read from ``release`` (wrap, never fork).
+
+    Reads through ``pipelines.geodata.extract.ContextExtractor`` with the serving rule
+    (``recommend.py``: 120-cell nearest-valid fallback; belt as its name, land cover as
+    its code), so model and serving read the same release. Returns the new frame and a
+    per-column change summary (rows changed beyond 1e-3, max abs diff).
+    """
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
+    from pipelines.geodata.extract import LEGACY_RADIUS, ContextExtractor
+
+    ext = ContextExtractor.for_release(release, geodata_dir, max_radius_px=LEGACY_RADIUS)
+    ctx = ext.batch(df, "latitude", "longitude", layers=sorted(set(RELEASE_CONTEXT.values())),
+                    max_radius_px=LEGACY_RADIUS)
+    out = df.copy()
+    changes: dict[str, Any] = {}
+    for col, lid in RELEASE_CONTEXT.items():
+        new = ctx[f"ctx_{lid}"]
+        if col == "aez_belt":
+            new = new.map(lambda v: ext.aez_lookup.get(int(v)) if pd.notna(v) else None)
+            changed = int((new.astype(object) != df[col].astype(object)).sum())
+            changes[col] = {"rows_changed": changed}
+        else:
+            if col == "land_cover":
+                new = new.round().astype("Int64")
+            d = (pd.to_numeric(new, errors="coerce") - pd.to_numeric(df[col], errors="coerce")).abs()
+            changes[col] = {"rows_changed": int((d > 1e-3).sum()), "max_abs_diff": float(d.max()),
+                            "rows_null": int(new.isna().sum())}
+        out[col] = new.to_numpy() if col != "land_cover" else new.astype("int64").to_numpy()
+    return out, {"release": ext.release_id, "columns": changes}
+
+
+def ranking_summary(payload: dict[str, Any]) -> dict[str, float]:
+    """Grouped ranking metrics of the best run of a protocol payload."""
+    best = next(r for r in payload["runs"] if r["label"] == payload["best"])
+    rk = best["ranking"]
+    return {"spearman": rk["spearman_mean"]["mean"], "top1": rk["top1_hit_rate"]["mean"],
+            "c_index": rk["c_index"]["mean"], "r2": best["r2"]["mean"]}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     parser.add_argument("--dataset", type=Path, default=DATASET_PATH,
@@ -139,6 +191,9 @@ def main(argv: list[str] | None = None) -> int:
                         default=REPO_ROOT / "docs" / "reports" / "model_evaluation_report.md",
                         help="markdown evaluation report to (re)generate")
     parser.add_argument("--no-report", dest="report", action="store_const", const=None)
+    parser.add_argument("--release",
+                        help="E3: geodata release (e.g. ET/2026.1) to re-extract the context features from")
+    parser.add_argument("--geodata-dir", type=Path, default=REPO_ROOT / "geodata")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING,
@@ -150,6 +205,28 @@ def main(argv: list[str] | None = None) -> int:
 
     df = pd.read_csv(args.dataset)
     print(f"dataset: {args.dataset} {df.shape}", flush=True)
+
+    if args.release:
+        # E3 (brief C4): same rows, context features from the release, then a metrics
+        # regression check (quick protocol, current stack versus release).
+        df_rel, changes = reextract_from_release(df, args.release, args.geodata_dir)
+        rel_path = art / f"dataset_{args.release.replace('/', '_')}.csv"
+        df_rel.to_csv(rel_path, index=False)
+        print(f"re-extracted context from {changes['release']} -> {rel_path}", flush=True)
+        for col, c in changes["columns"].items():
+            print(f"  {col:20s} " + ", ".join(f"{k} {v:.3g}" if isinstance(v, float) else f"{k} {v}"
+                                               for k, v in c.items()))
+        print("metrics regression check (quick protocol) ...", flush=True)
+        cur = ranking_summary(ev.run_protocol(args.dataset, args.folds, grid=False, ablations=False, quick=True))
+        new = ranking_summary(ev.run_protocol(rel_path, args.folds, grid=False, ablations=False, quick=True))
+        print(f"  {'metric':10s} {'current':>9s} {'release':>9s} {'delta':>9s}")
+        for k in cur:
+            print(f"  {k:10s} {cur[k]:9.4f} {new[k]:9.4f} {new[k] - cur[k]:+9.4f}")
+        (art / f"release_check_{args.release.replace('/', '_')}.json").write_text(
+            json.dumps({"changes": changes, "quick_current": cur, "quick_release": new}, indent=2) + "\n",
+            encoding="utf-8")
+        args.dataset = rel_path
+        df = df_rel
 
     if args.reuse_eval:
         if not eval_path.exists():

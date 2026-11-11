@@ -1,0 +1,244 @@
+{
+  "model": "RandomForest",
+  "cv_r2": 0.20635211713574247,
+  "cv_rmse": 0.5785407272859753,
+  "baseline_r2": 0.19077700848552298,
+  "per_indicator": {
+    "SOM content": [
+      111,
+      -0.659
+    ],
+    "biomass yield": [
+      1525,
+      0.028
+    ],
+    "income": [
+      208,
+      -0.01
+    ],
+    "runoff": [
+      359,
+      -0.207
+    ],
+    "soil loss": [
+      296,
+      0.097
+    ],
+    "water use efficiency": [
+      255,
+      -0.183
+    ],
+    "yield": [
+      5910,
+      0.005
+    ]
+  },
+  "per_source": {
+    "CSA": 0.324,
+    "ERA": 0.14
+  },
+  "indicator_confidence": {
+    "SOM content": "low",
+    "biomass yield": "low",
+    "income": "low",
+    "runoff": "low",
+    "soil loss": "medium",
+    "water use efficiency": "low",
+    "yield": "low"
+  },
+  "n_rows": 8664,
+  "n_groups": 337,
+  "features": [
+    "CSA_practices",
+    "practice_family",
+    "Crop_group",
+    "crop_type",
+    "aez_belt",
+    "Indicator",
+    "land_cover",
+    "Rainfall",
+    "Altitude_r",
+    "temp_mean_annual",
+    "precip_seasonality",
+    "slope",
+    "soil_clay"
+  ],
+  "protocol": "grouped-cv-10x5-deterministic",
+  "cv_r2_sd": 0.028788668205967132,
+  "cv_rmse_sd": 0.010494677606308041,
+  "baseline_r2_sd": 0.006885791420016938,
+  "fold_file": "data\\processed\\cv_folds.csv",
+  "n_reps": 2,
+  "n_folds": 5,
+  "model_params": {
+    "n_estimators": 150,
+    "min_samples_leaf": 3
+  },
+  "model_label": "RandomForest(min_samples_leaf=3,n_estimators=150)",
+  "ranking_metrics": {
+    "n_cells": {
+      "mean": 68.0,
+      "sd": 0.0
+    },
+    "n_cells_with_rho": {
+      "mean": 68.0,
+      "sd": 0.0
+    },
+    "spearman_mean": {
+      "mean": 0.3982519910244859,
+      "sd": 0.044927577853028026
+    },
+    "spearman_median": {
+      "mean": 0.5,
+      "sd": 0.0
+    },
+    "top1_hit_rate": {
+      "mean": 0.5073529411764706,
+      "sd": 0.031195887405288867
+    },
+    "top1_chance": {
+      "mean": 0.27497135217723445,
+      "sd": 0.0
+    },
+    "tophalf_hit_rate": {
+      "mean": 0.7941176470588235,
+      "sd": 0.0
+    },
+    "c_index": {
+      "mean": 0.7037671232876712,
+      "sd": 0.006053996414268371
+    },
+    "n_comparable_pairs": {
+      "mean": 584.0,
+      "sd": 0.0
+    }
+  },
+  "direction_metrics": {
+    "base_rate_beneficial": {
+      "mean": 0.7314173591874423,
+      "sd": 0.0
+    },
+    "n": {
+      "mean": 8664.0,
+      "sd": 0.0
+    },
+    "balanced_accuracy": {
+      "mean": 0.5818180671507281,
+      "sd": 0.006567190779849297
+    },
+    "roc_auc": {
+      "mean": 0.653856597215323,
+      "sd": 0.017160126954002153
+    },
+    "accuracy": {
+      "mean": 0.7346491228070176,
+      "sd": 0.00375426038026099
+    }
+  },
+  "per_indicator_detail": {
+    "SOM content": {
+      "n": {
+        "mean": 111.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": -0.6585479779113479,
+        "sd": 0.3024335419460165
+      },
+      "rmse": {
+        "mean": 0.35729800633452635,
+        "sd": 0.03271289350992789
+      }
+    },
+    "biomass yield": {
+      "n": {
+        "mean": 1525.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": 0.027792669538023507,
+        "sd": 0.10579820480002226
+      },
+      "rmse": {
+        "mean": 0.5709708655904234,
+        "sd": 0.031113414659947262
+      }
+    },
+    "income": {
+      "n": {
+        "mean": 208.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": -0.009993330698936875,
+        "sd": 0.025844556017914678
+      },
+      "rmse": {
+        "mean": 0.6782481300025465,
+        "sd": 0.008678501242294141
+      }
+    },
+    "runoff": {
+      "n": {
+        "mean": 359.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": -0.20699996594365055,
+        "sd": 0.03877184999886319
+      },
+      "rmse": {
+        "mean": 0.8936011141409984,
+        "sd": 0.01435420019264635
+      }
+    },
+    "soil loss": {
+      "n": {
+        "mean": 296.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": 0.09668813349355826,
+        "sd": 0.0022213744278290356
+      },
+      "rmse": {
+        "mean": 0.9728411282516601,
+        "sd": 0.0011961793696922108
+      }
+    },
+    "water use efficiency": {
+      "n": {
+        "mean": 255.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": -0.1826321834739444,
+        "sd": 0.14495567260328177
+      },
+      "rmse": {
+        "mean": 0.634738663568519,
+        "sd": 0.03897340622324085
+      }
+    },
+    "yield": {
+      "n": {
+        "mean": 5910.0,
+        "sd": 0.0
+      },
+      "r2": {
+        "mean": 0.005191200203849,
+        "sd": 0.04817377435550935
+      },
+      "rmse": {
+        "mean": 0.5239319627944412,
+        "sd": 0.012689464999196778
+      }
+    }
+  },
+  "noise_ceiling": {
+    "study_practice_indicator_means": 0.5632981111333312,
+    "study_indicator_means": 0.4931397072070285,
+    "practice_indicator_means": 0.385721918743797
+  },
+  "leakage_ablation_r2": 0.5086095162083096
+}

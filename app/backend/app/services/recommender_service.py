@@ -31,6 +31,58 @@ if str(_BACKEND_ROOT) not in sys.path:
 import recommend as _engine  # noqa: E402  (canonical logic — wrap, don't fork)
 from recommend import recommend as _recommend  # noqa: E402
 
+# --- Geodata release (E3, brief C2) -------------------------------------------
+# GEODATA_RELEASE unset: the engine reads LAYERS_DIR itself, exactly as before E3.
+# GEODATA_RELEASE=ET/2026.1: the engine's extract_context is replaced by an
+# adapter that reads the release through pipelines/geodata/extract.ContextExtractor.
+# recommend.py is not edited: it looks extract_context up at call time, and the
+# adapter returns the same 11 fields with the same rounding and fallback, plus
+# "release" and "extended" (the new layers), which the engine ignores.
+_GEODATA_RELEASE = get_settings().geodata_release.strip().strip("/")
+_GEODATA_RELEASE_DIR = get_settings().resolved_geodata_release_dir
+_LEGACY_EXTRACT_CONTEXT = _engine.extract_context
+_EXTRACTOR: Any = None
+
+
+def _install_release_adapter() -> None:
+    """Point the engine's context extraction at the configured release (fail fast if absent)."""
+    global _EXTRACTOR
+    repo_root = _BACKEND_ROOT.parents[1]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    from pipelines.geodata.extract import ContextExtractor, load_aez_lookup
+
+    try:
+        _EXTRACTOR = ContextExtractor(_GEODATA_RELEASE_DIR, max_radius_px=_engine.MAXR,
+                                      aez_lookup=load_aez_lookup(_BACKEND_ROOT / "aez_belt_lookup.csv"))
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            f"GEODATA_RELEASE={_GEODATA_RELEASE} but the release cannot be read: {exc}. "
+            "Build it with `python pipelines/geodata/refresh.py`, or unset GEODATA_RELEASE "
+            "to serve from LAYERS_DIR."
+        ) from exc
+    if _EXTRACTOR.release_id != _GEODATA_RELEASE:
+        raise RuntimeError(f"GEODATA_RELEASE={_GEODATA_RELEASE} but {_GEODATA_RELEASE_DIR} holds "
+                           f"release {_EXTRACTOR.release_id!r}")
+
+    def release_extract_context(lat: float, lon: float) -> dict[str, Any]:
+        return _EXTRACTOR.legacy_context(lat, lon)
+
+    _engine.extract_context = release_extract_context
+    logger.info("Context layers: geodata release %s (%s)", _GEODATA_RELEASE, _GEODATA_RELEASE_DIR)
+
+
+if _GEODATA_RELEASE:
+    _install_release_adapter()
+
+
+def geodata_info() -> dict[str, Any]:
+    """What /metadata reports about the context layers (release id or the legacy stack)."""
+    if _EXTRACTOR is not None:
+        return {"release": _EXTRACTOR.release_id, "source": "release",
+                "n_layers": len(_EXTRACTOR.layer_ids()), "extended_layers": _EXTRACTOR.extended_ids()}
+    return {"release": None, "source": "layers_dir", "n_layers": len(_engine.STACK) + 1, "extended_layers": []}
+
 # Re-export the canonical enums / direction map so the whole app has one source.
 DIRECTION: dict[str, int] = dict(_engine.DIRECTION)
 INDICATORS: list[str] = list(DIRECTION.keys())
@@ -59,7 +111,11 @@ def _required_paths() -> list[Path]:
         root / "aez_belt_lookup.csv",
     ]
     layer_names = list(_engine.STACK.keys()) + ["aez_belt"]
-    paths += [_LAYERS_DIR / f"{name}.tif" for name in layer_names]
+    if _EXTRACTOR is not None:  # E3: serving from a release, LAYERS_DIR is not read
+        paths.append(_GEODATA_RELEASE_DIR / "manifest.json")
+        paths += [_GEODATA_RELEASE_DIR / f"{name}.tif" for name in layer_names]
+    else:
+        paths += [_LAYERS_DIR / f"{name}.tif" for name in layer_names]
     return paths
 
 

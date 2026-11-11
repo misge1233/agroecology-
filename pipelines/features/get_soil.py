@@ -15,9 +15,13 @@ Setup:  pip install rasterio requests numpy
 Run:    python get_soil.py
 Verify: python extract_features.py --lat 9.03 --lon 38.74
 """
-import os, numpy as np, rasterio
-from rasterio.vrt import WarpedVRT
-from rasterio.enums import Resampling
+import numpy as np, rasterio
+import os, sys
+_REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+from pipelines.geodata.grid import grid_from_raster  # noqa: E402
+from pipelines.geodata.layers import soil as sl  # noqa: E402  (logic moved there; wrap, never fork)
 
 # help GDAL stream remote CO/VRT tiles efficiently
 os.environ.setdefault("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
@@ -50,13 +54,7 @@ def main():
     for out, (prop, scale, unit) in PROPS.items():
         url = SG % (prop, prop)
         print("  fetching %s from SoilGrids (this can take a few minutes)..." % prop)
-        with rasterio.open("/vsicurl/" + url) as src:
-            with WarpedVRT(src, crs=crs, transform=transform, width=W, height=H,
-                           resampling=Resampling.bilinear) as vrt:
-                a = vrt.read(1).astype("float32")
-                src_nd = src.nodata
-        valid = np.ones(a.shape, bool) if src_nd is None else (a != src_nd)
-        out_arr = np.where(valid, a * scale, ND).astype("float32")
+        out_arr = sl.warp_remote(url, grid_from_raster(REF), scale)
         with rasterio.open(os.path.join(LAYERS, out), "w", **oprof) as d:
             d.write(out_arr, 1)
         v = out_arr[out_arr > ND]

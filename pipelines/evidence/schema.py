@@ -247,6 +247,7 @@ def validate(
     df: pd.DataFrame,
     strict: bool = True,
     outcome_directions: Mapping[str, int | None] | None = None,
+    ctx_ranges: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> ValidationReport:
     """Validate ``df`` against the schema; raise :class:`SchemaError` on any error.
 
@@ -264,6 +265,12 @@ def validate(
     iff the outcome's direction is reviewed. Without it, only internal
     consistency is checked (``direction`` null iff not reviewed).
 
+    ``ctx_*`` columns beyond the fixed ones (E3) are validated by prefix: numeric,
+    and for a geodata layer ``ctx_<layer>`` inside ``valid_min``/``valid_max`` (or
+    the declared ``classes``) of ``pipelines/geodata/sources.yaml``; ``ctx_reported_*``
+    (values reported by the source) are only checked for being numeric. ``ctx_ranges``
+    overrides the ranges read from ``sources.yaml`` (tests).
+
     ``strict=False`` returns the report without raising.
     """
     rep = ValidationReport(n_rows=len(df))
@@ -277,6 +284,9 @@ def validate(
         if strict:
             raise SchemaError(rep)
         return rep
+
+    # --- ctx_* layer columns (E3): numeric, inside the sources.yaml ranges ------
+    validate_ctx(df, rep, ctx_ranges)
 
     # --- dtypes and nullability ---------------------------------------------
     for col, spec in EVIDENCE_COLUMNS.items():
@@ -363,6 +373,68 @@ def validate(
     else:
         logger.info(rep.summary())
     return rep
+
+
+CTX_REPORTED_PREFIX = "ctx_reported_"
+GEODATA_SOURCES = Path(__file__).resolve().parents[1] / "geodata" / "sources.yaml"
+_CTX_RANGES: dict[str, dict[str, Any]] | None = None
+
+
+def ctx_layer_ranges(path: Path = GEODATA_SOURCES) -> dict[str, dict[str, Any]]:
+    """Layer id -> {kind, classes, valid_min, valid_max} from ``pipelines/geodata/sources.yaml``."""
+    global _CTX_RANGES
+    if _CTX_RANGES is None or path != GEODATA_SOURCES:
+        import yaml
+
+        if not path.exists():
+            return {}
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        out = {}
+        for lid, spec in (data.get("layers") or {}).items():
+            spec = spec or {}
+            out[lid] = {"kind": spec.get("kind", (data.get("defaults") or {}).get("kind", "continuous")),
+                        "classes": spec.get("classes"), "valid_min": spec.get("valid_min"),
+                        "valid_max": spec.get("valid_max")}
+        if path != GEODATA_SOURCES:
+            return out
+        _CTX_RANGES = out
+    return _CTX_RANGES
+
+
+def validate_ctx(df: pd.DataFrame, rep: "ValidationReport",
+                 ranges: Mapping[str, Mapping[str, Any]] | None = None) -> None:
+    """Add the ``ctx_*`` checks of :func:`validate` to ``rep``."""
+    extra = [c for c in df.columns if c.startswith(CTX_PREFIX) and c not in EVIDENCE_COLUMNS]
+    if not extra:
+        return
+    ranges = ctx_layer_ranges() if ranges is None else ranges
+    for col in extra:
+        s = df[col]
+        vals = s[s.notna()]
+        if vals.empty:
+            continue
+        bad = _dtype_violations(vals, "float")
+        rep.add(f"dtype:{col}", int(bad.sum()), vals[bad].head(5))
+        if col.startswith(CTX_REPORTED_PREFIX):
+            continue
+        lid = col[len(CTX_PREFIX):]
+        spec = ranges.get(lid)
+        if spec is None:
+            rep.add("ctx_unknown_layer", 1, [col])
+            continue
+        v = pd.to_numeric(vals[~bad], errors="coerce")
+        if spec.get("kind") == "categorical" and spec.get("classes"):
+            notin = ~v.isin([float(c) for c in spec["classes"]])
+            rep.add(f"ctx_class:{col}", int(notin.sum()), v[notin].head(5))
+        else:
+            lo = spec.get("valid_min")
+            hi = spec.get("valid_max")
+            out = pd.Series(False, index=v.index)
+            if lo is not None:
+                out |= v < float(lo)
+            if hi is not None:
+                out |= v > float(hi)
+            rep.add(f"ctx_range:{col}", int(out.sum()), v[out].head(5))
 
 
 def _bad_json(v: Any) -> bool:

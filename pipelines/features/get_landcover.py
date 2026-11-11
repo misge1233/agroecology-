@@ -14,9 +14,13 @@ Setup:  pip install rasterio requests numpy
 Run:    python get_landcover.py
 Verify: python extract_features.py --lat 9.03 --lon 38.74
 """
-import os, math, numpy as np, requests, rasterio
-from rasterio.vrt import WarpedVRT
-from rasterio.enums import Resampling
+import math, numpy as np, requests, rasterio
+import os, sys
+_REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+from pipelines.geodata.grid import grid_from_raster  # noqa: E402
+from pipelines.geodata.layers import landcover as lc  # noqa: E402  (logic moved there; wrap, never fork)
 
 os.environ.setdefault("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
 os.environ.setdefault("CPL_VSIL_CURL_ALLOWED_EXTENSIONS", ".tif")
@@ -29,10 +33,7 @@ REF    = os.path.join(LAYERS, "aez_belt.tif")
 ND     = 0
 S3     = "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map"
 
-def tile_name(lat, lon):
-    ns = "N%02d" % lat if lat >= 0 else "S%02d" % (-lat)
-    ew = "E%03d" % lon if lon >= 0 else "W%03d" % (-lon)
-    return "ESA_WorldCover_10m_2021_v200_%s%s_Map" % (ns, ew)
+tile_name = lc.tile_name
 
 def download(url, dest):
     if os.path.exists(dest) and os.path.getsize(dest) > 1000:
@@ -72,10 +73,7 @@ def main():
         if not download(url, dest):
             print("  (no tile %s)" % name); continue
         got += 1
-        with rasterio.open(dest) as src:
-            with WarpedVRT(src, crs=crs, transform=transform, width=W, height=H,
-                           resampling=Resampling.mode) as vrt:
-                a = vrt.read(1)
+        a = lc.mode_tile(dest, grid_from_raster(REF))
         m = a > 0
         out[m] = a[m]
         print("  merged %s (%d/%d)" % (name, got, len(tiles)))

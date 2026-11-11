@@ -1,0 +1,600 @@
+# Geospatial context v2: every source and every layer of a release (brief E3, Part A2).
+#
+# `sources` are what is downloaded (one cache folder each under pipelines/geodata/cache/);
+# `layers` are what a release publishes (one <layer>.tif each in geodata/<CC>/<release>/).
+# A layer names the sources it is built from. Every URL is public; no source needs an
+# account (GEE and NASA Earthdata are excluded, see ndvi_trend).
+#
+# Layer keys (brief A2): id (the mapping key), group, source_name, url (or url_template),
+# version, licence, citation, native_resolution, resampling, dtype, nodata, unit,
+# update_cadence (static | annual | occasional), required, manual; plus valid_min /
+# valid_max (QA and the evidence-store range check), max_nodata_share (QA, inside the
+# country mask), kind (continuous | categorical), classes (categorical codes), legacy
+# (true for the 11 layers of the current stack, compared cell for cell with LAYERS_DIR),
+# method (what the module does). Hashing this file goes into every manifest.
+
+schema: 1
+
+defaults:
+  dtype: float32
+  nodata: -9999
+  kind: continuous
+  max_nodata_share: 0.02
+  required: false
+  manual: false
+
+settings:
+  pad_deg: 1.0                  # sources are clipped to the country bbox plus this margin
+  legacy_radius_px: 120         # nearest-valid search radius of recommend.py (training + serving)
+  cli_radius_px: 80             # nearest-valid search radius of extract_features.py
+  chirps_years: [1991, 2020]
+  dry_month_mm: 50              # B4: a dry month has a 1991-2020 mean below 50 mm
+  terrain:
+    flow_arcsec: 3              # flow routing grid: 3 arc-seconds (~90 m), see docs/decisions/geodata_v2.md
+    flow_backend: whitebox      # WhiteboxTools (pysheds needs numba, which does not support numpy 2.4)
+    tool:
+      name: WhiteboxTools
+      python_package: whitebox==2.3.6
+      binary_url: https://www.whiteboxgeo.com/WBT_Windows/WhiteboxTools_win_amd64.zip
+      licence: MIT
+      citation: "Lindsay, J.B. (2016) Whitebox GAT: a case study in geomorphometric analysis. Comput. Geosci. 95, 75-84."
+      tools: [FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation (cells), ExtractStreams]
+    stream_threshold_km2: 1.0   # B2: streams = upstream area >= 1 km2
+    tpi_window_m: 1000          # B2: TPI over a 1 km window
+    ls_max_sca_m: 300           # LS: specific catchment area capped at 300 m (RUSLE practical slope length)
+    min_tan_slope: 0.001        # TWI: slope floor (tan) for flats
+    sea_value: 0.0              # GLO-30 cells exactly at 0 m are sea for flow routing (not for elevation)
+  cropland_class: 40            # ESA WorldCover cropland
+  cropland_window_m: 1000
+
+sources:
+  belt_shapefile:
+    name: National agro-ecological belt shapefile (15 belts)
+    kind: local
+    path: geodata/sources/agroecology_belt/agroecology.shp
+    version: "MoA/EIAR belt map, as received 2025"
+    licence: national data; internal use (owner to confirm)
+    citation: Ministry of Agriculture, Ethiopia. Agro-ecological belts of Ethiopia (15 belts).
+  worldclim_prec_30s:
+    name: WorldClim 2.1 monthly precipitation, 30 arc-seconds
+    kind: file
+    url: https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip
+    approx_mb: 1025
+    manual: true
+    version: "2.1 (1970-2000 normals)"
+    licence: WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm)
+    citation: "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. Int. J. Climatol. 37, 4302-4315."
+  worldclim_tavg_30s:
+    name: WorldClim 2.1 monthly mean temperature, 30 arc-seconds
+    kind: file
+    url: https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip
+    approx_mb: 4300
+    manual: true
+    version: "2.1 (1970-2000 normals)"
+    licence: WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm)
+    citation: "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315."
+  worldclim_tmin_2.5m:
+    name: WorldClim 2.1 monthly minimum temperature, 2.5 arc-minutes
+    kind: file
+    url: https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmin.zip
+    approx_mb: 451
+    version: "2.1 (1970-2000 normals)"
+    licence: WorldClim 2.1 terms (owner to confirm)
+    citation: "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315."
+  worldclim_tmax_2.5m:
+    name: WorldClim 2.1 monthly maximum temperature, 2.5 arc-minutes
+    kind: file
+    url: https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmax.zip
+    approx_mb: 444
+    version: "2.1 (1970-2000 normals)"
+    licence: WorldClim 2.1 terms (owner to confirm)
+    citation: "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315."
+  chirps_monthly_africa:
+    name: CHIRPS v2.0 monthly precipitation, Africa, 0.05 degrees
+    kind: file_template
+    url_template: https://data.chc.ucsb.edu/products/CHIRPS/v2.0/africa_monthly/tifs/chirps-v2.0.{year}.{month:02d}.tif.gz
+    approx_mb: 1500             # 360 files for 1991-2020
+    throttle_s: 1.0             # the server answers HTTP 429 when hammered
+    version: "2.0"
+    licence: CC0 1.0 / public domain (Climate Hazards Center; owner to confirm)
+    citation: "Funk, C. et al. (2015) The climate hazards infrared precipitation with stations, a new environmental record for monitoring extremes. Sci. Data 2, 150066."
+  glo30_dem:
+    name: Copernicus DEM GLO-30, 1x1 degree COG tiles (AWS open data)
+    kind: tiles
+    url_template: https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif
+    tile_deg: 1
+    approx_mb_per_tile: 40
+    version: "GLO-30 (2021 release)"
+    licence: "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)"
+    citation: "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65"
+  soilgrids_v2:
+    name: SoilGrids v2.0 (ISRIC), 250 m, streamed from the public VRTs
+    kind: stream
+    url_template: https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt
+    approx_mb: 1500             # streamed windows over the country, all properties and depths
+    version: "2.0"
+    licence: CC BY 4.0
+    citation: "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240."
+  soilgrids_2017_bdricm:
+    name: SoilGrids250m (2017) absolute depth to bedrock, streamed
+    kind: stream
+    url: https://files.isric.org/soilgrids/former/2017-03-10/data/BDRICM_M_250m_ll.tif
+    approx_mb: 60
+    version: "2017-03-10"
+    licence: CC BY 4.0
+    citation: "Hengl, T. et al. (2017) SoilGrids250m: global gridded soil information based on machine learning. PLoS ONE 12, e0169748. Shangguan, W. et al. (2017) Mapping the global depth to bedrock. JAMES 9, 65-88."
+  worldcover_2021:
+    name: ESA WorldCover 10 m 2021 v200, 3x3 degree tiles (AWS open data)
+    kind: tiles
+    url_template: https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_{ns}{lat:02d}{ew}{lon:03d}_Map.tif
+    tile_deg: 3
+    approx_mb_per_tile: 125
+    version: "v200 (2021)"
+    licence: CC BY 4.0
+    citation: "Zanaga, D. et al. (2022) ESA WorldCover 10 m 2021 v200. doi:10.5281/zenodo.7254221"
+  map_travel_time_2015:
+    name: Malaria Atlas Project, travel time to cities 2015 (WCS clip)
+    kind: file
+    url_template: https://data.malariaatlas.org/geoserver/Accessibility/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=Accessibility__201501_Global_Travel_Time_to_Cities&subset=Lat({lat_min},{lat_max})&subset=Long({lon_min},{lon_max})&format=image/tiff
+    approx_mb: 15
+    version: "2015 (v1.0)"
+    licence: CC BY 4.0
+    citation: "Weiss, D.J. et al. (2018) A global map of travel time to cities to assess inequalities in accessibility in 2015. Nature 553, 333-336."
+  koppen_beck2018:
+    name: "Koppen-Geiger classification, present (1980-2016), 1 km (Beck et al. 2018)"
+    kind: file
+    url: https://figshare.com/ndownloader/files/12407516
+    landing_page: https://doi.org/10.6084/m9.figshare.6396959
+    filename: Beck_KG_V1.zip
+    member: Beck_KG_V1_present_0p0083.tif
+    approx_mb: 150
+    manual: true                # figshare answers scripted clients with a browser challenge
+    version: "V1 (2018)"
+    licence: CC BY 4.0
+    citation: "Beck, H.E. et al. (2018) Present and future Koppen-Geiger climate classification maps at 1-km resolution. Sci. Data 5, 180214."
+  modis_ndvi:
+    name: MODIS MOD13Q1 NDVI (LP DAAC)
+    kind: unavailable
+    url: https://lpdaac.usgs.gov/products/mod13q1v061/
+    reason: "LP DAAC and AppEEARS downloads need a NASA Earthdata login; the brief excludes credentials"
+    version: "061"
+    licence: NASA EOSDIS open data (no restriction)
+    citation: "Didan, K. (2021) MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061. doi:10.5067/MODIS/MOD13Q1.061"
+
+layers:
+  # ------------------------------------------------------------- legacy 11 (B1)
+  aez_belt:
+    group: aez
+    sources: [belt_shapefile]
+    source_name: National agro-ecological belt shapefile
+    native_resolution: vector (UTM 37N)
+    resampling: rasterize (cell centre; outer rings only, as the legacy stack)
+    dtype: int16
+    nodata: 0
+    kind: categorical
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    unit: belt code (data/lookups/aez_belt_lookup.csv)
+    update_cadence: static
+    required: true
+    legacy: true
+    max_nodata_share: 0.0
+    method: "burn OBJECTID of every polygon's outer rings in file order (the legacy rasterization; holes are not honoured, see geodata_v2.md)"
+  precip_annual:
+    group: climate_worldclim
+    sources: [worldclim_prec_30s]
+    source_name: WorldClim 2.1
+    native_resolution: 30 arc-seconds (~1 km)
+    resampling: bilinear
+    unit: mm/yr
+    update_cadence: static
+    required: true
+    legacy: true
+    valid_min: 0
+    valid_max: 5000
+    method: sum of the 12 monthly totals at native resolution, then bilinear to the grid (get_precip.py)
+  temp_mean_annual:
+    group: climate_worldclim
+    sources: [worldclim_tavg_30s]
+    source_name: WorldClim 2.1
+    native_resolution: 30 arc-seconds (~1 km)
+    resampling: bilinear
+    unit: degC
+    update_cadence: static
+    required: true
+    legacy: true
+    valid_min: -10
+    valid_max: 40
+    method: mean of the 12 monthly means at native resolution, then bilinear (get_temp.py)
+  precip_seasonality:
+    group: climate_worldclim
+    sources: [worldclim_prec_30s]
+    source_name: WorldClim 2.1 (BIO15 definition)
+    native_resolution: 30 arc-seconds (~1 km)
+    resampling: bilinear
+    unit: percent (CV of monthly rainfall)
+    update_cadence: static
+    required: true
+    legacy: true
+    valid_min: 0
+    valid_max: 400
+    method: each month bilinear to the grid, then 100 x population SD / mean (get_seasonality.py)
+  lgp_days:
+    group: climate_worldclim
+    sources: [worldclim_prec_30s, worldclim_tavg_30s]
+    source_name: WorldClim 2.1 (derived water balance)
+    native_resolution: 30 arc-seconds (~1 km)
+    resampling: bilinear
+    unit: days
+    update_cadence: static
+    required: true
+    legacy: true
+    valid_min: 0
+    valid_max: 365
+    method: Thornthwaite PET; growing month = rain >= 0.5 PET and T > 5 degC; days summed (get_lgp.py)
+  elevation:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30
+    native_resolution: 1 arc-second (~30 m)
+    resampling: bilinear
+    unit: m
+    update_cadence: static
+    required: true
+    legacy: true
+    legacy_tolerance: {median_abs: 0.1, p99_abs: 10}   # m; reviewer 11 Nov 2026 (measured median 0.015, p99 5.8): accepted
+    valid_min: -500
+    valid_max: 5000
+    method: every tile warped bilinear onto the grid and composited in tile order (get_terrain.py)
+  slope:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30 (derived)
+    native_resolution: 250 m (from the elevation layer)
+    resampling: none (computed on the grid)
+    unit: percent
+    update_cadence: static
+    required: true
+    legacy: true
+    legacy_tolerance: {median_abs: 0.05, p99_abs: 5}   # percent; reviewer 11 Nov 2026 (measured median 0.005, p99 1.8): accepted
+    valid_min: 0
+    valid_max: 1000
+    method: latitude-aware np.gradient of the 250 m elevation (get_terrain.py)
+  soil_clay:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, clay 0-5 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: percent
+    update_cadence: occasional
+    required: true
+    legacy: true
+    valid_min: 0
+    valid_max: 100
+    max_nodata_share: 0.05
+    method: WarpedVRT bilinear from the public VRT, g/kg / 10 (get_soil.py)
+  soil_ph:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, pH(H2O) 0-5 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: pH
+    update_cadence: occasional
+    required: true
+    legacy: true
+    valid_min: 3
+    valid_max: 11
+    max_nodata_share: 0.05
+    method: WarpedVRT bilinear, pH x 10 / 10 (get_soil.py)
+  soil_soc:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, organic carbon 0-5 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: g/kg
+    update_cadence: occasional
+    required: true
+    legacy: true
+    valid_min: 0
+    valid_max: 1000
+    max_nodata_share: 0.05
+    method: WarpedVRT bilinear, dg/kg / 10 (get_soil.py)
+  land_cover:
+    group: landcover
+    sources: [worldcover_2021]
+    source_name: ESA WorldCover 2021 (landcover_2021)
+    native_resolution: 10 m
+    resampling: mode
+    dtype: uint8
+    nodata: 0
+    kind: categorical
+    classes: [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+    unit: WorldCover class code
+    update_cadence: annual
+    required: true
+    legacy: true
+    max_nodata_share: 0.01
+    method: every 3-degree tile warped (mode) onto the grid and composited (get_landcover.py)
+
+  # ------------------------------------------------------------- terrain (B2)
+  slope_length_factor:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30 (derived)
+    native_resolution: 30 m slope, 90 m flow routing
+    resampling: average (90 m -> 250 m)
+    unit: dimensionless (RUSLE LS)
+    update_cadence: static
+    valid_min: 0
+    valid_max: 100
+    method: "Moore and Burch (1986) RUSLE approximation LS = (As/22.13)^0.4 (sin b/0.0896)^1.3; S from 30 m slope averaged to 90 m, As = D8 specific catchment area at 90 m capped at 300 m"
+  tpi:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30 (derived)
+    native_resolution: 90 m
+    resampling: average (90 m -> 250 m)
+    unit: m
+    update_cadence: static
+    valid_min: -1000
+    valid_max: 1000
+    method: elevation minus the mean elevation of the surrounding ~1 km square window (11 x 11 cells at 90 m)
+  twi:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30 (derived)
+    native_resolution: 90 m (slope from 30 m)
+    resampling: average (90 m -> 250 m)
+    unit: dimensionless
+    update_cadence: static
+    valid_min: -10
+    valid_max: 40
+    method: "ln(a / tan b): a = D8 specific catchment area (m), tan b = mean 30 m slope (floor 0.001)"
+  flow_accumulation:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30 (derived)
+    native_resolution: 90 m
+    resampling: max (90 m -> 250 m)
+    unit: km2 (upstream area)
+    update_cadence: static
+    valid_min: 0
+    valid_max: 3000000
+    method: WhiteboxTools FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation in cells x the cell area of the row (km2)
+  dist_to_stream_m:
+    group: terrain
+    sources: [glo30_dem]
+    source_name: Copernicus DEM GLO-30 (derived)
+    native_resolution: 90 m
+    resampling: min (90 m -> 250 m)
+    unit: m
+    update_cadence: static
+    valid_min: 0
+    valid_max: 300000
+    method: WhiteboxTools ExtractStreams at upstream area >= settings.terrain.stream_threshold_km2, then the Euclidean distance in metres (scipy, latitude-aware cell size)
+
+  # ------------------------------------------------------------- soil (B3)
+  soil_sand:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, sand 0-30 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: percent
+    update_cadence: occasional
+    valid_min: 0
+    valid_max: 100
+    max_nodata_share: 0.05
+    method: thickness-weighted mean of 0-5, 5-15, 15-30 cm (5, 10, 15 cm), g/kg / 10
+  soil_bulk_density:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, bulk density (bdod) 0-30 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: g/cm3
+    update_cadence: occasional
+    valid_min: 0.3
+    valid_max: 2.5
+    max_nodata_share: 0.05
+    method: thickness-weighted mean of the three depths, cg/cm3 / 100
+  soil_cec:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, cation exchange capacity 0-30 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: cmol(c)/kg
+    update_cadence: occasional
+    valid_min: 0
+    valid_max: 250
+    max_nodata_share: 0.05
+    method: thickness-weighted mean of the three depths, mmol(c)/kg / 10
+  soil_nitrogen:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0, total nitrogen 0-30 cm
+    native_resolution: 250 m (Homolosine)
+    resampling: bilinear
+    unit: g/kg
+    update_cadence: occasional
+    valid_min: 0
+    valid_max: 60
+    max_nodata_share: 0.05
+    method: thickness-weighted mean of the three depths, cg/kg / 100
+  soil_awc:
+    group: soil
+    sources: [soilgrids_v2]
+    source_name: SoilGrids v2.0 (derived, Saxton and Rawls 2006)
+    native_resolution: 250 m
+    resampling: none (computed on the grid)
+    unit: mm/m (volumetric water between 33 and 1500 kPa)
+    update_cadence: occasional
+    valid_min: 0
+    valid_max: 500
+    max_nodata_share: 0.05
+    method: "Saxton and Rawls (2006) eqs 1-2 and 6-8 with sand, clay, organic matter (SOC x 1.724) and the SoilGrids bulk density as the density adjustment, 0-30 cm"
+  soil_depth_bedrock:
+    group: soil
+    sources: [soilgrids_2017_bdricm]
+    source_name: SoilGrids250m 2017, absolute depth to bedrock (BDRICM)
+    native_resolution: 250 m (lat/lon)
+    resampling: bilinear
+    unit: cm
+    update_cadence: occasional
+    valid_min: 0
+    valid_max: 100000
+    max_nodata_share: 0.05
+    method: "WarpedVRT bilinear; SoilGrids v2 has no depth-to-bedrock product, so the 2017 product is used and the layer stays optional"
+
+  # ------------------------------------------------------------- recent climate (B4)
+  rain_mean_1991_2020:
+    group: climate_chirps
+    sources: [chirps_monthly_africa]
+    source_name: CHIRPS v2.0
+    native_resolution: 0.05 degrees (~5.5 km)
+    resampling: bilinear
+    unit: mm/yr
+    update_cadence: annual
+    valid_min: 0
+    valid_max: 5000
+    method: mean of the 30 annual totals (sum of monthly files), native resolution, then bilinear
+  rain_cv_interannual:
+    group: climate_chirps
+    sources: [chirps_monthly_africa]
+    source_name: CHIRPS v2.0
+    native_resolution: 0.05 degrees (~5.5 km)
+    resampling: bilinear
+    unit: percent
+    update_cadence: annual
+    valid_min: 0
+    valid_max: 300
+    method: 100 x sample SD (ddof 1) / mean of the 30 annual totals, then bilinear
+  dry_season_length_months:
+    group: climate_chirps
+    sources: [chirps_monthly_africa]
+    source_name: CHIRPS v2.0
+    native_resolution: 0.05 degrees (~5.5 km)
+    resampling: bilinear (monthly climatology), then counted on the grid
+    dtype: int16
+    unit: months
+    update_cadence: annual
+    valid_min: 0
+    valid_max: 12
+    method: number of calendar months whose 1991-2020 mean rainfall is below settings.dry_month_mm
+  pet_hargreaves_annual:
+    group: climate_worldclim
+    sources: [worldclim_tavg_30s, worldclim_tmin_2.5m, worldclim_tmax_2.5m]
+    source_name: WorldClim 2.1 (derived, Hargreaves 1985)
+    native_resolution: 30 arc-seconds (Tmean), 2.5 arc-minutes (Tmax - Tmin)
+    resampling: bilinear
+    unit: mm/yr
+    update_cadence: static
+    valid_min: 0
+    valid_max: 4000
+    method: "Hargreaves-Samani PET = 0.0023 x 0.408 Ra (Tmean + 17.8) sqrt(Tmax - Tmin) per month (FAO-56 Ra at mid-month), summed"
+  aridity_index:
+    group: climate_chirps
+    sources: [chirps_monthly_africa, worldclim_tavg_30s, worldclim_tmin_2.5m, worldclim_tmax_2.5m]
+    source_name: CHIRPS v2.0 / WorldClim 2.1 (derived)
+    native_resolution: 0.05 degrees / 30 arc-seconds
+    resampling: none (computed on the grid)
+    unit: dimensionless (P / PET, UNEP classes)
+    update_cadence: annual
+    valid_min: 0
+    valid_max: 10
+    method: rain_mean_1991_2020 / pet_hargreaves_annual
+
+  # ------------------------------------------------------------- land and access (B5)
+  cropland_fraction_1km:
+    group: landcover
+    sources: [worldcover_2021]
+    source_name: ESA WorldCover 2021 (derived)
+    native_resolution: 10 m
+    resampling: block count (27 x 27 pixels = one grid cell), then a 1 km box
+    unit: fraction (0-1)
+    update_cadence: annual
+    valid_min: 0
+    valid_max: 1
+    max_nodata_share: 0.01
+    method: "share of 10 m cropland pixels (class 40) among valid pixels in a 1 km box centred on the cell (weights 0.5,1,1,1,0.5 per axis)"
+  travel_time_to_city_min:
+    group: access
+    sources: [map_travel_time_2015]
+    source_name: Malaria Atlas Project accessibility to cities 2015
+    native_resolution: 30 arc-seconds (~1 km)
+    resampling: bilinear
+    unit: minutes
+    update_cadence: occasional
+    valid_min: 0
+    valid_max: 100000
+    method: travel time to the nearest city of 50,000 or more, WCS clip then bilinear
+  ndvi_trend:
+    group: vegetation
+    sources: [modis_ndvi]
+    source_name: MODIS MOD13Q1 NDVI
+    native_resolution: 250 m
+    resampling: bilinear
+    unit: NDVI per year
+    update_cadence: annual
+    method: "pending: needs NASA Earthdata credentials, which the brief excludes"
+
+  # ------------------------------------------------------------- Koppen (B6)
+  koppen_class:
+    group: koppen
+    sources: [koppen_beck2018]
+    source_name: Beck et al. 2018 Koppen-Geiger, present
+    native_resolution: 30 arc-seconds (~1 km)
+    resampling: nearest
+    dtype: uint8
+    nodata: 0
+    kind: categorical
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    unit: Koppen-Geiger class code (legend in pipelines/geodata/layers/koppen.py)
+    update_cadence: static
+    max_nodata_share: 0.01
+    method: nearest-neighbour clip of the present-day 1 km map
+
+  # ------------------------------------------------------------- Omo-Gibe overlays (B7, placeholder)
+  overlay_hotspot_coldspot:
+    group: overlays
+    sources: []
+    source_name: Omo-Gibe Living Landscape hotspot/coldspot raster (countries/ET.yaml overlays.omo_gibe)
+    native_resolution: native
+    resampling: nearest
+    dtype: int16
+    nodata: -9999
+    kind: categorical
+    unit: class code
+    update_cadence: occasional
+    max_nodata_share: 1.0
+    method: "warped to the grid when the file exists; pending otherwise; no modelling use in E3"
+  overlay_typology:
+    group: overlays
+    sources: []
+    source_name: Omo-Gibe Living Landscape typology raster (countries/ET.yaml overlays.omo_gibe)
+    native_resolution: native
+    resampling: nearest
+    dtype: int16
+    nodata: -9999
+    kind: categorical
+    unit: class code
+    update_cadence: occasional
+    max_nodata_share: 1.0
+    method: "warped to the grid when the file exists; pending otherwise"
+  mask_omo_gibe:
+    group: overlays
+    sources: []
+    source_name: footprint of the Omo-Gibe overlay rasters
+    native_resolution: grid
+    resampling: nearest
+    dtype: uint8
+    nodata: 0
+    kind: categorical
+    classes: [1]
+    unit: 1 inside the basin extent
+    update_cadence: occasional
+    max_nodata_share: 1.0
+    method: cells where either overlay has data

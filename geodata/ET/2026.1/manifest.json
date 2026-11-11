@@ -1,0 +1,2717 @@
+{
+  "release_id": "ET/2026.1",
+  "country": "ET",
+  "release": "2026.1",
+  "created_utc": "2026-11-11T10:05:43+00:00",
+  "git_commit": "adb446d3aa5dc99728dfd79a7ad431fa0f0ac06f+dirty",
+  "pipeline": "pipelines/geodata/refresh.py",
+  "grid": {
+    "crs": "EPSG:4326",
+    "res_deg": 0.00225,
+    "res_m_approx": 250.5,
+    "xmin": 32.9,
+    "ymin": 3.3,
+    "xmax": 48.2,
+    "ymax": 14.901,
+    "ncols": 6800,
+    "nrows": 5156
+  },
+  "grid_hash": "b4862eae93fb23f9425744e6d1d91b70ae10c9b2f006ff4e46431e0b7c9749ff",
+  "grid_source": "grid definition data/lookups/grid_definition.json",
+  "sources_yaml_sha256": "7e81d754802c3e25f9590846f811a92ee0c0b10585c79e37632a7ed868cb6e96",
+  "previous_release": null,
+  "qa_status": "pass",
+  "args": {
+    "layers": null,
+    "groups": [
+      "terrain",
+      "soil",
+      "landcover",
+      "access",
+      "koppen"
+    ],
+    "skip_download": false,
+    "prune_downloads": false,
+    "in_process": false
+  },
+  "layers": {
+    "aez_belt": {
+      "id": "aez_belt",
+      "group": "aez",
+      "sources": [
+        "belt_shapefile"
+      ],
+      "source_name": "National agro-ecological belt shapefile",
+      "url": "geodata/sources/agroecology_belt/agroecology.shp",
+      "version": "MoA/EIAR belt map, as received 2025",
+      "licence": "national data; internal use (owner to confirm)",
+      "citation": "Ministry of Agriculture, Ethiopia. Agro-ecological belts of Ethiopia (15 belts).",
+      "native_resolution": "vector (UTM 37N)",
+      "resampling": "rasterize (cell centre; outer rings only, as the legacy stack)",
+      "dtype": "int16",
+      "nodata": 0,
+      "unit": "belt code (data/lookups/aez_belt_lookup.csv)",
+      "update_cadence": "static",
+      "required": true,
+      "manual": false,
+      "kind": "categorical",
+      "classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": true,
+      "method": "burn OBJECTID of every polygon's outer rings in file order (the legacy rasterization; holes are not honoured, see geodata_v2.md)",
+      "status": "built",
+      "file": "aez_belt.tif",
+      "file_sha256": "19cd659f0661ac28ae114cfd299f1ede1e6ab353f871cf71f5870d8cd7433c2b",
+      "data_sha256": "c9a1bf37a012d3518de5eda1a8fca64c1e72401849cd4ebd6a20599f09fbf33b",
+      "bytes": 944608,
+      "built_utc": "2026-11-10T20:51:02+00:00",
+      "inputs": [
+        {
+          "source": "belt_shapefile",
+          "file": "agroecology.dbf",
+          "sha256": "b9e6ea69cd15a81914b93abda317644f220a1cb6de01904e3fc4191266d647b8",
+          "bytes": 1330,
+          "path": "geodata/sources/agroecology_belt/agroecology.dbf"
+        },
+        {
+          "source": "belt_shapefile",
+          "file": "agroecology.prj",
+          "sha256": "b48594feefd3292afc14e88e225b0a26609b558080f32a5819e17a40f775e442",
+          "bytes": 401,
+          "path": "geodata/sources/agroecology_belt/agroecology.prj"
+        },
+        {
+          "source": "belt_shapefile",
+          "file": "agroecology.shp",
+          "sha256": "fc35a5e67bd863a94d0bd2de4c4e5e3490dabc113ea9e14d7e44637339410ccc",
+          "bytes": 1287832,
+          "path": "geodata/sources/agroecology_belt/agroecology.shp"
+        },
+        {
+          "source": "belt_shapefile",
+          "file": "agroecology.shx",
+          "sha256": "58b1fe719e6cd326381cb491039adaa2b47244ea737285a8cc0ae6c86d481dd7",
+          "bytes": 220,
+          "path": "geodata/sources/agroecology_belt/agroecology.shx"
+        }
+      ],
+      "notes": "outer rings only (legacy rule); a hole-aware rasterization differs on 93119 cells",
+      "stats": {
+        "cells_in_mask": 35060800,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.475243,
+        "classes": {
+          "1": 2291710,
+          "2": 274184,
+          "3": 7544166,
+          "4": 1685332,
+          "5": 222021,
+          "6": 1199068,
+          "7": 2152362,
+          "8": 1426615,
+          "9": 152153,
+          "10": 794314,
+          "11": 537290,
+          "12": 77969,
+          "13": 21972,
+          "14": 16861,
+          "15": 2366
+        }
+      },
+      "hole_aware_cells_differing": 93119,
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "classes": "pass"
+      },
+      "legacy_equal": true
+    },
+    "precip_annual": {
+      "id": "precip_annual",
+      "group": "climate_worldclim",
+      "sources": [
+        "worldclim_prec_30s"
+      ],
+      "source_name": "WorldClim 2.1",
+      "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip",
+      "version": "2.1 (1970-2000 normals)",
+      "licence": "WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm)",
+      "citation": "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. Int. J. Climatol. 37, 4302-4315.",
+      "native_resolution": "30 arc-seconds (~1 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "mm/yr",
+      "update_cadence": "static",
+      "required": true,
+      "manual": true,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 5000,
+      "legacy": true,
+      "method": "sum of the 12 monthly totals at native resolution, then bilinear to the grid (get_precip.py)",
+      "status": "built",
+      "file": "precip_annual.tif",
+      "file_sha256": "ea9648d4c02a811a8444694918108db9f5152e3eb1c7cb23008c2d4c7fe52844",
+      "data_sha256": "c40d6da0052c7076dcd02dcb621ac5297f78ac452b96057e0b805da6df68e043",
+      "bytes": 109625711,
+      "built_utc": "2026-11-10T20:51:50+00:00",
+      "inputs": [
+        {
+          "source": "worldclim_prec_30s",
+          "file": "wc2.1_30s_prec.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip",
+          "sha256": "bf301aaa69f5fb9fb31eccd1e803c66e129e9e41113fdd7430c0efae3731ce97",
+          "bytes": 1025401472,
+          "downloaded_utc": "2026-11-10T20:27:41+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 102.00202178955078,
+        "max": 1996.9666748046875,
+        "mean": 799.9012089231876,
+        "sd": 448.9693836561738,
+        "quantiles": {
+          "1": 159.3718374633789,
+          "5": 225.8156280517578,
+          "25": 405.969970703125,
+          "50": 721.3150024414062,
+          "75": 1116.2606811523438,
+          "95": 1653.5798095703121,
+          "99": 1818.7606860351561
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "temp_mean_annual": {
+      "id": "temp_mean_annual",
+      "group": "climate_worldclim",
+      "sources": [
+        "worldclim_tavg_30s"
+      ],
+      "source_name": "WorldClim 2.1",
+      "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip",
+      "version": "2.1 (1970-2000 normals)",
+      "licence": "WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm)",
+      "citation": "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315.",
+      "native_resolution": "30 arc-seconds (~1 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "degC",
+      "update_cadence": "static",
+      "required": true,
+      "manual": true,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": -10,
+      "valid_max": 40,
+      "legacy": true,
+      "method": "mean of the 12 monthly means at native resolution, then bilinear (get_temp.py)",
+      "status": "built",
+      "file": "temp_mean_annual.tif",
+      "file_sha256": "a06c9a897a8b1d5607579dd92dc9476b14ee3c80a2b73d390754e358052f8cb4",
+      "data_sha256": "923c8f63ea02b2676e0fcea53b1194991613bf4940001d7b04ef2cc28cd71849",
+      "bytes": 102186257,
+      "built_utc": "2026-11-10T20:51:59+00:00",
+      "inputs": [
+        {
+          "source": "worldclim_tavg_30s",
+          "file": "wc2.1_30s_tavg.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip",
+          "sha256": "0332ef3f961b2bbaca86825af79f1ffa03f296ebe2bfb71dc1f626a28d72d621",
+          "bytes": 4299762045,
+          "downloaded_utc": "2026-11-10T20:43:16+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 5.114249229431152,
+        "max": 31.013839721679688,
+        "mean": 22.688512460021737,
+        "sd": 4.221431592311232,
+        "quantiles": {
+          "1": 11.905213890075684,
+          "5": 15.026984691619873,
+          "25": 19.878271102905273,
+          "50": 22.89212989807129,
+          "75": 26.238597869873047,
+          "95": 28.542743301391596,
+          "99": 29.600228042602538
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "precip_seasonality": {
+      "id": "precip_seasonality",
+      "group": "climate_worldclim",
+      "sources": [
+        "worldclim_prec_30s"
+      ],
+      "source_name": "WorldClim 2.1 (BIO15 definition)",
+      "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip",
+      "version": "2.1 (1970-2000 normals)",
+      "licence": "WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm)",
+      "citation": "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. Int. J. Climatol. 37, 4302-4315.",
+      "native_resolution": "30 arc-seconds (~1 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "percent (CV of monthly rainfall)",
+      "update_cadence": "static",
+      "required": true,
+      "manual": true,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 400,
+      "legacy": true,
+      "method": "each month bilinear to the grid, then 100 x population SD / mean (get_seasonality.py)",
+      "status": "built",
+      "file": "precip_seasonality.tif",
+      "file_sha256": "de82cfd43d4ad913f8e79b00cdfe689a99ab9418a3e3dad7fc3729131ad98298",
+      "data_sha256": "25edd6ae2286571787ec3c07f43aaf16ad4cd6c6852b65a6f84e54a3f34bb708",
+      "bytes": 120512038,
+      "built_utc": "2026-11-10T20:52:26+00:00",
+      "inputs": [
+        {
+          "source": "worldclim_prec_30s",
+          "file": "wc2.1_30s_prec.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip",
+          "sha256": "bf301aaa69f5fb9fb31eccd1e803c66e129e9e41113fdd7430c0efae3731ce97",
+          "bytes": 1025401472,
+          "downloaded_utc": "2026-11-10T20:27:41+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 33.35123062133789,
+        "max": 137.3806915283203,
+        "mean": 88.53696313871454,
+        "sd": 26.87862159188642,
+        "quantiles": {
+          "1": 37.3102677154541,
+          "5": 44.046596908569335,
+          "25": 67.78330612182617,
+          "50": 87.7132797241211,
+          "75": 111.96511459350586,
+          "95": 130.68820190429688,
+          "99": 133.5560482788086
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "lgp_days": {
+      "id": "lgp_days",
+      "group": "climate_worldclim",
+      "sources": [
+        "worldclim_prec_30s",
+        "worldclim_tavg_30s"
+      ],
+      "source_name": "WorldClim 2.1 (derived water balance)",
+      "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip; https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip",
+      "version": "2.1 (1970-2000 normals)",
+      "licence": "WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm)",
+      "citation": "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. Int. J. Climatol. 37, 4302-4315.; Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315.",
+      "native_resolution": "30 arc-seconds (~1 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "days",
+      "update_cadence": "static",
+      "required": true,
+      "manual": true,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 365,
+      "legacy": true,
+      "method": "Thornthwaite PET; growing month = rain >= 0.5 PET and T > 5 degC; days summed (get_lgp.py)",
+      "status": "built",
+      "file": "lgp_days.tif",
+      "file_sha256": "29fb66ead8d9c4673777f547414a7e579a61328fafcbb7bae35c17f6bddc8afb",
+      "data_sha256": "b3900d0a6d4b9e475e21f0ca96b799e8c0d65fa653b690b99012ae675fddda45",
+      "bytes": 4689539,
+      "built_utc": "2026-11-10T20:53:00+00:00",
+      "inputs": [
+        {
+          "source": "worldclim_prec_30s",
+          "file": "wc2.1_30s_prec.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip",
+          "sha256": "bf301aaa69f5fb9fb31eccd1e803c66e129e9e41113fdd7430c0efae3731ce97",
+          "bytes": 1025401472,
+          "downloaded_utc": "2026-11-10T20:27:41+00:00",
+          "manual": false
+        },
+        {
+          "source": "worldclim_tavg_30s",
+          "file": "wc2.1_30s_tavg.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip",
+          "sha256": "0332ef3f961b2bbaca86825af79f1ffa03f296ebe2bfb71dc1f626a28d72d621",
+          "bytes": 4299762045,
+          "downloaded_utc": "2026-11-10T20:43:16+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 365.0,
+        "mean": 162.07151459995154,
+        "sd": 102.39546931558795,
+        "quantiles": {
+          "1": 0.0,
+          "5": 0.0,
+          "25": 92.0,
+          "50": 181.0,
+          "75": 245.0,
+          "95": 334.0,
+          "99": 365.0
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "elevation": {
+      "id": "elevation",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "1 arc-second (~30 m)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "m",
+      "update_cadence": "static",
+      "required": true,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": -500,
+      "valid_max": 5000,
+      "legacy": true,
+      "method": "every tile warped bilinear onto the grid and composited in tile order (get_terrain.py)",
+      "status": "built",
+      "file": "elevation.tif",
+      "file_sha256": "8e8889cf3369e5b1731589f6bad6ce2969cdf592823227c825cac40d3a2645e3",
+      "data_sha256": "fd4bf8d06338e661824a4993a1ceb8733802508f885dce0af5ee02d8a8bae20c",
+      "bytes": 144533305,
+      "built_utc": "2026-11-11T00:23:25+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": -125.0,
+        "max": 4469.88134765625,
+        "mean": 1253.7824102948955,
+        "sd": 711.3122347711143,
+        "quantiles": {
+          "1": 47.895801544189474,
+          "5": 354.1804229736328,
+          "25": 672.9946594238281,
+          "50": 1143.240478515625,
+          "75": 1733.5979614257812,
+          "95": 2567.9174072265614,
+          "99": 3113.8731787109373
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": false,
+      "legacy_within_tolerance": true,
+      "legacy_tolerance": {
+        "median_abs": 0.1,
+        "p99_abs": 10
+      },
+      "legacy_abs_diff": {
+        "median": 0.02880859375,
+        "p95": 2.570065307617142,
+        "p99": 6.1702880859375,
+        "max": 61.430419921875,
+        "cells": 18398383,
+        "region": "mask"
+      },
+      "legacy_newly_valid_cells": 197136,
+      "legacy_newly_nodata_cells": 0
+    },
+    "slope": {
+      "id": "slope",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30 (derived)",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "250 m (from the elevation layer)",
+      "resampling": "none (computed on the grid)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "percent",
+      "update_cadence": "static",
+      "required": true,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 1000,
+      "legacy": true,
+      "method": "latitude-aware np.gradient of the 250 m elevation (get_terrain.py)",
+      "status": "built",
+      "file": "slope.tif",
+      "file_sha256": "4ad2dc9149ac331de00852be08f08f78888e61aad3ac3b9fbe5da86760a864fa",
+      "data_sha256": "a6557bd42c3bb27c0ba67d2eb6655f1bc06070b7e960b821b92f871d4c611d73",
+      "bytes": 186303603,
+      "built_utc": "2026-11-11T00:23:33+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 173.5823211669922,
+        "mean": 8.209087581672392,
+        "sd": 10.713984255639867,
+        "quantiles": {
+          "1": 0.031141580641269685,
+          "5": 0.24420412182807927,
+          "25": 1.1512122750282288,
+          "50": 3.7545418739318848,
+          "75": 11.040036678314209,
+          "95": 31.269534111022878,
+          "99": 48.1596885681152
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": false,
+      "legacy_within_tolerance": true,
+      "legacy_tolerance": {
+        "median_abs": 0.05,
+        "p99_abs": 5
+      },
+      "legacy_abs_diff": {
+        "median": 0.009219884872436523,
+        "p95": 0.8183135032653794,
+        "p99": 1.89046703338623,
+        "max": 18.915023803710938,
+        "cells": 18398383,
+        "region": "mask"
+      },
+      "legacy_newly_valid_cells": 198022,
+      "legacy_newly_nodata_cells": 0
+    },
+    "soil_clay": {
+      "id": "soil_clay",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, clay 0-5 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "percent",
+      "update_cadence": "occasional",
+      "required": true,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 100,
+      "legacy": true,
+      "method": "WarpedVRT bilinear from the public VRT, g/kg / 10 (get_soil.py)",
+      "status": "built",
+      "file": "soil_clay.tif",
+      "file_sha256": "80d1ce78c187d0e64890ee9d3409ee90b733e66a5cbb9c2a979e87126c3c7649",
+      "data_sha256": "5eee3e670ad80be6cc7e17b8fb9d2c23d10dca2deecc2aaa4b9f769712ef8645",
+      "bytes": 76782843,
+      "built_utc": "2026-11-11T00:25:18+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "clay_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/clay/clay_0-5cm_mean.vrt",
+          "sha256": "ecf5395b237c0c5e1fd82f27e2035d7773304e968195ad2eb074238a2e5d0f68",
+          "bytes": 32626489,
+          "downloaded_utc": "2026-11-11T00:25:08+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 13.300000190734863,
+        "max": 66.5999984741211,
+        "mean": 33.078271600725614,
+        "sd": 6.421301268253946,
+        "quantiles": {
+          "1": 18.700000762939453,
+          "5": 21.80000114440918,
+          "25": 29.100000381469727,
+          "50": 32.900001525878906,
+          "75": 37.5,
+          "95": 43.60000228881836,
+          "99": 48.10000228881836
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "soil_ph": {
+      "id": "soil_ph",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, pH(H2O) 0-5 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "pH",
+      "update_cadence": "occasional",
+      "required": true,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 3,
+      "valid_max": 11,
+      "legacy": true,
+      "method": "WarpedVRT bilinear, pH x 10 / 10 (get_soil.py)",
+      "status": "built",
+      "file": "soil_ph.tif",
+      "file_sha256": "797a072444382010b74d6e3a4695680cd796bd3218312163d143b6c079a01b35",
+      "data_sha256": "ca21884c71641230e82f95cd3d5744e5c1b57a124e481a9a85e353e46e8e570b",
+      "bytes": 37133320,
+      "built_utc": "2026-11-11T00:26:31+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "phh2o_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/phh2o/phh2o_0-5cm_mean.vrt",
+          "sha256": "e08d5f7c39b8c3bf347040259abce75a48e96ded7a9d2b93668e1a1161ef77bb",
+          "bytes": 7997256,
+          "downloaded_utc": "2026-11-11T00:26:25+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 4.599999904632568,
+        "max": 9.100000381469727,
+        "mean": 6.973711607477706,
+        "sd": 0.8152282890286539,
+        "quantiles": {
+          "1": 5.400000095367432,
+          "5": 5.700000286102295,
+          "25": 6.200000286102295,
+          "50": 7.099999904632568,
+          "75": 7.700000286102295,
+          "95": 8.0,
+          "99": 8.199999809265137
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "soil_soc": {
+      "id": "soil_soc",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, organic carbon 0-5 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "g/kg",
+      "update_cadence": "occasional",
+      "required": true,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 1000,
+      "legacy": true,
+      "method": "WarpedVRT bilinear, dg/kg / 10 (get_soil.py)",
+      "status": "built",
+      "file": "soil_soc.tif",
+      "file_sha256": "0324e6579beecdaeba989429dbcae94560d2c395f93a8477328fa0f900cedf45",
+      "data_sha256": "eb4f953521dfb732c283a6c7c322511859916610301a39077176a83ba012e4e6",
+      "bytes": 87832898,
+      "built_utc": "2026-11-11T00:27:56+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "soc_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/soc/soc_0-5cm_mean.vrt",
+          "sha256": "d0e37e5041d7b2d6ee8cb8e476e924d154681e1ecccb49367322e664990c8194",
+          "bytes": 39950513,
+          "downloaded_utc": "2026-11-11T00:27:46+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18239009,
+        "nodata_share_in_mask": 0.008662,
+        "min": 4.599999904632568,
+        "max": 131.1999969482422,
+        "mean": 32.63850758903145,
+        "sd": 13.92079997749816,
+        "quantiles": {
+          "1": 9.300000190734863,
+          "5": 13.800000190734863,
+          "25": 22.399999618530273,
+          "50": 30.200000762939453,
+          "75": 40.29999923706055,
+          "95": 60.0,
+          "99": 72.5999984741211
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      },
+      "legacy_equal": true
+    },
+    "land_cover": {
+      "id": "land_cover",
+      "group": "landcover",
+      "sources": [
+        "worldcover_2021"
+      ],
+      "source_name": "ESA WorldCover 2021 (landcover_2021)",
+      "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_{ns}{lat:02d}{ew}{lon:03d}_Map.tif",
+      "version": "v200 (2021)",
+      "licence": "CC BY 4.0",
+      "citation": "Zanaga, D. et al. (2022) ESA WorldCover 10 m 2021 v200. doi:10.5281/zenodo.7254221",
+      "native_resolution": "10 m",
+      "resampling": "mode",
+      "dtype": "uint8",
+      "nodata": 0,
+      "unit": "WorldCover class code",
+      "update_cadence": "annual",
+      "required": true,
+      "manual": false,
+      "kind": "categorical",
+      "classes": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        95,
+        100
+      ],
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": true,
+      "method": "every 3-degree tile warped (mode) onto the grid and composited (get_landcover.py)",
+      "status": "built",
+      "file": "land_cover.tif",
+      "file_sha256": "388fc13d9334267ef57c03bf39beea7f4de926d0aab2e361d6d13c8b9e1af4a3",
+      "data_sha256": "5b7033062dab61fc6605eb66fb4e7a2a9f878f69bef31719d585a99c0e7733f2",
+      "bytes": 5780798,
+      "built_utc": "2026-11-11T10:04:08+00:00",
+      "inputs": [
+        {
+          "source": "worldcover_2021",
+          "files": 28,
+          "first": "ESA_WorldCover_10m_2021_v200_N03E030_Map.tif",
+          "last": "ESA_WorldCover_10m_2021_v200_N12E048_Map.tif",
+          "bytes": 2689494679,
+          "sha256_of_files": "08592b143978739794b974195142b7c8508496a2adab8835d7e53ac8518bae2d",
+          "downloaded_utc": "2026-11-11T10:04:00+00:00"
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "classes": {
+          "10": 2487373,
+          "20": 6991263,
+          "30": 3915266,
+          "40": 3339314,
+          "50": 32871,
+          "60": 1365466,
+          "80": 136599,
+          "90": 130231
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "classes": "pass"
+      },
+      "legacy_equal": true
+    },
+    "slope_length_factor": {
+      "id": "slope_length_factor",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30 (derived)",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "30 m slope, 90 m flow routing",
+      "resampling": "average (90 m -> 250 m)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "dimensionless (RUSLE LS)",
+      "update_cadence": "static",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 100,
+      "legacy": false,
+      "method": "Moore and Burch (1986) RUSLE approximation LS = (As/22.13)^0.4 (sin b/0.0896)^1.3; S from 30 m slope averaged to 90 m, As = D8 specific catchment area at 90 m capped at 300 m",
+      "status": "built",
+      "file": "slope_length_factor.tif",
+      "file_sha256": "d88a9808af9d2c9077fedb9768476a5cc3f7b6022fb92d47cb363a05a322af26",
+      "data_sha256": "77cec65d32867e1159e925d481f42cf9c4ab1d81f5341ffe24d7c33dba2ce47e",
+      "bytes": 185848697,
+      "built_utc": "2026-11-11T07:04:42+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "30 m slope terms, 3 arc-second D8 routing with WhiteboxTools WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023 (whitebox 2.3.6): FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation; sea cells (GLO-30 == 0.0) excluded from routing",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 55.42013931274414,
+        "mean": 4.697776519066388,
+        "sd": 6.184320439635338,
+        "quantiles": {
+          "1": 0.045509835556149486,
+          "5": 0.09738926365971566,
+          "25": 0.33051322400569916,
+          "50": 1.7804023027420044,
+          "75": 6.940733909606934,
+          "95": 18.313123512268064,
+          "99": 25.7588286590576
+        }
+      },
+      "tool": {
+        "name": "WhiteboxTools",
+        "python_package": "whitebox 2.3.6",
+        "binary": "WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023",
+        "licence": "MIT",
+        "url": "https://www.whiteboxgeo.com/"
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "tpi": {
+      "id": "tpi",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30 (derived)",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "90 m",
+      "resampling": "average (90 m -> 250 m)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "m",
+      "update_cadence": "static",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": -1000,
+      "valid_max": 1000,
+      "legacy": false,
+      "method": "elevation minus the mean elevation of the surrounding ~1 km square window (11 x 11 cells at 90 m)",
+      "status": "built",
+      "file": "tpi.tif",
+      "file_sha256": "b48184f7ada31860bcc459c53e0a004b4812ce4540f840d2e9ebbc2bcdefd5a6",
+      "data_sha256": "89e9f593671c81734bccf49e95139d3bc308123fda81ac9e5b3cc809dff09de5",
+      "bytes": 201372258,
+      "built_utc": "2026-11-11T07:00:50+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "11 x 11 window at 3 arc-seconds",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": -283.2454833984375,
+        "max": 345.8926086425781,
+        "mean": 0.0001267370702867876,
+        "sd": 18.073121623244052,
+        "quantiles": {
+          "1": -54.416640625,
+          "5": -27.093439102172848,
+          "25": -4.2189061641693115,
+          "50": -0.10340025275945663,
+          "75": 2.807594656944275,
+          "95": 29.698434829711914,
+          "99": 62.48557365417477
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "twi": {
+      "id": "twi",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30 (derived)",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "90 m (slope from 30 m)",
+      "resampling": "average (90 m -> 250 m)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "dimensionless",
+      "update_cadence": "static",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": -10,
+      "valid_max": 40,
+      "legacy": false,
+      "method": "ln(a / tan b): a = D8 specific catchment area (m), tan b = mean 30 m slope (floor 0.001)",
+      "status": "built",
+      "file": "twi.tif",
+      "file_sha256": "e912f99095a322f405b47d69eec6c53a11854bd7bd2c751795a1f4b43011d8fe",
+      "data_sha256": "62f1159a7d54767f9c00e6d9c51c65360809db2b3b6f2f9a720b405c6bc3b545",
+      "bytes": 177199857,
+      "built_utc": "2026-11-11T07:04:24+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "30 m slope terms, 3 arc-second D8 routing with WhiteboxTools WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023 (whitebox 2.3.6): FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation; sea cells (GLO-30 == 0.0) excluded from routing",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 4.244781970977783,
+        "max": 22.190439224243164,
+        "mean": 8.811241156861565,
+        "sd": 1.900741417739641,
+        "quantiles": {
+          "1": 5.48868257522583,
+          "5": 6.022115707397461,
+          "25": 7.29376745223999,
+          "50": 8.681852340698242,
+          "75": 10.177777290344238,
+          "95": 11.969414329528803,
+          "99": 13.616118431091309
+        }
+      },
+      "tool": {
+        "name": "WhiteboxTools",
+        "python_package": "whitebox 2.3.6",
+        "binary": "WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023",
+        "licence": "MIT",
+        "url": "https://www.whiteboxgeo.com/"
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "flow_accumulation": {
+      "id": "flow_accumulation",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30 (derived)",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "90 m",
+      "resampling": "max (90 m -> 250 m)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "km2 (upstream area)",
+      "update_cadence": "static",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 3000000,
+      "legacy": false,
+      "method": "WhiteboxTools FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation in cells x the cell area of the row (km2)",
+      "status": "built",
+      "file": "flow_accumulation.tif",
+      "file_sha256": "6c84320d46e3ab940a06ff8283a93afbd9c13c399329e6756332b9d9b253e20b",
+      "data_sha256": "a11d76db3dbf6fb3492b82a474220911d4cb766c1c11f73d9540eb99f9ac7a53",
+      "bytes": 182619114,
+      "built_utc": "2026-11-11T07:04:07+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "30 m slope terms, 3 arc-second D8 routing with WhiteboxTools WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023 (whitebox 2.3.6): FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation; sea cells (GLO-30 == 0.0) excluded from routing",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.016635842621326447,
+        "max": 192691.953125,
+        "mean": 178.68811039418762,
+        "sd": 3309.003865789429,
+        "quantiles": {
+          "1": 0.017022276297211647,
+          "5": 0.025604180991649628,
+          "25": 0.0686289444565773,
+          "50": 0.2308373898267746,
+          "75": 1.236147403717041,
+          "95": 42.539817810058366,
+          "99": 1112.8433911132752
+        }
+      },
+      "tool": {
+        "name": "WhiteboxTools",
+        "python_package": "whitebox 2.3.6",
+        "binary": "WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023",
+        "licence": "MIT",
+        "url": "https://www.whiteboxgeo.com/"
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "dist_to_stream_m": {
+      "id": "dist_to_stream_m",
+      "group": "terrain",
+      "sources": [
+        "glo30_dem"
+      ],
+      "source_name": "Copernicus DEM GLO-30 (derived)",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM/Copernicus_DSM_COG_10_{ns}{lat:02d}_00_{ew}{lon:03d}_00_DEM.tif",
+      "version": "GLO-30 (2021 release)",
+      "licence": "Copernicus DEM licence (free, attribution: (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA)",
+      "citation": "European Space Agency and Airbus (2022) Copernicus DEM GLO-30. doi:10.5270/ESA-c5d3d65",
+      "native_resolution": "90 m",
+      "resampling": "min (90 m -> 250 m)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "m",
+      "update_cadence": "static",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 300000,
+      "legacy": false,
+      "method": "WhiteboxTools ExtractStreams at upstream area >= settings.terrain.stream_threshold_km2, then the Euclidean distance in metres (scipy, latitude-aware cell size)",
+      "status": "built",
+      "file": "dist_to_stream_m.tif",
+      "file_sha256": "f7df9cab44a4ee72c9c00fd9bd93604ab1e0fda29dabf1dc8fd6fb3af60d9c8e",
+      "data_sha256": "36ca53ffd0ffb28d1728c307f81fd7c05aedb4b45834d0ee20aa7eff9d4ba507",
+      "bytes": 143133979,
+      "built_utc": "2026-11-11T07:05:25+00:00",
+      "inputs": [
+        {
+          "source": "glo30_dem",
+          "files": 197,
+          "bytes": 7258504733,
+          "sha256_of_files": "0cfb4de47efbed49282c1b478af4fded70ce80237938540c12bb3a342916a4d6",
+          "url_template": "https://copernicus-dem-30m.s3.amazonaws.com/<tile>/<tile>.tif",
+          "downloaded_utc": "2026-11-11T00:21:37+00:00"
+        }
+      ],
+      "notes": "streams: WhiteboxTools ExtractStreams at upstream area >= 1.0 km2; Euclidean distance in metres (scipy); 30 m slope terms, 3 arc-second D8 routing with WhiteboxTools WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023 (whitebox 2.3.6): FillDepressions (fix_flats), D8Pointer, D8FlowAccumulation; sea cells (GLO-30 == 0.0) excluded from routing",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 3360.88916015625,
+        "mean": 312.5121257032946,
+        "sd": 319.2867530379131,
+        "quantiles": {
+          "1": 0.0,
+          "5": 0.0,
+          "25": 0.0,
+          "50": 206.9129638671875,
+          "75": 498.7010803222656,
+          "95": 927.6666870117188,
+          "99": 1247.2611083984375
+        }
+      },
+      "tool": {
+        "name": "WhiteboxTools",
+        "python_package": "whitebox 2.3.6",
+        "binary": "WhiteboxTools v2.4.0 (c) Dr. John Lindsay 2017-2023",
+        "licence": "MIT",
+        "url": "https://www.whiteboxgeo.com/"
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "soil_sand": {
+      "id": "soil_sand",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, sand 0-30 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "percent",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 100,
+      "legacy": false,
+      "method": "thickness-weighted mean of 0-5, 5-15, 15-30 cm (5, 10, 15 cm), g/kg / 10",
+      "status": "built",
+      "file": "soil_sand.tif",
+      "file_sha256": "0a591cd0c0dd9ce597488437d010dff6141bc87fc3f63870b6701a2ffe4d7f15",
+      "data_sha256": "482bb67b92c07955d67dcbf7cfedf693a0ded710fd491afffede35ebaed84c4a",
+      "bytes": 102273489,
+      "built_utc": "2026-11-11T00:31:34+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "sand_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/sand/sand_0-5cm_mean.vrt",
+          "sha256": "0a160f33a5d6f10bc042d7c44e7f3307c976431b14ed158b63e132a9fbd7045a",
+          "bytes": 32131293,
+          "downloaded_utc": "2026-11-11T00:29:04+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "sand_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/sand/sand_5-15cm_mean.vrt",
+          "sha256": "30e6ca3feb6985a79f32a41a4b83ec6681362957e09dadc951a1ee574afb3715",
+          "bytes": 32170468,
+          "downloaded_utc": "2026-11-11T00:30:17+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "sand_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/sand/sand_15-30cm_mean.vrt",
+          "sha256": "624fea9947a571c90d5c42ae25f01d58e34d9e6e97a1562b709f41a83a96b547",
+          "bytes": 32218785,
+          "downloaded_utc": "2026-11-11T00:31:25+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "0-30 cm, thickness-weighted (5, 10, 15 cm)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 2.0166666507720947,
+        "max": 72.13333129882812,
+        "mean": 34.136140119652616,
+        "sd": 8.266833265258935,
+        "quantiles": {
+          "1": 16.350000381469727,
+          "5": 20.83333396911621,
+          "25": 29.016666412353516,
+          "50": 33.88333511352539,
+          "75": 38.66666793823242,
+          "95": 48.78333282470703,
+          "99": 57.31666564941406
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "soil_bulk_density": {
+      "id": "soil_bulk_density",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, bulk density (bdod) 0-30 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "g/cm3",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0.3,
+      "valid_max": 2.5,
+      "legacy": false,
+      "method": "thickness-weighted mean of the three depths, cg/cm3 / 100",
+      "status": "built",
+      "file": "soil_bulk_density.tif",
+      "file_sha256": "381e64e14b43370831f35c56974b7a8c35b30d1e7838f94ba0fb075245f79591",
+      "data_sha256": "9d37285b785392bd4f608f3ccb38d694c4d3d7351ad68f50a4755f56320493d9",
+      "bytes": 99570456,
+      "built_utc": "2026-11-11T00:34:36+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "bdod_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/bdod/bdod_0-5cm_mean.vrt",
+          "sha256": "b3a7f405a51d8a430431bcabb0e091579b5ad875c9c26c4964d9350db851dabd",
+          "bytes": 13181757,
+          "downloaded_utc": "2026-11-11T00:32:32+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "bdod_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/bdod/bdod_5-15cm_mean.vrt",
+          "sha256": "8ca451eced43269f4a773c6733b8b00bb0e5a511e22ba08e5d6d1744b8966974",
+          "bytes": 12764787,
+          "downloaded_utc": "2026-11-11T00:33:30+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "bdod_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/bdod/bdod_15-30cm_mean.vrt",
+          "sha256": "13167c3738d4fbe6036b744c1c0eabb37a1f09a730a9ddec36f8109964117c65",
+          "bytes": 12630574,
+          "downloaded_utc": "2026-11-11T00:34:29+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "0-30 cm, thickness-weighted (5, 10, 15 cm)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18238927,
+        "nodata_share_in_mask": 0.008667,
+        "min": 0.8849999904632568,
+        "max": 1.681666612625122,
+        "mean": 1.3144129568206517,
+        "sd": 0.1262367950755319,
+        "quantiles": {
+          "1": 1.0416666269302368,
+          "5": 1.0866665840148926,
+          "25": 1.2300000190734863,
+          "50": 1.3199999332427979,
+          "75": 1.4249999523162842,
+          "95": 1.4866665601730347,
+          "99": 1.534999966621399
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "soil_cec": {
+      "id": "soil_cec",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, cation exchange capacity 0-30 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "cmol(c)/kg",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 250,
+      "legacy": false,
+      "method": "thickness-weighted mean of the three depths, mmol(c)/kg / 10",
+      "status": "built",
+      "file": "soil_cec.tif",
+      "file_sha256": "8cf26204abb2b2c4c74d66721507ad442f6842ce71f41602ef76225368e3c280",
+      "data_sha256": "0fa6317522e73354bf5a5b891c5a48ba1b4c68b0ee5e8c332f2ce8d804507775",
+      "bytes": 102997002,
+      "built_utc": "2026-11-11T00:38:24+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "cec_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/cec/cec_0-5cm_mean.vrt",
+          "sha256": "a859b025368b9d06aaa930d58e3945ec13ea00e0f968ee31f5e3c207185201d4",
+          "bytes": 31254478,
+          "downloaded_utc": "2026-11-11T00:35:56+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "cec_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/cec/cec_5-15cm_mean.vrt",
+          "sha256": "67c1388dfb1bdde313245bf687e0ad6ea050fe1a3545e5438189e44b340b96ea",
+          "bytes": 31326498,
+          "downloaded_utc": "2026-11-11T00:37:08+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "cec_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/cec/cec_15-30cm_mean.vrt",
+          "sha256": "3cdbde4a9b1c6a946d6eabd31eb07344945d4c6296fad96d8101ff7e6a946389",
+          "bytes": 31331326,
+          "downloaded_utc": "2026-11-11T00:38:14+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "0-30 cm, thickness-weighted (5, 10, 15 cm)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18254604,
+        "nodata_share_in_mask": 0.007815,
+        "min": 8.816666603088379,
+        "max": 96.93333435058594,
+        "mean": 30.59173214297805,
+        "sd": 8.344943499848526,
+        "quantiles": {
+          "1": 16.41666603088379,
+          "5": 19.616666793823242,
+          "25": 24.899999618530273,
+          "50": 28.733333587646484,
+          "75": 35.150001525878906,
+          "95": 46.04999923706055,
+          "99": 55.63333511352539
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "soil_nitrogen": {
+      "id": "soil_nitrogen",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0, total nitrogen 0-30 cm",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m (Homolosine)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "g/kg",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 60,
+      "legacy": false,
+      "method": "thickness-weighted mean of the three depths, cg/kg / 100",
+      "status": "built",
+      "file": "soil_nitrogen.tif",
+      "file_sha256": "3b2fae00517302c0f76144fee11fd48fcb2f91d75e21055281b84e3a14e66596",
+      "data_sha256": "be905a7ede52e5fe1794b257edba833e4d0e8899fc1e8a56d722126faa2a4bc6",
+      "bytes": 148554827,
+      "built_utc": "2026-11-11T00:44:55+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "nitrogen_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/nitrogen/nitrogen_0-5cm_mean.vrt",
+          "sha256": "f16de1567a6320f111f36f4d606b982ffe5d9d467e5aebb4359e8e7a54516466",
+          "bytes": 34103139,
+          "downloaded_utc": "2026-11-11T00:40:32+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "nitrogen_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/nitrogen/nitrogen_5-15cm_mean.vrt",
+          "sha256": "c295937a1de5781a54eaeb368f80e8d5d12f87fd9167217a58ab1c3242fd5329",
+          "bytes": 31116847,
+          "downloaded_utc": "2026-11-11T00:42:39+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "nitrogen_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/nitrogen/nitrogen_15-30cm_mean.vrt",
+          "sha256": "afce2a371c85ed4d5c558108af635ff94985a55dec343b0cd9ca746fabf7de74",
+          "bytes": 28800872,
+          "downloaded_utc": "2026-11-11T00:44:47+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "0-30 cm, thickness-weighted (5, 10, 15 cm)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18050980,
+        "nodata_share_in_mask": 0.018882,
+        "min": 0.375,
+        "max": 8.850000381469727,
+        "mean": 1.703920825664585,
+        "sd": 0.7253033962996234,
+        "quantiles": {
+          "1": 0.7733333706855774,
+          "5": 0.8816667199134827,
+          "25": 1.1033332347869873,
+          "50": 1.5416666269302368,
+          "75": 2.121666669845581,
+          "95": 3.1399998664855957,
+          "99": 3.7316665649414062
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "soil_awc": {
+      "id": "soil_awc",
+      "group": "soil",
+      "sources": [
+        "soilgrids_v2"
+      ],
+      "source_name": "SoilGrids v2.0 (derived, Saxton and Rawls 2006)",
+      "url": "https://files.isric.org/soilgrids/latest/data/{prop}/{prop}_{depth}_mean.vrt",
+      "version": "2.0",
+      "licence": "CC BY 4.0",
+      "citation": "Poggio, L. et al. (2021) SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240.",
+      "native_resolution": "250 m",
+      "resampling": "none (computed on the grid)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "mm/m (volumetric water between 33 and 1500 kPa)",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 500,
+      "legacy": false,
+      "method": "Saxton and Rawls (2006) eqs 1-2 and 6-8 with sand, clay, organic matter (SOC x 1.724) and the SoilGrids bulk density as the density adjustment, 0-30 cm",
+      "status": "built",
+      "file": "soil_awc.tif",
+      "file_sha256": "2408f702f3c4aca2d5909c3783e9be82aacc1d572410033c499877088a9e534a",
+      "data_sha256": "45ab54b87cb38cd994da17cb4b2fb49bb1c8bf4e9115b877cfc646954ccce601",
+      "bytes": 142328191,
+      "built_utc": "2026-11-11T07:05:45+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_v2",
+          "file": "sand_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/sand/sand_0-5cm_mean.vrt",
+          "sha256": "0a160f33a5d6f10bc042d7c44e7f3307c976431b14ed158b63e132a9fbd7045a",
+          "bytes": 32131293,
+          "downloaded_utc": "2026-11-11T00:29:04+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "sand_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/sand/sand_5-15cm_mean.vrt",
+          "sha256": "30e6ca3feb6985a79f32a41a4b83ec6681362957e09dadc951a1ee574afb3715",
+          "bytes": 32170468,
+          "downloaded_utc": "2026-11-11T00:30:17+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "sand_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/sand/sand_15-30cm_mean.vrt",
+          "sha256": "624fea9947a571c90d5c42ae25f01d58e34d9e6e97a1562b709f41a83a96b547",
+          "bytes": 32218785,
+          "downloaded_utc": "2026-11-11T00:31:25+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "clay_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/clay/clay_0-5cm_mean.vrt",
+          "sha256": "ecf5395b237c0c5e1fd82f27e2035d7773304e968195ad2eb074238a2e5d0f68",
+          "bytes": 32626489,
+          "downloaded_utc": "2026-11-11T00:25:08+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "clay_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/clay/clay_5-15cm_mean.vrt",
+          "sha256": "0080258e2ec581fc746bf7be424b1633c36bc1048a4671f2bb2925c5a927f814",
+          "bytes": 32839521,
+          "downloaded_utc": "2026-11-11T00:46:01+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "clay_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/clay/clay_15-30cm_mean.vrt",
+          "sha256": "d5ef27234e1b8a1233e538655d2cdb790d3994d3901ebc32520d739d645d8aff",
+          "bytes": 32983760,
+          "downloaded_utc": "2026-11-11T00:47:05+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "soc_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/soc/soc_0-5cm_mean.vrt",
+          "sha256": "d0e37e5041d7b2d6ee8cb8e476e924d154681e1ecccb49367322e664990c8194",
+          "bytes": 39950513,
+          "downloaded_utc": "2026-11-11T00:27:46+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "soc_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/soc/soc_5-15cm_mean.vrt",
+          "sha256": "42a2f2be9e11bbe7c5fd9e86b68c74e3bba99f7ba2f2e214649167ffae162354",
+          "bytes": 34482517,
+          "downloaded_utc": "2026-11-11T00:48:11+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "soc_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/soc/soc_15-30cm_mean.vrt",
+          "sha256": "330375fc4de7eb8334106e62e4eb2a41dc76bd139b8339cb1494efa3a387452e",
+          "bytes": 32203556,
+          "downloaded_utc": "2026-11-11T00:49:17+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "bdod_0-5cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/bdod/bdod_0-5cm_mean.vrt",
+          "sha256": "b3a7f405a51d8a430431bcabb0e091579b5ad875c9c26c4964d9350db851dabd",
+          "bytes": 13181757,
+          "downloaded_utc": "2026-11-11T00:32:32+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "bdod_5-15cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/bdod/bdod_5-15cm_mean.vrt",
+          "sha256": "8ca451eced43269f4a773c6733b8b00bb0e5a511e22ba08e5d6d1744b8966974",
+          "bytes": 12764787,
+          "downloaded_utc": "2026-11-11T00:33:30+00:00",
+          "manual": false
+        },
+        {
+          "source": "soilgrids_v2",
+          "file": "bdod_15-30cm__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/latest/data/bdod/bdod_15-30cm_mean.vrt",
+          "sha256": "13167c3738d4fbe6036b744c1c0eabb37a1f09a730a9ddec36f8109964117c65",
+          "bytes": 12630574,
+          "downloaded_utc": "2026-11-11T00:34:29+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "Saxton and Rawls (2006), 0-30 cm, OM = SOC x 1.724, density factor from bdod",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18238927,
+        "nodata_share_in_mask": 0.008667,
+        "min": 53.220333099365234,
+        "max": 207.7158203125,
+        "mean": 135.6456375011216,
+        "sd": 9.110144118480004,
+        "quantiles": {
+          "1": 110.75959045410156,
+          "5": 120.0714614868164,
+          "25": 130.56680297851562,
+          "50": 135.528564453125,
+          "75": 141.2512969970703,
+          "95": 150.33558654785156,
+          "99": 156.97997650146482
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "soil_depth_bedrock": {
+      "id": "soil_depth_bedrock",
+      "group": "soil",
+      "sources": [
+        "soilgrids_2017_bdricm"
+      ],
+      "source_name": "SoilGrids250m 2017, absolute depth to bedrock (BDRICM)",
+      "url": "https://files.isric.org/soilgrids/former/2017-03-10/data/BDRICM_M_250m_ll.tif",
+      "version": "2017-03-10",
+      "licence": "CC BY 4.0",
+      "citation": "Hengl, T. et al. (2017) SoilGrids250m: global gridded soil information based on machine learning. PLoS ONE 12, e0169748. Shangguan, W. et al. (2017) Mapping the global depth to bedrock. JAMES 9, 65-88.",
+      "native_resolution": "250 m (lat/lon)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "cm",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 100000,
+      "legacy": false,
+      "method": "WarpedVRT bilinear; SoilGrids v2 has no depth-to-bedrock product, so the 2017 product is used and the layer stays optional",
+      "status": "built",
+      "file": "soil_depth_bedrock.tif",
+      "file_sha256": "084cc4d82ec7668de5e8d51a3fd49d568b0de44171c1b499047ebd4075eb82ca",
+      "data_sha256": "fdb82004685c679f5f0ab41cc852812851b677245fed308f62f18a4be44a43c6",
+      "bytes": 16522697,
+      "built_utc": "2026-11-11T07:07:31+00:00",
+      "inputs": [
+        {
+          "source": "soilgrids_2017_bdricm",
+          "file": "BDRICM_M_250m__ET_b4862eae.tif",
+          "url": "https://files.isric.org/soilgrids/former/2017-03-10/data/BDRICM_M_250m_ll.tif",
+          "sha256": "1352cbd2b93199f2ed7777fb27b0f470d685b34c7d708efdb753440c47d486fa",
+          "bytes": 10280254,
+          "downloaded_utc": "2026-11-11T07:07:27+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "SoilGrids250m 2017 (v2 has no depth-to-bedrock layer)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18278984,
+        "nodata_share_in_mask": 0.00649,
+        "min": 19.0,
+        "max": 200.0,
+        "mean": 191.72724649247465,
+        "sd": 19.50552101940907,
+        "quantiles": {
+          "1": 108.0,
+          "5": 147.0,
+          "25": 197.0,
+          "50": 200.0,
+          "75": 200.0,
+          "95": 200.0,
+          "99": 200.0
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "rain_mean_1991_2020": {
+      "id": "rain_mean_1991_2020",
+      "group": "climate_chirps",
+      "sources": [
+        "chirps_monthly_africa"
+      ],
+      "source_name": "CHIRPS v2.0",
+      "url": "https://data.chc.ucsb.edu/products/CHIRPS/v2.0/africa_monthly/tifs/chirps-v2.0.{year}.{month:02d}.tif.gz",
+      "version": "2.0",
+      "licence": "CC0 1.0 / public domain (Climate Hazards Center; owner to confirm)",
+      "citation": "Funk, C. et al. (2015) The climate hazards infrared precipitation with stations, a new environmental record for monitoring extremes. Sci. Data 2, 150066.",
+      "native_resolution": "0.05 degrees (~5.5 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "mm/yr",
+      "update_cadence": "annual",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 5000,
+      "legacy": false,
+      "method": "mean of the 30 annual totals (sum of monthly files), native resolution, then bilinear",
+      "status": "built",
+      "file": "rain_mean_1991_2020.tif",
+      "file_sha256": "14e8d7d269dcdeb56ee421742f746d445e05b15832832ef981c7f9d55abf6f3f",
+      "data_sha256": "e18d56db3ae7091a22ff3d2cb700c0a9aa8d03dc079640312a698d810ddfd4f1",
+      "bytes": 65570908,
+      "built_utc": "2026-11-10T22:52:21+00:00",
+      "inputs": [
+        {
+          "source": "chirps_monthly_africa",
+          "files": 360,
+          "first": "chirps-v2.0.1991.01.tif.gz",
+          "last": "chirps-v2.0.2020.12.tif.gz",
+          "bytes": 1625049171,
+          "sha256_of_files": "681a1e3266fcac43743803b0f1d537ff96a869ae59fd6dbda4da8ced4bd8a233",
+          "downloaded_utc": "2026-11-10T22:52:13+00:00"
+        }
+      ],
+      "notes": "360 monthly files, 1991-2020",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 113.40962982177734,
+        "max": 2212.15283203125,
+        "mean": 821.0307101282389,
+        "sd": 468.6196346526547,
+        "quantiles": {
+          "1": 171.88389038085938,
+          "5": 232.00046081542968,
+          "25": 377.5402526855469,
+          "50": 782.7030029296875,
+          "75": 1151.6875,
+          "95": 1702.37353515625,
+          "99": 1902.177900390625
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "rain_cv_interannual": {
+      "id": "rain_cv_interannual",
+      "group": "climate_chirps",
+      "sources": [
+        "chirps_monthly_africa"
+      ],
+      "source_name": "CHIRPS v2.0",
+      "url": "https://data.chc.ucsb.edu/products/CHIRPS/v2.0/africa_monthly/tifs/chirps-v2.0.{year}.{month:02d}.tif.gz",
+      "version": "2.0",
+      "licence": "CC0 1.0 / public domain (Climate Hazards Center; owner to confirm)",
+      "citation": "Funk, C. et al. (2015) The climate hazards infrared precipitation with stations, a new environmental record for monitoring extremes. Sci. Data 2, 150066.",
+      "native_resolution": "0.05 degrees (~5.5 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "percent",
+      "update_cadence": "annual",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 300,
+      "legacy": false,
+      "method": "100 x sample SD (ddof 1) / mean of the 30 annual totals, then bilinear",
+      "status": "built",
+      "file": "rain_cv_interannual.tif",
+      "file_sha256": "77baa7ec577c4ecd5c02cb782fb606063f5574e0161f1e6fe4d1b159d3d40685",
+      "data_sha256": "f86d3be2362ae65083e0f6de4bc35c2b0bf5d983721a4cb3ab46e48def2b3155",
+      "bytes": 66585597,
+      "built_utc": "2026-11-10T22:52:30+00:00",
+      "inputs": [
+        {
+          "source": "chirps_monthly_africa",
+          "files": 360,
+          "first": "chirps-v2.0.1991.01.tif.gz",
+          "last": "chirps-v2.0.2020.12.tif.gz",
+          "bytes": 1625049171,
+          "sha256_of_files": "681a1e3266fcac43743803b0f1d537ff96a869ae59fd6dbda4da8ced4bd8a233",
+          "downloaded_utc": "2026-11-10T22:52:13+00:00"
+        }
+      ],
+      "notes": "360 monthly files, 1991-2020",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 5.390401840209961,
+        "max": 42.35885238647461,
+        "mean": 17.37704600753034,
+        "sd": 7.965222296205847,
+        "quantiles": {
+          "1": 7.151233806610107,
+          "5": 8.247356414794922,
+          "25": 11.158830642700195,
+          "50": 14.950263977050781,
+          "75": 21.83775043487549,
+          "95": 33.72409019470214,
+          "99": 36.690019073486326
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "dry_season_length_months": {
+      "id": "dry_season_length_months",
+      "group": "climate_chirps",
+      "sources": [
+        "chirps_monthly_africa"
+      ],
+      "source_name": "CHIRPS v2.0",
+      "url": "https://data.chc.ucsb.edu/products/CHIRPS/v2.0/africa_monthly/tifs/chirps-v2.0.{year}.{month:02d}.tif.gz",
+      "version": "2.0",
+      "licence": "CC0 1.0 / public domain (Climate Hazards Center; owner to confirm)",
+      "citation": "Funk, C. et al. (2015) The climate hazards infrared precipitation with stations, a new environmental record for monitoring extremes. Sci. Data 2, 150066.",
+      "native_resolution": "0.05 degrees (~5.5 km)",
+      "resampling": "bilinear (monthly climatology), then counted on the grid",
+      "dtype": "int16",
+      "nodata": -9999,
+      "unit": "months",
+      "update_cadence": "annual",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 12,
+      "legacy": false,
+      "method": "number of calendar months whose 1991-2020 mean rainfall is below settings.dry_month_mm",
+      "status": "built",
+      "file": "dry_season_length_months.tif",
+      "file_sha256": "0b89e90eab20a35c7fafffae8af3add879e34635d731c8e1d17105b31f17a6c7",
+      "data_sha256": "f687b7480b9b58d13edf964c7de4a77b0724c91fbdcd06988f3db107d6c67bfc",
+      "bytes": 1200413,
+      "built_utc": "2026-11-10T22:52:48+00:00",
+      "inputs": [
+        {
+          "source": "chirps_monthly_africa",
+          "files": 360,
+          "first": "chirps-v2.0.1991.01.tif.gz",
+          "last": "chirps-v2.0.2020.12.tif.gz",
+          "bytes": 1625049171,
+          "sha256_of_files": "681a1e3266fcac43743803b0f1d537ff96a869ae59fd6dbda4da8ced4bd8a233",
+          "downloaded_utc": "2026-11-10T22:52:13+00:00"
+        }
+      ],
+      "notes": "360 monthly files, 1991-2020",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 12.0,
+        "mean": 6.858121499046955,
+        "sd": 2.519572877227967,
+        "quantiles": {
+          "1": 1.0,
+          "5": 3.0,
+          "25": 5.0,
+          "50": 7.0,
+          "75": 9.0,
+          "95": 11.0,
+          "99": 12.0
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "pet_hargreaves_annual": {
+      "id": "pet_hargreaves_annual",
+      "group": "climate_worldclim",
+      "sources": [
+        "worldclim_tavg_30s",
+        "worldclim_tmin_2.5m",
+        "worldclim_tmax_2.5m"
+      ],
+      "source_name": "WorldClim 2.1 (derived, Hargreaves 1985)",
+      "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip; https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmin.zip; https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmax.zip",
+      "version": "2.1 (1970-2000 normals)",
+      "licence": "WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm); WorldClim 2.1 terms (owner to confirm)",
+      "citation": "Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315.",
+      "native_resolution": "30 arc-seconds (Tmean), 2.5 arc-minutes (Tmax - Tmin)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "mm/yr",
+      "update_cadence": "static",
+      "required": false,
+      "manual": true,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 4000,
+      "legacy": false,
+      "method": "Hargreaves-Samani PET = 0.0023 x 0.408 Ra (Tmean + 17.8) sqrt(Tmax - Tmin) per month (FAO-56 Ra at mid-month), summed",
+      "status": "built",
+      "file": "pet_hargreaves_annual.tif",
+      "file_sha256": "897c708f6fdeaff3b9f96be547fab41ca13f20346ed5f6c2023fe6b9ea0c7cdd",
+      "data_sha256": "854385051d0fd1eda492af6f177d9f84c3ee76e6cb4b7b177294a26052bf29db",
+      "bytes": 110901193,
+      "built_utc": "2026-11-10T20:57:02+00:00",
+      "inputs": [
+        {
+          "source": "worldclim_tavg_30s",
+          "file": "wc2.1_30s_tavg.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip",
+          "sha256": "0332ef3f961b2bbaca86825af79f1ffa03f296ebe2bfb71dc1f626a28d72d621",
+          "bytes": 4299762045,
+          "downloaded_utc": "2026-11-10T20:43:16+00:00",
+          "manual": false
+        },
+        {
+          "source": "worldclim_tmin_2.5m",
+          "file": "wc2.1_2.5m_tmin.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmin.zip",
+          "sha256": "83170a2b0746379f2e17bd263ed9d3e4f686f6c2d6211d2485138e3664aebf1c",
+          "bytes": 450776085,
+          "downloaded_utc": "2026-11-10T20:54:39+00:00",
+          "manual": false
+        },
+        {
+          "source": "worldclim_tmax_2.5m",
+          "file": "wc2.1_2.5m_tmax.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmax.zip",
+          "sha256": "70b86fdeb698c199f0875b7ef628608e1a7fceff7ffc7a8ad3ffdd40dd234768",
+          "bytes": 444356872,
+          "downloaded_utc": "2026-11-10T20:56:16+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "Tmean from the 30 arc-second normals, Tmax - Tmin from the 2.5 arc-minute normals",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 1049.0242919921875,
+        "max": 2204.3974609375,
+        "mean": 1780.7635735229437,
+        "sd": 165.1757451453639,
+        "quantiles": {
+          "1": 1342.6658715820313,
+          "5": 1498.7320556640625,
+          "25": 1675.6597900390625,
+          "50": 1787.515869140625,
+          "75": 1890.93212890625,
+          "95": 2047.23681640625,
+          "99": 2113.99560546875
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "aridity_index": {
+      "id": "aridity_index",
+      "group": "climate_chirps",
+      "sources": [
+        "chirps_monthly_africa",
+        "worldclim_tavg_30s",
+        "worldclim_tmin_2.5m",
+        "worldclim_tmax_2.5m"
+      ],
+      "source_name": "CHIRPS v2.0 / WorldClim 2.1 (derived)",
+      "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip; https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmin.zip; https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmax.zip",
+      "version": "2.0; 2.1 (1970-2000 normals)",
+      "licence": "CC0 1.0 / public domain (Climate Hazards Center; owner to confirm); WorldClim 2.1 terms (free for research and non-commercial use; owner to confirm); WorldClim 2.1 terms (owner to confirm)",
+      "citation": "Funk, C. et al. (2015) The climate hazards infrared precipitation with stations, a new environmental record for monitoring extremes. Sci. Data 2, 150066.; Fick, S.E. and Hijmans, R.J. (2017) WorldClim 2. Int. J. Climatol. 37, 4302-4315.",
+      "native_resolution": "0.05 degrees / 30 arc-seconds",
+      "resampling": "none (computed on the grid)",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "dimensionless (P / PET, UNEP classes)",
+      "update_cadence": "annual",
+      "required": false,
+      "manual": true,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 10,
+      "legacy": false,
+      "method": "rain_mean_1991_2020 / pet_hargreaves_annual",
+      "status": "built",
+      "file": "aridity_index.tif",
+      "file_sha256": "ed452442b8a0b96a22a6a6dc580532d23cc65b0167d3c665faf9313ca1f4fe93",
+      "data_sha256": "ab0bb5632dce0ca07516fed0d09346c7a83a6b5203c1be08f92bf39d4882ee59",
+      "bytes": 119888137,
+      "built_utc": "2026-11-10T22:52:58+00:00",
+      "inputs": [
+        {
+          "source": "chirps_monthly_africa",
+          "file": "chirps-v2.0.1991.01.tif.gz",
+          "url": "https://data.chc.ucsb.edu/products/CHIRPS/v2.0/africa_monthly/tifs/chirps-v2.0.1991.01.tif.gz",
+          "sha256": "5d854b99768f2c66fa0dcfb78ec8d2a0070bfb718439a9f100b7752da96b7252",
+          "bytes": 4426641,
+          "downloaded_utc": "2026-11-10T20:57:38+00:00",
+          "manual": false
+        },
+        {
+          "source": "worldclim_tavg_30s",
+          "file": "wc2.1_30s_tavg.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_tavg.zip",
+          "sha256": "0332ef3f961b2bbaca86825af79f1ffa03f296ebe2bfb71dc1f626a28d72d621",
+          "bytes": 4299762045,
+          "downloaded_utc": "2026-11-10T20:43:16+00:00",
+          "manual": false
+        },
+        {
+          "source": "worldclim_tmin_2.5m",
+          "file": "wc2.1_2.5m_tmin.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmin.zip",
+          "sha256": "83170a2b0746379f2e17bd263ed9d3e4f686f6c2d6211d2485138e3664aebf1c",
+          "bytes": 450776085,
+          "downloaded_utc": "2026-11-10T20:54:39+00:00",
+          "manual": false
+        },
+        {
+          "source": "worldclim_tmax_2.5m",
+          "file": "wc2.1_2.5m_tmax.zip",
+          "url": "https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_2.5m_tmax.zip",
+          "sha256": "70b86fdeb698c199f0875b7ef628608e1a7fceff7ffc7a8ad3ffdd40dd234768",
+          "bytes": 444356872,
+          "downloaded_utc": "2026-11-10T20:56:16+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "CHIRPS 1991-2020 mean / Hargreaves PET from WorldClim 2.1 (1970-2000)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.06422877311706543,
+        "max": 1.6572645902633667,
+        "mean": 0.47571900582358406,
+        "sd": 0.29096274226082297,
+        "quantiles": {
+          "1": 0.09852695271372795,
+          "5": 0.12200455814599992,
+          "25": 0.2037254124879837,
+          "50": 0.43457502126693726,
+          "75": 0.6806479692459106,
+          "95": 1.0235669612884521,
+          "99": 1.1847066330909728
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "cropland_fraction_1km": {
+      "id": "cropland_fraction_1km",
+      "group": "landcover",
+      "sources": [
+        "worldcover_2021"
+      ],
+      "source_name": "ESA WorldCover 2021 (derived)",
+      "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_{ns}{lat:02d}{ew}{lon:03d}_Map.tif",
+      "version": "v200 (2021)",
+      "licence": "CC BY 4.0",
+      "citation": "Zanaga, D. et al. (2022) ESA WorldCover 10 m 2021 v200. doi:10.5281/zenodo.7254221",
+      "native_resolution": "10 m",
+      "resampling": "block count (27 x 27 pixels = one grid cell), then a 1 km box",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "fraction (0-1)",
+      "update_cadence": "annual",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 1,
+      "legacy": false,
+      "method": "share of 10 m cropland pixels (class 40) among valid pixels in a 1 km box centred on the cell (weights 0.5,1,1,1,0.5 per axis)",
+      "status": "built",
+      "file": "cropland_fraction_1km.tif",
+      "file_sha256": "72be3fc309e087ec81257482adb76bbb795462a837105f656431d1dac37945d1",
+      "data_sha256": "e1e3e890168e916374a9d6597db6287d994874ace433701a1fbbce99923df799",
+      "bytes": 82202229,
+      "built_utc": "2026-11-11T10:04:16+00:00",
+      "inputs": [
+        {
+          "source": "worldcover_2021",
+          "files": 28,
+          "first": "ESA_WorldCover_10m_2021_v200_N03E030_Map.tif",
+          "last": "ESA_WorldCover_10m_2021_v200_N12E048_Map.tif",
+          "bytes": 2689494679,
+          "sha256_of_files": "08592b143978739794b974195142b7c8508496a2adab8835d7e53ac8518bae2d",
+          "downloaded_utc": "2026-11-11T10:04:00+00:00"
+        }
+      ],
+      "notes": "box weights per axis [0.5, 1.0, 1.0, 1.0, 0.5] (cells of 0.00225 degrees)",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.16976720681141994,
+        "sd": 0.2855037783350954,
+        "quantiles": {
+          "1": 0.0,
+          "5": 0.0,
+          "25": 0.0,
+          "50": 0.00032150206970982254,
+          "75": 0.23456789553165436,
+          "95": 0.8714634776115417,
+          "99": 0.9871184825897217
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "travel_time_to_city_min": {
+      "id": "travel_time_to_city_min",
+      "group": "access",
+      "sources": [
+        "map_travel_time_2015"
+      ],
+      "source_name": "Malaria Atlas Project accessibility to cities 2015",
+      "url": "https://data.malariaatlas.org/geoserver/Accessibility/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=Accessibility__201501_Global_Travel_Time_to_Cities&subset=Lat({lat_min},{lat_max})&subset=Long({lon_min},{lon_max})&format=image/tiff",
+      "version": "2015 (v1.0)",
+      "licence": "CC BY 4.0",
+      "citation": "Weiss, D.J. et al. (2018) A global map of travel time to cities to assess inequalities in accessibility in 2015. Nature 553, 333-336.",
+      "native_resolution": "30 arc-seconds (~1 km)",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "minutes",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": 0,
+      "valid_max": 100000,
+      "legacy": false,
+      "method": "travel time to the nearest city of 50,000 or more, WCS clip then bilinear",
+      "status": "built",
+      "file": "travel_time_to_city_min.tif",
+      "file_sha256": "9f6479ad80b603e2fea304a01ade64ec54cd396a8d188e5357bb7931c2cccba5",
+      "data_sha256": "3e5e5dc8a58e353b3769bbc5c06d8f80430a48c711f597a57358f3ef3ace7a76",
+      "bytes": 125417031,
+      "built_utc": "2026-11-11T10:04:33+00:00",
+      "inputs": [
+        {
+          "source": "map_travel_time_2015",
+          "file": "travel_time_2015__ET_b4862eae.tif",
+          "url": "https://data.malariaatlas.org/geoserver/Accessibility/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=Accessibility__201501_Global_Travel_Time_to_Cities&subset=Lat(2.3,15.901)&subset=Long(31.9,49.2)&format=image/tiff",
+          "sha256": "7e04966ccaed8fa32385059f0ccec4d25fe8e3b19a9b03fcc9a0f0027e325826",
+          "bytes": 20972084,
+          "downloaded_utc": "2026-11-11T10:04:23+00:00",
+          "manual": false
+        }
+      ],
+      "notes": "",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "min": 0.0,
+        "max": 1409.284423828125,
+        "mean": 245.73448820322764,
+        "sd": 179.06507389179635,
+        "quantiles": {
+          "1": 6.001459617614747,
+          "5": 24.977075576782227,
+          "25": 104.07499694824219,
+          "50": 212.37261962890625,
+          "75": 349.2477264404297,
+          "95": 581.97998046875,
+          "99": 782.0155053710932
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "range": "pass",
+        "not_constant": "pass"
+      }
+    },
+    "ndvi_trend": {
+      "id": "ndvi_trend",
+      "group": "vegetation",
+      "sources": [
+        "modis_ndvi"
+      ],
+      "source_name": "MODIS MOD13Q1 NDVI",
+      "url": "https://lpdaac.usgs.gov/products/mod13q1v061/",
+      "version": "061",
+      "licence": "NASA EOSDIS open data (no restriction)",
+      "citation": "Didan, K. (2021) MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061. doi:10.5067/MODIS/MOD13Q1.061",
+      "native_resolution": "250 m",
+      "resampling": "bilinear",
+      "dtype": "float32",
+      "nodata": -9999,
+      "unit": "NDVI per year",
+      "update_cadence": "annual",
+      "required": false,
+      "manual": false,
+      "kind": "continuous",
+      "classes": null,
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": false,
+      "method": "pending: needs NASA Earthdata credentials, which the brief excludes",
+      "status": "pending",
+      "file": null,
+      "reason": "LP DAAC and AppEEARS downloads need a NASA Earthdata login; the brief excludes credentials",
+      "inputs": [],
+      "built_utc": "2026-11-11T01:12:27+00:00"
+    },
+    "koppen_class": {
+      "id": "koppen_class",
+      "group": "koppen",
+      "sources": [
+        "koppen_beck2018"
+      ],
+      "source_name": "Beck et al. 2018 Koppen-Geiger, present",
+      "url": "https://figshare.com/ndownloader/files/12407516",
+      "version": "V1 (2018)",
+      "licence": "CC BY 4.0",
+      "citation": "Beck, H.E. et al. (2018) Present and future Koppen-Geiger climate classification maps at 1-km resolution. Sci. Data 5, 180214.",
+      "native_resolution": "30 arc-seconds (~1 km)",
+      "resampling": "nearest",
+      "dtype": "uint8",
+      "nodata": 0,
+      "unit": "Koppen-Geiger class code (legend in pipelines/geodata/layers/koppen.py)",
+      "update_cadence": "static",
+      "required": false,
+      "manual": true,
+      "kind": "categorical",
+      "classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": false,
+      "method": "nearest-neighbour clip of the present-day 1 km map",
+      "status": "built",
+      "file": "koppen_class.tif",
+      "file_sha256": "0851d00170d441202b574273c8a75be407ff2c125e55cd0fa6310d435d028efc",
+      "data_sha256": "e374acafcdb58989322aca88d33d1dcd6233d8344451fb632c732ab877145910",
+      "bytes": 976576,
+      "built_utc": "2026-11-11T10:04:35+00:00",
+      "inputs": [
+        {
+          "source": "koppen_beck2018",
+          "file": "Beck_KG_V1.zip",
+          "url": null,
+          "sha256": "a33f861200e32e80d5615bba1350ceeb8b0f5e6a6ffdc18b2d1715a3293d7b4b",
+          "bytes": 70961149,
+          "downloaded_utc": "2026-11-11T10:04:34+00:00",
+          "manual": true
+        }
+      ],
+      "notes": "legend: pipelines/geodata/layers/koppen.py LEGEND",
+      "stats": {
+        "cells_in_mask": 18398383,
+        "valid_in_mask": 18398383,
+        "nodata_share_in_mask": 0.0,
+        "classes": {
+          "2": 395030,
+          "3": 5696219,
+          "4": 4701727,
+          "6": 3882940,
+          "7": 68738,
+          "8": 39214,
+          "9": 1452900,
+          "10": 5565,
+          "11": 62393,
+          "12": 1776963,
+          "13": 12780,
+          "14": 92,
+          "15": 267970,
+          "16": 12,
+          "29": 35840
+        }
+      },
+      "qa_status": "pass",
+      "qa": {
+        "alignment": "pass",
+        "dtype": "pass",
+        "nodata": "pass",
+        "nodata_share": "pass",
+        "classes": "pass"
+      }
+    },
+    "overlay_hotspot_coldspot": {
+      "id": "overlay_hotspot_coldspot",
+      "group": "overlays",
+      "sources": [],
+      "source_name": "Omo-Gibe Living Landscape hotspot/coldspot raster (countries/ET.yaml overlays.omo_gibe)",
+      "url": null,
+      "version": null,
+      "licence": null,
+      "citation": null,
+      "native_resolution": "native",
+      "resampling": "nearest",
+      "dtype": "int16",
+      "nodata": -9999,
+      "unit": "class code",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "categorical",
+      "classes": null,
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": false,
+      "method": "warped to the grid when the file exists; pending otherwise; no modelling use in E3",
+      "status": "pending",
+      "file": null,
+      "reason": "no GeoTIFF at countries/ET.yaml overlays.omo_gibe.rasters.hotspot_coldspot = 'data/raw/hotspot and coldspot/'",
+      "inputs": [],
+      "built_utc": "2026-11-11T01:12:27+00:00"
+    },
+    "overlay_typology": {
+      "id": "overlay_typology",
+      "group": "overlays",
+      "sources": [],
+      "source_name": "Omo-Gibe Living Landscape typology raster (countries/ET.yaml overlays.omo_gibe)",
+      "url": null,
+      "version": null,
+      "licence": null,
+      "citation": null,
+      "native_resolution": "native",
+      "resampling": "nearest",
+      "dtype": "int16",
+      "nodata": -9999,
+      "unit": "class code",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "categorical",
+      "classes": null,
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": false,
+      "method": "warped to the grid when the file exists; pending otherwise",
+      "status": "pending",
+      "file": null,
+      "reason": "no GeoTIFF at countries/ET.yaml overlays.omo_gibe.rasters.typology = 'data/raw/Typology/'",
+      "inputs": [],
+      "built_utc": "2026-11-11T01:12:27+00:00"
+    },
+    "mask_omo_gibe": {
+      "id": "mask_omo_gibe",
+      "group": "overlays",
+      "sources": [],
+      "source_name": "footprint of the Omo-Gibe overlay rasters",
+      "url": null,
+      "version": null,
+      "licence": null,
+      "citation": null,
+      "native_resolution": "grid",
+      "resampling": "nearest",
+      "dtype": "uint8",
+      "nodata": 0,
+      "unit": "1 inside the basin extent",
+      "update_cadence": "occasional",
+      "required": false,
+      "manual": false,
+      "kind": "categorical",
+      "classes": [
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null,
+      "legacy": false,
+      "method": "cells where either overlay has data",
+      "status": "pending",
+      "file": null,
+      "reason": "no overlay raster present",
+      "inputs": [],
+      "built_utc": "2026-11-11T01:12:27+00:00"
+    }
+  },
+  "timings_s": {
+    "terrain": 303.0,
+    "soil": 125.4,
+    "landcover": 10605.1,
+    "access": 17.6,
+    "koppen": 1.7,
+    "qa": 56.8,
+    "total": 11120.5
+  },
+  "peak_memory_mb": {
+    "terrain": {
+      "peak_rss_mb": 8647.0,
+      "peak_commit_mb": 9092.2,
+      "worker_returncode": 0
+    },
+    "soil": {
+      "peak_rss_mb": 2129.9,
+      "peak_commit_mb": 2341.0,
+      "worker_returncode": 0
+    },
+    "landcover": {
+      "peak_rss_mb": 1791.7,
+      "peak_commit_mb": 2129.7,
+      "worker_returncode": 0
+    },
+    "access": {
+      "peak_rss_mb": 634.2,
+      "peak_commit_mb": 837.9,
+      "worker_returncode": 0
+    },
+    "koppen": {
+      "peak_rss_mb": 234.3,
+      "peak_commit_mb": 469.6,
+      "worker_returncode": 0
+    }
+  },
+  "disk_preflight": {
+    "drives": {
+      "C:\\": {
+        "free_gb": 455.3,
+        "total_gb": 1013.3
+      }
+    },
+    "needed_mb": 10821,
+    "warn_below_gb": 15.0,
+    "low": [],
+    "short": [],
+    "estimate": {
+      "download_mb": 5075,
+      "layers_to_write": 15,
+      "terrain_temporaries_mb": 4096.0
+    }
+  },
+  "release_bytes": 2951487571
+}

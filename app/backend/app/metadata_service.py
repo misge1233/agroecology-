@@ -102,6 +102,8 @@ def build_metadata() -> dict[str, Any]:
         "languages": list(i18n.LANGUAGES),
         # Size of the evidence base (counts only) for the home trust strip (U1).
         "evidence": svc.evidence_counts(),
+        # E3: which context layers the engine reads (release id, or the legacy stack).
+        "geodata": svc.geodata_info(),
         # P9: how the advisory decides its mode and which knowledge sources exist.
         "advisory": {
             "thresholds": evidence_service.thresholds(get_settings()),
