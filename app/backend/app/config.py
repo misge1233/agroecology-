@@ -47,8 +47,16 @@ class Settings(BaseSettings):
     # Advisory engine (E5). "legacy" (default): the frozen csa_model.joblib path, unchanged.
     # "m1_v2": Methodology 1 v2 from M1_ARTIFACT_DIR (model/m1/train.py) serves POST /rank for
     # any registry challenge and objective and adds the additive `m1_v2` field to /advise.
+    # "m3" (E7 decision, behind this flag only): M1 v2 numbers, intervals and citations, with the
+    # practices of thin-evidence requests ordered by gpt-4.1-mini (no evidence in the prompt),
+    # cached per (rendered context, objective, crop, candidates), M3_TIMEOUT_SECONDS with
+    # fallback to the M1 v2 order, cost logged, spend capped by M3_BUDGET_USD.
     advisor_engine: str = Field(default="legacy", validation_alias=AliasChoices("ADVISOR_ENGINE"))
     m1_artifact_dir: str = Field(default="../../model/artifacts/m1_v2", validation_alias=AliasChoices("M1_ARTIFACT_DIR"))
+    m3_artifact_dir: str = Field(default="../../model/artifacts/m3_gate", validation_alias=AliasChoices("M3_ARTIFACT_DIR"))
+    m3_timeout_seconds: float = Field(default=8.0, validation_alias=AliasChoices("M3_TIMEOUT_SECONDS"))
+    m3_budget_usd: float = Field(default=10.0, validation_alias=AliasChoices("M3_BUDGET_USD"))
+    m3_cache_dir: str = Field(default="cache/m3", validation_alias=AliasChoices("M3_CACHE_DIR"))
 
     # RAG evidence index (Phase P2b). Built by rag/ingest (fetch_papers →
     # parse_and_chunk → build_index); lives at the repo root by default. Relative

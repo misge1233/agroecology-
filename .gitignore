@@ -89,3 +89,6 @@ model/artifacts/m1_v2/*.joblib
 
 # --- E6: Methodology 2 API answer cache, embeddings and cost ledger (prompts carry partner-derived evidence cards) ---
 model/m2/cache/
+
+# --- E7: ADVISOR_ENGINE=m3 serving cache (language-model answers and cost ledger; never in git) ---
+app/backend/cache/m3/

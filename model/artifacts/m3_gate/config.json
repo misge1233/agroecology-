@@ -1,0 +1,25 @@
+{
+ "engine": "m3_gate",
+ "built_utc": "2026-11-12T14:28:18+00:00",
+ "threshold": 5,
+ "threshold_votes": {
+  "2": 4,
+  "3": 6,
+  "5": 40
+ },
+ "thresholds_considered": [
+  2,
+  3,
+  5
+ ],
+ "llm_model": "gpt-4.1-mini",
+ "llm_variant": "m2_zero",
+ "llm_source_in_evaluation": "m2_zero__gpt-4.1-mini",
+ "prompt_version": "m2-p1",
+ "prompt_hash": "dcfc37f59f6509cb8817c6c8a8291791f053312d2dcdf21eb6c3e4ea86a48d6b",
+ "timeout_s": 8.0,
+ "density": "median distinct training groups per candidate (outcome; objective group below 3)",
+ "numbers_from": "m1_v2 (model/artifacts/m1_v2)",
+ "decision": "E7 Part C branch 2",
+ "run_id": "e7_m3_gate"
+}

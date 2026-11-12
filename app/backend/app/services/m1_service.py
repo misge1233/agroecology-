@@ -38,7 +38,15 @@ class EngineUnavailable(RuntimeError):
 
 
 def enabled(settings: Any = None) -> bool:
-    return str((settings or get_settings()).advisor_engine).strip().lower() == "m1_v2"
+    """M1 v2 serves the numbers with ``ADVISOR_ENGINE=m1_v2`` and with ``m3`` (E7: the gate only
+    changes the order of thin-evidence requests; every number stays M1 v2's)."""
+    return engine_name(settings) in ("m1_v2", "m3")
+
+
+def engine_name(settings: Any = None) -> str:
+    """``legacy``, ``m1_v2`` or ``m3`` (anything else serves as ``legacy``)."""
+    v = str((settings or get_settings()).advisor_engine).strip().lower()
+    return v if v in ("m1_v2", "m3") else "legacy"
 
 
 def artifact_path(settings: Any = None) -> Path:
@@ -88,7 +96,7 @@ def warmup(settings: Any = None) -> None:
 def info(settings: Any = None) -> dict[str, Any]:
     """What /metadata reports about the advisory engine."""
     s = settings or get_settings()
-    out: dict[str, Any] = {"engine": "m1_v2" if enabled(s) else "legacy", "artifact": None, "built_utc": None,
+    out: dict[str, Any] = {"engine": engine_name(s), "artifact": None, "built_utc": None,
                            "release": None}
     if enabled(s):
         path = artifact_path(s)
@@ -119,6 +127,30 @@ def registry_lookup(challenge_id: str, outcome_id: str, country: str = "ET") -> 
     if not cands:
         cands = [p["id"] for p in reg.get("practices", []) if int(p.get("n_rows") or 0) > 0]
     return challenge, objective, sorted(cands)
+
+
+def practice_ids_by_label(country: str = "ET") -> dict[str, str]:
+    """Lower-cased practice label (the frozen ``CSA_practices`` names are the registry's
+    ``name_en``) and the id itself -> registry practice id (E7 Part D)."""
+    reg = registry_service.get_registry(country)
+    out: dict[str, str] = {}
+    for p in reg.get("practices", []):
+        out[str(p.get("name_en", "")).strip().lower()] = p["id"]
+        out[str(p["id"]).strip().lower()] = p["id"]
+    return out
+
+
+def direction_of_indicator(indicator: str, country: str = "ET") -> int:
+    """+1 when higher is better for the legacy indicator's canonical outcome, -1 when lower is."""
+    from rag.graph.query import LEGACY_INDICATOR_OF
+
+    outcome_id = next((o for o, ind in LEGACY_INDICATOR_OF.items() if ind == indicator), None)
+    reg = registry_service.get_registry(country)
+    for c in reg.get("challenges", []):
+        for o in c.get("objectives", []):
+            if o.get("id") == outcome_id and o.get("direction") is not None:
+                return -1 if int(o["direction"]) < 0 else 1
+    return 1
 
 
 def candidates_for_family(practice_family: str, country: str = "ET") -> list[str]:
@@ -156,24 +188,32 @@ def rank(lat: float, lon: float, challenge_id: str, outcome_id: str, crop_type: 
     eng = engine if engine is not None else load(s)
     challenge, objective, cands = registry_lookup(challenge_id, outcome_id, country)
     ctx = (context_fn or context_of)(lat, lon)
-    items = _rank_items(eng, ctx, cands, outcome_id, objective.get("objective_group"), crop_type)
+    items, ordering = _rank_items(eng, ctx, cands, outcome_id, objective.get("objective_group"), crop_type, s)
     direction = int(objective.get("direction") or 1)
-    return {"engine": "m1_v2", "country": country, "challenge_id": challenge_id, "outcome_id": outcome_id,
+    return {"engine": engine_name(s), "country": country, "challenge_id": challenge_id, "outcome_id": outcome_id,
             "objective_group": objective.get("objective_group"), "direction": direction,
             "context": {k: v for k, v in ctx.items() if not k.startswith("ctx_")}, "n_candidates": len(cands),
-            "items": items[:top_n], "release": ctx.get("release")}
+            "items": items[:top_n], "release": ctx.get("release"), "ordering": ordering}
 
 
 def _rank_items(eng: Any, ctx: dict[str, Any], cands: list[str], outcome_id: str, objective_group: str | None,
-                crop_type: str | None) -> list[dict[str, Any]]:
-    raw = eng.rank(ctx, list(cands), outcome_id, objective_group, crop_type, {"loc_precision": "site"}, qkey="api")
+                crop_type: str | None, settings: Any = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """M1 v2's items in display order and, with ``ADVISOR_ENGINE=m3``, the gate's ordering record."""
+    ordering = None
+    if engine_name(settings) == "m3":
+        from app.services import m3_service
+
+        raw, ordering = m3_service.ranker(settings, m1_engine=eng).rank(ctx, list(cands), outcome_id, objective_group,
+                                                                         crop_type, {"loc_precision": "site"})
+    else:
+        raw = eng.rank(ctx, list(cands), outcome_id, objective_group, crop_type, {"loc_precision": "site"}, qkey="api")
     items = []
     for r in sorted(raw, key=lambda r: -r["score"]):
         lead = LEAD_LABEL.get(r["lead_source"], "documented")
         items.append({"practice_id": r["practice_id"], "score": r["score"], "est_lrr": r["est_lrr"],
                       "lo": r["lo"], "hi": r["hi"], "lead_source": lead, "lead_label": FUSION_WORDING[lead],
                       "citations": list(r.get("citations") or []), "components": r.get("components") or {}})
-    return items
+    return items, ordering
 
 
 def rank_for_family(lat: float, lon: float, practice_family: str, indicator: str, crop_type: str | None = None,
@@ -181,6 +221,16 @@ def rank_for_family(lat: float, lon: float, practice_family: str, indicator: str
                     settings: Any = None) -> list[dict[str, Any]] | None:
     """The additive ``m1_v2`` list of /advise: the family's registry practices ranked for the
     legacy indicator's canonical outcome. ``None`` when the engine is not enabled."""
+    out = rank_for_family_with_ordering(lat, lon, practice_family, indicator, crop_type, country, engine=engine,
+                                        context_fn=context_fn, settings=settings)
+    return None if out is None else out[0]
+
+
+def rank_for_family_with_ordering(lat: float, lon: float, practice_family: str, indicator: str, crop_type: str | None = None,
+                                  country: str = "ET", *, engine: Any = None,
+                                  context_fn: Callable[[float, float], dict[str, Any]] | None = None,
+                                  settings: Any = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None] | None:
+    """:func:`rank_for_family` with the ``m3`` gate's ordering record (``None`` on the other engines)."""
     s = settings or get_settings()
     if not enabled(s):
         return None
@@ -192,8 +242,8 @@ def rank_for_family(lat: float, lon: float, practice_family: str, indicator: str
     eng = engine if engine is not None else load(s)
     cands = candidates_for_family(practice_family, country)
     if not cands:
-        return []
+        return [], None
     reg = registry_service.get_registry(country)
     group = next((o.get("objective_group") for c in reg.get("challenges", []) for o in c.get("objectives", []) if o.get("id") == outcome_id), None)
     ctx = (context_fn or context_of)(lat, lon)
-    return _rank_items(eng, ctx, cands, outcome_id, group, crop_type)
+    return _rank_items(eng, ctx, cands, outcome_id, group, crop_type, s)

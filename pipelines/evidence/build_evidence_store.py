@@ -267,6 +267,16 @@ def build(dry_run: bool = False, skip_hab: bool = False, propose: bool = True) -
 
         hab, hab_log, hab_raw = load_habtamu.load(crops=crops)
         hab = geocode_sites.apply_to_frame(hab, log=hab_log)  # E2: applied geocoding, if any
+        from pipelines.evidence import load_fresh
+
+        if load_fresh.available():  # E7 A6: the fresh_2024plus test set, same format, marked in `extra`
+            fresh, fresh_log = load_fresh.load(crops=crops)
+            if len(fresh):
+                hab = pd.concat([hab, schema.coerce(fresh)], ignore_index=True)
+            for k, v in fresh_log.parsing.items():
+                hab_log.parse(f"fresh_2024plus {k}", v)
+            for k, v in fresh_log.dropped.items():
+                hab_log.drop(f"fresh_2024plus {k}", v)
         frames["HAB"] = hab
         logs["HAB"] = (hab_log, len(hab_raw))
     elif not skip_hab:

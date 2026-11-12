@@ -35,7 +35,12 @@ from model.m2 import prompt as pm
 from model.m2.cards import Card, CardStore, _num, context_words
 from model.m2.knowledge import GraphFacts, PassageSource, passage_query
 
-VARIANTS = ("m2_zero", "m2_cards", "m2_rag", "m2_graph")
+VARIANTS = ("m2_zero", "m2_cards", "m2_rag", "m2_graph", "m2_names", "m2_swap")
+#: E7 Part A validity variants (no evidence, like m2_zero): ``m2_names`` hides the site context and
+#: the crop ("not given"); ``m2_swap`` shows the context of the most dissimilar query of the same
+#: objective group (``context_override``) with the query's own crop
+NO_EVIDENCE = ("m2_zero", "m2_names", "m2_swap")
+NOT_GIVEN = "not given"
 SERVING_MODEL = "gpt-4o-mini"
 LEAD = "llm_evidence"
 
@@ -69,7 +74,8 @@ class M2Engine:
                  outcome_name: Mapping[str, str], outcome_direction: Mapping[str, int],
                  components_of: Mapping[str, list[str]], belt_name_of: Mapping[int, str] | None = None,
                  passages: PassageSource | None = None, graph: GraphFacts | None = None, mode: str = "call",
-                 shuffle_seed: int | None = None, repeat: str | None = None, name: str | None = None) -> None:
+                 shuffle_seed: int | None = None, repeat: str | None = None, name: str | None = None,
+                 context_override: Mapping[str, Mapping[str, Any]] | None = None) -> None:
         if variant not in VARIANTS:
             raise KeyError(f"unknown M2 variant {variant!r}; known: {VARIANTS}")
         self.variant = variant
@@ -80,7 +86,10 @@ class M2Engine:
         self.practice_name = dict(practice_name)
         self.outcome_name = dict(outcome_name)
         self.cards = CardStore(outcome_group, practice_name, outcome_name, outcome_direction, components_of, belt_name_of)
-        self.use_cards = variant != "m2_zero"
+        self.use_cards = variant not in NO_EVIDENCE
+        if variant == "m2_swap" and context_override is None:
+            raise ValueError("m2_swap needs the swapped contexts (context_override)")
+        self.context_override = {str(k): dict(v) for k, v in (context_override or {}).items()}
         self.use_passages = variant in ("m2_rag", "m2_graph")
         self.use_graph = variant == "m2_graph"
         if self.use_passages and passages is None:
@@ -135,7 +144,14 @@ class M2Engine:
         group = req.objective_group or self.outcome_group.get(req.outcome_id, "other")
         better = self.cards.better_words(req.outcome_id)
         objective = self.outcome_name.get(req.outcome_id, req.outcome_id)
-        ctx_text = self.context_text(req.context)
+        crop = req.crop
+        if self.variant == "m2_names":
+            ctx_text, crop = NOT_GIVEN, NOT_GIVEN
+        elif self.variant == "m2_swap":
+            # a query without a partner (a single-query objective group) keeps its own context
+            ctx_text = self.context_text(self.context_override.get(req.query_id, req.context))
+        else:
+            ctx_text = self.context_text(req.context)
         shown: dict[str, list[Card]] = {c: [] for c in cands}
         if self.use_cards:
             shown = self.cards.select(req.context, cands, req.outcome_id, group)
@@ -146,7 +162,7 @@ class M2Engine:
             qs = {c: passage_query(self.practice_name.get(c, c), objective, better, words) for c in cands}
             passages = self.passages.for_candidates(qs, req.mask)
         facts: dict[str, str] = self.graph.facts(cands) if self.use_graph and self.graph is not None else {}
-        user = pm.user_message(ctx_text, objective, better, req.crop,
+        user = pm.user_message(ctx_text, objective, better, crop,
                                [(c, self.practice_name.get(c, c)) for c in cands],
                                cards={c: [k.text for k in shown[c]] for c in cands} if self.use_cards else None,
                                passages=passages if self.use_passages else None,
@@ -264,6 +280,8 @@ class M2Engine:
                            "passages_per_candidate": PASSAGES_PER_CANDIDATE, "passages_per_prompt": MAX_PASSAGES,
                            "passage_tokens": PASSAGE_TOKENS, "fact_tokens": FACT_TOKENS},
                 "evidence": {"cards": self.use_cards, "passages": self.use_passages, "graph": self.use_graph},
+                "context": ("hidden (not given), crop hidden" if self.variant == "m2_names" else
+                            "swapped: most dissimilar query of the same objective group" if self.variant == "m2_swap" else "own"),
                 "shuffle_seed": self.shuffle_seed, "repeat": self.repeat,
                 "abstained_invalid": self.n_abstained_invalid,
                 "client_stats": dict(getattr(self.client, "stats", {}))}

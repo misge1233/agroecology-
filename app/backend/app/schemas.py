@@ -312,11 +312,27 @@ class StudyEvidence(BaseModel):
     match: str
 
 
+class Interval80(BaseModel):
+    """Additive (E7 Part D): the 80 % interval of a practice's effect from M1 v2's split
+    conformal calibration, as % change of the indicator (the headline's convention)."""
+
+    lo: NumberValue
+    hi: NumberValue
+    level: float = 0.8
+    method: str = "split conformal (Methodology 1 v2)"
+    engine: str = "m1_v2"
+
+
 class PracticeEvidence(BaseModel):
     """The evidence bundle of one shown practice (U9, docs/decisions/evidence_fusion.md)."""
 
     practice: str
     lead_source: Literal["model", "study", "documented"]
+    #: Additive (E7 Part D): the fusion wording of ``lead_source`` (model-led, study-led, documented).
+    lead_label: str | None = None
+    #: Additive (E7 Part D): M1 v2's calibrated 80 % interval when ADVISOR_ENGINE=m1_v2 ranks the
+    #: practice; null with the legacy engine, which has no calibrated interval.
+    interval80: Interval80 | None = None
     match: str
     headline: Headline
     disagreement: bool = False
@@ -352,6 +368,11 @@ class AdviseResponse(BaseModel):
     #: Methodology 1 v2 for the request's objective (effect estimate, 80 % interval, lead
     #: source mapped to the fusion labels); null with the default engine.
     m1_v2: list["RankItem"] | None = None
+    #: Additive (E7 Part D): the advisory engine that served this response ("legacy", "m1_v2" or "m3").
+    engine: str = "legacy"
+    #: Additive (E7 Part D): with ADVISOR_ENGINE=m3, how the ``m1_v2`` list was ordered
+    #: ({"source": "m1_v2" | "llm_order", "density", "threshold", "llm": {model, outcome, ...}}).
+    m3_ordering: dict[str, Any] | None = None
 
 
 class ContextResponse(BaseModel):
@@ -658,6 +679,8 @@ class RankResponse(BaseModel):
     n_candidates: int
     items: list[RankItem]
     release: str | None = None
+    #: Additive (E7 Part D): with ADVISOR_ENGINE=m3, the gate's ordering record (null otherwise).
+    ordering: dict[str, Any] | None = None
 
 
 AdviseResponse.model_rebuild()

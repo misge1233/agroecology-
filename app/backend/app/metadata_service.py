@@ -122,9 +122,9 @@ def build_metadata() -> dict[str, Any]:
 
 
 def _advisor_engine_info() -> dict[str, Any]:
-    from app.services import m1_service
+    from app.services import m1_service, m3_service
 
-    return m1_service.info()
+    return {**m1_service.info(), **m3_service.info()}
 
 
 def _fusion_settings() -> dict[str, Any]:

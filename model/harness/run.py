@@ -110,6 +110,10 @@ def make_engine(name: str, taxonomy: Any, store: pd.DataFrame, seed: int = 0) ->
         return cls(outcome_group=outcome_group)
     if name == "m0_current":
         return cls(label_of=hq.dataset_labels(store))
+    if name in ("component_count", "input_intensity"):  # E7 Part A4: heuristic baselines
+        components_of = {str(r.practice_id): [c.strip() for c in str(r.components).split(";") if c.strip()]
+                         for r in taxonomy.practices.itertuples()}
+        return cls(outcome_group=outcome_group, family_of=family_of, components_of=components_of)
     if name.startswith("m1_"):  # E5: Methodology 1 v2 and its variants
         components_of = {str(r.practice_id): [c.strip() for c in str(r.components).split(";") if c.strip()]
                          for r in taxonomy.practices.itertuples()}
@@ -148,6 +152,8 @@ def fold_plan(split: str, queries: pd.DataFrame, harness_dir: Path, reps: int, s
     """``(rep, fold, held-out query ids, mask)`` for every fold of a split, restricted to ``queries``."""
     plan: list[tuple[int, int, list[str], Mask]] = []
     wanted = set(queries["query_id"])
+    if split == "fresh":  # E7 A6: one fold, every selected query held out, trained on everything else
+        return [(0, 0, sorted(wanted), Mask.from_groups(sorted(set(queries["group"].astype(str))), store))]
     if split == "legacy":
         from assign_folds import load_folds  # pipelines/dataset (on sys.path via model.harness)
 
@@ -200,6 +206,9 @@ def run(methods: list[str], splits: list[str], reps: int = hf.N_REPS, query_set:
         "started_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
     }
     for split in splits:
+        if split == "fresh":  # no fold file: the held-out set is the query set itself
+            config["fold_files"][split] = {"file": None, "rule": "all selected queries held out in one fold"}
+            continue
         p = {"spatial": harness_dir / hf.FOLDS_SPATIAL.name, "study": harness_dir / hf.FOLDS_STUDY.name,
              "legacy": CV_FOLDS}[split]
         config["fold_files"][split] = {"file": str(p.relative_to(REPO_ROOT)) if p.is_relative_to(REPO_ROOT) else str(p),

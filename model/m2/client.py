@@ -141,7 +141,7 @@ class ChatClient:
     def __init__(self, model: str, budget_usd: float = DEFAULT_BUDGET, cache_dir: Path = CACHE_DIR,
                  ledger: Ledger | None = None, prices: dict[str, dict[str, Any]] | None = None,
                  api_key: str | None = None, transport: httpx.BaseTransport | None = None,
-                 timeout: float = 120.0, offline: bool = False) -> None:
+                 timeout: float = 120.0, offline: bool = False, max_attempts: int = 7) -> None:
         self.model = model
         self.budget_usd = float(budget_usd)
         self.cache_dir = Path(cache_dir)
@@ -152,6 +152,8 @@ class ChatClient:
         self.timeout = timeout
         #: offline: answer from the cache only; a miss raises (reruns, determinism checks)
         self.offline = offline
+        #: transport/HTTP attempts per request (evaluation 7 with backoff; serving 1, E7 Part D)
+        self.max_attempts = max(1, int(max_attempts))
         self.reasoning = is_reasoning(model, self.prices)
         self.stats = {"calls": 0, "cache_hits": 0, "cost_usd": 0.0}
         self._client: httpx.Client | None = None
@@ -235,12 +237,13 @@ class ChatClient:
         fmt = "json_schema" if schema is not None else "json_object"
         body["response_format"] = {"type": "json_schema", "json_schema": schema} if schema is not None else {"type": "json_object"}
         delay = 2.0
-        for attempt in range(7):
+        last = self.max_attempts - 1
+        for attempt in range(self.max_attempts):
             t0 = time.time()
             try:
                 r = self._http().post("/chat/completions", json=body)
             except (httpx.TimeoutException, httpx.TransportError) as exc:
-                if attempt == 6:
+                if attempt == last:
                     raise
                 logger.warning("transport error (%s); retrying in %.0f s", type(exc).__name__, delay)
                 time.sleep(delay + random.random())
@@ -252,7 +255,7 @@ class ChatClient:
                 body["response_format"] = {"type": "json_object"}
                 fmt = "json_object"
                 continue
-            if r.status_code in (429, 500, 502, 503, 504) and attempt < 6:
+            if r.status_code in (429, 500, 502, 503, 504) and attempt < last:
                 logger.warning("HTTP %s; retrying in %.0f s", r.status_code, delay)
                 time.sleep(delay + random.random())
                 delay = min(delay * 2, 60)
@@ -270,7 +273,7 @@ class ChatClient:
             return {"content": content, "parsed": parsed, "usage": j.get("usage"), "latency_s": round(latency, 3),
                     "model": j.get("model"), "system_fingerprint": j.get("system_fingerprint"),
                     "finish_reason": choice.get("finish_reason"), "response_format": fmt}
-        raise RuntimeError("unreachable")
+        raise RuntimeError(f"no answer after {self.max_attempts} attempt(s)")
 
     def list_models(self) -> list[str]:
         r = self._http().get("/models")

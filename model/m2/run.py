@@ -51,6 +51,27 @@ OUT_PER_CANDIDATE, OUT_BASE = 45, 25   # output-token estimate per answer (ids, 
 
 
 # ----------------------------------------------------------------- shared inputs
+def maps_from_taxonomy(tx: Any) -> dict[str, Any]:
+    """The taxonomy maps an :class:`M2Engine` needs (also used by the E7 serving gate, so the
+    served prompt is the evaluated one)."""
+    maps: dict[str, Any] = {
+        "outcome_group": {str(r.outcome_id): str(r.objective_group) for r in tx.outcomes.itertuples()},
+        "practice_name": {str(r.practice_id): str(r.name_en) for r in tx.practices.itertuples()},
+        "outcome_name": {str(r.outcome_id): str(r.name_en) for r in tx.outcomes.itertuples()},
+        "outcome_direction": {str(r.outcome_id): int(float(r.direction)) if str(r.direction).strip() not in ("", "nan") else 1
+                              for r in tx.outcomes.itertuples()},
+        "components_of": {str(r.practice_id): [c.strip() for c in str(r.components).split(";") if c.strip()]
+                          for r in tx.practices.itertuples()},
+    }
+    try:
+        from pipelines.geodata.extract import load_aez_lookup
+
+        maps["belt_name_of"] = {int(k): v for k, v in load_aez_lookup().items()}
+    except Exception:  # noqa: BLE001
+        maps["belt_name_of"] = {}
+    return maps
+
+
 class Inputs:
     """Store, queries, taxonomy maps, the retriever and the graph, loaded once per process."""
 
@@ -59,21 +80,7 @@ class Inputs:
         self.store = hr.load_store(store_dir)
         self.train_rows = hq.eligible_rows(self.store)
         tx = hr.load_taxonomy()
-        self.maps = {
-            "outcome_group": {str(r.outcome_id): str(r.objective_group) for r in tx.outcomes.itertuples()},
-            "practice_name": {str(r.practice_id): str(r.name_en) for r in tx.practices.itertuples()},
-            "outcome_name": {str(r.outcome_id): str(r.name_en) for r in tx.outcomes.itertuples()},
-            "outcome_direction": {str(r.outcome_id): int(float(r.direction)) if str(r.direction).strip() not in ("", "nan") else 1
-                                  for r in tx.outcomes.itertuples()},
-            "components_of": {str(r.practice_id): [c.strip() for c in str(r.components).split(";") if c.strip()]
-                              for r in tx.practices.itertuples()},
-        }
-        try:
-            from pipelines.geodata.extract import load_aez_lookup
-
-            self.maps["belt_name_of"] = {int(k): v for k, v in load_aez_lookup().items()}
-        except Exception:  # noqa: BLE001
-            self.maps["belt_name_of"] = {}
+        self.maps = maps_from_taxonomy(tx)
         self.taxonomy = tx
         self._passages: PassageSource | None = None
         self._graph: GraphFacts | None = None
@@ -100,17 +107,63 @@ class Inputs:
     def select(self, query_set: str) -> pd.DataFrame:
         return hr.select_queries(self.queries, query_set).reset_index(drop=True)
 
-    def plan(self, queries: pd.DataFrame) -> list[tuple[int, int, list[str], Any]]:
-        return [p for p in hr.fold_plan(SPLIT, queries, HARNESS_DIR, REP + 1, self.store) if p[0] == REP]
+    def plan(self, queries: pd.DataFrame, split: str = SPLIT, reps: int = REP + 1) -> list[tuple[int, int, list[str], Any]]:
+        return [p for p in hr.fold_plan(split, queries, HARNESS_DIR, reps, self.store) if p[0] < reps]
+
+
+def swap_contexts(queries: pd.DataFrame) -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
+    """E7 A3: for each query the context of the most dissimilar query of the same objective group.
+
+    Contexts are the release-layer vectors of :func:`model.engines.nearest_studies.context_vector`
+    standardised over the queries given; the distance is the root mean square of the
+    standardised differences over the shared layers (as :mod:`model.m1.matched`). The partner
+    is the largest finite distance in the group, ties by query id; a query whose group has no
+    finite distance gets the first other query of its group by id. Deterministic.
+    """
+    import numpy as np
+
+    from model.engines.nearest_studies import CONTEXT_LAYERS, context_vector
+
+    q = queries.reset_index(drop=True)
+    ctxs = [json.loads(c) if isinstance(c, str) else dict(c or {}) for c in q["context"]]
+    V = np.vstack([context_vector(c) for c in ctxs]) if len(ctxs) else np.zeros((0, len(CONTEXT_LAYERS)))
+    with np.errstate(invalid="ignore"):
+        mu, sd = np.nanmean(V, axis=0), np.nanstd(V, axis=0)
+    mu = np.where(np.isfinite(mu), mu, 0.0)
+    sd = np.where(np.isfinite(sd) & (sd > 0), sd, 1.0)
+    Z = (V - mu) / sd
+    out_ctx: dict[str, dict[str, Any]] = {}
+    partner: dict[str, str] = {}
+    ids = q["query_id"].astype(str).tolist()
+    for g, idx in q.groupby("objective_group").indices.items():
+        idx = sorted(idx, key=lambda i: ids[i])
+        for i in idx:
+            others = [j for j in idx if j != i]
+            if not others:
+                continue
+            diff = Z[others] - Z[i][None, :]
+            ok = np.isfinite(diff)
+            n_ok = ok.sum(axis=1)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                d = np.sqrt(np.where(ok, diff ** 2, 0.0).sum(axis=1) / np.maximum(n_ok, 1))
+            d[n_ok == 0] = -np.inf
+            best = max(range(len(others)), key=lambda k: (d[k], -others[k]))  # largest distance; ties: lowest id
+            j = others[best] if np.isfinite(d[best]) else others[0]
+            out_ctx[ids[i]] = ctxs[j]
+            partner[ids[i]] = ids[j]
+    return out_ctx, partner
 
 
 def make_engine(inp: Inputs, variant: str, client: Any, mode: str = "call", shuffle_seed: int | None = None,
                 repeat: str | None = None, name: str | None = None) -> M2Engine:
     ledger = getattr(client, "ledger", None) or Ledger()
+    override = None
+    if variant == "m2_swap":  # E7 A3: partners among the ET queries (the set the validity tests use)
+        override, _ = swap_contexts(inp.select("ET"))
     return M2Engine(variant, client, **inp.maps,
                     passages=inp.passages(ledger) if variant in ("m2_rag", "m2_graph") else None,
                     graph=inp.graph() if variant == "m2_graph" else None, mode=mode, shuffle_seed=shuffle_seed,
-                    repeat=repeat, name=name)
+                    repeat=repeat, name=name, context_override=override)
 
 
 def stability_queries(queries: pd.DataFrame, n: int = STABILITY_N) -> list[str]:
@@ -120,16 +173,18 @@ def stability_queries(queries: pd.DataFrame, n: int = STABILITY_N) -> list[str]:
 
 
 # ----------------------------------------------------------------- collect / prefetch
-def collect(inp: Inputs, engine: M2Engine, queries: pd.DataFrame, only: set[str] | None = None) -> list[dict[str, Any]]:
-    """Every prompt of the plan (spatial, repetition 0) built under its fold's mask, no calls."""
+def collect(inp: Inputs, engine: M2Engine, queries: pd.DataFrame, only: set[str] | None = None,
+            splits: tuple[str, ...] = (SPLIT,), reps: int = REP + 1) -> list[dict[str, Any]]:
+    """Every prompt of the plan (default spatial, repetition 0) built under its fold's mask, no calls."""
     mode = engine.mode
     engine.mode, engine.collected = "collect", []
-    for rep, fold, held, mask in inp.plan(queries):
+    plans = [(split, p) for split in splits for p in inp.plan(queries, split, reps)]
+    for split, (rep, fold, held, mask) in plans:
         held = [h for h in held if only is None or h in only]
         if not held:
             continue
         engine.fit(inp.train_rows, mask)
-        engine.fold_tag.update({"split": SPLIT, "rep": rep, "fold": fold})
+        engine.fold_tag.update({"split": split, "rep": rep, "fold": fold})
         for _, q in queries[queries["query_id"].isin(held)].iterrows():
             engine.rank(hr.request_of(q, inp.items, mask))
     engine.mode = mode
@@ -138,7 +193,12 @@ def collect(inp: Inputs, engine: M2Engine, queries: pd.DataFrame, only: set[str]
 
 def prefetch(client: ChatClient, prompts: list[dict[str, Any]], workers: int = 8, repeat: str | None = None) -> dict[str, Any]:
     """Send the uncached prompts concurrently; returns calls, cache hits, cost and failures."""
-    todo = [p for p in prompts if client.cached(p["messages"], p["schema"], repeat) is None]
+    todo, seen = [], set()
+    for p in prompts:  # identical prompts are sent once (E7: concurrent duplicates were each sent)
+        key = client.cache_key(p["messages"], p["schema"], repeat)
+        if key not in seen and client.cached(p["messages"], p["schema"], repeat) is None:
+            todo.append(p)
+        seen.add(key)
     t0, fails = time.time(), []
     with ThreadPoolExecutor(max_workers=workers) as ex:
         futs = {ex.submit(client.chat, p["messages"], p["schema"], repeat): p["query_id"] for p in todo}
@@ -208,14 +268,18 @@ def print_table(rows: list[dict[str, Any]]) -> None:
 
 # ----------------------------------------------------------------- harness run of one variant
 def run_variant(inp: Inputs, variant: str, model: str, query_set: str, budget: float, run_id: str | None,
-                workers: int, offline: bool = False) -> Path:
-    client = ChatClient(model, budget_usd=budget, offline=offline)
+                workers: int, offline: bool = False, splits: tuple[str, ...] = (SPLIT,), reps: int = REP + 1,
+                ledger: Ledger | None = None) -> Path:
+    """One variant through the harness. ``splits``/``reps`` beyond spatial repetition 0 are for the
+    fold-independent no-evidence variants (E7: their answers are the same in every fold, so the
+    replication runs from the cache)."""
+    client = ChatClient(model, budget_usd=budget, offline=offline, ledger=ledger)
     name = method_name(variant, model)
     rid = run_id or f"e6_{name}_{query_set.lower()}"
     queries = inp.select(query_set)
     engine = make_engine(inp, variant, client)
     if not offline:
-        prompts = collect(inp, engine, queries)
+        prompts = collect(inp, engine, queries, splits=splits, reps=reps)
         pf = prefetch(client, prompts, workers)
         logger.info("prefetch %s: %s", name, {k: v for k, v in pf.items() if k != "failures"})
         if pf["failures"]:
@@ -223,13 +287,15 @@ def run_variant(inp: Inputs, variant: str, model: str, query_set: str, budget: f
                 logger.error("prefetch failure %s: %s", qid, err)
             raise SystemExit(f"{len(pf['failures'])} prefetch failures (first: {pf['failures'][0][1]}); nothing scored")
     engine.log = []
-    run_dir = hr.run([name, "practice_prior"], [SPLIT], reps=REP + 1, query_set=query_set, run_id=rid, report=False,
+    run_dir = hr.run([name, "practice_prior"], list(splits), reps=reps, query_set=query_set, run_id=rid, report=False,
                      queries_override=inp.queries, items_override=inp.items, store_override=inp.store,
                      taxonomy_override=inp.taxonomy, engine_overrides={name: engine})
     (run_dir / "responses.jsonl").write_text(log_lines(engine.log), encoding="utf-8")
     cfg = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
     cfg["m2"] = {"variant": variant, "model": model, "prompt_version": pm.PROMPT_VERSION, "prompt_hash": pm.prompt_hash(),
-                 "design": "spatial split, repetition 0, one call per query (owner, 12 Nov 2026)", "offline": offline,
+                 "design": (f"splits {','.join(splits)}, {reps} repetition(s); one call per distinct prompt (cached)"
+                            if (tuple(splits), reps) != ((SPLIT,), REP + 1) else
+                            "spatial split, repetition 0, one call per query (owner, 12 Nov 2026)"), "offline": offline,
                  "client_stats": client.stats, "ledger_total_usd": round(client.ledger.total(), 4), "budget_usd": budget}
     (run_dir / "config.json").write_text(json.dumps(cfg, indent=1, default=str) + "\n", encoding="utf-8")
     return run_dir
@@ -295,6 +361,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--offline", action="store_true", help="answers from the cache only (no request)")
+    ap.add_argument("--splits", default=SPLIT, help="comma list of harness splits (default spatial)")
+    ap.add_argument("--reps", type=int, default=REP + 1, help="repetitions (default 1: repetition 0)")
+    ap.add_argument("--ledger-dir", type=Path, default=None,
+                    help="cost ledger folder of the phase (E7: model/m2/cache/e7); the budget cap counts only this phase")
     ap.add_argument("-v", "--verbose", action="store_true")
     a = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO if a.verbose else logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
@@ -312,7 +382,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if not a.variant:
         ap.error("--variant, --dry-run, --stability or --list-models")
-    print(run_variant(inp, a.variant, a.model, a.query_set, a.budget_usd, a.run_id, a.workers, a.offline))
+    ledger = Ledger(a.ledger_dir / "ledger.jsonl") if a.ledger_dir else None
+    print(run_variant(inp, a.variant, a.model, a.query_set, a.budget_usd, a.run_id, a.workers, a.offline,
+                      splits=tuple(s for s in a.splits.split(",") if s), reps=a.reps, ledger=ledger))
     return 0
 
 

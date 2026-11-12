@@ -47,6 +47,9 @@ class M1Config:
     stacker_set: str = "e5"
     #: E5.1: Mondrian conformal quantiles per objective group (>= 30 inner residuals, else pooled)
     conformal_by_group: bool = False
+    #: E7: keep the inner out-of-fold frame, the pooled items and their inner folds on the engine
+    #: (``self.inner``) for the hybrids' nested selection; off by default (lean serving pickles)
+    keep_inner: bool = False
     tune: bool = True                  # inner grid for the regressor and the matched k
     select: bool = True                # grouped permutation feature selection
     inner_folds: int = 3
@@ -83,6 +86,7 @@ class M1Engine:
         self.calibrator = cf.ConformalCalibrator(by_group=cfg.conformal_by_group)
         self.summary: dict[str, Any] = {}
         self.n_train = 0
+        self.inner: dict[str, Any] | None = None
 
     # ------------------------------------------------------------ fit
     def fit(self, store: pd.DataFrame, mask: Mask) -> dict[str, Any]:
@@ -173,6 +177,8 @@ class M1Engine:
         self.calibrator.fit(oof["y"].to_numpy(float) - est_oof, diff,
                             groups=oof["objective_group"].to_numpy(object) if cfg.conformal_by_group else None)
         summary["conformal"] = self.calibrator.summary()
+        if cfg.keep_inner:  # E7: the hybrids select on the same inner out-of-fold predictions
+            self.inner = {"oof": oof.copy(), "items": items.copy(), "fold_of_item": np.asarray(fold_of_item).copy()}
         # --- 4. final components on every training row
         X_full = enc.transform_rows(rows)
         self.regressor = rg.Regressor(params, cat_idx).fit(X_full, y, w) if cfg.use_regressor else None

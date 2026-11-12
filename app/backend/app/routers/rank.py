@@ -30,6 +30,7 @@ def post_rank(body: RankRequestBody, request: Request):
     except RuntimeError as exc:  # artifact missing although enabled
         error_envelope("engine_unavailable", str(exc), status=503)
     rid = getattr(request.state, "request_id", "-")
-    logger.info("request_id=%s rank engine=m1_v2 challenge=%s outcome=%s candidates=%d",
-                rid, body.challenge_id, body.outcome_id, result["n_candidates"])
+    ordering = result.get("ordering") or {}
+    logger.info("request_id=%s rank engine=%s order=%s challenge=%s outcome=%s candidates=%d", rid, result["engine"],
+                ordering.get("source", "m1_v2"), body.challenge_id, body.outcome_id, result["n_candidates"])
     return result

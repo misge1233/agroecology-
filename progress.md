@@ -4573,3 +4573,174 @@ Repeats are fresh calls with their own cache keys. Candidate order matters: it c
 5. Cost ledger per process and the cached retrieval results: accepted. Prices in `model/m2/prices.yaml` stay to be checked by the owner (the dollar figures depend on them; the amounts are small).
 
 **Next steps.** Phase **E7: validity of the LLM result, the hybrid, and the methodology decision** (`docs/briefs/E7_validity_hybrid_decision.md`): implement exactly, verify every item under Acceptance, append the E7 report block here, and stop.
+
+## Phase E7 — Validity of the LLM result, the hybrids and the methodology decision (12 Nov 2026)
+
+**Built**
+- **Part A:** the validity tests (fair reference, names only, context swap, two heuristic baselines, recall probes) and the loader path for the fresh test set.
+- **Part B:** two nested hybrids, `m3_stack` and `m3_gate`.
+- **Part C:** the decision, coded before any result was read.
+- **Part D:** serving behind `ADVISOR_ENGINE=m3`, plus additive `/advise` fields.
+- **Part E:** the methodology comparison report.
+
+Full report: `model/reports/methodology_comparison_2026-11-12.md`, with `metrics.json` and two figures in `methodology_comparison_2026-11-12/`. Spend: **0.58 USD** of the 20 USD cap, on a separate E7 ledger.
+
+### Part A: validity of the zero-evidence LLM result (pre-registered)
+
+**A1, fair reference** (spatial, 5 × 5, full coverage). The no-evidence variants do not depend on the folds. Their E6 answers were replicated across all 50 folds from the cache, and the rows are identical in every split-repetition. M1 v2 keeps its five-repetition mean.
+
+| method | top-1 | C-index | minus M1 v2, top-1 | minus M1 v2, C-index |
+|---|---:|---:|---:|---:|
+| M1 v2 | 0.519 | 0.603 | | |
+| `gpt-4.1-mini`, no evidence | 0.601 | 0.653 | +0.082 [+0.028, +0.133] * | +0.049 [+0.014, +0.084] * |
+| `gpt-4o-mini`, no evidence | 0.518 | 0.629 | −0.002 [−0.060, +0.058] | +0.025 [−0.017, +0.068] |
+
+So the E6 gap shrinks from +0.104 to +0.082 top-1 but holds. On the study split it is +0.045 [−0.007, +0.097].
+
+**A2 and A3: the model does not use the farm context** (spatial repetition 0, full coverage).
+
+| model | variant | top-1 change | C-index change | mean Kendall tau vs own context | same top practice |
+|---|---|---:|---:|---:|---:|
+| `gpt-4.1-mini` | names only (context and crop hidden) | +0.005 | +0.010 | 0.87 | 91 % |
+| `gpt-4.1-mini` | most dissimilar context of the same objective group | −0.011 | +0.001 | 0.90 | 93 % |
+| `gpt-4o-mini` | names only | −0.013 | −0.012 | 0.84 | 93 % |
+| `gpt-4o-mini` | most dissimilar context | +0.021 | +0.018 | 0.92 | 94 % |
+
+**A4: heuristics without any LLM match it.** The input-level table was written from the taxonomy before any run (hash in the run config).
+
+| heuristic | top-1 | C-index | minus M1 v2, top-1 | minus M1 v2, C-index |
+|---|---:|---:|---:|---:|
+| component count (more components first, ties by the practice prior) | 0.615 | 0.651 | +0.095 [+0.044, +0.146] * | +0.048 [+0.014, +0.080] * |
+| input intensity | 0.607 | 0.633 | +0.087 [+0.030, +0.142] * | +0.029 [−0.010, +0.071] |
+
+`gpt-4.1-mini` with no evidence minus component count: top-1 −0.014 [−0.059, +0.037], C-index +0.001 [−0.040, +0.043]. The two cannot be told apart.
+
+**A5: no recall signal** (`gpt-4.1-mini`, 80 queries, one per study group, stratified by objective group and source).
+- **Identification:** 0 of 80 studies named correctly, interval 0 to 0 %. The model claimed to know one study and named it wrongly.
+- **Title lift:** +0.000 [−0.067, +0.067] on the 75 queries that had a title or DOI.
+
+Fixed before the probes ran: the lift is computed on queries that received the line, since the 5 without one would add zeros by construction.
+
+**A6: fresh set pending.** No files in `data/raw/fresh_2024plus/`. The loader, the query set and the one-fold harness split are in place and tested on a fixture in Habtamu's format.
+
+### Part B: hybrids (5 × 5, both splits, full coverage)
+
+Every number, interval, lead source and citation is M1 v2's. All 10,930 prediction rows of each hybrid equal E5's M1 v2 rows exactly; only the order differs. Choices were made on M1 v2's inner folds. A canary test confirms that the held-out query's LLM ranking, perfect or reversed, and a masked canary study leave every inner choice unchanged.
+
+| hybrid | spatial top-1 / C-index | minus M1 v2, spatial | minus M1 v2, study | inner choices (50 outer fits) |
+|---|---|---|---|---|
+| `m3_stack` | 0.562 / 0.634 | top-1 +0.043 [+0.009, +0.073] *, C +0.031 [+0.008, +0.051] * | top-1 +0.031 [−0.001, +0.062], C +0.017 [−0.005, +0.039] | LLM weight 2 in 33, weight 1 in 15, E5 in 2 |
+| `m3_gate` | 0.572 / 0.632 | top-1 +0.053 [+0.020, +0.084] *, C +0.029 [+0.005, +0.053] * | top-1 +0.023 [−0.008, +0.052], C +0.004 [−0.020, +0.028] | threshold 5 in 40, 3 in 6, 2 in 4; LLM order on 38.8 % of test questions |
+
+- **The hybrids tie with each other:** gate minus stack is +0.010 [−0.021, +0.043] on top-1.
+- **The gate does not beat the heuristic:** gate minus component count is top-1 −0.043 [−0.090, +0.003] and C-index −0.019 [−0.058, +0.016].
+- **Calibration:** coverage at 80 % is 81.7 % (spatial) and 80.0 % (study), inside the 75 to 85 % target.
+
+### Part C: decision
+
+**Branch 2 applied, design `m3_gate`.**
+- **Branch 1 does not hold:** identification is 0 % (threshold 25 %), and the title lift is +0.000 with an interval through zero.
+- **Branch 2 holds on both conditions:** hiding the context moves `gpt-4.1-mini` by at most 0.02 on both metrics. So does swapping it, with a mean tau of 0.90.
+- **The gate condition holds:** `m3_gate` beats M1 v2 on the spatial split under full coverage, with intervals excluding zero on top-1 and C-index.
+
+The LLM is therefore a generic prior that may enter only through the gate, on thin-evidence requests. Before any result was read, `model/e7/decision.py` fixed how the brief's open points are read:
+- the test model is `gpt-4.1-mini`;
+- full coverage;
+- "beats" is the E5.1 rule;
+- a tie between hybrids goes to `m3_gate`.
+
+In plain words: the language model's order is the same whatever the farm. The gate adds a general ordering where field evidence is thin, not location-specific advice.
+
+### Part D: serving (behind flags; the default is unchanged)
+
+- **`ADVISOR_ENGINE=m3`:** M1 v2 numbers from the E5 artifact. Below the served threshold (5, the majority of 50 fits; `model/artifacts/m3_gate/config.json`), the evaluated no-evidence prompt goes to `gpt-4.1-mini`. The prompt hash equals E6's.
+- **Each call:** sent once per (rendered context, objective, crop, candidates) and cached on disk (git-ignored). It has an 8 s timeout and a single attempt, and falls back to the M1 v2 order on timeout, error, budget, invalid or abstained answers. Its cost is ledgered and logged, capped by `M3_BUDGET_USD`.
+- **Startup:** a missing gate config fails fast.
+- **Responses:** `/rank` gains `ordering`, and `/metadata` reports the gate.
+- **`/advise` additive fields:** `engine`, `m3_ordering`, and per practice `lead_label` (fusion wording) and `interval80`. The interval is M1 v2's conformal interval as percent change of the indicator, turned back for lower-is-better objectives; it is null with the legacy engine, which has no calibrated interval.
+- **Tests:** a fake client covers the gate on thin and dense evidence, cache reuse, timeout, error, abstention and the fail-fast start.
+
+**Doctrine:** a one-paragraph amendment is drafted in `docs/decisions/evidence_fusion_amendment_DRAFT.md`. It is **not applied**; `evidence_fusion.md` and CLAUDE.md are unchanged.
+
+### Part E
+
+`model/reports/methodology_comparison_2026-11-12.md` contains:
+- the protocol in plain words;
+- headline tables on both splits under full coverage, plus the common subset (67 queries);
+- the spatial repetition-0 table with every M2 variant;
+- the paired differences that matter and the validity tests;
+- calibration, cost and latency;
+- the decision with its reasons, and the limitations.
+
+`metrics.json` and two PNG figures sit beside it: each method minus M1 v2, and the context tests.
+
+**Files.**
+- **New code:**
+  - `model/engines/heuristics.py`, `model/m2/probes.py`;
+  - `model/m3/{__init__,engine,run,serve,test_m3}.py`, `model/e7/{__init__,decision,report,test_e7}.py`;
+  - `pipelines/evidence/load_fresh.py`;
+  - `app/backend/app/services/m3_service.py`, `app/backend/tests/test_m3_engine.py`.
+- **New documents and config:**
+  - `docs/decisions/evidence_fusion_amendment_DRAFT.md`;
+  - `model/artifacts/m3_gate/config.json`;
+  - `model/reports/methodology_comparison_2026-11-12.md` and `methodology_comparison_2026-11-12/`;
+  - harness reports `eval_2026-11-12_e7_{all,validity}.md` with figures.
+- **Changed:**
+  - `model/engines/__init__.py`, `model/harness/{run,queries}.py` (the `fresh` split and query set);
+  - `model/m1/engine.py` (opt-in `keep_inner`);
+  - `model/m2/{engine,run,client}.py`: the `m2_names` and `m2_swap` variants, runs over several splits and repetitions, the phase ledger, prefetch dedupe, `max_attempts`;
+  - `pipelines/evidence/build_evidence_store.py` (fresh rows only when files exist), `.gitignore`;
+  - backend `config.py`, `schemas.py`, `main.py`, `metadata_service.py`, `routers/rank.py`, `services/{m1_service,advisory_service}.py`, `tests/test_m1_engine.py`.
+- **Runs** (git-ignored):
+  - `e7_heuristics`, `e7_m2_zero_5x5`, `e7_m2_zero__gpt-4.1-mini_5x5`;
+  - `e7_m2_{names,swap}{,__gpt-4.1-mini}_et`, each with a `_b` rerun;
+  - `e7_recall_probes`, `e7_m3_stack`, `e7_m3_gate`;
+  - the merges `e7_validity`, `e7_context`, `e7_all`, `e7_rep0`.
+
+**Decisions.**
+1. Validity conditions are tested on `gpt-4.1-mini`, under full coverage, with E5.1's "beats" rule. The hybrid tie rule was fixed in code before the results.
+2. `m3_stack` uses the LLM ranking whenever the answer is valid. `m3_gate` uses it only when valid and not abstained. Selection is scored on the inner training queries that have an LLM ranking, the only place the configurations differ.
+3. Density is the median, over candidates, of distinct training study groups reporting the practice for the outcome, falling back to the objective group below 3: the pool M1 v2's matched-studies estimate draws from.
+4. The fresh set is a separate one-fold split, so the existing folds and results are untouched. The date rule is year 2025 or later, or 2024 with a month from July.
+5. The served threshold follows the majority-of-folds rule. The serving client makes one attempt within the 8 s limit.
+
+**Incidents.**
+1. **Duplicate calls.** Prefetch sent identical prompts concurrently before the first answer was cached: 375 calls for 299 distinct names-only prompts. Every duplicate reads the same cached answer, so the results are unaffected; the waste was cents. Prefetch now dedupes by cache key.
+2. **Cache key bug.** The gate's service cache rebuilt the ranker on the request path. The new backend tests caught it before any serving; fixed.
+
+**Verified.**
+- `py_compile` on every touched file.
+- Root suites: **494 passed**. `rag/eval`: 13 passed. Backend: **337 passed, 1 skipped**.
+- **Reproducibility:** every E7 LLM run reproduces exactly from the cache. That covers the four names and swap runs and the recall probes (identical tables). The replicated `m2_zero` rows equal E6's in all 10 split-repetitions.
+- **Hybrids:** their numbers equal E5's M1 v2 rows, all 10,930 per hybrid. The E7 spend is 0.58 USD.
+
+**Acceptance.**
+1. Part A run and reported; the A6 loader and query set in place, the set pending: **met**.
+2. Both hybrids evaluated with nested selection; two canary tests show no outer-fold leakage: **met**.
+3. The decision branch applied as written (branch 2, `m3_gate`), with reasons in plain words: **met**.
+4. The chosen design is calibrated: 81.7 % and 80.0 % at 80 %: **met**.
+5. Serving behind `ADVISOR_ENGINE=m3`; the doctrine paragraph drafted, not applied: **met**.
+6. Report written; runs reproduce from the cache; all tests pass; spend under 20 USD; nothing committed: **met**.
+
+**Open items for the reviewer.**
+1. **The benchmark rewards trial design.** Putting the practice with the most components first beats M1 v2 by +0.095 top-1, matches the LLM, and scores at least as well as `m3_gate`. The gate's gain over M1 v2 is this generic ordering on thin-evidence questions. A gate using the heuristic instead of the LLM would be cheaper, deterministic and need no external call, but it was not pre-registered and was not run. Whether the within-trial ranking task measures advice quality for a new farm is the question this raises for the manuscript.
+2. **Serving needs the owner.** `m3_gate` serves only after the owner approves the doctrine paragraph and sets `ADVISOR_ENGINE=m3`. It does not beat M1 v2 on the study split.
+3. **Fresh set.** `fresh_2024plus` is still the only clean test against recall.
+4. **Prices.** `model/m2/prices.yaml` is still unchecked by the owner.
+
+**Needs local verification.** The live `gpt-4.1-mini` path of `ADVISOR_ENGINE=m3` has only been tested with a fake client. A first real request with the key should be checked for latency against the 8 s limit.
+
+### Review (Senior Engineer): E7 APPROVED ✅; branch 2 recorded, the LLM gate not enabled; next E7.1 (12 Nov 2026)
+
+**Verified** by reading the E7 block, `model/reports/methodology_comparison_2026-11-12.md` and the amendment draft on the owner's machine. The phase did exactly what was pre-registered and reported it plainly; 0.58 USD spent.
+
+**What E7 established (manuscript-grade findings).** (1) No recall: `gpt-4.1-mini` named 0 of 80 source studies, and showing the title and DOI changed nothing (+0.000 [-0.067, +0.067]). (2) No use of the farm context: hiding it or swapping in the most dissimilar farm moved scores by at most 0.02, with rankings nearly unchanged (tau 0.87 to 0.92). The language model's order is a generic ordering of practices. (3) The fair-reference gap holds (+0.082 top-1 over M1 v2's five-repetition mean). (4) A rule with no language model, "the practice with the most components first", matches it exactly and does at least as well as either hybrid. Field trials compare a combined treatment with its parts, and the combination usually gives the larger effect; this is real evidence about effects, but it is not knowledge of a particular farm, and the within-trial benchmark rewards it whatever a method knows.
+
+**Decisions.**
+1. **Branch 2 is recorded as the pre-registered outcome** (`m3_gate` beats M1 v2 on the spatial split). The rule allowed the gate; it did not require it.
+2. **The gate is not enabled and the doctrine amendment is not approved** (owner, 12 Nov, on the reviewer's recommendation). The gate's gain is reproduced by a transparent one-line rule, it is not location-specific, it does not beat M1 v2 on the study split, and it would add an external call and a doctrine change to every thin-evidence request. The `m3` code stays behind its flag for research; the draft is marked not approved. The language model keeps its roles in conversation and explanation.
+3. **M1 should learn the set structure from evidence** rather than have it hard-coded or delegated to a language model: E7.1, pre-registered today, adds set-relative structure features to the ranker and stacker, evaluated once, with a fixed rebuild rule. Only learned engines are eligible as the production default.
+4. **The benchmark question goes into the manuscript.** E7.1 Part A splits the queries into nested (a combined practice and its parts) and non-nested (alternatives) and reports every method on each; non-nested queries are where location-specific value can be tested.
+5. The fresh post-June-2024 set remains requested; the live `gpt-4.1-mini` latency check is not needed while the gate is off.
+
+**Next steps.** Phase **E7.1: structure-aware Methodology 1 and the nested-query diagnostic** (`docs/briefs/E7_1_structure_aware_m1.md`): implement exactly, verify every item under Acceptance, append the E7.1 block here, and stop. Then E8 (product v2: country selector, problem-based challenges from the registry, M1 v2 as the default engine with calibrated ranges and evidence labels, the Omo-Gibe page, the Methodology page).

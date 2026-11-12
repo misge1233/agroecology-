@@ -85,6 +85,40 @@ def test_rank_for_family_and_advise_additive_field(enabled):
     assert m1_service.rank_for_family(9.0, 38.0, "F9", "yield", country="TT") == []
 
 
+def test_advise_bundles_gain_lead_labels_and_m1_intervals(enabled):
+    """E7 Part D (additive): the fusion wording of each bundle's lead source and M1 v2's 80 %
+    interval as % change of the indicator; lower-is-better objectives are turned back."""
+    import math
+
+    from app.schemas import Interval80
+    from app.services import advisory_service as adv
+
+    items = m1_service.rank_for_family(9.0, 38.0, "F1", "yield", country="TT")
+    by_id = {i["practice_id"]: i for i in items}
+    bundles = [{"practice": "A", "lead_source": "model"}, {"practice": "b", "lead_source": "study"},
+               {"practice": "Not ranked", "lead_source": "documented"}]
+    adv._attach_labels_and_intervals(bundles, items, "yield")
+    assert [b["lead_label"] for b in bundles] == ["model-led", "study-led", "documented"]
+    a = bundles[0]["interval80"]
+    assert a["lo"]["value"] == pytest.approx((math.exp(by_id["A"]["lo"]) - 1) * 100) and a["hi"]["source"] == "model"
+    assert a["lo"]["value"] <= a["hi"]["value"] and a["engine"] == "m1_v2" and Interval80(**a).level == 0.8
+    assert bundles[1]["interval80"] is not None and bundles[2]["interval80"] is None
+    # a lower-is-better objective: the oriented interval is turned back (and the bounds swap)
+    soil = [{"practice": "A", "lead_source": "model"}]
+    orig = m1_service.direction_of_indicator
+    m1_service.direction_of_indicator = lambda indicator, country="ET": -1
+    try:
+        adv._attach_labels_and_intervals(soil, items, "soil loss")
+    finally:
+        m1_service.direction_of_indicator = orig
+    s_lo, s_hi = soil[0]["interval80"]["lo"]["value"], soil[0]["interval80"]["hi"]["value"]
+    assert s_lo == pytest.approx((math.exp(-by_id["A"]["hi"]) - 1) * 100) and s_lo <= s_hi
+    # the legacy engine: labels, no interval
+    legacy = [{"practice": "A", "lead_source": "model"}]
+    adv._attach_labels_and_intervals(legacy, None, "yield")
+    assert legacy[0]["lead_label"] == "model-led" and legacy[0]["interval80"] is None
+
+
 def test_legacy_default_is_unchanged(monkeypatch):
     s = Settings(_env_file=None, openai_api_key="")
     assert s.advisor_engine == "legacy" and not m1_service.enabled(s)

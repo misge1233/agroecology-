@@ -61,6 +61,7 @@ import pandas as pd
 
 from model.harness import HARNESS_DIR, RELEASE, REPO_ROOT
 from model.harness.mask import group_key
+from pipelines.evidence.load_fresh import QUERY_SET as FRESH_QUERY_SET, is_fresh_extra
 
 if str(REPO_ROOT / "pipelines" / "dataset") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "pipelines" / "dataset"))
@@ -292,8 +293,11 @@ def build_queries(store: pd.DataFrame, taxonomy: Any, seed: int = 0, use_compara
         year = q["year"].dropna()
         year_v = int(year.iloc[0]) if len(year) else None
         belt_code = q["ctx_aez_belt"].iloc[0] if "ctx_aez_belt" in q.columns else None
+        qset = "ET" if country == HOME_COUNTRY else "global"
+        if "extra" in q.columns and q["extra"].map(is_fresh_extra).all():  # E7 A6: cells made only of fresh rows
+            qset = FRESH_QUERY_SET
         queries.append({
-            "query_id": qid, "query_set": "ET" if country == HOME_COUNTRY else "global",
+            "query_id": qid, "query_set": qset,
             "post_2024": bool(year_v is not None and year_v >= POST_CUTOFF_YEAR), "legacy": False,
             "group": group, "site": site, "outcome_id": outcome_id,
             "objective_group": str(outcomes.loc[outcome_id, "objective_group"]) if outcome_id in outcomes.index else "other",

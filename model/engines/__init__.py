@@ -21,8 +21,12 @@ def registry() -> dict[str, Any]:
     from model.engines.practice_prior import PracticePriorEngine
     from model.engines.random_engine import RandomEngine
 
+    from model.engines.heuristics import ComponentCountEngine, InputIntensityEngine
+
     out: dict[str, Any] = {"random": RandomEngine, "practice_prior": PracticePriorEngine,
-                           "nearest_studies": NearestStudiesEngine, "m0_current": M0CurrentEngine}
+                           "nearest_studies": NearestStudiesEngine, "m0_current": M0CurrentEngine,
+                           # E7 Part A4: heuristic baselines without a language model
+                           "component_count": ComponentCountEngine, "input_intensity": InputIntensityEngine}
     # E5: Methodology 1 v2 and its component and ablation variants (one class, one config each)
     for name, cfg in VARIANTS.items():
         out[name] = (lambda cfg=cfg: (lambda **kw: M1V2Engine(cfg, **kw)))()

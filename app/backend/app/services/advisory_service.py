@@ -20,6 +20,7 @@ amended in P9). Every collaborator is injectable for tests.
 from __future__ import annotations
 
 import logging
+import math
 from typing import Any, Callable
 
 from app.config import get_settings
@@ -137,6 +138,10 @@ def advise(
         if mode == ev.KNOWLEDGE_LED and not candidates:
             reasons.append({"key": "mode.reason.no_candidates", "params": {}})
 
+    m1_list, ordering = _m1_ranking(lat, lon, practice_family, indicator, crop_type, s)
+    _attach_labels_and_intervals(practices, m1_list, indicator)
+    from app.services import m1_service
+
     return {
         "mode": mode,
         "reasons": reasons,
@@ -152,21 +157,50 @@ def advise(
         "funnel": funnel,
         # E5: with ADVISOR_ENGINE=m1_v2, the same request ranked by Methodology 1 v2 (additive;
         # null with the default engine or when the artifact cannot answer).
-        "m1_v2": _m1_ranking(lat, lon, practice_family, indicator, crop_type, s),
+        "m1_v2": m1_list,
+        # E7 Part D: the engine that served this response and, with ADVISOR_ENGINE=m3, how the
+        # additive list was ordered (M1 v2, or the language model on a thin-evidence request)
+        "engine": m1_service.engine_name(s),
+        "m3_ordering": ordering,
     }
 
 
+def _attach_labels_and_intervals(practices: list[dict[str, Any]], m1_list: list[dict[str, Any]] | None,
+                                 indicator: str) -> None:
+    """E7 Part D (additive): the fusion wording of each bundle's lead source and, when M1 v2
+    ranks the practice, its calibrated 80 % interval as % change of the indicator (the
+    headline's convention: the oriented interval is turned back by the objective's direction)."""
+    from app.services import m1_service
+    from app.services.numbers import number
+
+    by_id = {it["practice_id"]: it for it in (m1_list or [])}
+    id_of = m1_service.practice_ids_by_label() if by_id else {}
+    direction = m1_service.direction_of_indicator(indicator) if by_id else 1
+    for b in practices:
+        b["lead_label"] = m1_service.FUSION_WORDING.get(b.get("lead_source", ""), None)
+        b["interval80"] = None
+        it = by_id.get(id_of.get(str(b.get("practice", "")).strip().lower(), ""))
+        if it is None or it.get("lo") is None or it.get("hi") is None:
+            continue
+        lo, hi = sorted([direction * float(it["lo"]), direction * float(it["hi"])])
+        b["interval80"] = {"lo": number((math.exp(lo) - 1.0) * 100.0, "%", "model", "m1_v2:conformal80"),
+                           "hi": number((math.exp(hi) - 1.0) * 100.0, "%", "model", "m1_v2:conformal80"),
+                           "level": 0.8, "method": "split conformal (Methodology 1 v2)", "engine": "m1_v2"}
+
+
 def _m1_ranking(lat: float, lon: float, practice_family: str, indicator: str, crop_type: str | None,
-                settings: Any) -> list[dict[str, Any]] | None:
+                settings: Any) -> tuple[list[dict[str, Any]] | None, dict[str, Any] | None]:
+    """The additive M1 v2 list (ordered by the m3 gate when ``ADVISOR_ENGINE=m3``) and the gate's record."""
     from app.services import m1_service
 
     if not m1_service.enabled(settings):
-        return None
+        return None, None
     try:
-        return m1_service.rank_for_family(lat, lon, practice_family, indicator, crop_type, settings=settings)
+        out = m1_service.rank_for_family_with_ordering(lat, lon, practice_family, indicator, crop_type, settings=settings)
+        return (None, None) if out is None else out
     except Exception as exc:  # noqa: BLE001 - degrade: the legacy advisory stands
         logger.warning("advise: m1_v2 ranking unavailable (%s)", exc)
-        return None
+        return None, None
 
 
 #: Ask the engine for every grounded practice (families have at most a few dozen).

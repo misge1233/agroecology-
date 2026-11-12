@@ -15,6 +15,7 @@ from app.config import get_settings
 from app.helpers import RequestIdMiddleware
 from app.routers import advise, chat, explain, geocode, health, metadata, models, recommend, registry, speech, rank
 from app.services.m1_service import warmup as m1_warmup
+from app.services.m3_service import warmup as m3_warmup
 from app.services.recommender_service import warmup
 
 logging.basicConfig(
@@ -29,6 +30,7 @@ async def lifespan(_app: FastAPI):
     logger.info("Warming up recommender engine (model + dataset + rasters)…")
     warmup()
     m1_warmup()  # E5: fail fast when ADVISOR_ENGINE=m1_v2 and the artifact is missing
+    m3_warmup()  # E7: fail fast when ADVISOR_ENGINE=m3 and the gate config is missing
     logger.info("Recommender engine ready.")
     _preload_local_voice()
     yield
