@@ -42,7 +42,11 @@ class M1Config:
     use_regressor: bool = True
     use_ranker: bool = True
     use_matched: bool = True
-    stacker: str = "auto"              # auto | ridge | rank_avg
+    stacker: str = "auto"              # auto | ridge | rank_avg (| rank_avg3 | rank_w2 | rank_w3, E5.1)
+    #: E5.1 (pre-registered 12 Nov 2026): "e51" widens the inner stacker choice (stack.CANDIDATE_SETS)
+    stacker_set: str = "e5"
+    #: E5.1: Mondrian conformal quantiles per objective group (>= 30 inner residuals, else pooled)
+    conformal_by_group: bool = False
     tune: bool = True                  # inner grid for the regressor and the matched k
     select: bool = True                # grouped permutation feature selection
     inner_folds: int = 3
@@ -76,7 +80,7 @@ class M1Engine:
         self.matched: MatchedStudies | None = None
         self.prior: ShrunkenPrior | None = None
         self.stacker: st.Stacker | None = None
-        self.calibrator = cf.ConformalCalibrator()
+        self.calibrator = cf.ConformalCalibrator(by_group=cfg.conformal_by_group)
         self.summary: dict[str, Any] = {}
         self.n_train = 0
 
@@ -161,12 +165,13 @@ class M1Engine:
             pr = ShrunkenPrior(self.family_of, self.components_of).fit(rows[tr_rows])
             oof.loc[te_items, "prior"] = [pr.estimate(p, g)["est"] for p, g in zip(it_te["practice_id"], it_te["objective_group"])]
         # --- 3. stacker and conformal on the inner out-of-fold predictions
-        self.stacker = st.Stacker(cfg.stacker).fit(oof)
+        self.stacker = st.Stacker(cfg.stacker, candidate_set=cfg.stacker_set).fit(oof)
         summary["stacker"] = self.stacker.summary
         est_oof = self._effect(oof)
         self.calibrator.fallback_spread = float(np.nanmedian(oof["spread"])) if np.isfinite(oof["spread"]).any() else 0.3
         diff = np.array([cf.difficulty(s, d, self.calibrator.fallback_spread) for s, d in zip(oof["spread"], oof["d_nearest"])])
-        self.calibrator.fit(oof["y"].to_numpy(float) - est_oof, diff)
+        self.calibrator.fit(oof["y"].to_numpy(float) - est_oof, diff,
+                            groups=oof["objective_group"].to_numpy(object) if cfg.conformal_by_group else None)
         summary["conformal"] = self.calibrator.summary()
         # --- 4. final components on every training row
         X_full = enc.transform_rows(rows)
@@ -232,7 +237,7 @@ class M1Engine:
         out = []
         for i, pid in enumerate(candidates):
             d = cf.difficulty(frame.loc[i, "spread"], frame.loc[i, "d_nearest"], self.calibrator.fallback_spread)
-            lo, hi = self.calibrator.interval(float(est[i]), d)
+            lo, hi = self.calibrator.interval(float(est[i]), d, group)
             citations = cites[i] or (self._nearest_groups(ctx, outcome_id) if self.matched is not None else [])
             out.append({"practice_id": pid, "score": float(scores[i]), "est_lrr": float(est[i]),
                         "lo": None if not np.isfinite(lo) else float(lo), "hi": None if not np.isfinite(hi) else float(hi),

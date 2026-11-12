@@ -4431,3 +4431,145 @@ The "current" column equals the committed `model_eval.json` best run exactly, so
 **Owner decisions for E6 (12 Nov 2026).** Evidence cards from all sources, including Habtamu's database, may be sent to the OpenAI API (the owner confirmed with the data holder). Models: `gpt-4o-mini` for all variants, plus one stronger model on the owner's key for the full variant, run only after the owner sees the cost estimate; minimal evaluation design (spatial split, repetition 0, all 375 ET queries, about 375 calls per variant); cap 100 USD for the phase.
 
 **Next steps.** Phase **E6: E5.1 follow-up, then Methodology 2** (`docs/briefs/E6_methodology2.md`): implement exactly, stop for the owner's go before the paid stronger-model run, verify every item under Acceptance, append the E6 report block here, and stop.
+
+## Phase E6 — E5.1 follow-up, then Methodology 2: LLM evidence reasoning (12 Nov 2026)
+
+**Built** the E5.1 follow-up of Methodology 1, then Methodology 2 as a harness engine with four pre-registered variants, run on the owner's minimal design: spatial split, repetition 0, all 375 ET queries, one call per query per variant. Full report: `model/reports/eval_2026-11-12_m2.md`; E5.1 harness report: `model/reports/eval_2026-11-12_e6_e51.md`.
+
+### E5.1 (post-hoc, pre-registered 12 Nov 2026)
+
+Both pre-registered changes are opt-in settings (`stacker_set="e51"`, `conformal_by_group=True`), so the E5 default is unchanged. A one-repetition rerun of E5 `m1_v2` after the change matched all 1,093 E5 predictions exactly. `m1_v2_e51` ran on both splits, 5 × 5, in its own process (57 minutes).
+
+**Full coverage** (mean across 5 × 5):
+
+| method | split | top-1 | C-index | NDCG@3 | 80 % coverage | width |
+|---|---|---:|---:|---:|---:|---:|
+| M1 v2 E5.1 | spatial | 0.535 | 0.614 | 0.843 | 0.828 | 1.37 |
+| M1 v2 (E5) | spatial | 0.519 | 0.603 | 0.830 | 0.817 | 1.30 |
+| M1 v2 E5.1 | study | 0.549 | 0.618 | 0.858 | 0.813 | 1.36 |
+| M1 v2 (E5) | study | 0.546 | 0.618 | 0.844 | 0.800 | 1.27 |
+
+**Paired, E5.1 minus other** (95 % bootstrap; * = excludes zero):
+
+| comparison | split | top-1 | C-index | NDCG@3 |
+|---|---|---:|---:|---:|
+| minus E5 | spatial | +0.015 [−0.007, +0.037] | +0.011 [−0.008, +0.031] | +0.013 * |
+| minus current model + prior | spatial | +0.053 [+0.014, +0.098] * | +0.037 [+0.003, +0.067] * | +0.046 * |
+| minus E5 | study | +0.004 [−0.026, +0.030] | +0.000 [−0.023, +0.023] | +0.014 * |
+
+- **Rebuild rule not met:** neither the top-1 nor the C-index interval over E5 on the spatial split excludes zero, so `model/artifacts/m1_v2/` stays the E5 artifact.
+- **Calibration per objective group:** Mondrian conformal brings livestock from 0.71 to 0.77 and water from 0.73 to 0.79 on the spatial split. Soil health moves from 0.90 to 0.85 with narrower intervals; overall 0.83.
+- **Stacker choices** inside the 50 outer fits: ranker weight 3 in 20, ranker weight 2 in 16, three-component average in 6, four-component average in 5, ridge in 3.
+- As the brief says, no further Methodology 1 variants run before E7.
+
+### Methodology 2 headline (spatial, repetition 0, 375 ET queries, full coverage)
+
+| method | model | top-1 | C-index | NDCG@3 | abstention before fill |
+|---|---|---:|---:|---:|---:|
+| `m2_zero` + prior | gpt-4o-mini | 0.517 | 0.628 | 0.823 | 9.1 % |
+| `m2_cards` + prior | gpt-4o-mini | 0.477 | 0.566 | 0.801 | 31.2 % |
+| `m2_rag` + prior | gpt-4o-mini | 0.480 | 0.563 | 0.802 | 29.9 % |
+| `m2_graph` + prior | gpt-4o-mini | 0.491 | 0.580 | 0.802 | 28.0 % |
+| `m2_zero` + prior | gpt-4.1-mini | **0.595** | **0.646** | **0.888** | 15.2 % |
+| `m2_graph` + prior | gpt-4.1-mini | 0.523 | 0.594 | 0.828 | 20.8 % |
+| M1 v2 (E5, its repetition-0 rows) | | 0.491 | 0.591 | 0.816 | 0 % |
+| current model + prior | | 0.488 | 0.591 | 0.803 | |
+| practice prior | | 0.445 | 0.570 | 0.791 | |
+
+Chance top-1 is 0.396. Repetition 0 is a weaker fold assignment for M1 v2 than its five-repetition mean (top-1 0.519).
+
+**Paired differences** (95 % bootstrap; * = excludes zero):
+
+| comparison | top-1 | C-index |
+|---|---:|---:|
+| `m2_graph`+prior (4o-mini) minus M1 v2 | −0.000 [−0.056, +0.053] | −0.011 [−0.052, +0.034] |
+| `m2_graph`+prior (4.1-mini) minus M1 v2 | +0.032 [−0.024, +0.085] | +0.003 [−0.039, +0.047] |
+| `m2_zero`+prior (4.1-mini) minus M1 v2 | +0.104 [+0.045, +0.165] * | +0.055 [+0.014, +0.095] * |
+| `m2_zero`+prior (4.1-mini) minus current model + prior | +0.107 [+0.043, +0.171] * | +0.055 [+0.008, +0.102] * |
+
+### Variant ladder, memorisation and the stronger model
+
+- **Evidence lowers ranking quality with both models.** With `gpt-4o-mini`, cards minus zero is −0.040 [−0.101, +0.019] on top-1 and −0.063 [−0.109, −0.015] * on C-index. With `gpt-4.1-mini`, graph minus zero is −0.072 [−0.131, −0.016] * on top-1 and −0.052 [−0.096, −0.004] * on C-index.
+- **Passages and graph facts add almost nothing beyond the cards.** Graph minus RAG is +0.011 top-1 and +0.017 C-index; neither excludes zero.
+- **Part of the drop is abstention.** With evidence the model says "unknown" more often, and those queries fall back to the prior. Even on the queries it answers, the graph variant does not reach the zero variant with `gpt-4.1-mini` (top-1 0.579 against 0.635).
+- **The stronger model is better.** `gpt-4.1-mini` minus `gpt-4o-mini` is +0.077 * top-1 for `m2_zero` and +0.032 top-1 for `m2_graph`, the latter not excluding zero.
+- **Memorisation cannot be separated.** The ET set has 0 `post_2024` queries; the global set has 5, which the harness withholds below 20 queries. The zero-shot result may come from general agronomic knowledge, from knowing these published studies, or both. This is not interpreted here; it is the first open item for E7.
+
+**Global set** (39 queries outside Ethiopia, `m2_graph`, gpt-4o-mini): top-1 0.538 and C-index 0.549 with the prior fill, against the practice prior's 0.590 and 0.609.
+
+### Stability (40 fixed queries, `m2_graph`, gpt-4o-mini)
+
+| pair | top-1 agreement | mean Kendall tau |
+|---|---:|---:|
+| repeat 1 vs repeat 2 | 100 % | 0.98 |
+| main vs each repeat | 100 % | 0.96 and 0.98 |
+| shuffle 1 vs shuffle 2 | 89.7 % | 0.85 |
+| main vs each shuffle | 86.5 % and 83.8 % | 0.73 and 0.67 |
+
+Repeats are fresh calls with their own cache keys. Candidate order matters: it changes the top pick in 10 to 16 % of queries.
+
+### Citation validity, numeric guard, cost and calibration
+
+- **Citations:** 0 cited ids outside the prompt in any final answer, all variants. Every cited card's practice is the ranked item or a related practice shown for it (100 %). 85 to 87 % of items cite a card with `gpt-4o-mini` and 97 % with `gpt-4.1-mini`. First answers invented 1 to 9 ids per evidence variant, and 38 in the 4.1-mini zero variant, which had no cards to cite. The retry with the validation error corrected all but the queries counted as invalid twice (0 to 3 per variant).
+- **Numeric guard:** estimates and intervals are computed by code from the cited cards of the practice only. A test feeds a reason containing numbers and checks that none reaches `est_lrr`, `lo`, `hi`, the score or the citations. The reason text is logged and never parsed.
+- **Cost and latency per query:** `gpt-4o-mini` costs 0.0002 USD (zero) to 0.0005 USD (graph), median 2.7 to 3.1 s, p95 up to 7.8 s. `gpt-4.1-mini` costs 0.0006 to 0.0014 USD, median 1.7 to 2.1 s. The phase total is **1.42 USD** of the 100 USD cap, including the stability check, the global run, one rerun call and the embeddings.
+- **Card-derived intervals** cover 36 to 39 % of held-out effects at 80 %, as expected; reported, not fixed.
+
+**Files.**
+- **New:** `model/m2/{__init__,cards,knowledge,prompt,client,engine,run,report,test_m2}.py`, `model/m2/prices.yaml`, `model/m2/model_card.md`.
+- **New reports:** `model/reports/eval_2026-11-12_m2.md`, `model/reports/eval_2026-11-12_e6_e51.md` (with `figures/e6_e51/`).
+- **Changed:** `model/m1/{stack,conformal,engine,test_m1}.py`, `model/engines/m1_v2.py` (adds the `m1_v2_e51` variant).
+- **Changed:** `docs/decisions/enhancement_v2.md` (addendum: data sent to the API and the model scope).
+- **Changed:** `.gitignore` (`model/m2/cache/`) and `pipelines/requirements.txt` (`tiktoken==0.12.0`).
+- **Runs** (git-ignored): `e51_m1`, `e51_e5check`, `e6_e51`, `e6_m2_{zero,cards,rag,graph}_et` with `_b` reruns, `e6_m2_{zero,graph}__gpt-4.1-mini_et` with `_b` reruns, `e6_m2_graph_global`, `e6_m2_stability`, `e6_m2_headline`.
+
+**Decisions.**
+1. **The API is called with `httpx`, as the backend does;** no SDK dependency.
+2. **Structured output** uses a strict JSON schema with candidate ids as an enum. Card ids are free text so that invented ids stay measurable.
+3. **Prompt limits follow the updated Part 5:** 4 cards per candidate, 32 per prompt, 4 passages per prompt, 60 tokens of graph facts. The largest prompt is 5,436 tokens: 11-candidate queries reach the 32-card cap. The mean graph prompt is 2,261 tokens.
+4. **The run has three steps:** build every prompt under its fold's mask without calling, send the uncached ones concurrently through the capped client, then score through the harness from the cache.
+5. **Stability queries** are the 40 ET queries first by the hash of their id. Shuffles always change the order; a shuffle that equals the original order is rotated by one.
+6. **Owner decision (12 Nov):** `gpt-4.1-mini` is the stronger model, and Methodology 2 is evaluated with deployable low-cost models only. The key lists no other chat model. Recorded in the model card and the decision addendum.
+7. **The reviewer's addition is in:** the stronger model ran `m2_zero` as well as `m2_graph`.
+
+**Incidents.**
+1. **Ledger corruption.** Four processes appending to one ledger file interleaved lines, and the first launch failed before scoring anything. Each process now writes its own ledger file; the total sums them all and skips another process's half-written line (test). The ledger was rebuilt from the cached answers and the intact embedding lines; the damaged file is kept as `ledger_corrupt_20261112.bak`.
+2. **Tied passages swapped on rerun.** One query's two tied guideline passages came back in swapped order, from the approximate dense search. Retrieval results are now cached on disk by query text and mask (test). `m2_rag` and `m2_graph` were rerun from the cache; one prompt changed, costing one call.
+3. **Two bugs in the new code, found by the tests before any paid run.** A card shown as own evidence for one candidate and as related evidence for another was dropped from the first estimate. The Kendall tau sign was inverted. Both fixed.
+
+**Verified.**
+- `py_compile` on every touched file.
+- Root suites (`model`, `pipelines`, `rag/graph`, `rag/ingest/wocat`, the retrieval-tier, mask-canary and guideline tests): **480 passed**. `rag/eval`: 13 passed. Backend: **329 passed, 1 skipped**, including loading the E5 artifact pickled before the calibrator change. M1 and M2 tests after the last change: 27 passed.
+- **Determinism:** two runs from the cache give identical predictions for all six M2 runs (3,279 rows each, offline reruns).
+- **E5 unchanged:** the rerun of E5 `m1_v2` matched bit for bit.
+
+**Acceptance.**
+1. E5.1 ran once with the two pre-registered changes, labelled post-hoc and reported against E5. The rebuild rule was not met, so the artifact is kept: **met**.
+2. Cards, passages and graph facts are masked (three canary tests). The dry run gives the token and cost estimate. The budget-cap tests stop a request before sending: **met**.
+3. All four `gpt-4o-mini` variants and the stronger model (after the owner's go, on `m2_zero` and `m2_graph`) ran on the 375 ET queries, spatial repetition 0. Full coverage, common subset and paired differences against the other methods on the same folds are reported: **met**.
+4. Stability, citation validity, numeric guard and cost tables are reported, with 0 cited ids outside the prompt: **met**.
+5. Two runs from the cache give identical predictions: **met**.
+6. All tests pass; nothing committed: **met**.
+
+**Open items for E7.**
+1. **Memorisation versus knowledge.** `gpt-4.1-mini` with no evidence is the best ranker measured so far (top-1 +0.104 over M1 v2), but the ET set has no post-2024 queries to tell knowledge from recall of the published studies. A held-out set the model cannot have read is needed before this can count.
+2. **Why evidence hurts.** More abstention, order sensitivity, or the cards pulling the model toward noisy single-site effects. The per-query logs (`responses.jsonl`) allow this to be examined without new calls.
+3. **Intervals.** M2's card-derived intervals are not calibrated, while M1 v2's are. Any hybrid would take numbers from M1 (doctrine 1) and might take the ranking from the LLM.
+4. **Single-repetition caveat.** The M2 comparison uses one fold assignment, on which M1 v2 is below its five-repetition mean.
+
+**Needs local verification.** None beyond the owner's review. The price table (`model/m2/prices.yaml`) has not yet been checked against the current OpenAI price list; the ledger's dollar figures depend on it.
+
+### Review (Senior Engineer): E6 APPROVED ✅; the LLM result is promising but not yet trusted; next E7 (12 Nov 2026)
+
+**Verified** by reading the E6 block and `model/reports/eval_2026-11-12_m2.md` on the owner's machine. The phase is complete and clean: masked cards, passages and graph facts with canaries; no cited id outside a prompt; the numeric guard tested; repeats stable; every run reproducible from the cache; 1.42 USD spent of 100. E5.1 did not meet its rebuild rule and the E5 artifact stays, exactly as pre-registered.
+
+**The finding and why it is not yet accepted.** `gpt-4.1-mini` with no evidence is the best ranker measured (top-1 0.595, C-index 0.646 on the spatial repetition-0 folds; +0.104 and +0.055 over M1 v2), and evidence makes both models worse. Because `m2_zero` uses no data, its score does not depend on the folds, while M1 v2 sits below its five-repetition mean on repetition 0; the fair reference is the five-repetition mean (E7 A1). More importantly, three explanations predict the same score and have opposite consequences: location-aware knowledge, a generic ordering of practices (including the structure of trial designs, where combined treatments are usually built to win), or recall of the very studies the test queries come from. The test queries are published Ethiopian trials, mostly years before the model's training cutoff, and none is from after 2024. Until these are separated, the result cannot shape the product or be claimed in the manuscript.
+
+**Decisions.**
+1. M2 is evaluated with deployable models only (owner, 12 Nov); `gpt-4.1-mini` is the stronger model. Accepted.
+2. Evidence cards, passages and graph facts in the prompt lowered ranking quality with both models, partly through more "unknown" answers; this is a finding to report, not a defect to tune away in E6.
+3. E7 is pre-registered today: validity tests first (names only, context swap, heuristic baselines, recall probes, fair reference), then two hybrids that let the LLM reorder evidence-backed candidates while every number, interval and citation still comes from M1 v2, then a decision by fixed branches. Any LLM influence on ordering needs an owner-approved amendment to the evidence fusion doctrine.
+4. A fresh test set of Ethiopian multi-practice trials published after June 2024 is requested from the data team (Habtamu's extraction format); it is the only clean test against recall and the strongest evidence for the manuscript. E7 does not wait for it.
+5. Cost ledger per process and the cached retrieval results: accepted. Prices in `model/m2/prices.yaml` stay to be checked by the owner (the dollar figures depend on them; the amounts are small).
+
+**Next steps.** Phase **E7: validity of the LLM result, the hybrid, and the methodology decision** (`docs/briefs/E7_validity_hybrid_decision.md`): implement exactly, verify every item under Acceptance, append the E7 report block here, and stop.

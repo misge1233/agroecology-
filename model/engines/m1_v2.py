@@ -41,6 +41,9 @@ VARIANTS: dict[str, M1Config] = {
     "m1_rankavg": replace(_BASE, name="m1_rankavg", stacker="rank_avg", tune=False),
     "m1_ridge": replace(_BASE, name="m1_ridge", stacker="ridge", tune=False),
     "m1_notune": replace(_BASE, name="m1_notune", tune=False, select=False),
+    # E5.1, post-hoc, pre-registered 12 Nov 2026 (E6 brief Part 0): wider stacker choice scored by
+    # the mean of inner top-1 and C-index, and Mondrian conformal per objective group
+    "m1_v2_e51": replace(_BASE, name="m1_v2_e51", stacker_set="e51", conformal_by_group=True),
 }
 
 
@@ -81,7 +84,11 @@ class M1V2Engine:
         d["last_fit"]["stacker_chosen"] = (last.get("stacker") or {}).get("chosen")
         # one entry per outer fold fitted in this run (per-fold kept features, stacker, conformal q)
         d["folds"] = [{"features": f.get("features"), "stacker": (f.get("stacker") or {}).get("chosen"),
-                       "conformal_q": (f.get("conformal") or {}).get("q"), "n_rows": f.get("n_rows")} for f in self.fit_summaries]
+                       "conformal_q": (f.get("conformal") or {}).get("q"), "n_rows": f.get("n_rows"),
+                       **({"conformal_q_by_group": f["conformal"]["q_by_group"]} if (f.get("conformal") or {}).get("by_group") else {}),
+                       **({"stacker_scores": {k: v["selection"] for k, v in f["stacker"].items() if isinstance(v, dict) and "selection" in v}}
+                          if (f.get("stacker") or {}).get("rule") else {})}
+                      for f in self.fit_summaries]
         d["last_fit"]["conformal_q"] = (last.get("conformal") or {}).get("q")
         return d
 

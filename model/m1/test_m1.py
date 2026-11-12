@@ -204,6 +204,54 @@ def test_stacker_patterns_rank_average_and_lead_source():
     assert ld == ["prior"] and sc[0] == pytest.approx(0.3)
 
 
+def test_e51_weighted_rank_average_selection_and_mondrian_conformal():
+    """E5.1 (pre-registered 12 Nov 2026): the weighted rank averages by hand, the wider inner
+    choice scored by mean(top-1, C), and per-group conformal quantiles with the pooled fallback."""
+    f = pd.DataFrame({"qkey": ["q"] * 3, "reg": [0.1, 0.3, 0.2], "rank": [3.0, 1.0, 2.0], "matched": [np.nan] * 3, "prior": [0.0, 0.2, 0.1]})
+    # ranks (1 = worst): reg 1,3,2; rank 3,1,2; prior 1,3,2; ranker weight 3: (3x[3,1,2] + [1,3,2] + [1,3,2]) / 5
+    assert st.weighted_rank_average(f, st.RANK_SPECS["rank_w3"]).tolist() == pytest.approx([11 / 5, 9 / 5, 2.0])
+    assert st.weighted_rank_average(f, st.RANK_SPECS["rank_avg3"]).tolist() == pytest.approx([5 / 3, 7 / 3, 2.0])
+    s = st.Stacker("rank_w3").fit(pd.DataFrame({**f.to_dict("list"), "y": [0.0, 1.0, 0.5], "matched_prec": [np.nan] * 3}))
+    sc, ld = s.predict(f)
+    assert s.chosen == "rank_w3" and ld[0] == "model" and sc.tolist() == pytest.approx([11 / 5, 9 / 5, 2.0])
+    # the ranker is the only informative component: the E5.1 choice is one of the ranker-led averages
+    rng = np.random.default_rng(1)
+    n = 600
+    y = rng.normal(0, 1, n)
+    oof = pd.DataFrame({"qkey": [f"q{i // 4}" for i in range(n)], "y": y, "reg": rng.normal(0, 1, n), "rank": y + rng.normal(0, 0.2, n),
+                        "matched": np.nan, "matched_prec": np.nan, "prior": rng.normal(0, 1, n)})
+    e51 = st.Stacker("auto", candidate_set="e51").fit(oof)
+    assert set(st.CANDIDATE_SETS["e51"]) <= set(e51.summary) and e51.summary["rule"].startswith("mean of inner top-1")
+    assert e51.chosen == max(st.CANDIDATE_SETS["e51"], key=lambda k: e51.summary[k]["selection"])
+    assert e51.chosen in ("rank_w2", "rank_w3", "ridge")
+    assert st.Stacker("auto").fit(oof).chosen in ("ridge", "rank_avg")  # the E5 set is unchanged
+    # Mondrian conformal: group a (40 residuals of 1) and b (40 of 3) get their own quantiles; c (5) falls back
+    r = np.r_[np.ones(40), np.full(40, 3.0), np.full(5, 10.0)]
+    g = ["a"] * 40 + ["b"] * 40 + ["c"] * 5
+    cal = cf.ConformalCalibrator(0.8, by_group=True).fit(r, np.ones(len(r)), groups=g)
+    assert cal.quantile_for("a") == 1.0 and cal.quantile_for("b") == 3.0 and cal.quantile_for("c") == cal.q == 3.0
+    assert cal.quantile_for(None) == cal.q and cal.summary()["n_by_group"] == {"a": 40, "b": 40, "c": 5} and "c" not in cal.q_group
+    assert cal.interval(0.0, 1.0, "a") == pytest.approx((-1.0, 1.0))
+    pooled = cf.ConformalCalibrator(0.8).fit(r, np.ones(len(r)), groups=g)
+    assert pooled.quantile_for("a") == pooled.q and "by_group" not in pooled.summary()
+    # an E5 artifact pickled before E5.1 lacks the new attributes: pooled quantile, no error
+    old = cf.ConformalCalibrator(0.8).fit(r, np.ones(len(r)))
+    del old.by_group, old.q_group
+    assert old.interval(0.0, 1.0, "a") == pytest.approx((-old.q, old.q))
+
+
+def test_e51_variant_fits_and_records_its_choices():
+    store = synthetic_store(24)
+    eng = M1V2Engine(VARIANTS["m1_v2_e51"].__class__(**{**VARIANTS["m1_v2_e51"].__dict__, "tune": False, "select": False}),
+                     OUTCOME_GROUP, FAMILY, COMPONENTS)
+    eng.fit(store, Mask.from_groups(["10.1/g02"], store))
+    items = eng.rank(_req("q", ["A", "B", "C"], {"ctx_precip_annual": 900.0, "release": "ET/2026.1"}))
+    assert len(items) == 3 and all(i.lo is not None for i in items)
+    fold = eng.params()["folds"][-1]
+    assert fold["stacker"] in st.CANDIDATE_SETS["e51"] and set(fold["stacker_scores"]) == set(st.CANDIDATE_SETS["e51"])
+    assert "conformal_q_by_group" in fold and VARIANTS["m1_v2"].stacker_set == "e5" and not VARIANTS["m1_v2"].conformal_by_group
+
+
 def test_ranker_relevance_and_pairwise_fallback():
     items = pd.DataFrame({"qkey": ["a", "a", "a", "b", "b"], "y": [0.1, 0.5, 0.3, 0.9, 0.2], "practice_id": list("ABCAB"), "row_index": range(5)})
     assert rk.relevance(items).tolist() == [0, 2, 1, 1, 0]

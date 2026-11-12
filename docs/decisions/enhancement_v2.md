@@ -60,3 +60,23 @@ Habtamu's database, the catalogue docx, the Omo-Gibe rasters and the evidence ro
 them stay out of git (`.gitignore`) and out of any public artifact. Taxonomies, aliases, review
 sheets, data cards, the registry, code and tests are in git. Sending partner text to an external
 API (the optional `--llm` mapping proposal) is the owner's decision per run.
+
+
+## Addendum, 12 Nov 2026: evidence cards sent to the OpenAI API (E6, Methodology 2)
+
+The owner decided, after confirming with the data holder, that the evidence cards of
+Methodology 2 may be sent to the OpenAI API **from all sources, including Habtamu's database**
+(decision 7 above: sending partner text to an external API is the owner's decision; this is
+that decision for E6). What is sent per query: the query context in words and numbers, the
+objective, the crop, the candidate practice names, and up to 32 evidence cards (one pooled
+effect per study cell with its site context, country, year, quality flag, short citation and
+DOI), up to 4 retrieved passages trimmed to 120 tokens, and graph facts from the catalogue.
+No partner file is sent whole. Models: `gpt-4o-mini` for every variant and one stronger model
+for the full variant, run only after the owner's go on the printed estimate; budget cap 100 USD
+for the phase. The model never produces a number shown to anyone: estimates are computed by
+code from the cited cards. Recorded also in `model/m2/model_card.md`.
+
+**Owner decision, 12 Nov 2026 (model scope).** Methodology 2 is evaluated with deployable,
+low-cost models only: `gpt-4o-mini` (all four variants) and `gpt-4.1-mini` as the stronger model
+(`m2_zero` and `m2_graph`, the reviewer's addition to test whether the evidence effect holds with
+a stronger model). Frontier models (`gpt-4.1`, `o3`, `gpt-5` class) are out of scope for cost.
