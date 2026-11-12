@@ -52,7 +52,7 @@ def test_release_adapter_matches_the_engine(tmp_path, monkeypatch):
         assert str(rel / "manifest.json") in [str(x) for x in svc._required_paths()]
     finally:
         svc._engine.extract_context = legacy
-        monkeypatch.setattr(svc, "_EXTRACTOR", None)
+        svc._EXTRACTOR = None  # a direct reset: monkeypatch here would restore the test extractor at teardown (E5 fix)
 
 
 def test_wrong_release_fails_fast(tmp_path, monkeypatch):
@@ -62,7 +62,7 @@ def test_wrong_release_fails_fast(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="GEODATA_RELEASE=ET/missing.1"):
         svc._install_release_adapter()
     assert svc._engine.extract_context is legacy
-    monkeypatch.setattr(svc, "_EXTRACTOR", None)
+    svc._EXTRACTOR = None
 
 
 def test_settings_resolve_release_dir(monkeypatch):

@@ -22,6 +22,15 @@ ranked lists of several tiers with the same RRF used inside each tier, and
 every hit carries its ``tier`` tag. ``RAG_GUIDELINES_ENABLED=false`` (env or
 ``app/backend/.env``; default true) leaves the Tier 2 path exactly as before.
 
+Masked retrieval (E4 Part 3): every ``retrieve`` call takes an optional
+``mask`` (:class:`model.harness.mask.Mask`, the held-out groups of an evaluation
+fold). The dense query carries a Chroma ``where`` filter on ``doi`` and ``era_code``,
+the lexical candidates are filtered the same way, and every fused hit is checked once
+more with ``mask.blocks_chunk`` (which also reads the ``study_ids`` list of the
+re-indexed Tier 1), so a held-out study cannot surface through any path. Chunks that
+carry no study metadata at all can never be masked; they are counted in
+``retriever.unmaskable`` and reported by the harness.
+
 Usage (library):
     from rag.retrieve import RagRetriever
     r = RagRetriever(index_dir=".../rag/index/store", chunks_path=".../rag/corpus/chunks.jsonl")
@@ -29,6 +38,7 @@ Usage (library):
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from functools import lru_cache
@@ -135,6 +145,19 @@ def build_query_text(
     return " ".join(p for p in parts if p).strip()
 
 
+def index_hash(chunks_path: str | Path) -> str:
+    """SHA-256 of a chunks file's ids and texts (the evaluation baseline's index identity)."""
+    h = hashlib.sha256()
+    for line in Path(chunks_path).read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            c = json.loads(line)
+            h.update(c["chunk_id"].encode("utf-8"))
+            h.update(b"\x1f")
+            h.update(hashlib.sha256(c["text"].encode("utf-8")).digest())
+            h.update(b"\n")
+    return h.hexdigest()
+
+
 class RagRetriever:
     def __init__(self, index_dir: str | Path, chunks_path: str | Path,
                  api_key: str | None = None, collection: str = COLLECTION):
@@ -142,6 +165,7 @@ class RagRetriever:
 
         self._client = chromadb.PersistentClient(path=str(index_dir))
         self._col = self._client.get_collection(collection)
+        self._chunks_path = Path(chunks_path)
         self._chunks = [
             json.loads(l)
             for l in Path(chunks_path).read_text(encoding="utf-8").splitlines()
@@ -151,6 +175,13 @@ class RagRetriever:
         self._api_key = api_key or _find_api_key()
         self._session = requests.Session()
         self._bm25 = None  # built lazily
+        #: chunks seen under a mask that carry no study metadata (never maskable): counted, reported
+        self.unmaskable: dict[str, int] = {}
+        self.collection_name = collection
+
+    def index_hash(self) -> str:
+        """Identity of this retriever's chunks (``index_hash`` of its chunks file)."""
+        return index_hash(self._chunks_path)
 
     # ---------------------------------------------------------------- dense
     def _embed(self, text: str) -> list[float]:
@@ -173,8 +204,12 @@ class RagRetriever:
         resp.raise_for_status()
         return resp.json()["data"][0]["embedding"]
 
-    def _dense(self, query: str, n: int) -> list[str]:
-        res = self._col.query(query_embeddings=[self._embed(query)], n_results=n, include=[])
+    def _dense(self, query: str, n: int, mask: Any = None) -> list[str]:
+        where = mask.where_clause() if mask is not None and not mask.is_empty else None
+        kw: dict[str, Any] = {"query_embeddings": [self._embed(query)], "n_results": n, "include": []}
+        if where:
+            kw["where"] = where
+        res = self._col.query(**kw)
         return res["ids"][0]
 
     # --------------------------------------------------------------- lexical
@@ -185,11 +220,28 @@ class RagRetriever:
             self._tokenized = [c["text"].lower().split() for c in self._chunks]
             self._bm25 = BM25Okapi(self._tokenized)
 
-    def _lexical(self, query: str, n: int) -> list[str]:
+    def _lexical(self, query: str, n: int, mask: Any = None) -> list[str]:
         self._ensure_bm25()
         scores = self._bm25.get_scores(query.lower().split())
-        order = sorted(range(len(scores)), key=lambda i: -scores[i])[:n]
-        return [self._chunks[i]["chunk_id"] for i in order if scores[i] > 0]
+        order = sorted(range(len(scores)), key=lambda i: -scores[i])
+        out: list[str] = []
+        for i in order:
+            if scores[i] <= 0 or len(out) >= n:
+                break
+            if mask is not None and self._masked(self._chunks[i], mask):
+                continue
+            out.append(self._chunks[i]["chunk_id"])
+        return out
+
+    # ----------------------------------------------------------------- mask
+    def _masked(self, chunk: dict[str, Any], mask: Any) -> bool:
+        """True when the mask hides this chunk; counts chunks that cannot be masked at all."""
+        if mask is None or mask.is_empty:
+            return False
+        if not mask.chunk_is_maskable(chunk):
+            self.unmaskable[chunk["chunk_id"]] = self.unmaskable.get(chunk["chunk_id"], 0) + 1
+            return False
+        return bool(mask.blocks_chunk(chunk))
 
     # ----------------------------------------------------------------- fuse
     @staticmethod
@@ -201,18 +253,30 @@ class RagRetriever:
         return sorted(scores, key=lambda c: -scores[c])
 
     # ------------------------------------------------------------------ API
-    def retrieve(self, query: str, k: int = 8) -> list[dict[str, Any]]:
-        fused = self._rrf([self._dense(query, CANDIDATES), self._lexical(query, CANDIDATES)])
+    def retrieve(self, query: str, k: int = 8, mask: Any = None, dense: bool = True) -> list[dict[str, Any]]:
+        """Hybrid retrieval; ``mask`` hides held-out studies (E4); ``dense=False`` is lexical only
+        (fixture tests without an embedding key)."""
+        masked = mask is not None and not mask.is_empty
+        n = 2 * CANDIDATES if masked else CANDIDATES
+        # without a mask the calls are byte-identical to before E4 (stubs with two arguments keep working)
+        lists = [self._lexical(query, n, mask) if masked else self._lexical(query, n)]
+        if dense:
+            lists.insert(0, self._dense(query, n, mask) if masked else self._dense(query, n))
+        fused = self._rrf(lists)
         out = []
-        for cid in fused[:k]:
+        for cid in fused:
+            if len(out) >= k:
+                break
             c = self._by_id.get(cid)
-            if c:
-                # tier tag on every hit (E2); Tier 1 chunks carry none on disk
-                out.append(c if c.get("tier") else {**c, "tier": "evidence"})
+            if not c or (mask is not None and self._masked(c, mask)):
+                continue
+            # tier tag on every hit (E2); Tier 1 chunks carry none on disk
+            out.append(c if c.get("tier") else {**c, "tier": "evidence"})
         return out
 
     def retrieve_for_recommendation(self, recommendation: dict[str, Any],
-                                    k: int = 8, per_practice: bool = True) -> list[dict[str, Any]]:
+                                    k: int = 8, per_practice: bool = True,
+                                    mask: Any = None) -> list[dict[str, Any]]:
         """Retrieve evidence for the ranked practices in a recommendation.
 
         per_practice=True runs one query per recommended practice (deduped),
@@ -226,7 +290,9 @@ class RagRetriever:
         out: list[dict[str, Any]] = []
         each = max(2, k // len(practices))
         for p in practices:
-            for c in self.retrieve(build_query_text(recommendation, practice=p), k=each):
+            hits = self.retrieve(build_query_text(recommendation, practice=p), k=each, mask=mask) if mask is not None \
+                else self.retrieve(build_query_text(recommendation, practice=p), k=each)
+            for c in hits:
                 if c["chunk_id"] not in seen:
                     seen.add(c["chunk_id"])
                     out.append({**c, "for_practice": p})
@@ -248,15 +314,24 @@ class TieredRetriever:
         self.retrievers = list(retrievers)
         self.per_tier = per_tier
 
-    def retrieve(self, query: str, k: int = 8) -> list[dict[str, Any]]:
+    def retrieve(self, query: str, k: int = 8, mask: Any = None) -> list[dict[str, Any]]:
         lists: list[list[str]] = []
         by_id: dict[str, dict[str, Any]] = {}
         for r in self.retrievers:
-            hits = r.retrieve(query, k=max(k, min(self.per_tier, 3 * k)))
+            n = max(k, min(self.per_tier, 3 * k))
+            hits = r.retrieve(query, k=n, mask=mask) if mask is not None else r.retrieve(query, k=n)
             lists.append([h["chunk_id"] for h in hits])
             for h in hits:
                 by_id.setdefault(h["chunk_id"], h)
         return [by_id[cid] for cid in RagRetriever._rrf(lists)[:k]]
+
+    @property
+    def unmaskable(self) -> dict[str, int]:
+        out: dict[str, int] = {}
+        for r in self.retrievers:
+            for cid, n in getattr(r, "unmaskable", {}).items():
+                out[cid] = out.get(cid, 0) + n
+        return out
 
     # same per-practice loop as a single tier (it only calls self.retrieve)
     retrieve_for_recommendation = RagRetriever.retrieve_for_recommendation

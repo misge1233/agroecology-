@@ -40,7 +40,7 @@ import numpy as np
 import rasterio
 from rasterio.warp import Resampling, reproject
 
-from ..core import BuildContext, GeodataError, LayerUnavailable, read_band
+from ..core import BuildContext, GeodataError, LayerUnavailable, cache_root, read_band
 from ..grid import Grid
 from .climate_worldclim import to_grid
 
@@ -218,7 +218,7 @@ def whitebox_tool_record(wbt: Any = None) -> dict[str, Any]:
         except Exception:  # noqa: BLE001
             binary = None
     return {"name": "WhiteboxTools", "python_package": f"whitebox {pkg}" if pkg else None, "binary": binary,
-            "licence": "MIT", "url": "https://www.whiteboxgeo.com/"}
+            "licence": "MIT", "url": "https://www.whiteboxgeo.com/", "retries": [dict(r) for r in WBT_RETRIES]}
 
 
 class WhiteboxError(RuntimeError):
@@ -243,28 +243,20 @@ def _wbt_exe_of(wbt: Any) -> Path:
 
 _WBT_ERROR = re.compile(r"\b(error|panicked|thread 'main'|could not|cannot|failed|unsupported|not found)\b", re.I)
 
+#: The one WhiteboxTools failure that is retried (E4 Part 0): the binary panics while
+#: creating its output file ("thread 'main' panicked ... Error unwrapping 'output'"),
+#: seen in 2 of 15 E3 unit runs when the work folder was the user temp folder, where
+#: Windows Defender and the indexer lock fresh files. Exactly one retry, logged as a
+#: warning and recorded in :data:`WBT_RETRIES` (-> the manifest). Any other error fails
+#: at once, as before.
+WBT_RETRY_PANIC = "Error unwrapping 'output'"
+WBT_RETRIES: list[dict[str, Any]] = []
 
-def run_wbt(wbt: Any, tool: str, workdir: Path, outputs: tuple[str, ...], **params: Any) -> str:
-    """Run one WhiteboxTools tool as a subprocess and return its captured output.
 
-    The ``whitebox`` package's ``run_tool`` returns 0 whenever the process starts and
-    shows the binary's error lines only in verbose mode, so a failure is invisible
-    (the E3 national run: FillDepressions "finished" in 9 s with no output file).
-    Here stdout and stderr are captured and the run fails with :class:`WhiteboxError`
-    when the exit code is not 0, an error line appears in the output, or any expected
-    output is missing, empty or unreadable.
-    """
-    exe = _wbt_exe_of(wbt)
-    args = [str(exe), f"--run={tool}", f"--wd={workdir}"]
-    for k, v in params.items():
-        if v is True:
-            args.append(f"--{k}")
-        elif v is not False and v is not None:
-            args.append(f"--{k}={v}")
-    args += ["-v=true", "--compress_rasters=True"]
+def _wbt_attempt(exe: Path, args: list[str], workdir: Path, outputs: tuple[str, ...]) -> tuple[str, list[str]]:
+    """One subprocess run; returns the captured output and the list of problems found."""
     for name in outputs:
         (workdir / name).unlink(missing_ok=True)
-    t0 = time.time()
     proc = subprocess.run(args, capture_output=True, text=True, errors="replace", cwd=str(exe.parent))
     out = (proc.stdout or "") + (proc.stderr or "")
     problems: list[str] = []
@@ -283,6 +275,37 @@ def run_wbt(wbt: Any, tool: str, workdir: Path, outputs: tuple[str, ...], **para
                 s.read(1, window=rasterio.windows.Window(0, 0, 1, 1))
         except Exception as exc:  # noqa: BLE001
             problems.append(f"output {name} unreadable: {exc}")
+    return out, problems
+
+
+def run_wbt(wbt: Any, tool: str, workdir: Path, outputs: tuple[str, ...], **params: Any) -> str:
+    """Run one WhiteboxTools tool as a subprocess and return its captured output.
+
+    The ``whitebox`` package's ``run_tool`` returns 0 whenever the process starts and
+    shows the binary's error lines only in verbose mode, so a failure is invisible
+    (the E3 national run: FillDepressions "finished" in 9 s with no output file).
+    Here stdout and stderr are captured and the run fails with :class:`WhiteboxError`
+    when the exit code is not 0, an error line appears in the output, or any expected
+    output is missing, empty or unreadable. The one known transient panic
+    (:data:`WBT_RETRY_PANIC`) is retried exactly once (E4 Part 0).
+    """
+    exe = _wbt_exe_of(wbt)
+    args = [str(exe), f"--run={tool}", f"--wd={workdir}"]
+    for k, v in params.items():
+        if v is True:
+            args.append(f"--{k}")
+        elif v is not False and v is not None:
+            args.append(f"--{k}={v}")
+    args += ["-v=true", "--compress_rasters=True"]
+    t0 = time.time()
+    out, problems = _wbt_attempt(exe, args, workdir, outputs)
+    if problems and WBT_RETRY_PANIC in out:
+        record = {"tool": tool, "workdir": str(workdir), "panic": WBT_RETRY_PANIC,
+                  "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+        WBT_RETRIES.append(record)
+        logger.warning("    %s panicked (%s); retrying once", tool, WBT_RETRY_PANIC)
+        out, problems = _wbt_attempt(exe, args, workdir, outputs)
+        record["recovered"] = not problems
     if problems:
         raise WhiteboxError(tool, problems, out)
     logger.info("    %s done (%.0f s): %s", tool, time.time() - t0, ", ".join(outputs))
@@ -316,11 +339,23 @@ def _read_nan(path: Path) -> np.ndarray:
     return a
 
 
+def wbt_work_root() -> Path:
+    """Folder for WhiteboxTools scratch files: ``<cache>/_work/wbt`` (E4 Part 0).
+
+    Not the user temp folder: Windows Defender and the search indexer lock fresh files
+    there, which is where the E3 flake came from; the cache folder is excluded from
+    indexing (see ``pipelines/geodata/README.md``).
+    """
+    root = cache_root() / "_work" / "wbt"
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
 def _workdir(workdir: Path | None) -> tuple[Path, bool]:
     import tempfile
 
     if workdir is None:
-        return Path(tempfile.mkdtemp(prefix="wbt_")), True
+        return Path(tempfile.mkdtemp(prefix="wbt_", dir=str(wbt_work_root()))), True
     Path(workdir).mkdir(parents=True, exist_ok=True)
     return Path(workdir), False
 
@@ -574,6 +609,7 @@ def build(ctx: BuildContext, wanted: set[str]) -> None:
         return
     finally:
         del dem
+    tool = {**tool, "retries": [dict(r) for r in WBT_RETRIES]}  # E4: retried panics go into the manifest
     tool_txt = f"{tool.get('name')} {tool.get('binary') or ''} ({tool.get('python_package') or 'whitebox'})"
     note = (f"30 m slope terms, {flow_grid.res * 3600:.0f} arc-second D8 routing with {tool_txt}: FillDepressions "
             f"(fix_flats), D8Pointer, D8FlowAccumulation; sea cells (GLO-30 == {tset.get('sea_value', 0.0)}) "

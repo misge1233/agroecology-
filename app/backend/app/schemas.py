@@ -348,6 +348,10 @@ class AdviseResponse(BaseModel):
     #: Resolved context (also when there is no model payload).
     context: dict[str, Any] = Field(default_factory=dict)
     language: Literal["en", "am", "om"] = "en"
+    #: Additive (E5): with ADVISOR_ENGINE=m1_v2, the family's registry practices ranked by
+    #: Methodology 1 v2 for the request's objective (effect estimate, 80 % interval, lead
+    #: source mapped to the fusion labels); null with the default engine.
+    m1_v2: list["RankItem"] | None = None
 
 
 class ContextResponse(BaseModel):
@@ -434,6 +438,8 @@ class MetadataResponse(BaseModel):
     #: ({"release": "ET/2026.1", "source": "release", ...}) or from LAYERS_DIR
     #: ({"release": null, "source": "layers_dir", ...}).
     geodata: dict[str, Any] | None = None
+    #: Additive (E5): which advisory engine serves ({"engine": "legacy" | "m1_v2", ...}).
+    advisor_engine: dict[str, Any] | None = None
 
 
 class ExplainCitation(BaseModel):
@@ -604,3 +610,55 @@ class RegistryResponse(BaseModel):
     n_counted_rows: int | None = None
     challenges: list[RegistryChallenge]
     practices: list[RegistryPractice]
+
+
+# --------------------------------------------------------------- E5: Methodology 1 v2
+class RankRequestBody(BaseModel):
+    """POST /rank: a site, a registry challenge and one of its objectives (ADVISOR_ENGINE=m1_v2)."""
+
+    lat: float
+    lon: float
+    challenge_id: str = Field(..., max_length=80)
+    outcome_id: str = Field(..., max_length=80)
+    crop_type: str | None = Field(default=None, max_length=200)
+    top_n: int = Field(default=5, ge=1, le=50)
+    country: str = Field(default="ET", min_length=2, max_length=2)
+
+    @model_validator(mode="after")
+    def _check_bounds(self) -> "RankRequestBody":
+        lat_lo, lat_hi = svc.LAT_BOUNDS
+        lon_lo, lon_hi = svc.LON_BOUNDS
+        if self.country.upper() == "ET" and not (lat_lo <= self.lat <= lat_hi and lon_lo <= self.lon <= lon_hi):
+            raise ValueError(f"point ({self.lat}, {self.lon}) is outside Ethiopia.")
+        return self
+
+
+class RankItem(BaseModel):
+    """One ranked practice of Methodology 1 v2 (oriented log response ratio scale)."""
+
+    practice_id: str
+    score: float
+    est_lrr: float | None = None
+    lo: float | None = None
+    hi: float | None = None
+    lead_source: Literal["model", "study", "documented"]
+    lead_label: str
+    citations: list[str] = Field(default_factory=list)
+    components: dict[str, float | None] = Field(default_factory=dict)
+
+
+class RankResponse(BaseModel):
+    engine: str
+    country: str
+    challenge_id: str
+    outcome_id: str
+    objective_group: str | None = None
+    direction: Literal[1, -1]
+    context: dict[str, Any] = Field(default_factory=dict)
+    n_candidates: int
+    items: list[RankItem]
+    release: str | None = None
+
+
+AdviseResponse.model_rebuild()
+

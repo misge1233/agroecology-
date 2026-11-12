@@ -88,8 +88,10 @@ def embed_batch(texts: list[str], api_key: str, session: requests.Session) -> li
 
 
 #: E2 (Tier 2b guidelines): metadata keys stored ONLY when the chunk has them,
-#: so Tier 1 and Tier 2 metadata stay exactly as before.
-OPTIONAL_METADATA = ("doc_id", "page", "language", "theme", "publisher", "citation")
+#: so Tier 1 and Tier 2 metadata stay exactly as before. E4 adds ``corpus_source``
+#: and ``study_ids`` (a ``;``-joined list: Chroma metadata values are scalars) for
+#: the re-indexed Tier 1, read by the harness mask.
+OPTIONAL_METADATA = ("doc_id", "page", "language", "theme", "publisher", "citation", "corpus_source")
 
 
 def _metadata(c: dict) -> dict:
@@ -97,7 +99,7 @@ def _metadata(c: dict) -> dict:
     meta = {
         "era_code": c.get("era_code") or "",   # "" for Tier-2 guidance
         "tier": c.get("tier") or "evidence",
-        "doi": c.get("doi") or "",
+        "doi": (c.get("doi") or "").strip().lower(),
         "title": c.get("title") or "",
         "year": int(c["year"]) if c.get("year") else 0,
         "journal": c.get("journal") or "",
@@ -107,6 +109,8 @@ def _metadata(c: dict) -> dict:
     for key in OPTIONAL_METADATA:
         if c.get(key) not in (None, ""):
             meta[key] = c[key]
+    if c.get("study_ids"):
+        meta["study_ids"] = ";".join(c["study_ids"]) if isinstance(c["study_ids"], list) else str(c["study_ids"])
     return meta
 
 

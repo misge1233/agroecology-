@@ -146,19 +146,59 @@ def image_pages(chars: list[int], threshold: int = IMAGE_PAGE_CHARS) -> tuple[li
     return (list(range(1, len(chars) + 1)) if whole else low), whole
 
 
+class OcrSetupError(RuntimeError):
+    """The OCR stack itself is unusable (a missing package or binary): not a page-specific
+    failure, so the ingest stops instead of listing every page as pending (E4 Part 0).
+
+    E2 recorded 170 "OCR pending" pages this way when Pillow was not installed: every
+    page failed in ``to_pil()`` and the per-page handler swallowed it.
+    """
+
+
+def check_ocr_stack(tess: str | None) -> None:
+    """Fail loudly before the first document when OCR would fail on every page."""
+    if not tess:
+        return
+    try:
+        import pypdfium2  # noqa: F401
+    except ImportError as exc:
+        raise OcrSetupError(f"pypdfium2 is not installed ({exc}): python -m pip install -r pipelines/requirements.txt") from exc
+    try:
+        import PIL  # noqa: F401
+    except ImportError as exc:
+        raise OcrSetupError(f"Pillow is not installed ({exc}): python -m pip install -r pipelines/requirements.txt") from exc
+    if not Path(tess).exists() and shutil.which(tess) is None:
+        raise OcrSetupError(f"Tesseract binary not found at {tess}")
+
+
 def ocr_page(pdf: Path, page: int, tess: str, langs: str) -> str:
-    """Render one page (pypdfium2) and OCR it with Tesseract."""
-    import pypdfium2 as pdfium
+    """Render one page (pypdfium2) and OCR it with Tesseract.
+
+    Raises :class:`OcrSetupError` when the renderer, Pillow or the Tesseract binary is
+    missing (the same failure would hit every page); any other exception is page-specific
+    and is handled by the caller.
+    """
+    try:
+        import pypdfium2 as pdfium
+    except ImportError as exc:
+        raise OcrSetupError(f"pypdfium2 is not installed ({exc})") from exc
 
     doc = pdfium.PdfDocument(str(pdf))
     try:
-        img = doc[page - 1].render(scale=OCR_DPI / 72).to_pil()
+        bitmap = doc[page - 1].render(scale=OCR_DPI / 72)
+        try:
+            img = bitmap.to_pil()
+        except ImportError as exc:  # Pillow missing: every page would fail the same way
+            raise OcrSetupError(f"Pillow is not installed ({exc})") from exc
     finally:
         doc.close()
     with tempfile.TemporaryDirectory() as tmp:
         png = Path(tmp) / "p.png"
         img.save(png)
-        r = subprocess.run([tess, str(png), "stdout", "-l", langs, "--psm", "3"], capture_output=True, timeout=300)
+        try:
+            r = subprocess.run([tess, str(png), "stdout", "-l", langs, "--psm", "3"], capture_output=True, timeout=300)
+        except OSError as exc:  # the binary cannot be started at all
+            raise OcrSetupError(f"Tesseract cannot be run ({tess}): {exc}") from exc
     return r.stdout.decode("utf-8", errors="replace")
 
 
@@ -203,7 +243,9 @@ def ingest_doc(rec: dict[str, str], pdftotext: str, tess: str | None, tess_langs
                 if len(text.strip()) > chars[pg - 1]:
                     pages[pg - 1] = text
                 res.ocr_pages.append(pg)
-            except Exception as exc:  # noqa: BLE001
+            except OcrSetupError:
+                raise  # not page-specific: stop the ingest (E4 Part 0)
+            except Exception as exc:  # noqa: BLE001 - page-specific: recorded, the page stays pending
                 res.ocr_pending.append(pg)
                 res.error = f"ocr failed on page {pg}: {exc}"[:200]
         else:
@@ -316,6 +358,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if not pdftotext:
         raise SystemExit("ERROR: pdftotext not found (install poppler or Git for Windows)")
+    if tess and not args.chunk_only:
+        check_ocr_stack(tess)  # E4 Part 0: a missing Pillow must not become 170 "pending" pages
     results: dict[str, DocResult] = {}
     for n, rec in enumerate(manifest, start=1):
         if args.chunk_only and (TEXTS / rec["doc_id"] / "meta.json").exists():

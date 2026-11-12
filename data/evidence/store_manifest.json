@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "built_at": "2026-11-11T10:42:04+00:00",
-  "git_commit": "adb446d3aa5dc99728dfd79a7ad431fa0f0ac06f",
+  "built_at": "2026-11-11T11:16:07+00:00",
+  "git_commit": "3644d5929787bd3c1e9d47c688c0be8f541406d5",
   "n_rows": 19753,
   "rows_per_source": {
     "CSA": 3344,
@@ -176,5 +176,30 @@
     "null_after_fallback": {},
     "release_manifest_sha256": "fcedbbd49859b7b578b1da197ed8385b520702d9677b2ac2e480ac3d0ef90c02",
     "reconciliation_within_tolerance": false
+  },
+  "dedupe": {
+    "dois_in_more_than_one_source": 40,
+    "dois_by_source_set": {
+      "CSA+ERA+HAB": 3,
+      "CSA+ERA": 36,
+      "ERA+HAB": 1
+    },
+    "rows_with_multi_source_doi": 2268,
+    "flagged_rows": 49,
+    "flagged_by_source": {
+      "CSA": 47,
+      "ERA": 2
+    },
+    "flagged_by_pair_kept_over_dropped": {
+      "ERA>CSA": 44,
+      "HAB>CSA": 3,
+      "HAB>ERA": 2
+    },
+    "flagged_by_rule": {
+      "lrr": 49
+    },
+    "groups_with_duplicates": 8,
+    "lrr_tolerance": 0.01,
+    "mean_relative_tolerance": 0.01
   }
 }

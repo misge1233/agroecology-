@@ -3,8 +3,14 @@
 Input : corpus/manifest.jsonl (from fetch_papers.py) + corpus/pdfs/*.pdf
         + corpus/xml/*.xml (Europe PMC full-text JATS XML)
 Output: corpus/chunks.jsonl — one JSON object per chunk:
-        {chunk_id, era_code, doi, title, year, journal, source, text}
+        {chunk_id, era_code, doi, title, year, journal, source, text,
+         corpus_source, study_ids}
         source = "pdf" | "xml" (full text) | "abstract" (metadata-only studies)
+        corpus_source = "ERA" | "HAB" (the manifest row's source, E4)
+        study_ids = every evidence-store study id the chunk belongs to (E4 Part 3:
+        ``ERA_<era_code>`` and its sub-studies, the Habtamu study id, and every
+        store study of any source that carries the chunk's DOI), so a held-out
+        study can be masked through any of its identifiers
 
 NOTE: this script rewrites chunks.jsonl from scratch on every run, so chunk
 ids are reassigned. After the corpus changes (e.g. fetch_papers.py
@@ -18,7 +24,7 @@ chunk carries `era_code` — the join key back to the training rows behind a
 recommendation (the linkage the whole RAG design is built on).
 
 Usage:
-    python parse_and_chunk.py --corpus ../corpus
+    python parse_and_chunk.py --corpus ../corpus [--store ../../data/evidence/evidence_rows.parquet]
 """
 from __future__ import annotations
 
@@ -116,10 +122,47 @@ def chunk_text(text: str) -> list[str]:
     return [" ".join(c) for c in chunks if c]
 
 
+def study_id_index(store_path: Path | None) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """``(era_code -> store study ids, normalised doi -> store study ids)`` from the evidence store.
+
+    ERA store ids are ``ERA_<era_code>`` plus sub-studies ``ERA_<era_code>.<n>``; Habtamu ids
+    equal their corpus code. Empty when the store is absent (the chunks then carry only
+    the ids derivable from the manifest).
+    """
+    by_code: dict[str, set[str]] = {}
+    by_doi: dict[str, set[str]] = {}
+    if store_path and Path(store_path).exists():
+        import pandas as pd
+
+        df = pd.read_parquet(store_path, columns=["study_id", "doi", "source"])
+        for sid, doi, source in zip(df["study_id"], df["doi"], df["source"]):
+            sid = str(sid)
+            if source == "ERA" and sid.startswith("ERA_"):
+                by_code.setdefault(sid[4:].split(".")[0], set()).add(sid)
+            elif source == "HAB":
+                by_code.setdefault(sid, set()).add(sid)
+            if isinstance(doi, str) and doi.strip():
+                by_doi.setdefault(doi.strip().lower(), set()).add(sid)
+    return ({k: sorted(v) for k, v in by_code.items()}, {k: sorted(v) for k, v in by_doi.items()})
+
+
+def study_ids_for(rec: dict, by_code: dict[str, list[str]], by_doi: dict[str, list[str]]) -> list[str]:
+    """Every store study id a manifest record belongs to (sorted, never empty)."""
+    code = rec["era_code"]
+    ids = set(by_code.get(code, []))
+    ids.add(code if str(rec.get("source", "ERA")) == "HAB" else f"ERA_{code}")
+    doi = rec.get("doi")
+    if isinstance(doi, str) and doi.strip() and doi != "None":
+        ids |= set(by_doi.get(doi.strip().lower(), []))
+    return sorted(ids)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", default="../corpus", help="corpus dir (manifest.jsonl, pdfs/)")
     ap.add_argument("--min-words", type=int, default=40, help="drop chunks shorter than this")
+    ap.add_argument("--store", default=str(Path(__file__).resolve().parents[2] / "data" / "evidence" / "evidence_rows.parquet"),
+                    help="evidence store (study ids per chunk, E4); skipped when absent")
     args = ap.parse_args()
 
     corpus = Path(args.corpus)
@@ -128,20 +171,36 @@ def main() -> int:
         for l in (corpus / "manifest.jsonl").read_text(encoding="utf-8").splitlines()
         if l.strip()
     ]
+    by_code, by_doi = study_id_index(Path(args.store) if args.store else None)
     out_path = corpus / "chunks.jsonl"
-    n_chunks = n_pdf = n_xml = n_abs = 0
+    n_chunks = n_pdf = n_xml = n_abs = n_same_paper = 0
+    seen_doi: dict[str, str] = {}  # one paper is chunked once: later manifest rows of the same DOI are skipped
     with open(out_path, "w", encoding="utf-8") as out:
         for rec in manifest:
             code = rec["era_code"]
+            doi = rec.get("doi")
+            doi_key = doi.strip().lower() if isinstance(doi, str) and doi != "None" and doi.strip() else None
+            if doi_key and doi_key in seen_doi:
+                # the Habtamu sheet lists one study per contrast set, so a paper can have ten
+                # manifest rows; its chunks carry every study id of the DOI (study_ids), so the
+                # repeats add nothing but duplicated text (E4)
+                n_same_paper += 1
+                continue
+            if doi_key:
+                seen_doi[doi_key] = code
             meta = {
                 "era_code": code,
-                "doi": rec.get("doi"),
+                "doi": doi if isinstance(doi, str) and doi != "None" and doi.strip() else None,
                 "title": rec.get("title"),
                 "year": rec.get("year"),
                 "journal": rec.get("container") or rec.get("journal"),
+                "corpus_source": rec.get("source") or "ERA",
+                "study_ids": study_ids_for(rec, by_code, by_doi),
             }
             texts: list[tuple[str, str]] = []          # (source, chunk_text)
             pdf_file = rec.get("pdf_file")
+            if pdf_file == "None":
+                pdf_file = None
             if pdf_file and (corpus / "pdfs" / pdf_file).exists():
                 try:
                     full = extract_pdf_text(corpus / "pdfs" / pdf_file)
@@ -151,6 +210,8 @@ def main() -> int:
                 except Exception as exc:
                     print(f"[warn] {code}: PDF parse failed ({exc}); falling back to abstract")
             xml_file = rec.get("fulltext_xml")
+            if xml_file == "None":
+                xml_file = None
             if not texts and xml_file and (corpus / "xml" / xml_file).exists():
                 try:
                     full = extract_xml_text(corpus / "xml" / xml_file)
@@ -175,6 +236,7 @@ def main() -> int:
 
     print(f"Done: {n_chunks} chunks from {n_pdf + n_xml} full-text "
           f"({n_pdf} PDF + {n_xml} XML) + {n_abs} abstract-only studies "
+          f"({n_same_paper} manifest rows skipped as repeats of an already chunked DOI) "
           f"-> {out_path}")
     print("Reminder: chunk ids were reassigned — rebuild the index with "
           "`build_index.py --rebuild` if it already exists.")

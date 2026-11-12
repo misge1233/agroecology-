@@ -78,3 +78,11 @@ rag/corpus/guidelines/chunks.jsonl
 geodata/*/*/*.tif
 geodata/*/.*.partial/
 pipelines/geodata/cache/
+
+# --- E4: reproducible check artifacts and harness runs stay out of git; the harness query tables hold partner-derived rows ---
+model/artifacts/release_check/
+model/harness/runs/
+data/evidence/harness/*.parquet
+
+# --- E5: Methodology 1 v2 artifact binaries (model/m1/train.py); config.json, features.json and model_card.md stay in git ---
+model/artifacts/m1_v2/*.joblib

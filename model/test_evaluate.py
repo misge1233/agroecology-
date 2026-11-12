@@ -377,3 +377,14 @@ def test_train_model_reexports_the_shared_contract():
     assert tm.FEATURES is ev.FEATURES
     assert tm.CAT is ev.CAT and tm.NUM is ev.NUM
     assert tm.build_cat_maps is ev.build_cat_maps
+
+
+# ------------------------------------------------------------ E4 Part 0: report path
+def test_report_path_only_canonical_for_full_canonical_runs(tmp_path):
+    """--quick and redirected runs never overwrite docs/reports/model_evaluation_report.md."""
+    assert tm.resolve_report_path("auto", quick=False, artifacts=tm.ARTIFACTS_DIR) == tm.CANONICAL_REPORT
+    assert tm.resolve_report_path("auto", quick=True, artifacts=tm.ARTIFACTS_DIR) == tm.ARTIFACTS_DIR / tm.REPORT_NAME
+    assert tm.resolve_report_path("auto", quick=False, artifacts=tmp_path) == tmp_path / tm.REPORT_NAME
+    assert tm.resolve_report_path("auto", quick=True, artifacts=tmp_path) == tmp_path / tm.REPORT_NAME
+    assert tm.resolve_report_path(tmp_path / "r.md", quick=True, artifacts=tm.ARTIFACTS_DIR) == tmp_path / "r.md"
+    assert tm.resolve_report_path(None, quick=False, artifacts=tm.ARTIFACTS_DIR) is None

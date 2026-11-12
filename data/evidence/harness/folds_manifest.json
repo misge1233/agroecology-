@@ -1,0 +1,244 @@
+{
+ "seed": 0,
+ "n_reps": 5,
+ "n_folds": 5,
+ "query_hash": "81c29a8f17b7b1079863b522734a192b4805e47474d8a70e8fcc0bffb2f448fd",
+ "n_queries": 414,
+ "assigner": "pipelines/dataset/assign_folds.py (greedy balance, block shuffle)",
+ "splits": {
+  "spatial": {
+   "file": "folds_spatial.csv",
+   "sha256": "11e29e68727c03cf60a6d7474aaadf9a8f8383e50fa28c800708266f36732c7d",
+   "n_units": 45,
+   "fold_sizes": {
+    "fold_rep00": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep01": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep02": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep03": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep04": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ]
+   },
+   "groups_spanning_blocks": [
+    {
+     "group": "10.1002/agj2.21143",
+     "blocks": {
+      "b6_38": 9,
+      "b7_38": 3
+     },
+     "assigned": "b6_38"
+    },
+    {
+     "group": "10.1007/s11104-019-04271-y",
+     "blocks": {
+      "b8_38": 1,
+      "b8_39": 1
+     },
+     "assigned": "b8_38"
+    },
+    {
+     "group": "10.1016/j.cropro.2019.01.029",
+     "blocks": {
+      "b9_36": 1,
+      "b9_37": 1
+     },
+     "assigned": "b9_36"
+    },
+    {
+     "group": "10.1016/j.smallrumres.2011.07.014",
+     "blocks": {
+      "b9_41": 2,
+      "b9_42": 3
+     },
+     "assigned": "b9_42"
+    },
+    {
+     "group": "10.1016/j.still.2008.09.013",
+     "blocks": {
+      "b11_39": 2,
+      "b8_39": 1
+     },
+     "assigned": "b11_39"
+    },
+    {
+     "group": "10.1016/j.still.2009.07.007",
+     "blocks": {
+      "country_ZM": 1,
+      "country_ZW": 1
+     },
+     "assigned": "country_ZM"
+    },
+    {
+     "group": "10.1016/s0341-8162(99)00004-1",
+     "blocks": {
+      "b11_39": 2,
+      "b6_37": 1,
+      "b8_35": 1,
+      "b9_39": 2
+     },
+     "assigned": "b11_39"
+    },
+    {
+     "group": "10.1017/s0014479715000125",
+     "blocks": {
+      "b7_38": 4,
+      "b8_39": 4
+     },
+     "assigned": "b7_38"
+    },
+    {
+     "group": "10.1017/s0014479721000302",
+     "blocks": {
+      "b10_36": 3,
+      "b11_37": 3
+     },
+     "assigned": "b10_36"
+    },
+    {
+     "group": "10.1080/02571862.1998.10635130",
+     "blocks": {
+      "b9_41": 2,
+      "b9_42": 1
+     },
+     "assigned": "b9_41"
+    },
+    {
+     "group": "10.1080/03650340.2023.2175352",
+     "blocks": {
+      "b8_39": 2,
+      "b9_37": 6
+     },
+     "assigned": "b9_37"
+    },
+    {
+     "group": "10.1080/23311932.2021.1921951",
+     "blocks": {
+      "b12_36": 2,
+      "b13_36": 2
+     },
+     "assigned": "b12_36"
+    },
+    {
+     "group": "10.1155/2022/9031999",
+     "blocks": {
+      "b12_38": 5,
+      "b12_39": 10
+     },
+     "assigned": "b12_39"
+    },
+    {
+     "group": "10.1186/s40066-018-0245-6",
+     "blocks": {
+      "b7_35": 2,
+      "b7_36": 2
+     },
+     "assigned": "b7_35"
+    },
+    {
+     "group": "10.1300/j064v26n02_04",
+     "blocks": {
+      "b11_39": 5,
+      "b9_37": 1
+     },
+     "assigned": "b11_39"
+    },
+    {
+     "group": "10.3923/ajps.2007.749.756",
+     "blocks": {
+      "b9_41": 3,
+      "b9_42": 3
+     },
+     "assigned": "b9_41"
+    },
+    {
+     "group": "10.3923/ja.2015.152.157",
+     "blocks": {
+      "b10_40": 1,
+      "b7_37": 3,
+      "b8_39": 1
+     },
+     "assigned": "b7_37"
+    },
+    {
+     "group": "CSA_144",
+     "blocks": {
+      "b8_38": 2,
+      "b9_38": 1
+     },
+     "assigned": "b8_38"
+    }
+   ]
+  },
+  "study": {
+   "file": "folds_study.csv",
+   "sha256": "8eff0fcbe3cf201169c843695b1bbbb6937d48c175f47625515c0d25098d53b5",
+   "n_units": 127,
+   "fold_sizes": {
+    "fold_rep00": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep01": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep02": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep03": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ],
+    "fold_rep04": [
+     83,
+     83,
+     83,
+     83,
+     82
+    ]
+   },
+   "groups_spanning_blocks": null
+  }
+ }
+}

@@ -104,6 +104,8 @@ def build_metadata() -> dict[str, Any]:
         "evidence": svc.evidence_counts(),
         # E3: which context layers the engine reads (release id, or the legacy stack).
         "geodata": svc.geodata_info(),
+        # E5: which advisory engine serves (legacy by default; m1_v2 behind ADVISOR_ENGINE).
+        "advisor_engine": _advisor_engine_info(),
         # P9: how the advisory decides its mode and which knowledge sources exist.
         "advisory": {
             "thresholds": evidence_service.thresholds(get_settings()),
@@ -117,6 +119,12 @@ def build_metadata() -> dict[str, Any]:
             },
         },
     }
+
+
+def _advisor_engine_info() -> dict[str, Any]:
+    from app.services import m1_service
+
+    return m1_service.info()
 
 
 def _fusion_settings() -> dict[str, Any]:

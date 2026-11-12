@@ -150,7 +150,23 @@ def advise(
         "context": context,
         "language": language,
         "funnel": funnel,
+        # E5: with ADVISOR_ENGINE=m1_v2, the same request ranked by Methodology 1 v2 (additive;
+        # null with the default engine or when the artifact cannot answer).
+        "m1_v2": _m1_ranking(lat, lon, practice_family, indicator, crop_type, s),
     }
+
+
+def _m1_ranking(lat: float, lon: float, practice_family: str, indicator: str, crop_type: str | None,
+                settings: Any) -> list[dict[str, Any]] | None:
+    from app.services import m1_service
+
+    if not m1_service.enabled(settings):
+        return None
+    try:
+        return m1_service.rank_for_family(lat, lon, practice_family, indicator, crop_type, settings=settings)
+    except Exception as exc:  # noqa: BLE001 - degrade: the legacy advisory stands
+        logger.warning("advise: m1_v2 ranking unavailable (%s)", exc)
+        return None
 
 
 #: Ask the engine for every grounded practice (families have at most a few dozen).

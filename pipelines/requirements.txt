@@ -10,7 +10,9 @@ rapidfuzz==3.14.6
 pytest==9.1.1
 pypdfium2==4.30.0      # E2: renders image pages for Tesseract OCR (Apache-2.0/BSD-3)
 pypdf==6.21.2
-pillow>=10
+pillow==13.0.0         # E2/E4: pypdfium2 .to_pil() needs it; without it 170 pages were silently left OCR-pending (E4 Part 0: pinned, and the OCR step now fails loudly)
 rasterio==1.4.4        # E3 geodata pipeline (already in the backend venv)
 scipy==1.17.1          # E3: TPI window, distance to streams, 1 km box
 whitebox==2.3.6        # E3: D8 flow routing with WhiteboxTools (MIT; depends only on Click, fetches its own binary on first use; versions recorded in the manifest)
+matplotlib==3.10.8     # E4: coverage-accuracy and calibration figures of the evaluation report
+lightgbm==4.6.0        # E5: LGBMRanker (lambdarank) for the within-study ranker; installs cleanly with numpy 2.4.6 on Windows

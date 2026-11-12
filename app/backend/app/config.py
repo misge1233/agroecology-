@@ -44,6 +44,11 @@ class Settings(BaseSettings):
     # GEODATA_DIR/ET/2026.1 (GEODATA_DIR resolves against backend/).
     geodata_release: str = Field(default="", validation_alias=AliasChoices("GEODATA_RELEASE"))
     geodata_dir: str = Field(default="../../geodata", validation_alias=AliasChoices("GEODATA_DIR"))
+    # Advisory engine (E5). "legacy" (default): the frozen csa_model.joblib path, unchanged.
+    # "m1_v2": Methodology 1 v2 from M1_ARTIFACT_DIR (model/m1/train.py) serves POST /rank for
+    # any registry challenge and objective and adds the additive `m1_v2` field to /advise.
+    advisor_engine: str = Field(default="legacy", validation_alias=AliasChoices("ADVISOR_ENGINE"))
+    m1_artifact_dir: str = Field(default="../../model/artifacts/m1_v2", validation_alias=AliasChoices("M1_ARTIFACT_DIR"))
 
     # RAG evidence index (Phase P2b). Built by rag/ingest (fetch_papers →
     # parse_and_chunk → build_index); lives at the repo root by default. Relative
@@ -159,6 +164,12 @@ class Settings(BaseSettings):
         """Folder of the configured release (``GEODATA_DIR/<CC>/<release>``), or None when unset."""
         rel = self.geodata_release.strip().strip("/")
         return (self.resolved_geodata_dir / rel) if rel else None
+
+    @property
+    def resolved_m1_artifact_dir(self) -> Path:
+        """Absolute folder of the Methodology 1 v2 artifact (M1_ARTIFACT_DIR, relative to backend/)."""
+        p = Path(self.m1_artifact_dir)
+        return p if p.is_absolute() else (self.backend_root / p).resolve()
 
     @property
     def resolved_rag_index_dir(self) -> Path:

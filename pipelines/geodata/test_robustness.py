@@ -235,3 +235,72 @@ def test_manifest_and_diff_carry_the_tolerance_numbers(tmp_path):
     assert rows[0]["change"] == "changed, within tolerance" and rows[0]["abs_diff_p99"] == pytest.approx(0.02, abs=1e-3)
     md = release.diff_markdown(rows, "ET/2026.1", "legacy")
     assert "within tolerance" in md and "Median / p99 abs diff" in md
+
+
+# ------------------------------------------------------------------ E4 Part 0: the WhiteboxTools flake
+def _fake_tif(path: Path) -> None:
+    import rasterio
+
+    g = Grid(38.0, 9.0, 1 / 1200, 3, 3)
+    tr._write_plain(path, np.ones((3, 3), "float32"), g, tr.WBT_NODATA)
+
+
+def test_run_wbt_retries_the_output_panic_exactly_once(tmp_path, monkeypatch, caplog):
+    """The known panic is retried once, logged as a warning and recorded; the second run succeeds."""
+    calls = []
+    panic = "Finding pit cells: 100%\nthread 'main' panicked at fill_depressions.rs:368:23:\nError unwrapping 'output'\n"
+
+    def fake_run(args, **kw):
+        calls.append(args)
+        if len(calls) == 1:
+            return SimpleNamespace(returncode=101, stdout=panic, stderr="")
+        _fake_tif(tmp_path / "filled.tif")
+        return SimpleNamespace(returncode=0, stdout="Filling depressions: 100%\n", stderr="")
+
+    monkeypatch.setattr(tr.subprocess, "run", fake_run)
+    monkeypatch.setattr(tr, "_wbt_exe_of", lambda wbt: Path(sys.executable))
+    monkeypatch.setattr(tr, "WBT_RETRIES", [])
+    import logging
+
+    with caplog.at_level(logging.WARNING, logger=tr.logger.name):
+        tr.run_wbt(None, "FillDepressions", tmp_path, ("filled.tif",), dem="dem.tif", output="filled.tif")
+    assert len(calls) == 2
+    assert len(tr.WBT_RETRIES) == 1 and tr.WBT_RETRIES[0]["tool"] == "FillDepressions" and tr.WBT_RETRIES[0]["recovered"]
+    assert any("retrying once" in r.getMessage() for r in caplog.records)
+    assert tr.whitebox_tool_record()["retries"] == tr.WBT_RETRIES
+
+
+def test_run_wbt_gives_up_after_one_retry_and_other_errors_fail_at_once(tmp_path, monkeypatch):
+    calls = []
+    panic = "thread 'main' panicked at x.rs:1:1:\nError unwrapping 'output'\n"
+
+    def always_panic(args, **kw):
+        calls.append(args)
+        return SimpleNamespace(returncode=101, stdout=panic, stderr="")
+
+    monkeypatch.setattr(tr.subprocess, "run", always_panic)
+    monkeypatch.setattr(tr, "_wbt_exe_of", lambda wbt: Path(sys.executable))
+    monkeypatch.setattr(tr, "WBT_RETRIES", [])
+    with pytest.raises(tr.WhiteboxError):
+        tr.run_wbt(None, "FillDepressions", tmp_path, ("filled.tif",), dem="dem.tif", output="filled.tif")
+    assert len(calls) == 2 and tr.WBT_RETRIES[0]["recovered"] is False
+
+    calls.clear()
+
+    def other_error(args, **kw):
+        calls.append(args)
+        return SimpleNamespace(returncode=1, stdout="Error: unsupported TIFF layout\n", stderr="")
+
+    monkeypatch.setattr(tr.subprocess, "run", other_error)
+    monkeypatch.setattr(tr, "WBT_RETRIES", [])
+    with pytest.raises(tr.WhiteboxError, match="unsupported TIFF layout"):
+        tr.run_wbt(None, "D8Pointer", tmp_path, ("pointer.tif",), dem="filled.tif", output="pointer.tif")
+    assert len(calls) == 1 and tr.WBT_RETRIES == []
+
+
+def test_wbt_scratch_folder_is_under_the_cache_not_the_user_temp(tmp_path, monkeypatch):
+    monkeypatch.setenv("GEODATA_CACHE", str(tmp_path / "cache"))
+    wd, own = tr._workdir(None)
+    assert own and wd.is_dir() and wd.parent == tmp_path / "cache" / "_work" / "wbt"
+    tr._cleanup(wd, own, ())
+    assert not wd.exists()

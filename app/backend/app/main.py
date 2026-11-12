@@ -13,7 +13,8 @@ from fastapi.responses import JSONResponse
 from app import __version__
 from app.config import get_settings
 from app.helpers import RequestIdMiddleware
-from app.routers import advise, chat, explain, geocode, health, metadata, models, recommend, registry, speech
+from app.routers import advise, chat, explain, geocode, health, metadata, models, recommend, registry, speech, rank
+from app.services.m1_service import warmup as m1_warmup
 from app.services.recommender_service import warmup
 
 logging.basicConfig(
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(_app: FastAPI):
     logger.info("Warming up recommender engine (model + dataset + rasters)…")
     warmup()
+    m1_warmup()  # E5: fail fast when ADVISOR_ENGINE=m1_v2 and the artifact is missing
     logger.info("Recommender engine ready.")
     _preload_local_voice()
     yield
@@ -71,6 +73,7 @@ def create_app() -> FastAPI:
     application.include_router(advise.router)
     application.include_router(speech.router)
     application.include_router(registry.router)
+    application.include_router(rank.router)  # E5: Methodology 1 v2
 
     @application.exception_handler(HTTPException)
     async def http_handler(_request: Request, exc: HTTPException):

@@ -1,15 +1,15 @@
 {
   "country": "ET",
   "registry_version": "1.0",
-  "built_at": "2026-11-10T17:46:46+00:00",
-  "store_manifest": "data/evidence/store_manifest.json (built 2026-11-10T17:46:44+00:00, schema 1.1)",
+  "built_at": "2026-11-11T11:44:07+00:00",
+  "store_manifest": "data/evidence/store_manifest.json (built 2026-11-11T11:16:07+00:00, schema 1.1)",
   "thresholds": {
     "min_rows": 30,
     "min_studies": 5,
     "min_docs": 3
   },
   "counting_rule": "country match, reviewed direction, computable lrr, not an exact duplicate",
-  "n_counted_rows": 16672,
+  "n_counted_rows": 16623,
   "challenges": [
     {
       "id": "SOIL_EROSION",
@@ -243,16 +243,16 @@
           "name_en": "Crop yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 6532,
-          "n_studies": 315,
+          "n_rows": 6492,
+          "n_studies": 313,
           "n_practices": 89,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 7518,
-      "n_studies": 363,
+      "n_rows": 7478,
+      "n_studies": 361,
       "n_practices_with_evidence": 95,
       "n_documented_practices": 21,
       "documented_catalogue_ids": [
@@ -313,7 +313,7 @@
           "name_en": "Water use efficiency",
           "objective_group": "water",
           "direction": 1,
-          "n_rows": 237,
+          "n_rows": 228,
           "n_studies": 49,
           "n_practices": 12,
           "exposed": true,
@@ -337,16 +337,16 @@
           "name_en": "Crop yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 2479,
-          "n_studies": 214,
+          "n_rows": 2439,
+          "n_studies": 212,
           "n_practices": 34,
           "exposed": true,
           "documented_only": false,
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 3823,
-      "n_studies": 238,
+      "n_rows": 3774,
+      "n_studies": 236,
       "n_practices_with_evidence": 36,
       "n_documented_practices": 21,
       "documented_catalogue_ids": [
@@ -465,8 +465,8 @@
           "name_en": "Crop yield",
           "objective_group": "productivity",
           "direction": 1,
-          "n_rows": 6532,
-          "n_studies": 315,
+          "n_rows": 6492,
+          "n_studies": 313,
           "n_practices": 89,
           "exposed": true,
           "documented_only": false,
@@ -509,8 +509,8 @@
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 8789,
-      "n_studies": 341,
+      "n_rows": 8749,
+      "n_studies": 340,
       "n_practices_with_evidence": 90,
       "n_documented_practices": 0,
       "documented_catalogue_ids": [],
@@ -980,7 +980,7 @@
           "name_en": "Water use efficiency",
           "objective_group": "water",
           "direction": 1,
-          "n_rows": 218,
+          "n_rows": 209,
           "n_studies": 47,
           "n_practices": 10,
           "exposed": true,
@@ -1012,7 +1012,7 @@
           "n_rows_pending_review": 0
         }
       ],
-      "n_rows": 1169,
+      "n_rows": 1160,
       "n_studies": 73,
       "n_practices_with_evidence": 16,
       "n_documented_practices": 3,
@@ -1439,7 +1439,7 @@
         "SOIL_FERTILITY_DECLINE",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 352,
+      "n_rows": 321,
       "catalogue_ids": []
     },
     {
@@ -2150,7 +2150,7 @@
         "SOIL_EROSION",
         "SOIL_FERTILITY_DECLINE"
       ],
-      "n_rows": 886,
+      "n_rows": 873,
       "catalogue_ids": []
     },
     {
@@ -2346,7 +2346,7 @@
         "WATERLOGGING_EXCESS_RUNOFF",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 305,
+      "n_rows": 303,
       "catalogue_ids": []
     },
     {
@@ -2581,7 +2581,7 @@
         "WATERLOGGING_EXCESS_RUNOFF",
         "WATER_SCARCITY_IRRIGATION"
       ],
-      "n_rows": 589,
+      "n_rows": 586,
       "catalogue_ids": []
     },
     {

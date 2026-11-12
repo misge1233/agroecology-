@@ -1,0 +1,134 @@
+{
+ "seed": 0,
+ "store_rows": 19753,
+ "eligible_rows": 17326,
+ "release": "ET/2026.1",
+ "counts": {
+  "ET": {
+   "n_pairwise": 375,
+   "n_list": 185,
+   "by_objective_pairwise": {
+    "economics": 71,
+    "livestock": 34,
+    "productivity": 188,
+    "resilience_biodiversity": 3,
+    "soil_health": 32,
+    "water": 47
+   },
+   "by_objective_list": {
+    "economics": 51,
+    "livestock": 1,
+    "productivity": 109,
+    "soil_health": 16,
+    "water": 8
+   }
+  },
+  "global": {
+   "n_pairwise": 39,
+   "n_list": 8,
+   "by_objective_pairwise": {
+    "economics": 2,
+    "productivity": 12,
+    "resilience_biodiversity": 1,
+    "soil_health": 14,
+    "water": 10
+   },
+   "by_objective_list": {
+    "productivity": 3,
+    "soil_health": 2,
+    "water": 3
+   }
+  },
+  "post_2024": {
+   "n_pairwise": 5,
+   "n_list": 0,
+   "by_objective_pairwise": {
+    "productivity": 2,
+    "soil_health": 2,
+    "water": 1
+   },
+   "by_objective_list": {}
+  },
+  "legacy_68": {
+   "n_pairwise": 68,
+   "n_list": 68,
+   "by_objective_pairwise": {
+    "economics": 4,
+    "productivity": 58,
+    "soil_health": 2,
+    "water": 4
+   },
+   "by_objective_list": {
+    "economics": 4,
+    "productivity": 58,
+    "soil_health": 2,
+    "water": 4
+   }
+  }
+ },
+ "counts_without_comparator_key": {
+  "ET": {
+   "n_pairwise": 360,
+   "n_list": 184,
+   "by_objective_pairwise": {
+    "climate": 1,
+    "economics": 68,
+    "livestock": 30,
+    "productivity": 173,
+    "resilience_biodiversity": 3,
+    "soil_health": 36,
+    "water": 49
+   },
+   "by_objective_list": {
+    "economics": 47,
+    "livestock": 8,
+    "productivity": 102,
+    "soil_health": 17,
+    "water": 10
+   }
+  },
+  "global": {
+   "n_pairwise": 46,
+   "n_list": 8,
+   "by_objective_pairwise": {
+    "economics": 2,
+    "productivity": 17,
+    "resilience_biodiversity": 2,
+    "soil_health": 15,
+    "water": 10
+   },
+   "by_objective_list": {
+    "productivity": 3,
+    "soil_health": 2,
+    "water": 3
+   }
+  },
+  "post_2024": {
+   "n_pairwise": 5,
+   "n_list": 0,
+   "by_objective_pairwise": {
+    "productivity": 2,
+    "soil_health": 2,
+    "water": 1
+   },
+   "by_objective_list": {}
+  },
+  "legacy_68": {
+   "n_pairwise": 0,
+   "n_list": 0,
+   "by_objective_pairwise": {},
+   "by_objective_list": {}
+  }
+ },
+ "query_hash": "17a46034aff7368850a1e525cfbd9a1dcd061f7c1e8c2ce32380351f154fe3c5",
+ "n_queries": 482,
+ "n_items": 1465,
+ "queries_with_null_comparator": 39,
+ "comparator_classes": {
+  "other": 239,
+  "no_practice": 105,
+  "conventional_tillage": 53,
+  "mineral_fertilizer_only": 10,
+  "farmer_practice": 7
+ }
+}

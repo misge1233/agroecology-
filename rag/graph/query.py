@@ -16,6 +16,11 @@ Typical use::
     from rag.graph.query import GraphQuery
     gq = GraphQuery.load()                       # rag/graph/store/graph.json
     gq.evidence_summary("Mulch-Reduced Tillage", "yield")
+
+Masking (E4 Part 3): :meth:`GraphQuery.masked` returns a view without the ``Study``
+nodes of the held-out groups of an evaluation fold (and so without their
+``REPORTS_EFFECT`` and ``STUDIED_IN`` edges); every module-level function takes an
+optional ``mask`` and answers from that view. The default store is never modified.
 """
 from __future__ import annotations
 
@@ -59,6 +64,25 @@ class GraphQuery:
                 f"graph store not found: {path} — run rag/graph/build_graph.py"
             )
         return cls(from_node_link(json.loads(path.read_text(encoding="utf-8"))))
+
+    # --------------------------------------------------------------- masking
+    def masked(self, mask: Any) -> "GraphQuery":
+        """A read-only view without the ``Study`` nodes of a :class:`model.harness.mask.Mask`.
+
+        Study nodes are matched by label (the store study id), DOI and ``era_code``
+        (``Mask.blocks_graph_study``); removing a node removes every edge on it, so
+        ``REPORTS_EFFECT`` aggregates of masked studies cannot reach any query. The
+        removed study ids are kept in ``view.masked_studies`` for the harness report.
+        """
+        if mask is None or getattr(mask, "is_empty", True):
+            return self
+        drop = [nid for nid in self._nodes_of(NodeType.STUDY)
+                if mask.blocks_graph_study({**self._attrs(nid), "id": nid})]
+        g = self.graph.copy()
+        g.remove_nodes_from(drop)
+        view = GraphQuery(g)
+        view.masked_studies = sorted(n.split(":", 1)[1] for n in drop)
+        return view
 
     # -------------------------------------------------------- small helpers
     def _attrs(self, nid: str) -> dict[str, Any]:
@@ -526,54 +550,54 @@ GraphQuery.documents_for_practice = documents_for_practice
 _CACHED: GraphQuery | None = None
 
 
-def default_query(path: Path | str = DEFAULT_STORE) -> GraphQuery:
-    """Process-wide cached :class:`GraphQuery` over the default store."""
+def default_query(path: Path | str = DEFAULT_STORE, mask: Any = None) -> GraphQuery:
+    """Process-wide cached :class:`GraphQuery` over the default store (a masked view with ``mask``)."""
     global _CACHED
     if _CACHED is None:
         _CACHED = GraphQuery.load(path)
-    return _CACHED
+    return _CACHED.masked(mask) if mask is not None else _CACHED
 
 
-def evidence_summary(practice: str, indicator: str) -> dict[str, Any]:
+def evidence_summary(practice: str, indicator: str, mask: Any = None) -> dict[str, Any]:
     """Module-level shortcut for :meth:`GraphQuery.evidence_summary`."""
-    return default_query().evidence_summary(practice, indicator)
+    return default_query(mask=mask).evidence_summary(practice, indicator)
 
 
-def components_of(practice: str) -> list[str]:
+def components_of(practice: str, mask: Any = None) -> list[str]:
     """Module-level shortcut for :meth:`GraphQuery.components_of`."""
-    return default_query().components_of(practice)
+    return default_query(mask=mask).components_of(practice)
 
 
-def slm_measures_for(practice: str) -> list[dict[str, Any]]:
+def slm_measures_for(practice: str, mask: Any = None) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.slm_measures_for`."""
-    return default_query().slm_measures_for(practice)
+    return default_query(mask=mask).slm_measures_for(practice)
 
 
-def related_practices(practice: str, k: int = 5) -> list[dict[str, Any]]:
+def related_practices(practice: str, k: int = 5, mask: Any = None) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.related_practices`."""
-    return default_query().related_practices(practice, k)
+    return default_query(mask=mask).related_practices(practice, k)
 
 
 def similar_context_technologies(
     context: dict[str, Any], practice: str | None = None, k: int = 5,
-    include_synthetic: bool = False,
+    include_synthetic: bool = False, mask: Any = None,
 ) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.similar_context_technologies`."""
-    return default_query().similar_context_technologies(
+    return default_query(mask=mask).similar_context_technologies(
         context, practice, k, include_synthetic
     )
 
 
-def explain_paths(practice: str, indicator: str, max_paths: int = 5) -> list[dict[str, Any]]:
+def explain_paths(practice: str, indicator: str, max_paths: int = 5, mask: Any = None) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.explain_paths`."""
-    return default_query().explain_paths(practice, indicator, max_paths)
+    return default_query(mask=mask).explain_paths(practice, indicator, max_paths)
 
 
-def practices_for_challenge_q(challenge_id: str) -> list[dict[str, Any]]:
+def practices_for_challenge_q(challenge_id: str, mask: Any = None) -> list[dict[str, Any]]:
     """Module-level shortcut for :meth:`GraphQuery.practices_for_challenge` (E2)."""
-    return default_query().practices_for_challenge(challenge_id)
+    return default_query(mask=mask).practices_for_challenge(challenge_id)
 
 
-def documents_for_practice_q(practice: str) -> dict[str, list[dict[str, Any]]]:
+def documents_for_practice_q(practice: str, mask: Any = None) -> dict[str, list[dict[str, Any]]]:
     """Module-level shortcut for :meth:`GraphQuery.documents_for_practice` (E2)."""
-    return default_query().documents_for_practice(practice)
+    return default_query(mask=mask).documents_for_practice(practice)

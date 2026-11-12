@@ -1,0 +1,171 @@
+{
+ "active": [
+  "ctx_precip_annual",
+  "ctx_temp_mean_annual",
+  "ctx_precip_seasonality",
+  "ctx_elevation",
+  "ctx_slope",
+  "ctx_soil_clay",
+  "ctx_lgp_days",
+  "ctx_soil_ph",
+  "ctx_slope_length_factor",
+  "ctx_tpi",
+  "ctx_flow_accumulation",
+  "ctx_soil_sand",
+  "ctx_soil_cec",
+  "ctx_soil_nitrogen",
+  "ctx_soil_awc",
+  "ctx_soil_depth_bedrock",
+  "ctx_rain_cv_interannual",
+  "ctx_pet_hargreaves_annual",
+  "ctx_cropland_fraction_1km",
+  "ctx_travel_time_to_city_min",
+  "cat_belt",
+  "cat_koppen",
+  "cat_crop_group",
+  "cat_practice_family",
+  "cat_outcome_id",
+  "cat_objective_group",
+  "cat_quality_flag",
+  "te_practice_mean",
+  "te_practice_n",
+  "te_practice_group_mean",
+  "te_practice_group_n",
+  "comp_Agroforestry Fallow",
+  "comp_Agroforestry Pruning",
+  "comp_Agronomic/Biological SWC Practices",
+  "comp_Alleycropping",
+  "comp_Alternate Furrow Irrigation",
+  "comp_Animal Feed Management",
+  "comp_Biochar",
+  "comp_Biological SWC Practices",
+  "comp_Conservation Tillage",
+  "comp_Cookstove",
+  "comp_Crop Residue Incorporation",
+  "comp_Crop Rotation",
+  "comp_Deficit Irrigation",
+  "comp_Drip Irrigation",
+  "comp_Drought Tolerant Crops",
+  "comp_Ex",
+  "comp_Exclosure",
+  "comp_Feed Addition",
+  "comp_Feed Processing",
+  "comp_Feed Substitution",
+  "comp_Furrow Irrigation",
+  "comp_Genetic Improvement",
+  "comp_Grazing Management",
+  "comp_ISFM",
+  "comp_IWM",
+  "comp_Improved Fallow",
+  "comp_Improved Varieties",
+  "comp_In-situ Water Harvesting",
+  "comp_Inorganic Fertilizer",
+  "comp_Inorganic Fertilizer Reduction",
+  "comp_Intercropping",
+  "comp_Intercropping or Rotation",
+  "comp_Mulch",
+  "comp_Multistrata Agroforestry",
+  "comp_Organic Amendments",
+  "comp_Organic Fertilizer",
+  "comp_Other Agroforestry",
+  "comp_Overhead Irrigation with Mulching",
+  "comp_Parklands",
+  "comp_Pasture Management",
+  "comp_Physical + Biological SWC Practices",
+  "comp_Physical SWC Measures",
+  "comp_Reduced Tillage",
+  "comp_Silvopasture",
+  "comp_Supplemental Irrigation",
+  "comp_Water Harvesting",
+  "comp_Weeding",
+  "comp_pH Control",
+  "comp_situ water harvesting"
+ ],
+ "selection": "fixed (stable set)",
+ "regressor_grid": [
+  {
+   "params": {
+    "learning_rate": 0.05,
+    "max_iter": 300,
+    "min_samples_leaf": 20
+   },
+   "c_pooled": 0.6623167914815161,
+   "top1": 0.5513814317357618,
+   "n_queries": 138.0
+  },
+  {
+   "params": {
+    "learning_rate": 0.1,
+    "max_iter": 300,
+    "min_samples_leaf": 20
+   },
+   "c_pooled": 0.6538242026868857,
+   "top1": 0.5692937891156079,
+   "n_queries": 138.0
+  },
+  {
+   "params": {
+    "learning_rate": 0.05,
+    "max_iter": 300,
+    "min_samples_leaf": 50
+   },
+   "c_pooled": 0.6669007592471748,
+   "top1": 0.55894141897089,
+   "n_queries": 138.0
+  },
+  {
+   "params": {
+    "learning_rate": 0.1,
+    "max_iter": 150,
+    "min_samples_leaf": 50
+   },
+   "c_pooled": 0.6612556063101417,
+   "top1": 0.559028391085775,
+   "n_queries": 138.0
+  }
+ ],
+ "matched_grid": [
+  {
+   "k": 5,
+   "power": 1.0,
+   "c_pooled": 0.618421052631579,
+   "top1": 0.587737843551797,
+   "n_queries": 32.5
+  },
+  {
+   "k": 5,
+   "power": 2.0,
+   "c_pooled": 0.618421052631579,
+   "top1": 0.587737843551797,
+   "n_queries": 32.5
+  },
+  {
+   "k": 10,
+   "power": 1.0,
+   "c_pooled": 0.6737100737100736,
+   "top1": 0.6085714285714285,
+   "n_queries": 42.5
+  },
+  {
+   "k": 10,
+   "power": 2.0,
+   "c_pooled": 0.6737100737100736,
+   "top1": 0.6085714285714285,
+   "n_queries": 42.5
+  },
+  {
+   "k": 20,
+   "power": 1.0,
+   "c_pooled": 0.6792582417582418,
+   "top1": 0.61,
+   "n_queries": 43.0
+  },
+  {
+   "k": 20,
+   "power": 2.0,
+   "c_pooled": 0.6792582417582418,
+   "top1": 0.61,
+   "n_queries": 43.0
+  }
+ ]
+}

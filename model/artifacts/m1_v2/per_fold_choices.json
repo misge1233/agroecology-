@@ -1,0 +1,242 @@
+[
+ {
+  "split": "spatial",
+  "fold": 0,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6316981132075472,
+   "top1": 0.5196374622356495,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6652830188679245,
+   "top1": 0.5287009063444109,
+   "n_queries": 331.0
+  },
+  "q": 0.7819042095387334,
+  "n_features": 83,
+  "params": {
+   "learning_rate": 0.05,
+   "max_iter": 300,
+   "min_samples_leaf": 20
+  },
+  "matched_k": 10,
+  "matched_power": 2.0
+ },
+ {
+  "split": "spatial",
+  "fold": 1,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6720841300191205,
+   "top1": 0.5438066465256798,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6835564053537285,
+   "top1": 0.6102719033232629,
+   "n_queries": 331.0
+  },
+  "q": 0.8232635799257298,
+  "n_features": 85,
+  "params": {
+   "learning_rate": 0.05,
+   "max_iter": 300,
+   "min_samples_leaf": 50
+  },
+  "matched_k": 20,
+  "matched_power": 2.0
+ },
+ {
+  "split": "spatial",
+  "fold": 2,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6566164154103853,
+   "top1": 0.525679758308157,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6641541038525963,
+   "top1": 0.5589123867069486,
+   "n_queries": 331.0
+  },
+  "q": 0.7764004708051548,
+  "n_features": 84,
+  "params": {
+   "learning_rate": 0.1,
+   "max_iter": 300,
+   "min_samples_leaf": 20
+  },
+  "matched_k": 20,
+  "matched_power": 2.0
+ },
+ {
+  "split": "spatial",
+  "fold": 3,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6411020104244229,
+   "top1": 0.459214501510574,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6638123603871928,
+   "top1": 0.5589123867069486,
+   "n_queries": 331.0
+  },
+  "q": 0.8455957981005929,
+  "n_features": 80,
+  "params": {
+   "learning_rate": 0.05,
+   "max_iter": 300,
+   "min_samples_leaf": 50
+  },
+  "matched_k": 5,
+  "matched_power": 1.0
+ },
+ {
+  "split": "spatial",
+  "fold": 4,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6496062992125984,
+   "top1": 0.5331325301204819,
+   "n_queries": 332.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6835629921259843,
+   "top1": 0.5813253012048193,
+   "n_queries": 332.0
+  },
+  "q": 0.8141160685667146,
+  "n_features": 86,
+  "params": {
+   "learning_rate": 0.05,
+   "max_iter": 300,
+   "min_samples_leaf": 20
+  },
+  "matched_k": 10,
+  "matched_power": 2.0
+ },
+ {
+  "split": "study",
+  "fold": 0,
+  "stacker": "ridge",
+  "ridge": {
+   "c_pooled": 0.6771523178807947,
+   "top1": 0.5619335347432024,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6754966887417219,
+   "top1": 0.5558912386706949,
+   "n_queries": 331.0
+  },
+  "q": 0.7138044006604308,
+  "n_features": 82,
+  "params": {
+   "learning_rate": 0.1,
+   "max_iter": 300,
+   "min_samples_leaf": 20
+  },
+  "matched_k": 20,
+  "matched_power": 1.0
+ },
+ {
+  "split": "study",
+  "fold": 1,
+  "stacker": "ridge",
+  "ridge": {
+   "c_pooled": 0.650278293135436,
+   "top1": 0.5287009063444109,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.648886827458256,
+   "top1": 0.5498489425981873,
+   "n_queries": 331.0
+  },
+  "q": 0.7344509799730135,
+  "n_features": 88,
+  "params": {
+   "learning_rate": 0.05,
+   "max_iter": 300,
+   "min_samples_leaf": 50
+  },
+  "matched_k": 20,
+  "matched_power": 1.0
+ },
+ {
+  "split": "study",
+  "fold": 2,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6663778162911612,
+   "top1": 0.5196374622356495,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.669844020797227,
+   "top1": 0.552870090634441,
+   "n_queries": 331.0
+  },
+  "q": 0.8097285532061926,
+  "n_features": 85,
+  "params": {
+   "learning_rate": 0.1,
+   "max_iter": 300,
+   "min_samples_leaf": 20
+  },
+  "matched_k": 10,
+  "matched_power": 1.0
+ },
+ {
+  "split": "study",
+  "fold": 3,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.644122383252818,
+   "top1": 0.4984894259818731,
+   "n_queries": 331.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6537842190016103,
+   "top1": 0.5317220543806647,
+   "n_queries": 331.0
+  },
+  "q": 0.7784620417292021,
+  "n_features": 87,
+  "params": {
+   "learning_rate": 0.1,
+   "max_iter": 150,
+   "min_samples_leaf": 50
+  },
+  "matched_k": 20,
+  "matched_power": 1.0
+ },
+ {
+  "split": "study",
+  "fold": 4,
+  "stacker": "rank_avg",
+  "ridge": {
+   "c_pooled": 0.6328502415458938,
+   "top1": 0.49096385542168675,
+   "n_queries": 332.0
+  },
+  "rank_avg": {
+   "c_pooled": 0.6739130434782609,
+   "top1": 0.5421686746987951,
+   "n_queries": 332.0
+  },
+  "q": 0.7845968302009317,
+  "n_features": 82,
+  "params": {
+   "learning_rate": 0.1,
+   "max_iter": 150,
+   "min_samples_leaf": 50
+  },
+  "matched_k": 20,
+  "matched_power": 2.0
+ }
+]

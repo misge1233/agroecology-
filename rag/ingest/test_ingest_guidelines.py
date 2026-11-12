@@ -74,3 +74,53 @@ def test_guideline_chunks_metadata():
     assert c["chunk_id"].startswith("GL_MOA_TEST_p003_") and c["tier"] == "guidelines" and c["era_code"] is None
     assert (c["doc_id"], c["year"], c["language"], c["theme"], c["source"]) == ("MOA_TEST", 2014, "en", "swc", "guidelines")
     assert c["citation"] == "MoA 2014, Test guide, p. 3"
+
+
+# ------------------------------------------------------------ E4 Part 0: OCR fails loudly
+def _doc_setup(tmp_path, monkeypatch):
+    monkeypatch.setattr(ig, "TEXTS", tmp_path / "texts")
+    monkeypatch.setattr(ig, "GUIDE_DIR", tmp_path)
+    (tmp_path / "pdfs").mkdir()
+    (tmp_path / "pdfs" / "d.pdf").write_bytes(b"%PDF-1.4\n")
+    monkeypatch.setattr(ig, "extract_pages", lambda pdf, tool: ["x" * 1500, "img", "y" * 1500])
+    return {"doc_id": "D1", "file_name": "d.pdf", "language": "en"}
+
+
+def test_setup_error_stops_the_ingest_instead_of_marking_pages_pending(tmp_path, monkeypatch):
+    rec = _doc_setup(tmp_path, monkeypatch)
+
+    def no_pillow(pdf, page, tess, langs):
+        raise ig.OcrSetupError("Pillow is not installed")
+
+    monkeypatch.setattr(ig, "ocr_page", no_pillow)
+    with pytest.raises(ig.OcrSetupError, match="Pillow"):
+        ig.ingest_doc(rec, "pdftotext", "tesseract", {"eng"})
+    assert not (tmp_path / "texts" / "D1" / "meta.json").exists()
+
+
+def test_page_specific_error_still_leaves_the_page_pending(tmp_path, monkeypatch):
+    rec = _doc_setup(tmp_path, monkeypatch)
+
+    def bad_page(pdf, page, tess, langs):
+        raise RuntimeError("corrupt page object")
+
+    monkeypatch.setattr(ig, "ocr_page", bad_page)
+    res = ig.ingest_doc(rec, "pdftotext", "tesseract", {"eng"})
+    assert res.ocr_pending == [2] and res.ocr_pages == [] and "corrupt page" in res.error
+    assert (tmp_path / "texts" / "D1" / "meta.json").exists()
+
+
+def test_check_ocr_stack_reports_a_missing_package(monkeypatch):
+    import builtins
+
+    real_import = builtins.__import__
+
+    def fake_import(name, *a, **kw):
+        if name == "PIL":
+            raise ImportError("No module named PIL")
+        return real_import(name, *a, **kw)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+    with pytest.raises(ig.OcrSetupError, match="Pillow"):
+        ig.check_ocr_stack("tesseract")
+    ig.check_ocr_stack(None)  # no Tesseract: nothing to check

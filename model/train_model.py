@@ -58,6 +58,25 @@ DATASET_PATH = ev.DATASET_PATH
 FOLDS_PATH = ev.FOLDS_PATH
 ARTIFACTS_DIR = REPO_ROOT / "model" / "artifacts"
 BACKEND_ARTIFACTS = REPO_ROOT / "app" / "backend" / "artifacts"
+CANONICAL_REPORT = REPO_ROOT / "docs" / "reports" / "model_evaluation_report.md"
+REPORT_NAME = "model_evaluation_report.md"
+
+
+def resolve_report_path(report: Path | str | None, quick: bool, artifacts: Path) -> Path | None:
+    """Where the markdown report goes (E4 Part 0).
+
+    ``docs/reports/model_evaluation_report.md`` (the canonical report) is written only
+    by a full run that also writes the canonical artifacts; ``--quick`` runs and runs
+    with ``--artifacts`` elsewhere write ``model_evaluation_report.md`` next to their
+    artifacts (the E3 release checks overwrote the canonical report with quick-protocol
+    text). An explicit ``--report PATH`` is honoured as given; ``None`` means no report.
+    """
+    if report is None:
+        return None
+    if str(report) != "auto":
+        return Path(report)
+    canonical = not quick and Path(artifacts).resolve() == ARTIFACTS_DIR.resolve()
+    return CANONICAL_REPORT if canonical else Path(artifacts) / REPORT_NAME
 
 # Re-exported so the names train_model.py has always owned keep working.
 CAT, NUM, FEATURES = ev.CAT, ev.NUM, ev.FEATURES
@@ -187,9 +206,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--reuse-eval", action="store_true",
                         help="reuse an existing model_eval.json instead of "
                              "re-running the protocol")
-    parser.add_argument("--report", type=Path,
-                        default=REPO_ROOT / "docs" / "reports" / "model_evaluation_report.md",
-                        help="markdown evaluation report to (re)generate")
+    parser.add_argument("--report", default="auto",
+                        help="markdown evaluation report to (re)generate (default: "
+                             "docs/reports/model_evaluation_report.md for a full run into the "
+                             "canonical artifacts folder, else <artifacts>/model_evaluation_report.md)")
     parser.add_argument("--no-report", dest="report", action="store_const", const=None)
     parser.add_argument("--release",
                         help="E3: geodata release (e.g. ET/2026.1) to re-extract the context features from")
@@ -202,6 +222,7 @@ def main(argv: list[str] | None = None) -> int:
     art: Path = args.artifacts
     art.mkdir(parents=True, exist_ok=True)
     eval_path = art / "model_eval.json"
+    args.report = resolve_report_path(args.report, args.quick, art)
 
     df = pd.read_csv(args.dataset)
     print(f"dataset: {args.dataset} {df.shape}", flush=True)
